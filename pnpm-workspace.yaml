@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm runs every script with this Node, whatever is installed system-wide. Keep in sync with .nvmrc.
+useNodeVersion: 24.22.1
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd

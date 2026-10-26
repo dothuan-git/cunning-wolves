@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Cunning Wolves"
+  },
+  "home": {
+    "tagline": "Bài vai trò và sổ quản trò cho Ma Sói, ngay trên điện thoại.",
+    "apiLoading": "Đang kết nối máy chủ…",
+    "apiOk": "Máy chủ trả lời: {{message}}",
+    "apiError": "Không kết nối được máy chủ."
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}

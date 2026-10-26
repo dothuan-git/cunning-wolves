@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+**/worker-configuration.d.ts
+**/dist/
+**/.wrangler/
+**/playwright-report/
+**/test-results/
+**/coverage/

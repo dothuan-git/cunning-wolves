@@ -1,0 +1,16 @@
+/*
+ * Design tokens. PROVISIONAL until Phase 0 locks the visual direction (docs/design/direction.md).
+ * `--color-*: initial` removes Tailwind's default palette, so only these colors exist as utilities.
+ */
+@theme {
+  --color-*: initial;
+  --color-forest: #1f4d3a;
+  --color-lime: #a3e635;
+  --color-sunset: #f97316;
+  --color-paper: #fbf8f1;
+  --color-ink: #2b2b2b;
+  --color-berry: #b4234a;
+  --color-white: #ffffff;
+
+  --font-sans: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+}

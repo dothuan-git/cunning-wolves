@@ -1,0 +1,8 @@
+* text=auto eol=lf
+apps/worker/worker-configuration.d.ts linguist-generated=true -diff
+*.png binary
+*.jpg binary
+*.webp binary
+*.mp3 binary
+*.ogg binary
+*.woff2 binary

@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Cunning Wolves"
+  },
+  "home": {
+    "tagline": "Role cards and the narrator's notebook for Werewolf, right on your phone.",
+    "apiLoading": "Connecting to the server…",
+    "apiOk": "Server says: {{message}}",
+    "apiError": "Can't reach the server."
+  },
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}
