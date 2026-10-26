@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# Cloudflare
+.wrangler/
+.dev.vars*
+!.dev.vars.example
+
+# tests
+test-results/
+playwright-report/
+blob-report/
+coverage/
+
+# env
+.env*
+!.env.example
+
+# Claude Code (personal)
+CLAUDE.local.md
+.claude/settings.local.json
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.log
