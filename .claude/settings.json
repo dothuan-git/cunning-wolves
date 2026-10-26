@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm test *)",
+      "Bash(pnpm test:e2e *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm lint:fix *)",
+      "Bash(pnpm dev *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm format *)",
+      "Bash(pnpm format:check *)",
+      "Bash(pnpm i18n:check *)",
+      "Bash(pnpm check *)",
+      "Bash(pnpm build *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(wrangler deploy *)",
+      "Bash(wrangler versions *)",
+      "Bash(wrangler delete *)",
+      "Bash(pnpm exec wrangler delete *)",
+      "Bash(npx wrangler deploy *)",
+      "Bash(pnpm exec wrangler deploy *)",
+      "Bash(pnpm deploy:prod *)",
+      "Bash(pnpm run deploy *)",
+      "Bash(pnpm --filter @werewolf/web run deploy *)",
+      "PowerShell(git push *)",
+      "PowerShell(wrangler deploy *)",
+      "PowerShell(npx wrangler deploy *)",
+      "PowerShell(pnpm exec wrangler deploy *)",
+      "PowerShell(pnpm deploy:prod *)",
+      "PowerShell(pnpm run deploy *)"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-lint.mjs\"",
+            "timeout": 60,
+            "statusMessage": "Formatting and linting"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/typecheck.mjs\"",
+            "timeout": 180,
+            "statusMessage": "Type checking"
+          }
+        ]
+      }
+    ]
+  }
+}
