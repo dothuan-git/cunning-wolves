@@ -1,5 +1,11 @@
 @AGENTS.md
 
+# Working with me
+
+- Answer concisely in plain, simple words. Lead with the answer; no filler, no recap of what you did.
+- Before planning or coding, weigh the possible approaches and recommend the best one with a one-line reason. If the trade-offs are close, list them briefly and let me choose.
+- If a requirement is unclear or could mean more than one thing, ask and agree on it before planning or coding. Don't guess.
+
 # Claude Code
 
 - Start every task in plan mode; write code only after the plan is approved.
