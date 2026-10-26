@@ -1,0 +1,31 @@
+name: Preview cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  delete-preview:
+    name: Delete PR preview Worker
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WORKER_NAME: cunning-wolves-pr-${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # --force skips the confirmation prompt; nothing else binds to a preview Worker.
+      # A PR whose checks never passed has no preview, so a failed delete is only a warning.
+      - run: |
+          pnpm --filter @werewolf/worker exec wrangler delete "$WORKER_NAME" --force \
+            || echo "::warning::Could not delete $WORKER_NAME (it may never have been deployed)"
