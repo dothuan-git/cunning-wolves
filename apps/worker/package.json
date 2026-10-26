@@ -1,0 +1,20 @@
+{
+  "name": "@werewolf/worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "typecheck": "tsc -p tsconfig.worker.json && tsc -p tsconfig.node.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@werewolf/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.7",
+    "@types/node": "^24.19.2",
+    "typescript": "~6.0.3",
+    "vitest": "~5.0.5",
+    "wrangler": "^4.152.0"
+  }
+}

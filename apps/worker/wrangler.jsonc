@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cunning-wolves",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-19",
+  "observability": { "enabled": true },
+  // Static assets come from the web app's Vite build (@cloudflare/vite-plugin sets the directory).
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOM", "class_name": "Room" },
+      { "name": "LOBBY", "class_name": "Lobby" },
+    ],
+  },
+  // Free plan: Durable Objects must use the SQLite backend.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room", "Lobby"] }],
+}
