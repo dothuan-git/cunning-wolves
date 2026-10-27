@@ -6,11 +6,7 @@ export function LanguageSwitch() {
   const { t, i18n } = useTranslation();
 
   return (
-    <div
-      role="group"
-      aria-label={t('language.label')}
-      className="flex gap-1 rounded-full bg-white p-1"
-    >
+    <div role="group" aria-label={t('language.label')} className="flex gap-3">
       {LOCALES.map((locale) => {
         const active = i18n.language === locale;
         return (
@@ -21,8 +17,10 @@ export function LanguageSwitch() {
             onClick={() => {
               setLocale(locale);
             }}
-            className={`min-h-12 rounded-full px-4 text-sm font-semibold transition active:scale-95 ${
-              active ? 'bg-forest text-white' : 'text-ink'
+            className={`min-h-12 border-b px-1 text-control motion-safe:transition-colors ${
+              active
+                ? 'border-forest font-medium text-forest'
+                : 'border-transparent text-muted hover:border-line hover:text-ink'
             }`}
           >
             {t(`language.${locale}`)}

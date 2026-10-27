@@ -43,7 +43,8 @@ The worker builds each viewer's state before sending it. A player's client never
 - Roles are listed in wake order, each with its holders underneath. The narrator can drag to reorder for this room.
 - Tapping a player marks them dead; tapping again undoes it. Dead players stay visible, grayed out.
 - **A player is dead in night N if they were marked in any night before N.** Marking can be undone in any night.
-- One comment box per role and one for the night.
+- One comment field per player per night, plus one general night note. Players sharing a role have separate comments, keyed by device ID rather than role or display name. Switching nights restores the selected night's notes; dead players' notes stay editable.
+- Comment fields are separate from status controls: editing a comment never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See `docs/decisions/0007-per-player-night-comments.md`.
 - The app records what the narrator marks. It never resolves abilities or decides winners.
 
 ## Wake order

@@ -1,6 +1,21 @@
 @import 'tailwindcss';
 @import './design/tokens.css';
+@import './design/fonts.css';
 
-body {
-  @apply bg-paper font-sans text-ink antialiased;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-paper font-sans text-body text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-village;
+  }
+
+  ::selection {
+    @apply bg-village text-surface;
+  }
 }

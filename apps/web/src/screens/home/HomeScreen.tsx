@@ -31,20 +31,24 @@ export function HomeScreen() {
   }, []);
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col px-4 pt-4 pb-8">
+    <main className="mx-auto flex min-h-dvh max-w-md flex-col px-6 pt-4 pb-6">
       <div className="flex justify-end">
         <LanguageSwitch />
       </div>
 
-      <div className="flex flex-1 flex-col justify-center gap-4">
-        <h1 className="text-4xl font-extrabold text-forest">{t('app.name')}</h1>
-        <p className="text-lg">{t('home.tagline')}</p>
-        <p role="status" className={api.status === 'error' ? 'text-berry' : 'text-forest'}>
-          {api.status === 'loading' && t('home.apiLoading')}
-          {api.status === 'ok' && t('home.apiOk', { message: api.message })}
-          {api.status === 'error' && t('home.apiError')}
-        </p>
+      <div className="flex flex-1 flex-col justify-center gap-3 py-12">
+        <h1 className="font-display text-title font-medium">{t('app.name')}</h1>
+        <p className="text-body text-muted">{t('home.tagline')}</p>
       </div>
+
+      <p
+        role="status"
+        className={`border-t border-line pt-4 text-control ${api.status === 'error' ? 'text-danger' : 'text-muted'}`}
+      >
+        {api.status === 'loading' && t('home.apiLoading')}
+        {api.status === 'ok' && t('home.apiOk', { message: api.message })}
+        {api.status === 'error' && t('home.apiError')}
+      </p>
     </main>
   );
 }

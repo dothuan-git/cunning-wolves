@@ -56,7 +56,7 @@ Nine screens: three shared, three for the room master, three for players.
 3. **Narrator page** — one night at a time:
    - Roles listed in wake order (drag to reorder), each with its holders underneath.
    - Tap a player to mark dead, tap again to undo. Dead players stay visible but grayed out.
-   - A comment box per role, plus one for the night.
+   - A comment field per player per night, plus one general night note. Players sharing a role have separate fields.
    - End night moves to the next night; a night switcher lets the narrator go back and correct an earlier one.
    - Timer and sound controls as configured in setup; Finish game is always available.
 
@@ -70,16 +70,16 @@ Nine screens: three shared, three for the room master, three for players.
 
 The role pool is static data shipped with the app; everything else lives inside the room's Durable Object.
 
-| Entity            | Key fields                                                           | Notes                                                            |
-| ----------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| PoolRole (static) | id, name {vi, en}, rule {vi, en}, team, defaultWakeOrder, image      | Fixed; never edited at runtime                                   |
-| Room              | id, name, status, masterDeviceId, createdAt, lastActiveAt            | status: lobby, setup, reveal, playing, finished                  |
-| Player            | deviceId, name, joinedAt, kicked                                     | deviceId comes from the device token                             |
-| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                       | A copy of a pool role (edits stay in this room) or a custom role |
-| Slot              | index, roomRoleId?                                                   | One per player; filled in setup                                  |
-| Assignment        | deviceId, roomRoleId, flipped                                        | Created at Start game by shuffling slots                         |
-| Night             | number, deadDeviceIds\[\], roleComments {roleId: text}, nightComment | One per night; editable later                                    |
-| Settings          | timerSeconds, soundOn, soundPack                                     | Set in setup, locked at Start game                               |
+| Entity            | Key fields                                                               | Notes                                                            |
+| ----------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| PoolRole (static) | id, name {vi, en}, rule {vi, en}, team, defaultWakeOrder, image          | Fixed; never edited at runtime                                   |
+| Room              | id, name, status, masterDeviceId, createdAt, lastActiveAt                | status: lobby, setup, reveal, playing, finished                  |
+| Player            | deviceId, name, joinedAt, kicked                                         | deviceId comes from the device token                             |
+| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                           | A copy of a pool role (edits stay in this room) or a custom role |
+| Slot              | index, roomRoleId?                                                       | One per player; filled in setup                                  |
+| Assignment        | deviceId, roomRoleId, flipped                                            | Created at Start game by shuffling slots                         |
+| Night             | number, deadDeviceIds\[\], playerComments {deviceId: text}, nightComment | One per night; editable later                                    |
+| Settings          | timerSeconds, soundOn, soundPack                                         | Set in setup, locked at Start game                               |
 
 A player is dead in night N if they were marked in any night before N; marking is undoable in any night.
 
@@ -106,27 +106,17 @@ The server sends each phone only what it is allowed to see, so no one can find a
 
 ## Visual direction (Phase 0)
 
-A bright, playful look for teens and adults on a light screen, with a forest-village palette; it is designed and approved before any code.
+**Approved 2026-10-27:** Village ink — medieval minimalism with a light ivory background, hand-colored ink engraving, manuscript-inspired headings, fine borders, and subtle depth.
 
-| Area         | Decision                                                                                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Vibe         | Bright and playful for teens and adults: bold, witty, a little mischievous; not childish                                                                                             |
-| Screen       | Light background                                                                                                                                                                     |
-| Colors       | Deep forest green (main), vivid lime and sunset orange (highlights), warm off-white background, charcoal text, berry red (danger only)                                               |
-| Fonts        | Be Vietnam Pro for everything, extra-bold for headings: modern, clean, and made for Vietnamese accents                                                                               |
-| Role cards   | Stylized character per role in a bold graphic style, like modern board-game art, all generated with one shared style prompt; custom roles get a generic card with the role's initial |
-| Dead players | Grayed out with a small tombstone mark                                                                                                                                               |
-| Sounds       | Playful but not goofy: soft pop on card flip, rooster at night end, wolf howl when the timer ends; on/off in setup                                                                   |
-| Animation    | A little: snappy card flip, subtle press on tap, fade to gray on death                                                                                                               |
-| Layout       | Phone-first, main button at the bottom for thumbs, touch targets at least 48px                                                                                                       |
+The source of truth is [the design brief](design/direction.md), [tokens](design/tokens.md), and [approved reference](design/mockups/approved-village-ink.png).
 
-**Steps**
+- Cormorant Unicase headings; Be Vietnam Pro for body, controls, and notes, self-hosted with Vietnamese coverage.
+- Village faction blue; wolf faction red. Forest-green primary actions and restrained ochre detail.
+- Centered card character, vertical role name at the upper right, description centered at the bottom.
+- Compact narrator role groups, one comment field under each player, and a general night note.
+- Slim visual controls with at least 48px touch targets. No oversized bold type, heavy borders, or pill-shaped buttons.
 
-1. **Three takes** on this direction (for example bold poster, modern board game, paper cut-out), each shown on the card flip and narrator night screens. Thuan picks one or mixes.
-2. **Design system** from the chosen take: color and font tokens, buttons, cards, inputs, player chips.
-3. **Mockups** of all nine screens at phone size, checked in both Vietnamese and English.
-4. **Card art:** one test card to lock the style, then every role in the pool.
-5. **Handoff to Claude Code:** mockups, design tokens and `CLAUDE.md` rules, plus a screenshot-and-compare loop after every UI change.
+Direction, tokens, fonts, and current home styling are in place. Phase 0 still needs shared components, individual mockups for all nine screens in both languages, standalone card art, and screen-by-screen phone verification. See decisions [0006](decisions/0006-village-ink-visual-direction.md) and [0007](decisions/0007-per-player-night-comments.md).
 
 ## Build phases
 
@@ -150,5 +140,5 @@ After Phase 0, six phases, each ending in something playable on real phones.
 ## Open items
 
 - [ ] Which roles go in the fixed pool, with Vietnamese and English rule text
-- [ ] Card artwork: illustrated cards or icon + text
+- [x] Card artwork approach: centered hand-colored engraved characters; standalone production assets still to be made
 - [ ] Sound pack contents (night start, night end, timer end)
