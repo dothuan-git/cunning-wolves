@@ -17,8 +17,8 @@ The spec the code follows, taken from `docs/plan.md`. Any change to game behavio
 | `lobby`    | Players join with a name. Master sees the live list, can kick, and can close or re-open the room.                                                                           | Master goes to setup                                           |
 | `setup`    | One empty card slot per player; master fills slots from the pool, edits a role's rule for this room only, or creates a custom role. Room settings (timer, sound) live here. | Master taps **Ready** (enabled only when every slot is filled) |
 | `reveal`   | Players see **Rules review**: every role in this game with its count and room rule. Nobody sees who has what.                                                               | Master taps **Start game** (shuffles slots into assignments)   |
-| `playing`  | Players see only **My card**. Master runs nights on the narrator page.                                                                                                      | Master taps **Finish game** (always available)                 |
-| `finished` | **Game summary**: every player's role and the night-by-night log, for everyone.                                                                                             | Master taps **Play again**                                     |
+| `playing`  | Players see only **My card**, held down to show the role and hidden again on release. Master runs nights and mornings on the narrator page.                                 | Master taps **Finish game** (always available)                 |
+| `finished` | **Game summary**: every player's role and the night-and-morning log, for everyone.                                                                                          | Master taps **Play again**                                     |
 
 > **TODO:** the plan's state diagram (5 states, 3 loops) did not survive the export into `docs/plan.md`. Add the three backward transitions, including where **Play again** leads, from the original plan doc.
 
@@ -34,17 +34,21 @@ The worker builds each viewer's state before sending it. A player's client never
 | Role list + rules (after Ready)  | Yes         | Yes           |
 | Who holds which role             | Yes         | Own card only |
 | Who has flipped their card       | Yes         | No            |
-| Nights, deaths, comments         | Yes         | No            |
+| Phases, deaths, notes            | Yes         | No            |
 | Full reveal + log (after Finish) | Yes         | Yes           |
 
-## Nights
+## Nights and mornings
 
-- The narrator works on one night at a time. **End night** moves to the next one; the night switcher goes back to correct an earlier night.
-- Roles are listed in wake order, each with its holders underneath. The narrator can drag to reorder for this room.
-- Tapping a player marks them dead; tapping again undoes it. Dead players stay visible, grayed out.
-- **A player is dead in night N if they were marked in any night before N.** Marking can be undone in any night.
-- One comment field per player per night, plus one general night note. Players sharing a role have separate comments, keyed by device ID rather than role or display name. Switching nights restores the selected night's notes; dead players' notes stay editable.
-- Comment fields are separate from status controls: editing a comment never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See `docs/decisions/0007-per-player-night-comments.md`.
+- Play alternates **Night 1 → Morning 1 → Night 2 → Morning 2 → …** until the master taps **Finish game**. **End night** moves to the morning; **End morning** starts the next night. There is no going back to an earlier phase.
+- The narrator page is one list for the whole game. Roles are listed in wake order, each with its holders underneath; the narrator can reorder waking roles for this room. Roles that never wake are listed last so their players can still be marked.
+- The status control marks a player dead or undoes it, at night and in the morning, with one tap. An Undo bar appears for a few seconds after each tap. Each death records the phase it was marked in (for example Morning 1) and shows in that player's history. Dead players stay visible, grayed out.
+- At night a **wake guide** names the role to wake, in this room's wake order, with Back and Next, and highlights that role's players. It only guides the narrator; it changes no room state and starts again at the first role each night.
+- **End night** and **End morning** need a press and hold, so a stray tap can't skip a phase.
+- **A player is dead from the phase they were marked in onward.** Undoing removes the death entirely; a death is always recorded at the current phase.
+- **Notes are taken at night only.** Each night, every player who was alive when the night started gets one note field. A player marked dead during that night keeps that night's field. Mornings have no notes, and there is no general night note.
+- Earlier notes show under the player as text labelled with their night (`Night 1: …`). Tapping one edits it. Empty notes are not shown.
+- Notes are keyed by night and device ID, not role or display name, so players sharing a role have separate notes and reordering never moves a note.
+- Note fields are separate from status controls: editing a note never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See decisions `0007-per-player-night-comments.md`, `0010-single-list-night-and-morning.md` and `0012-medieval-light-redesign.md`.
 - The app records what the narrator marks. It never resolves abilities or decides winners.
 
 ## Wake order

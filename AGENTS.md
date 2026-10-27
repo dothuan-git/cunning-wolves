@@ -14,6 +14,7 @@ Phone-first webapp for in-person Werewolf games: it deals role cards and keeps t
 | `pnpm format` / `pnpm format:check`         | Prettier                                                              |
 | `pnpm typecheck`                            | `tsc` in every package                                                |
 | `pnpm i18n:check`                           | `vi.json` and `en.json` have the same keys and placeholders           |
+| `pnpm design:mockups`                       | Capture bilingual Phase 0 screens (requires the dev server)           |
 | `pnpm check`                                | Everything CI runs except e2e and build                               |
 | `pnpm build`                                | Production build of app + worker into `apps/web/dist`                 |
 | `pnpm --filter @werewolf/worker cf-typegen` | Regenerate `worker-configuration.d.ts` after editing `wrangler.jsonc` |

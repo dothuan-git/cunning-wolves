@@ -33,7 +33,7 @@ Add the entry to `packages/shared/src/roles/pool.ts`:
 ## 4. Card art slot
 
 - Art ready: save it as `apps/web/src/assets/cards/<id>.webp`, in the card style from `docs/design/direction.md`.
-- No art yet: add `Missing card art: <id>` under Known issues in `docs/progress.md`. The UI falls back to the generic initial card.
+- No art yet: add `Missing card art: <id>` under Known issues in `docs/progress.md`. The UI uses the shared `apps/web/src/assets/cards/placeholder.svg` through `RoleArtwork` until the role's image exists.
 
 ## 5. Wake order in the rules
 

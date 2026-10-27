@@ -19,3 +19,107 @@
     @apply bg-village text-surface;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .role-card[data-revealed='true'] {
+    animation: reveal-card 220ms ease-out;
+  }
+
+  @keyframes reveal-card {
+    from {
+      opacity: 0;
+      transform: perspective(1000px) rotateY(-12deg);
+    }
+    to {
+      opacity: 1;
+      transform: perspective(1000px) rotateY(0);
+    }
+  }
+
+  .undo-bar {
+    animation: undo-in 180ms ease-out;
+  }
+
+  @keyframes undo-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* The fill tracks the user's own press, so it lasts as long as the hold (see decision 0012). */
+  .hold-button[data-holding='true'] .hold-fill {
+    scale: 1 1;
+    transition: scale var(--hold-duration) linear;
+  }
+}
+
+@layer components {
+  .folio {
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .tabletop-heading {
+    border-bottom: 1px solid var(--color-edge);
+    position: relative;
+  }
+
+  .tabletop-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    transform: rotate(45deg);
+    background: var(--color-brass);
+  }
+
+  .tabletop-primary {
+    box-shadow:
+      inset 0 0 0 2px var(--color-forest),
+      inset 0 0 0 3px var(--color-brass),
+      0 4px 12px color-mix(in srgb, var(--color-forest) 20%, transparent);
+  }
+
+  /* Heraldic pennant: a flat ribbon with a notched right edge. */
+  .role-banner {
+    clip-path: polygon(0 0, 100% 0, calc(100% - 0.5rem) 50%, 100% 100%, 0 100%);
+  }
+
+  .hold-button {
+    -webkit-touch-callout: none;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .hold-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    scale: 0 1;
+  }
+
+  .screen-footer {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .role-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    max-height: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .role-card::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+}

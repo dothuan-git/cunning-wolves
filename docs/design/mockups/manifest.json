@@ -1,0 +1,434 @@
+[
+  {
+    "screen": "home",
+    "state": "default",
+    "lang": "vi",
+    "filename": "home.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "name-entry",
+    "state": "default",
+    "lang": "vi",
+    "filename": "name-entry.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "default",
+    "lang": "vi",
+    "filename": "summary.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "master-lobby",
+    "state": "default",
+    "lang": "vi",
+    "filename": "master-lobby.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "default",
+    "lang": "vi",
+    "filename": "setup.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "narrator",
+    "state": "default",
+    "lang": "vi",
+    "filename": "narrator.png",
+    "width": 390,
+    "height": 1293
+  },
+  {
+    "screen": "player-lobby",
+    "state": "default",
+    "lang": "vi",
+    "filename": "player-lobby.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "rules-review",
+    "state": "default",
+    "lang": "vi",
+    "filename": "rules-review.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "default",
+    "lang": "vi",
+    "filename": "my-card.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "empty",
+    "lang": "vi",
+    "filename": "home.empty.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "loading",
+    "lang": "vi",
+    "filename": "home.loading.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "error",
+    "lang": "vi",
+    "filename": "home.error.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "master-lobby",
+    "state": "empty",
+    "lang": "vi",
+    "filename": "master-lobby.empty.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "empty",
+    "lang": "vi",
+    "filename": "setup.empty.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "player-lobby",
+    "state": "loading",
+    "lang": "vi",
+    "filename": "player-lobby.loading.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "player-lobby",
+    "state": "removed",
+    "lang": "vi",
+    "filename": "player-lobby.removed.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "empty",
+    "lang": "vi",
+    "filename": "summary.empty.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "notes",
+    "lang": "vi",
+    "filename": "summary.notes.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "hidden",
+    "lang": "vi",
+    "filename": "my-card.hidden.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "long",
+    "lang": "vi",
+    "filename": "my-card.long.png",
+    "width": 390,
+    "height": 866
+  },
+  {
+    "screen": "narrator",
+    "state": "dead",
+    "lang": "vi",
+    "filename": "narrator.dead.png",
+    "width": 390,
+    "height": 1285
+  },
+  {
+    "screen": "narrator",
+    "state": "morning",
+    "lang": "vi",
+    "filename": "narrator.morning.png",
+    "width": 390,
+    "height": 1059
+  },
+  {
+    "screen": "narrator",
+    "state": "long",
+    "lang": "vi",
+    "filename": "narrator.long.png",
+    "width": 390,
+    "height": 1417
+  },
+  {
+    "screen": "components",
+    "state": "default",
+    "lang": "vi",
+    "filename": "components.png",
+    "width": 390,
+    "height": 988
+  },
+  {
+    "screen": "setup",
+    "state": "library",
+    "lang": "vi",
+    "filename": "setup.library.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "settings",
+    "lang": "vi",
+    "filename": "setup.settings.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "narrator",
+    "state": "menu",
+    "lang": "vi",
+    "filename": "narrator.menu.png",
+    "width": 390,
+    "height": 1293
+  },
+  {
+    "screen": "home",
+    "state": "default",
+    "lang": "en",
+    "filename": "home.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "name-entry",
+    "state": "default",
+    "lang": "en",
+    "filename": "name-entry.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "default",
+    "lang": "en",
+    "filename": "summary.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "master-lobby",
+    "state": "default",
+    "lang": "en",
+    "filename": "master-lobby.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "default",
+    "lang": "en",
+    "filename": "setup.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "narrator",
+    "state": "default",
+    "lang": "en",
+    "filename": "narrator.en.png",
+    "width": 390,
+    "height": 1318
+  },
+  {
+    "screen": "player-lobby",
+    "state": "default",
+    "lang": "en",
+    "filename": "player-lobby.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "rules-review",
+    "state": "default",
+    "lang": "en",
+    "filename": "rules-review.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "default",
+    "lang": "en",
+    "filename": "my-card.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "empty",
+    "lang": "en",
+    "filename": "home.empty.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "loading",
+    "lang": "en",
+    "filename": "home.loading.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "home",
+    "state": "error",
+    "lang": "en",
+    "filename": "home.error.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "master-lobby",
+    "state": "empty",
+    "lang": "en",
+    "filename": "master-lobby.empty.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "empty",
+    "lang": "en",
+    "filename": "setup.empty.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "player-lobby",
+    "state": "loading",
+    "lang": "en",
+    "filename": "player-lobby.loading.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "player-lobby",
+    "state": "removed",
+    "lang": "en",
+    "filename": "player-lobby.removed.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "empty",
+    "lang": "en",
+    "filename": "summary.empty.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "summary",
+    "state": "notes",
+    "lang": "en",
+    "filename": "summary.notes.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "hidden",
+    "lang": "en",
+    "filename": "my-card.hidden.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "my-card",
+    "state": "long",
+    "lang": "en",
+    "filename": "my-card.long.en.png",
+    "width": 390,
+    "height": 890
+  },
+  {
+    "screen": "narrator",
+    "state": "dead",
+    "lang": "en",
+    "filename": "narrator.dead.en.png",
+    "width": 390,
+    "height": 1310
+  },
+  {
+    "screen": "narrator",
+    "state": "morning",
+    "lang": "en",
+    "filename": "narrator.morning.en.png",
+    "width": 390,
+    "height": 1084
+  },
+  {
+    "screen": "narrator",
+    "state": "long",
+    "lang": "en",
+    "filename": "narrator.long.en.png",
+    "width": 390,
+    "height": 1491
+  },
+  {
+    "screen": "components",
+    "state": "default",
+    "lang": "en",
+    "filename": "components.en.png",
+    "width": 390,
+    "height": 988
+  },
+  {
+    "screen": "setup",
+    "state": "library",
+    "lang": "en",
+    "filename": "setup.library.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "setup",
+    "state": "settings",
+    "lang": "en",
+    "filename": "setup.settings.en.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "screen": "narrator",
+    "state": "menu",
+    "lang": "en",
+    "filename": "narrator.menu.en.png",
+    "width": 390,
+    "height": 1318
+  }
+]

@@ -18,6 +18,7 @@
     "test": "pnpm -r --no-bail test",
     "test:e2e": "pnpm --filter @werewolf/web test:e2e",
     "i18n:check": "node scripts/check-i18n.mjs",
+    "design:mockups": "pnpm --filter @werewolf/web exec node scripts/capture-design.mjs",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm i18n:check && pnpm test"
   },
   "devDependencies": {

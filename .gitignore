@@ -11,6 +11,7 @@ dist/
 !.dev.vars.example
 
 # tests
+.playwright-mcp/
 test-results/
 playwright-report/
 blob-report/
