@@ -59,4 +59,4 @@ Editable text stays at 16px so phones do not zoom in on focus.
 
 ## Preview
 
-`/design` shows every screen and state. On wide screens it renders inside a 390×844 phone frame. `pnpm design:mockups` captures the bilingual baselines into `docs/design/mockups/`.
+`/design` shows every screen and state. On wide screens it renders inside a 390×844 phone frame.

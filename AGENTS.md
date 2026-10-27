@@ -14,7 +14,6 @@ Phone-first webapp for in-person Werewolf games: it deals role cards and keeps t
 | `pnpm format` / `pnpm format:check`         | Prettier                                                              |
 | `pnpm typecheck`                            | `tsc` in every package                                                |
 | `pnpm i18n:check`                           | `vi.json` and `en.json` have the same keys and placeholders           |
-| `pnpm design:mockups`                       | Capture bilingual Phase 0 screens (requires the dev server)           |
 | `pnpm check`                                | Everything CI runs except e2e and build                               |
 | `pnpm build`                                | Production build of app + worker into `apps/web/dist`                 |
 | `pnpm --filter @werewolf/worker cf-typegen` | Regenerate `worker-configuration.d.ts` after editing `wrangler.jsonc` |
@@ -68,15 +67,13 @@ React 19, Vite 8, Tailwind CSS 4, i18next · Cloudflare Workers + Durable Object
 
 - When a phase finishes, update `docs/progress.md`.
 - A change to game behavior updates `docs/game-rules.md` in the same commit.
-- A new big choice (library, data shape, rule change) gets `docs/decisions/NNNN-short-title.md`: context, choice, why.
-- Mockups in `docs/design/mockups/` are the source of truth for UI. If code and mockup differ, ask before changing either.
+- A new dependency or architecture change gets `docs/decisions/NNNN-short-title.md`: context, choice, why. Visual tweaks do not.
 
 ### Git
 
 - Never commit to `main` directly. One branch per task: `feat/…`, `fix/…`, `chore/…`, `docs/…`.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`), one logical change per commit.
 - Never `git push`, deploy, or run `wrangler deploy` / `wrangler versions upload` without asking first.
-- Start each task with a plan and get it approved before writing code.
 
 ## Deploy
 

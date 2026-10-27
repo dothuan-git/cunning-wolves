@@ -110,7 +110,7 @@ The server sends each phone only what it is allowed to see, so no one can find a
 
 **Current choice: Medieval light**, selected 2026-10-27 (decision 0012). It has a parchment page, content on cards, forest-green actions with gilt detail, lapis village and madder wolf banners, a night-blue wake guide, the wolf seal, and Source Sans 3 throughout.
 
-The source of truth is [the design direction](design/direction.md), the tokens in `apps/web/src/design/tokens.css`, and the mockups in `design/mockups/`.
+The source of truth is [the design direction](design/direction.md), the tokens in `apps/web/src/design/tokens.css`. The `/design` route shows every screen and state.
 
 Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. Every card uses the shared placeholder until final artwork is supplied. On the narrator screen:
 
