@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node 'c:\\Users\\Admin\\Downloads\\code\\cunning-wolves\\.codex\\hooks\\format-lint.mjs'",
+            "timeout": 60,
+            "statusMessage": "Formatting and linting"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node 'c:\\Users\\Admin\\Downloads\\code\\cunning-wolves\\.codex\\hooks\\typecheck.mjs'",
+            "timeout": 180,
+            "statusMessage": "Type checking"
+          }
+        ]
+      }
+    ]
+  }
+}
