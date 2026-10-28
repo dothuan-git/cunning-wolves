@@ -132,6 +132,7 @@ describe('Room', () => {
         settings: { timerSeconds: 120, soundOn: false },
       },
       assignments: [],
+      game: null,
     });
   });
 
@@ -294,6 +295,7 @@ describe('Room', () => {
         settings: { timerSeconds: 120, soundOn: false },
       });
       expect(loaded?.assignments).toEqual({});
+      expect(loaded?.game).toBeNull();
     });
   });
 
@@ -343,6 +345,36 @@ describe('Room', () => {
         [lanId]: holder(lanId),
       });
     });
+  });
+
+  it('keeps the narrator marks across a reload, and sends them to the master only', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    const lan = await join(roomId, TOKENS.lan, 'Lan');
+    const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
+    const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
+    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'addPick', roleId: 'werewolf' });
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    master.send({ type: 'toggleDeath', playerId: lanId });
+    master.send({ type: 'setNote', night: 1, playerId: minhId, text: 'Secret note' });
+    master.send({ type: 'endPhase', phase: { kind: 'night', number: 1 } });
+    master.send({ type: 'setWakeOrder', order: ['werewolf', 'seer'] });
+    await master.next(masterView((view) => view.setup.wakeOrder[0] === 'werewolf'));
+
+    const again = await enter(roomId, TOKENS.master);
+    const { view } = await again.next(masterView());
+    expect(view.game).toEqual({
+      phase: { kind: 'morning', number: 1 },
+      deaths: { [lanId]: { kind: 'night', number: 1 } },
+      notes: { 1: { [minhId]: 'Secret note' } },
+    });
+    for (const text of [...minh.received, ...lan.received]) {
+      expect(text).not.toContain('Secret note');
+      expect(text).not.toContain('"game"');
+    }
   });
 
   it('refuses to show the rules until roles equal players', async () => {
@@ -451,6 +483,9 @@ describe('parseClientMessage', () => {
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
+    [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
+    [{ type: 'toggleDeath', playerId: 'abc' }],
+    [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
   });
@@ -474,6 +509,15 @@ describe('parseClientMessage', () => {
         type: 'addCustomRole',
         role: { name: 'Vampire', rule: 'Bites.', team: 'vampire', wakes: true },
       }),
+    ],
+    [
+      'a phase of another kind',
+      JSON.stringify({ type: 'endPhase', phase: { kind: 'dusk', number: 1 } }),
+    ],
+    ['a note without text', JSON.stringify({ type: 'setNote', night: 1, playerId: 'abc' })],
+    [
+      'a note for a night given as text',
+      JSON.stringify({ type: 'setNote', night: '1', playerId: 'abc', text: '' }),
     ],
     ['a wake order with a number', JSON.stringify({ type: 'setWakeOrder', order: ['seer', 1] })],
     [

@@ -1,4 +1,5 @@
 import {
+  canNoteNight,
   cleanName,
   cleanRule,
   CUSTOM_ROLES_MAX,
@@ -6,11 +7,14 @@ import {
   isValidName,
   NAME_MAX,
   nameKey,
+  nextPhase,
+  NOTE_MAX,
   PICKS_MAX,
   ROLE_NAME_MAX,
   roomRoles,
   RULE_MAX,
   TIMER_MAX,
+  type GameState,
   type RoomAction,
   type RoomSetup,
   type RoomStatus,
@@ -41,6 +45,8 @@ export interface RoomState {
   setup: RoomSetup;
   /** Player id → the role id dealt to them at Start game; empty before */
   assignments: Record<string, string>;
+  /** What the narrator marks while playing; null before Start game */
+  game: GameState | null;
 }
 
 export type ApplyResult = { ok: true; state: RoomState } | { ok: false; error: ServerErrorCode };
@@ -77,6 +83,7 @@ export function createRoom(input: {
       settings: { ...DEFAULT_SETTINGS },
     },
     assignments: {},
+    game: null,
   };
 }
 
@@ -174,8 +181,11 @@ export function apply(
     case 'setWakeOrder':
     case 'setSettings': {
       if (!isMaster) return refuse('not-master');
-      // The card set and settings are locked once the rules are reviewed.
-      if (state.status !== 'lobby') return refuse('not-allowed');
+      // The card set is locked once the rules are reviewed. The narrator's tools (wake order,
+      // timer, sound) can still change while playing.
+      const narratorTool = action.type === 'setWakeOrder' || action.type === 'setSettings';
+      const allowed = state.status === 'lobby' || (narratorTool && state.status === 'playing');
+      if (!allowed) return refuse('not-allowed');
       const result = applySetup(state.setup, action);
       return result.ok ? { ok: true, state: { ...state, setup: result.setup } } : result;
     }
@@ -200,7 +210,69 @@ export function apply(
         if (card === undefined) throw new Error('startGame: fewer cards than players');
         assignments[player.id] = card;
       });
-      return { ok: true, state: { ...state, status: 'playing', assignments } };
+      const game: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} };
+      return { ok: true, state: { ...state, status: 'playing', assignments, game } };
+    }
+    case 'endPhase':
+    case 'toggleDeath':
+    case 'setNote': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
+      const result = applyGame(state.game, state.assignments, action);
+      return result.ok ? { ok: true, state: { ...state, game: result.game } } : result;
+    }
+  }
+}
+
+type GameAction = Extract<RoomAction, { type: 'endPhase' | 'toggleDeath' | 'setNote' }>;
+type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErrorCode };
+
+/** The narrator's marks while playing. Who may make them is checked by `apply`. */
+function applyGame(
+  game: GameState,
+  assignments: Record<string, string>,
+  action: GameAction,
+): GameResult {
+  switch (action.type) {
+    case 'endPhase': {
+      const { phase } = game;
+      // A hold that arrives twice ends one phase, not two.
+      if (action.phase.kind !== phase.kind || action.phase.number !== phase.number) {
+        return refuse('not-allowed');
+      }
+      return { ok: true, game: { ...game, phase: nextPhase(phase) } };
+    }
+    case 'toggleDeath': {
+      const { playerId } = action;
+      if (!Object.hasOwn(assignments, playerId)) return refuse('not-allowed');
+      if (Object.hasOwn(game.deaths, playerId)) {
+        const deaths = Object.fromEntries(
+          Object.entries(game.deaths).filter(([id]) => id !== playerId),
+        );
+        return { ok: true, game: { ...game, deaths } };
+      }
+      return { ok: true, game: { ...game, deaths: { ...game.deaths, [playerId]: game.phase } } };
+    }
+    case 'setNote': {
+      const { night, playerId } = action;
+      if (!Object.hasOwn(assignments, playerId)) return refuse('not-allowed');
+      if (!Number.isInteger(night) || night < 1 || night > game.phase.number) {
+        return refuse('not-allowed');
+      }
+      const death = Object.hasOwn(game.deaths, playerId) ? game.deaths[playerId] : undefined;
+      if (!canNoteNight(death, night)) return refuse('not-allowed');
+      const text = cleanRule(action.text);
+      if (text.length > NOTE_MAX) return refuse('not-allowed');
+      const others = Object.fromEntries(
+        Object.entries(game.notes[night] ?? {}).filter(([id]) => id !== playerId),
+      );
+      const byPlayer: Record<string, string> = text ? { ...others, [playerId]: text } : others;
+      const notes = Object.fromEntries(
+        Object.entries({ ...game.notes, [night]: byPlayer }).filter(
+          ([, entries]) => Object.keys(entries).length > 0,
+        ),
+      );
+      return { ok: true, game: { ...game, notes } };
     }
   }
 }
