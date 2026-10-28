@@ -1,5 +1,13 @@
-import { ROLE_POOL, roomRoles, type PlayerView, type ServerErrorCode } from '@werewolf/shared';
-import { useState } from 'react';
+import {
+  gameRoles,
+  ROLE_POOL,
+  roomRoles,
+  wakingOrder,
+  type MasterView,
+  type PlayerView,
+  type ServerErrorCode,
+} from '@werewolf/shared';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { ScreenLayout } from '../../components/ScreenLayout';
@@ -7,8 +15,13 @@ import { useRoomConnection } from '../../realtime/useRoomConnection';
 import { navigate, paths } from '../../router';
 import { NameEntryScreen } from '../name-entry/NameEntryScreen';
 import { readSavedName, saveName } from '../name-entry/savedName';
+import { MyCardScreen } from '../my-card/MyCardScreen';
+import { NarratorScreen } from '../narrator/NarratorScreen';
+import { nextPhase } from '../narrator/phase';
 import { PlayerLobbyScreen } from '../player-lobby/PlayerLobbyScreen';
+import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
+import type { Phase, RoleGroupItem } from '../types';
 
 function goHome() {
   navigate(paths.home);
@@ -47,6 +60,20 @@ export function RoomScreen({ roomId }: { roomId: string }) {
 
   if (view.kind === 'master') {
     const { setup } = view;
+    const reconnecting = status !== 'connected';
+    if (view.room.status === 'reveal') {
+      return (
+        <RulesReviewScreen
+          roles={gameRoles(setup)}
+          master={{
+            reconnecting,
+            onBack: () => send({ type: 'backToSetup' }),
+            onStart: () => send({ type: 'startGame' }),
+          }}
+        />
+      );
+    }
+    if (view.room.status !== 'lobby') return <NarratorRoom view={view} />;
     return (
       <SetupScreen
         roomName={view.room.name}
@@ -58,19 +85,66 @@ export function RoomScreen({ roomId }: { roomId: string }) {
         picks={setup.picks}
         wakeOrder={setup.wakeOrder}
         settings={setup.settings}
-        reconnecting={status !== 'connected'}
+        reconnecting={reconnecting}
         onAddPick={(roleId) => send({ type: 'addPick', roleId })}
         onRemovePick={(roleId) => send({ type: 'removePick', roleId })}
         onEditRule={(roleId, rule) => send({ type: 'editRule', roleId, rule })}
         onAddCustomRole={(role) => send({ type: 'addCustomRole', role })}
         onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
         onSettings={(settings) => send({ type: 'setSettings', settings })}
-        // Dealing comes in a later phase; for now reviewing the rules closes the room.
-        onReady={() => send({ type: 'setOpen', open: false })}
+        // The wake order is already in the room; the room checks roles = players again.
+        onReady={() => send({ type: 'review' })}
       />
     );
   }
   return <PlayerRoom view={view} error={error} reconnecting={status !== 'connected'} send={send} />;
+}
+
+/**
+ * The narrator page on the real deal. Phases, deaths and notes live here until the room keeps them
+ * (Phase 5), so a refresh starts again at Night 1.
+ */
+function NarratorRoom({ view }: { view: MasterView }) {
+  const { setup, assignments, players } = view;
+  const groups = useMemo<RoleGroupItem[]>(() => {
+    const picked = gameRoles(setup).map(({ role }) => role);
+    const waking = wakingOrder(roomRoles(setup), setup.picks, setup.wakeOrder);
+    const resting = picked.filter((role) => role.defaultWakeOrder === null);
+    return [...waking, ...resting].map((role) => ({
+      role,
+      players: players
+        .filter((player) =>
+          assignments.some(
+            (assignment) => assignment.playerId === player.id && assignment.roleId === role.id,
+          ),
+        )
+        .map(({ id, name }) => ({ id, name })),
+    }));
+  }, [setup, assignments, players]);
+  const [phase, setPhase] = useState<Phase>({ kind: 'night', number: 1 });
+  const [deaths, setDeaths] = useState<Record<string, Phase>>({});
+  const [notes, setNotes] = useState<Record<number, Record<string, string>>>({});
+  return (
+    <NarratorScreen
+      groups={groups}
+      phase={phase}
+      notes={notes}
+      deaths={deaths}
+      onPlayerNote={(night, playerId, text) => {
+        setNotes((current) => ({ ...current, [night]: { ...current[night], [playerId]: text } }));
+      }}
+      onTogglePlayer={(playerId) => {
+        setDeaths((current) =>
+          playerId in current
+            ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== playerId))
+            : { ...current, [playerId]: phase },
+        );
+      }}
+      onEndPhase={() => {
+        setPhase(nextPhase);
+      }}
+    />
+  );
 }
 
 function PlayerRoom({
@@ -87,6 +161,14 @@ function PlayerRoom({
   const { t } = useTranslation();
   const [notSent, setNotSent] = useState(false);
   const [rejoining, setRejoining] = useState(false);
+
+  if (view.seat === 'joined' && view.card) {
+    return <MyCardScreen role={view.card} />;
+  }
+
+  if (view.seat === 'joined' && view.roles.length > 0) {
+    return <RulesReviewScreen roles={view.roles} />;
+  }
 
   if (view.seat === 'joined') {
     return (

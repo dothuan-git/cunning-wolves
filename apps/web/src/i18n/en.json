@@ -42,7 +42,8 @@
     "noteSeer2": "Checked Hà: not a Wolf.",
     "noteWolves2": "Chose Linh.",
     "frame": "Phone size {{width}} × {{height}}",
-    "many": "Many players"
+    "many": "Many players",
+    "master": "Narrator"
   },
   "screens": {
     "home": "Cunning Wolves",
@@ -201,7 +202,10 @@
     "lookCloser": "Look closer at {{role}}, {{count}} in this game",
     "understood": "I’ve read the rules",
     "waiting": "Waiting for the narrator to begin.",
-    "start": "Start example game"
+    "masterIntro": "Everyone is reading these rules now. Nobody has a card yet.",
+    "masterWaiting": "Start the game once everyone has read the rules.",
+    "back": "Edit roles",
+    "startGame": "Start game"
   },
   "narrator": {
     "alive": "{{count}} players alive",

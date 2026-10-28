@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleanRule, ROLE_POOL, roomRoles, wakingOrder, type CustomRole } from '../src';
+import { cleanRule, gameRoles, ROLE_POOL, roomRoles, wakingOrder, type CustomRole } from '../src';
 
 const wolfHelper: CustomRole = {
   id: 'custom-0',
@@ -67,6 +67,26 @@ describe('wakingOrder', () => {
       'fox',
       'werewolf',
     ]);
+  });
+});
+
+describe('gameRoles', () => {
+  it('counts each picked role once, with the room rule, and leaves out the rest', () => {
+    const game = gameRoles({
+      picks: ['werewolf', 'custom-1', 'werewolf', 'seer'],
+      ruleEdits: { seer: 'Sees one card.' },
+      customRoles: [wolfHelper, baker],
+    });
+    expect(game.map(({ role, count }) => [role.id, count])).toEqual([
+      ['seer', 1],
+      ['werewolf', 2],
+      ['custom-1', 1],
+    ]);
+    expect(game[0]?.role.rule).toEqual({ vi: 'Sees one card.', en: 'Sees one card.' });
+  });
+
+  it('is empty when nothing is picked', () => {
+    expect(gameRoles({ picks: [], ruleEdits: {}, customRoles: [] })).toEqual([]);
   });
 });
 

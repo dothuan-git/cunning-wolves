@@ -34,7 +34,8 @@ export function NarratorScreen({
   onPlayerNote: (night: number, playerId: string, text: string) => void;
   onTogglePlayer: (playerId: string) => void;
   onEndPhase: () => void;
-  onFinish: () => void;
+  /** Leaves out the Finish game control when not given */
+  onFinish?: () => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -224,15 +225,17 @@ export function NarratorScreen({
               {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
             </HoldButton>
           </div>
-          <HoldButton
-            variant="danger"
-            iconOnly
-            label={t('common.finish')}
-            duration={1200}
-            onComplete={onFinish}
-          >
-            <Icon name="flag" />
-          </HoldButton>
+          {onFinish && (
+            <HoldButton
+              variant="danger"
+              iconOnly
+              label={t('common.finish')}
+              duration={1200}
+              onComplete={onFinish}
+            >
+              <Icon name="flag" />
+            </HoldButton>
+          )}
         </div>
       }
     >

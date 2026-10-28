@@ -39,6 +39,8 @@ export interface RoomState {
   /** In the order they joined */
   players: Player[];
   setup: RoomSetup;
+  /** Player id → the role id dealt to them at Start game; empty before */
+  assignments: Record<string, string>;
 }
 
 export type ApplyResult = { ok: true; state: RoomState } | { ok: false; error: ServerErrorCode };
@@ -46,6 +48,9 @@ export type ApplyResult = { ok: true; state: RoomState } | { ok: false; error: S
 type SetupResult = { ok: true; setup: RoomSetup } | { ok: false; error: ServerErrorCode };
 
 const refuse = (error: ServerErrorCode) => ({ ok: false, error }) as const;
+
+/** A whole number from 0 up to, not including, `below`. Injected so `apply` stays pure. */
+export type Random = (below: number) => number;
 
 export function createRoom(input: {
   id: string;
@@ -71,11 +76,33 @@ export function createRoom(input: {
       wakeOrder: [],
       settings: { ...DEFAULT_SETTINGS },
     },
+    assignments: {},
   };
 }
 
 export function seatedPlayers(state: RoomState): Player[] {
   return state.players.filter((player) => !player.kicked);
+}
+
+/** One role for each seated player, and at least one player. */
+function cardsMatchPlayers(state: RoomState): boolean {
+  const count = seatedPlayers(state).length;
+  return count > 0 && state.setup.picks.length === count;
+}
+
+/** Fisher–Yates: every order of the picks is equally likely. */
+function shuffle<T>(items: readonly T[], random: Random): T[] {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const other = random(index + 1);
+    const item = result[index];
+    const swap = result[other];
+    if (item === undefined || swap === undefined)
+      throw new Error(`shuffle: bad index ${String(other)}`);
+    result[index] = swap;
+    result[other] = item;
+  }
+  return result;
 }
 
 /**
@@ -87,6 +114,7 @@ export function apply(
   actorId: string,
   action: RoomAction,
   now: number,
+  random: Random,
 ): ApplyResult {
   const isMaster = actorId === state.masterId;
   const own = state.players.find((player) => player.id === actorId);
@@ -150,6 +178,29 @@ export function apply(
       if (state.status !== 'lobby') return refuse('not-allowed');
       const result = applySetup(state.setup, action);
       return result.ok ? { ok: true, state: { ...state, setup: result.setup } } : result;
+    }
+    case 'review': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'lobby' || !cardsMatchPlayers(state)) return refuse('not-allowed');
+      return { ok: true, state: { ...state, status: 'reveal', open: false } };
+    }
+    case 'backToSetup': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'reveal') return refuse('not-allowed');
+      // The room stays closed; the master can re-open it from Setup.
+      return { ok: true, state: { ...state, status: 'lobby' } };
+    }
+    case 'startGame': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'reveal' || !cardsMatchPlayers(state)) return refuse('not-allowed');
+      const cards = shuffle(state.setup.picks, random);
+      const assignments: Record<string, string> = {};
+      seatedPlayers(state).forEach((player, index) => {
+        const card = cards[index];
+        if (card === undefined) throw new Error('startGame: fewer cards than players');
+        assignments[player.id] = card;
+      });
+      return { ok: true, state: { ...state, status: 'playing', assignments } };
     }
   }
 }

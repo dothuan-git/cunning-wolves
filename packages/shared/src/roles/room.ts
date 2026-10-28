@@ -1,3 +1,4 @@
+import type { GameRole } from '../messages';
 import type { RoomRole, RoomSettings, RoomSetup } from '../types';
 import { ROLE_POOL } from './pool';
 
@@ -67,4 +68,13 @@ export function wakingOrder<Role extends Pick<RoomRole, 'id' | 'defaultWakeOrder
   return roles
     .filter((role) => role.defaultWakeOrder !== null && picks.includes(role.id))
     .sort((a, b) => place(a) - place(b));
+}
+
+/** The picked roles with their copy counts, in room role order. */
+export function gameRoles(
+  setup: Pick<RoomSetup, 'picks' | 'ruleEdits' | 'customRoles'>,
+): GameRole[] {
+  return roomRoles(setup)
+    .map((role) => ({ role, count: setup.picks.filter((id) => id === role.id).length }))
+    .filter(({ count }) => count > 0);
 }

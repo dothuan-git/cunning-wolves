@@ -1,8 +1,11 @@
 import type {
+  Assignment,
   CustomRole,
+  GameRole,
   LobbyMessage,
   PlayerInfo,
   RoomInfo,
+  RoomRole,
   RoomSetup,
   RoomStatus,
   RoomSummary,
@@ -113,6 +116,43 @@ function roomSetup(value: unknown): RoomSetup | null {
   return { picks, ruleEdits, customRoles, wakeOrder, settings: { timerSeconds, soundOn } };
 }
 
+function localized(value: unknown): RoomRole['name'] | null {
+  if (!isObject(value) || typeof value.vi !== 'string' || typeof value.en !== 'string') return null;
+  return { vi: value.vi, en: value.en };
+}
+
+function roomRole(value: unknown): RoomRole | null {
+  if (!isObject(value)) return null;
+  const { id, defaultWakeOrder, image, custom } = value;
+  const name = localized(value.name);
+  const rule = localized(value.rule);
+  const team = oneOf(TEAMS, value.team);
+  if (
+    typeof id !== 'string' ||
+    !name ||
+    !rule ||
+    !team ||
+    !(defaultWakeOrder === null || typeof defaultWakeOrder === 'number') ||
+    typeof image !== 'string' ||
+    typeof custom !== 'boolean'
+  ) {
+    return null;
+  }
+  return { id, name, rule, team, defaultWakeOrder, image, custom };
+}
+
+function gameRole(value: unknown): GameRole | null {
+  if (!isObject(value) || typeof value.count !== 'number') return null;
+  const role = roomRole(value.role);
+  return role ? { role, count: value.count } : null;
+}
+
+function assignment(value: unknown): Assignment | null {
+  if (!isObject(value)) return null;
+  const { playerId, roleId } = value;
+  return typeof playerId === 'string' && typeof roleId === 'string' ? { playerId, roleId } : null;
+}
+
 function roomView(value: unknown): RoomView | null {
   if (!isObject(value) || typeof value.you !== 'string') return null;
   const room = roomInfo(value.room);
@@ -120,11 +160,16 @@ function roomView(value: unknown): RoomView | null {
   if (!room || !players) return null;
   if (value.kind === 'master') {
     const setup = roomSetup(value.setup);
-    return setup ? { kind: 'master', you: value.you, room, players, setup } : null;
+    const assignments = list(value.assignments, assignment);
+    return setup && assignments
+      ? { kind: 'master', you: value.you, room, players, setup, assignments }
+      : null;
   }
   const seat = oneOf(SEATS, value.seat);
-  if (value.kind === 'player' && seat) {
-    return { kind: 'player', you: value.you, room, players, seat };
+  const roles = list(value.roles, gameRole);
+  const card = value.card === null ? null : roomRole(value.card);
+  if (value.kind === 'player' && seat && roles && (value.card === null || card)) {
+    return { kind: 'player', you: value.you, room, players, seat, roles, card };
   }
   return null;
 }

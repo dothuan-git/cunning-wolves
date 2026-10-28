@@ -45,6 +45,10 @@ function ensureSchema(sql: SqlStorage): void {
     timer_seconds INTEGER NOT NULL,
     sound_on INTEGER NOT NULL
   )`);
+  // Phase 4: the deal.
+  sql.exec(
+    'CREATE TABLE IF NOT EXISTS assignments (player_id TEXT PRIMARY KEY, role_id TEXT NOT NULL)',
+  );
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -132,6 +136,13 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     lastActiveAt: integer(row, 'last_active_at'),
     players,
     setup: loadSetup(sql),
+    // fromEntries, as for rule edits.
+    assignments: Object.fromEntries(
+      sql
+        .exec('SELECT * FROM assignments')
+        .toArray()
+        .map((assignment) => [text(assignment, 'player_id'), text(assignment, 'role_id')]),
+    ),
   };
 }
 
@@ -193,6 +204,10 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       setup.settings.timerSeconds,
       setup.settings.soundOn ? 1 : 0,
     );
+    sql.exec('DELETE FROM assignments');
+    for (const [playerId, roleId] of Object.entries(state.assignments)) {
+      sql.exec('INSERT INTO assignments VALUES (?, ?)', playerId, roleId);
+    }
   });
 }
 

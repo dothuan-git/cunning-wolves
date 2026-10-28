@@ -1,5 +1,5 @@
 import type { RoomSummary } from './api';
-import type { CustomRoleInput, RoomSettings, RoomSetup, RoomStatus } from './types';
+import type { CustomRoleInput, RoomRole, RoomSettings, RoomSetup, RoomStatus } from './types';
 
 /** Room ids, as the create route makes them: in `/room/:id` and `/api/rooms/:id/ws`. */
 export const ROOM_ID_PATTERN = /^[a-z0-9]{8}$/;
@@ -30,7 +30,12 @@ export type ClientMessage =
   | { type: 'editRule'; roleId: string; rule: string }
   | { type: 'addCustomRole'; role: CustomRoleInput }
   | { type: 'setWakeOrder'; order: string[] }
-  | { type: 'setSettings'; settings: RoomSettings };
+  | { type: 'setSettings'; settings: RoomSettings }
+  /** Shows the rules to everyone; needs as many roles as players. Closes the room. */
+  | { type: 'review' }
+  | { type: 'backToSetup' }
+  /** Shuffles the picks and deals one to each player */
+  | { type: 'startGame' };
 
 export type RoomAction = Exclude<ClientMessage, { type: 'hello' }>;
 
@@ -57,6 +62,19 @@ export interface MasterView {
   room: RoomInfo;
   players: PlayerInfo[];
   setup: RoomSetup;
+  /** Who holds which role; empty until the game starts */
+  assignments: Assignment[];
+}
+
+export interface Assignment {
+  playerId: string;
+  roleId: string;
+}
+
+/** One role in this game, with how many copies were picked. */
+export interface GameRole {
+  role: RoomRole;
+  count: number;
 }
 
 /** What any other phone sees: the player list and its own seat, never other players' secrets. */
@@ -67,6 +85,10 @@ export interface PlayerView {
   players: PlayerInfo[];
   /** none: not joined yet; removed: kicked by the master */
   seat: 'none' | 'joined' | 'removed';
+  /** The roles in this game with the room's rules: for a seated player once the rules are shown */
+  roles: GameRole[];
+  /** This player's own role, once the game starts; never anyone else's */
+  card: RoomRole | null;
 }
 
 export type RoomView = MasterView | PlayerView;
