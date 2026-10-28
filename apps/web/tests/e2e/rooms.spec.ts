@@ -245,6 +245,65 @@ test('the master shows the rules, then deals each player only their own card', a
   }
 });
 
+test('the room keeps what the narrator marks, and no player sees it', async ({ browser }) => {
+  const roomName = `Inn ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  const lan = await phone(browser);
+  const minhMessages = roomMessages(minh);
+  const lanMessages = roomMessages(lan);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await joinFromHome(lan, roomName, 'Lan');
+  await expect(master.getByRole('button', { name: 'Players (2)' })).toBeVisible();
+  for (const [team, role] of [
+    ['village', 'Seer'],
+    ['wolf', 'Werewolf'],
+  ] as const) {
+    await master.getByRole('button', { name: `Add ${team} roles`, exact: true }).click();
+    const picker = master.getByRole('dialog', { name: `Add ${team} roles` });
+    await picker.getByRole('button', { name: `Add ${role}`, exact: true }).click();
+    await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  }
+  await master.getByRole('button', { name: 'Review rules', exact: true }).click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+  await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
+
+  // A death, a note sent when its field is left, and the end of the night.
+  await master.getByRole('button', { name: 'Mark Minh dead' }).click();
+  await master.getByRole('textbox', { name: 'Note for Lan' }).fill('Saw the wolves.');
+  await master.getByRole('heading', { name: 'Night 1' }).click();
+  const endNight = master.getByRole('button', { name: 'Hold to end night', exact: true });
+  await endNight.hover();
+  await master.mouse.down();
+  await master.waitForTimeout(1000);
+  await master.mouse.up();
+  await expect(master.getByRole('heading', { name: 'Morning 1' })).toBeVisible();
+
+  // The wake order changes in the menu.
+  await master.getByRole('button', { name: 'Menu', exact: true }).click();
+  await master.getByRole('button', { name: 'Seer, 1 of 2', exact: true }).focus();
+  await master.keyboard.press('ArrowRight');
+  await expect(master.getByRole('button', { name: 'Seer, 2 of 2', exact: true })).toBeVisible();
+
+  // All of it comes back from the room after a refresh.
+  await master.reload();
+  await expect(master.getByRole('heading', { name: 'Morning 1' })).toBeVisible();
+  await expect(master.getByRole('button', { name: 'Restore Minh' })).toBeVisible();
+  await expect(master.getByText('Saw the wolves.', { exact: true })).toBeVisible();
+  const panels = master.locator('section[aria-label]').filter({ has: master.locator('h3') });
+  await expect(panels.first()).toHaveAttribute('aria-label', 'Werewolf');
+  await master.getByRole('button', { name: 'Menu', exact: true }).click();
+  await expect(master.getByRole('button', { name: 'Seer, 2 of 2', exact: true })).toBeVisible();
+
+  // The players' phones never received any of it.
+  for (const message of [...minhMessages, ...lanMessages]) {
+    const text = JSON.stringify(message);
+    expect(text).not.toContain('Saw the wolves.');
+    expect(text).not.toContain('"game"');
+  }
+});
+
 test('an unknown room says it has closed', async ({ page }) => {
   await page.goto('/room/zzzzzzzz');
   await expect(page.getByRole('alert')).toContainText('This room has closed');

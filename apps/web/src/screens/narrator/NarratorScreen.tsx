@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { NOTE_MAX, TIMER_MAX, type RoomSettings } from '@werewolf/shared';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { HoldButton } from '../../components/HoldButton';
@@ -10,9 +11,11 @@ import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
-import { NoteField } from '../../components/TextField';
+import { NoteField, TextField } from '../../components/TextField';
 import { useLocale } from '../../i18n/useLocale';
+import { playChime, unlockSound } from '../../sound/chime';
 import type { Phase, PlayerListItem, RoleGroupItem } from '../types';
+import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { playerTimeline } from './phase';
 
 export function NarratorScreen({
@@ -20,43 +23,101 @@ export function NarratorScreen({
   phase,
   notes,
   deaths,
+  settings,
+  reconnecting = false,
   onPlayerNote,
   onTogglePlayer,
   onEndPhase,
+  onWakeOrder,
+  onSettings,
   onFinish,
 }: {
+  /** Waking roles in wake order; roles that never wake may come anywhere */
   groups: readonly RoleGroupItem[];
   phase: Phase;
   /** Night number → player id → note. */
   notes: Readonly<Record<number, Readonly<Record<string, string>>>>;
   /** Player id → the phase the narrator marked them dead in. */
   deaths: Readonly<Record<string, Phase>>;
-  onPlayerNote: (night: number, playerId: string, text: string) => void;
+  settings: RoomSettings;
+  /** The room can't be told anything right now */
+  reconnecting?: boolean;
+  /** Sends a note; returns false when it could not be sent, so it is tried again later */
+  onPlayerNote: SaveNote;
   onTogglePlayer: (playerId: string) => void;
   onEndPhase: () => void;
+  onWakeOrder: (order: string[]) => void;
+  onSettings: (settings: RoomSettings) => void;
   /** Leaves out the Finish game control when not given */
   onFinish?: () => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
   const [showTools, setShowTools] = useState(false);
-  const [orderedGroups, setOrderedGroups] = useState(() =>
-    groups.filter((group) => group.role.defaultWakeOrder !== null),
-  );
+  const [timerDraft, setTimerDraft] = useState('');
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
-  const [seconds, setSeconds] = useState(120);
-  const [running, setRunning] = useState(false);
-  const [sound, setSound] = useState(false);
+
+  // The countdown lives on this phone; a new length from the room resets it.
+  const length = settings.timerSeconds;
+  const [timer, setTimer] = useState({ length, seconds: length, running: false });
+  if (timer.length !== length) setTimer({ length, seconds: length, running: false });
+  const { seconds, running } = timer;
+  const chime = useEffectEvent(() => {
+    if (settings.soundOn) playChime();
+  });
   useEffect(() => {
-    if (!running || seconds === 0) return;
+    if (!running) return;
+    if (seconds === 0) {
+      chime();
+      return;
+    }
     const interval = window.setInterval(() => {
-      setSeconds((value) => Math.max(0, value - 1));
+      setTimer((value) => ({ ...value, seconds: Math.max(0, value.seconds - 1) }));
     }, 1000);
     return () => {
       window.clearInterval(interval);
     };
   }, [running, seconds]);
 
+  // Notes are typed into local drafts and sent after a pause or when the field is left.
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const saver = useRef<NoteSaver | null>(null);
+  const saveNote = useEffectEvent(onPlayerNote);
+  useEffect(() => {
+    const created = new NoteSaver((night, playerId, text) => saveNote(night, playerId, text));
+    saver.current = created;
+    return () => {
+      // Leaving the page still sends what was typed.
+      created.flushAll();
+      created.dispose();
+      saver.current = null;
+    };
+  }, []);
+  useEffect(() => {
+    if (!reconnecting) saver.current?.flushAll();
+  }, [reconnecting]);
+  function typeNote(night: number, playerId: string, text: string) {
+    setDrafts((current) => ({ ...current, [noteKey(night, playerId)]: text }));
+    saver.current?.type(night, playerId, text);
+  }
+  function flushNote(night: number, playerId: string) {
+    saver.current?.flush(night, playerId);
+  }
+  function noteText(night: number, playerId: string): string {
+    return drafts[noteKey(night, playerId)] ?? notes[night]?.[playerId] ?? '';
+  }
+
+  function closeTools() {
+    // A number outside the timer's range is pulled into it; anything else leaves it as it was.
+    const typed = Number.parseInt(timerDraft, 10);
+    if (!Number.isNaN(typed)) {
+      const timerSeconds = Math.min(TIMER_MAX, Math.max(0, typed));
+      if (timerSeconds !== length) onSettings({ ...settings, timerSeconds });
+    }
+    setShowTools(false);
+  }
+
+  const orderedGroups = groups.filter((group) => group.role.defaultWakeOrder !== null);
   // Roles that never wake still need a place in the list so they can be marked dead.
   const restingGroups = groups.filter((group) => group.role.defaultWakeOrder === null);
   const alive = groups
@@ -72,9 +133,9 @@ export function NarratorScreen({
     const death = deaths[player.id];
     const dead = death !== undefined;
     const playerNotes: Record<number, string> = {};
-    for (const [night, byPlayer] of Object.entries(notes)) {
-      const text = byPlayer[player.id];
-      if (text !== undefined) playerNotes[Number(night)] = text;
+    for (let night = 1; night <= phase.number; night++) {
+      const text = noteText(night, player.id);
+      if (text !== '') playerNotes[night] = text;
     }
     const entries = playerTimeline({
       notes: playerNotes,
@@ -91,6 +152,7 @@ export function NarratorScreen({
           <PlayerStatusControl
             name={player.name}
             dead={dead}
+            disabled={reconnecting}
             onToggle={() => {
               onTogglePlayer(player.id);
             }}
@@ -130,10 +192,13 @@ export function NarratorScreen({
                         hideLabel
                         label={t('player.note', { name: player.name })}
                         placeholder={t('player.notePlaceholder')}
-                        value={notes[entry.night]?.[player.id] ?? ''}
-                        maxLength={1000}
+                        value={noteText(entry.night, player.id)}
+                        maxLength={NOTE_MAX}
                         onChange={(event) => {
-                          onPlayerNote(entry.night, player.id, event.target.value);
+                          typeNote(entry.night, player.id, event.target.value);
+                        }}
+                        onBlur={() => {
+                          flushNote(entry.night, player.id);
                         }}
                       />
                     </div>
@@ -158,15 +223,16 @@ export function NarratorScreen({
                             phase: phaseLabel(night),
                           })}
                           value={entry.text}
-                          maxLength={1000}
+                          maxLength={NOTE_MAX}
                           onFocus={(event) => {
                             const end = event.currentTarget.value.length;
                             event.currentTarget.setSelectionRange(end, end);
                           }}
                           onChange={(event) => {
-                            onPlayerNote(entry.night, player.id, event.target.value);
+                            typeNote(entry.night, player.id, event.target.value);
                           }}
                           onBlur={() => {
+                            flushNote(entry.night, player.id);
                             setEditing(null);
                           }}
                           onKeyDown={(event) => {
@@ -210,33 +276,42 @@ export function NarratorScreen({
     <ScreenLayout
       title={t('screens.narrator')}
       onOpenMenu={() => {
+        setTimerDraft(String(length));
         setShowTools(true);
       }}
       footer={
-        <div className="flex gap-2">
-          <div className="grid min-w-0 flex-1">
-            <HoldButton
-              onComplete={() => {
-                setEditing(null);
-                onEndPhase();
-              }}
-            >
-              <Icon name={isNight ? 'moon' : 'sun'} />
-              {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
-            </HoldButton>
-          </div>
-          {onFinish && (
-            <HoldButton
-              variant="danger"
-              iconOnly
-              label={t('common.finish')}
-              duration={1200}
-              onComplete={onFinish}
-            >
-              <Icon name="flag" />
-            </HoldButton>
+        <>
+          {reconnecting && (
+            <p role="status" className="text-center text-caption text-muted">
+              {t('setup.reconnecting')}
+            </p>
           )}
-        </div>
+          <div className="flex gap-2">
+            <div className="grid min-w-0 flex-1">
+              <HoldButton
+                disabled={reconnecting}
+                onComplete={() => {
+                  setEditing(null);
+                  onEndPhase();
+                }}
+              >
+                <Icon name={isNight ? 'moon' : 'sun'} />
+                {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
+              </HoldButton>
+            </div>
+            {onFinish && (
+              <HoldButton
+                variant="danger"
+                iconOnly
+                label={t('common.finish')}
+                duration={1200}
+                onComplete={onFinish}
+              >
+                <Icon name="flag" />
+              </HoldButton>
+            )}
+          </div>
+        </>
       }
     >
       <section className="flex items-center justify-between gap-3" aria-label={phaseLabel(phase)}>
@@ -280,67 +355,78 @@ export function NarratorScreen({
         })}
       </div>
       {showTools && (
-        <Modal
-          sheet
-          title={t('setup.settings')}
-          onClose={() => {
-            setShowTools(false);
-          }}
-        >
+        <Modal sheet title={t('setup.settings')} onClose={closeTools}>
           <div className="grid gap-4 pb-4">
             <div className="flex items-center justify-between text-control">
               <span>{t('language.label')}</span>
               <LanguageSwitch compact />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-control">
-                {t('narrator.timer')}{' '}
-                <span className="ml-2 tabular-nums" role="timer">
-                  {String(Math.floor(seconds / 60)).padStart(2, '0')}:
-                  {String(seconds % 60).padStart(2, '0')}
+            {length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-control">
+                  {t('narrator.timer')}{' '}
+                  <span className="ml-2 tabular-nums" role="timer">
+                    {String(Math.floor(seconds / 60)).padStart(2, '0')}:
+                    {String(seconds % 60).padStart(2, '0')}
+                  </span>
                 </span>
-              </span>
-              <div className="flex gap-1">
-                <Button
-                  variant="secondary"
-                  disabled={seconds === 0}
-                  onClick={() => {
-                    setRunning(!running);
-                  }}
-                >
-                  {t(running ? 'narrator.pauseTimer' : 'narrator.startTimer')}
-                </Button>
-                <Button
-                  variant="quiet"
-                  aria-label={t('narrator.resetTimer')}
-                  onClick={() => {
-                    setRunning(false);
-                    setSeconds(120);
-                  }}
-                >
-                  <Icon name="reset" />
-                </Button>
+                <div className="flex gap-1">
+                  <Button
+                    variant="secondary"
+                    disabled={seconds === 0}
+                    onClick={() => {
+                      // The tap that starts the timer is what lets the phone play its chime.
+                      if (!running) unlockSound();
+                      setTimer((value) => ({ ...value, running: !value.running }));
+                    }}
+                  >
+                    {t(running ? 'narrator.pauseTimer' : 'narrator.startTimer')}
+                  </Button>
+                  <Button
+                    variant="quiet"
+                    aria-label={t('narrator.resetTimer')}
+                    onClick={() => {
+                      setTimer({ length, seconds: length, running: false });
+                    }}
+                  >
+                    <Icon name="reset" />
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
+            <TextField
+              type="number"
+              min="0"
+              max={TIMER_MAX}
+              label={t('setup.timer')}
+              hint={t('setup.timerHint')}
+              value={timerDraft}
+              disabled={reconnecting}
+              onChange={(event) => {
+                setTimerDraft(event.target.value);
+              }}
+            />
             <label className="flex min-h-12 items-center gap-3 text-control">
               <input
                 type="checkbox"
                 className="size-5 accent-ink"
-                checked={sound}
+                checked={settings.soundOn}
+                disabled={reconnecting}
                 onChange={(event) => {
-                  setSound(event.target.checked);
+                  if (event.target.checked) unlockSound();
+                  onSettings({ ...settings, soundOn: event.target.checked });
                 }}
               />
               {t('setup.sound')}
             </label>
-            <WakeOrderSetting
-              roles={orderedGroups.map((group) => group.role)}
-              onChange={(order) => {
-                setOrderedGroups((current) =>
-                  order.flatMap((role) => current.filter((group) => group.role.id === role.id)),
-                );
-              }}
-            />
+            {orderedGroups.length > 0 && (
+              <WakeOrderSetting
+                roles={orderedGroups.map((group) => group.role)}
+                onChange={(order) => {
+                  onWakeOrder(order.map((role) => role.id));
+                }}
+              />
+            )}
           </div>
         </Modal>
       )}

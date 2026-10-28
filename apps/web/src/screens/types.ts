@@ -1,4 +1,6 @@
-import type { PoolRole, RoomSummary } from '@werewolf/shared';
+import type { Phase, PoolRole, RoomSummary } from '@werewolf/shared';
+
+export type { Phase };
 
 // Presentation props, not room state or wire messages.
 export interface PlayerListItem {
@@ -7,10 +9,6 @@ export interface PlayerListItem {
 }
 export interface RevealedPlayerItem extends PlayerListItem {
   role: PoolRole;
-}
-export interface Phase {
-  kind: 'night' | 'morning';
-  number: number;
 }
 export interface JournalPhase {
   phase: Phase;

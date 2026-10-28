@@ -2,7 +2,9 @@ import type {
   Assignment,
   CustomRole,
   GameRole,
+  GameState,
   LobbyMessage,
+  Phase,
   PlayerInfo,
   RoomInfo,
   RoomRole,
@@ -153,6 +155,35 @@ function assignment(value: unknown): Assignment | null {
   return typeof playerId === 'string' && typeof roleId === 'string' ? { playerId, roleId } : null;
 }
 
+function phase(value: unknown): Phase | null {
+  if (!isObject(value) || typeof value.number !== 'number') return null;
+  const kind = oneOf(['night', 'morning'] as const, value.kind);
+  return kind ? { kind, number: value.number } : null;
+}
+
+function gameState(value: unknown): GameState | null {
+  if (!isObject(value) || !isObject(value.deaths) || !isObject(value.notes)) return null;
+  const current = phase(value.phase);
+  if (!current) return null;
+  const deaths: Record<string, Phase> = {};
+  for (const [playerId, death] of Object.entries(value.deaths)) {
+    const marked = phase(death);
+    if (!marked) return null;
+    deaths[playerId] = marked;
+  }
+  const notes: Record<number, Record<string, string>> = {};
+  for (const [night, byPlayer] of Object.entries(value.notes)) {
+    if (!isObject(byPlayer) || !/^\d+$/.test(night)) return null;
+    const entries: Record<string, string> = {};
+    for (const [playerId, text] of Object.entries(byPlayer)) {
+      if (typeof text !== 'string') return null;
+      entries[playerId] = text;
+    }
+    notes[Number(night)] = entries;
+  }
+  return { phase: current, deaths, notes };
+}
+
 function roomView(value: unknown): RoomView | null {
   if (!isObject(value) || typeof value.you !== 'string') return null;
   const room = roomInfo(value.room);
@@ -161,8 +192,9 @@ function roomView(value: unknown): RoomView | null {
   if (value.kind === 'master') {
     const setup = roomSetup(value.setup);
     const assignments = list(value.assignments, assignment);
-    return setup && assignments
-      ? { kind: 'master', you: value.you, room, players, setup, assignments }
+    const game = value.game === null ? null : gameState(value.game);
+    return setup && assignments && (value.game === null || game)
+      ? { kind: 'master', you: value.you, room, players, setup, assignments, game }
       : null;
   }
   const seat = oneOf(SEATS, value.seat);
