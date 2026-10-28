@@ -29,3 +29,6 @@ CLAUDE.local.md
 .DS_Store
 Thumbs.db
 *.log
+
+# taste-skill working files (inspector screenshots, direction sheets)
+.taste-skill/
