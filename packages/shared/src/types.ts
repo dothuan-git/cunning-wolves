@@ -5,7 +5,8 @@ export type LocalizedText = Record<Locale, string>;
 
 export type Team = 'village' | 'werewolf';
 
-export type RoomStatus = 'lobby' | 'setup' | 'reveal' | 'playing' | 'finished';
+/** `lobby` covers gathering players and choosing roles; they happen at the same time. */
+export type RoomStatus = 'lobby' | 'reveal' | 'playing' | 'finished';
 
 /** Static role data shipped with the app; never edited at runtime. */
 export interface PoolRole {
