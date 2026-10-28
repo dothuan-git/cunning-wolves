@@ -60,15 +60,15 @@ While players gather, the master builds the card set on **Setup**. The room keep
 
 The worker builds each viewer's state before sending it. A player's client never receives data outside the Player column.
 
-| Data                                                                            | Room master | Player        |
-| ------------------------------------------------------------------------------- | ----------- | ------------- |
-| Player list                                                                     | Yes         | Yes           |
-| Card set while building (picks, rule edits, custom roles, wake order, settings) | Yes         | No            |
-| Role list + rules (from Review rules on)                                        | Yes         | Yes           |
-| Role pool cards (browse only)                                                   | Yes         | Yes, any time |
-| Who holds which role                                                            | Yes         | Own card only |
-| Phases, deaths, notes                                                           | Yes         | No            |
-| Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Yes           |
+| Data                                                                            | Room master | Player              |
+| ------------------------------------------------------------------------------- | ----------- | ------------------- |
+| Player list                                                                     | Yes         | Yes                 |
+| Card set while building (picks, rule edits, custom roles, wake order, settings) | Yes         | No                  |
+| Role list + rules (from Review rules on)                                        | Yes         | Yes                 |
+| Role pool cards (browse only)                                                   | Yes         | Yes, any time       |
+| Who holds which role                                                            | Yes         | Own card only       |
+| Phases, deaths, notes                                                           | Yes         | No                  |
+| Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Seated players only |
 
 ## Nights and mornings
 

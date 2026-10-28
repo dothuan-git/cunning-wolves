@@ -568,6 +568,11 @@ describe('finish and play again', () => {
     expect(again.setup).toEqual(finished.setup);
     expect(again.assignments).toEqual({});
     expect(again.game).toBeNull();
+    // Nothing from the old game reaches a phone in the next lobby.
+    const view = buildPlayerView(again, new Set(['a']), 'a');
+    expect(view.card).toBeNull();
+    expect(view.reveal).toBeNull();
+    expect(view.roles).toEqual([]);
     const second = run(again, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
     expect(second.game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {} });
     expect(Object.keys(second.assignments).sort()).toEqual(['a', 'b']);
@@ -647,6 +652,7 @@ describe('views', () => {
     ]);
     expect(view.roles[0]?.role.rule).toEqual({ vi: 'House rule', en: 'House rule' });
     expect(view.card).toBeNull();
+    expect(view.reveal).toBeNull();
     expect(buildPlayerView(reviewed, connected, 'c').roles).toEqual([]);
     expect(buildPlayerView(ready(), connected, 'a').roles).toEqual([]);
   });
