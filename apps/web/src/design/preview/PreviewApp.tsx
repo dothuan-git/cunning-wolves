@@ -12,7 +12,7 @@ import { PlayerLobbyScreen } from '../../screens/player-lobby/PlayerLobbyScreen'
 import { RulesReviewScreen } from '../../screens/rules-review/RulesReviewScreen';
 import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
-import type { Phase } from '../../screens/types';
+import type { Phase, PlayerListItem } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
 import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
@@ -131,6 +131,10 @@ function PreviewScene({
     case 'name-entry':
       return (
         <NameEntryScreen
+          mode={state === 'error' ? 'join' : 'create'}
+          roomName={roomName}
+          initialName={state === 'error' ? 'Minh' : ''}
+          nameError={state === 'error' ? t('nameEntry.taken') : undefined}
           onContinue={() => {
             onNavigate('setup');
           }}
@@ -155,9 +159,10 @@ function PreviewScene({
       );
     case 'setup':
       return (
-        <SetupScreen
+        <PreviewSetup
+          key={state}
           roomName={roomName}
-          players={state === 'empty' ? [] : players.map(({ id, name }) => ({ id, name }))}
+          initialPlayers={state === 'empty' ? [] : players.map(({ id, name }) => ({ id, name }))}
           roles={manyRoles}
           initialPicks={
             state === 'empty' ? [] : ['seer', 'werewolf', 'werewolf', 'witch', 'villager']
@@ -424,5 +429,29 @@ export default function PreviewApp() {
         </div>
       )}
     </>
+  );
+}
+
+/** Setup takes its players and open state from the room; here they live in the preview. */
+function PreviewSetup({
+  initialPlayers,
+  ...props
+}: Omit<Parameters<typeof SetupScreen>[0], 'players' | 'open' | 'onToggleOpen' | 'onRemove'> & {
+  initialPlayers: readonly PlayerListItem[];
+}) {
+  const [players, setPlayers] = useState(initialPlayers);
+  const [open, setOpen] = useState(true);
+  return (
+    <SetupScreen
+      {...props}
+      players={players}
+      open={open}
+      onToggleOpen={() => {
+        setOpen(!open);
+      }}
+      onRemove={(id) => {
+        setPlayers((current) => current.filter((player) => player.id !== id));
+      }}
+    />
   );
 }

@@ -37,7 +37,7 @@ export const STATES = [
 export type PreviewState = (typeof STATES)[number];
 export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
   home: ['default', 'empty', 'loading', 'error'],
-  'name-entry': ['default'],
+  'name-entry': ['default', 'error'],
   summary: ['default', 'notes', 'empty'],
   setup: ['default', 'empty'],
   narrator: ['default', 'dead', 'morning', 'long'],

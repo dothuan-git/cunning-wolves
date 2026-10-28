@@ -385,10 +385,10 @@ test('a custom role is made from the list and shows up in it', async ({ page }) 
 test('name entry validates whitespace and accepts Vietnamese accents', async ({ page }) => {
   await page.goto('/design?screen=name-entry&lang=en&capture=1');
   await page.getByRole('textbox', { name: 'Your name', exact: true }).fill('   ');
-  await page.getByRole('button', { name: 'Enter the village', exact: true }).click();
+  await page.getByRole('button', { name: 'Open the room', exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText('Enter a name with 1–24 characters.');
   await page.getByRole('textbox', { name: 'Your name', exact: true }).fill('Hà Nguyễn');
-  await page.getByRole('button', { name: 'Enter the village', exact: true }).click();
+  await page.getByRole('button', { name: 'Open the room', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Prepare the roles', exact: true })).toBeVisible();
 });
 

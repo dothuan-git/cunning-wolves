@@ -1,4 +1,4 @@
-import type { PoolRole, Team } from '@werewolf/shared';
+import { nameKey, type PoolRole, type Team } from '@werewolf/shared';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddCard } from '../../components/AddCard';
@@ -21,14 +21,12 @@ const TEAMS: readonly Team[] = ['werewolf', 'village'];
 // A card taken out of the game shrinks away this long before it leaves the grid.
 const LEAVE_MS = 160;
 
-/** Lowercase without accents, so "soi" finds "Sói" and "dan" finds "Dân". */
-function plain(text: string) {
-  return text.normalize('NFD').replace(/\p{M}/gu, '').replace(/[đĐ]/g, 'd').toLocaleLowerCase();
-}
-
 export function SetupScreen({
   roomName,
-  players: initialPlayers,
+  players,
+  open,
+  onToggleOpen,
+  onRemove,
   roles: initialRoles,
   initialPicks,
   onReady,
@@ -36,17 +34,22 @@ export function SetupScreen({
   roomName: string;
   /** Players who have joined so far; more join while the roles are set up. */
   players: readonly PlayerListItem[];
+  /** Whether new players can still join */
+  open: boolean;
+  onToggleOpen: () => void;
+  onRemove: (playerId: string) => void;
   roles: readonly PoolRole[];
   /** Ids of the roles in the game, one per copy. There can be more or fewer than players. */
   initialPicks: readonly string[];
-  /** Called with the ids of the waking roles in the order the narrator will wake them. */
+  /**
+   * Called with the ids of the waking roles in the order the narrator will wake them.
+   * Reviewing the rules closes the room: the roster is fixed from here on.
+   */
   onReady: (wakeOrder: string[]) => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
   const [roles, setRoles] = useState(initialRoles);
-  const [players, setPlayers] = useState(initialPlayers);
-  const [open, setOpen] = useState(true);
   const [picks, setPicks] = useState(initialPicks);
   // The faction whose roles are being picked from, and what was typed to narrow them.
   const [picking, setPicking] = useState<Team | null>(null);
@@ -177,9 +180,9 @@ export function SetupScreen({
     setTeam(picking ?? 'village');
   }
 
-  const query = plain(search.trim());
+  const query = nameKey(search);
   const pool = roles.filter(
-    (role) => role.team === picking && (!query || plain(role.name[locale]).includes(query)),
+    (role) => role.team === picking && (!query || nameKey(role.name[locale]).includes(query)),
   );
 
   return (
@@ -198,8 +201,6 @@ export function SetupScreen({
             disabled={!matched}
             className="press"
             onClick={() => {
-              // Reviewing the rules closes the room: the roster is fixed from here on.
-              setOpen(false);
               onReady(waking.map((role) => role.id));
             }}
           >
@@ -212,12 +213,8 @@ export function SetupScreen({
         roomName={roomName}
         players={players}
         open={open}
-        onToggleOpen={() => {
-          setOpen(!open);
-        }}
-        onRemove={(id) => {
-          setPlayers((current) => current.filter((player) => player.id !== id));
-        }}
+        onToggleOpen={onToggleOpen}
+        onRemove={onRemove}
       />
       {TEAMS.map((faction) => {
         const chosen = roles.filter(

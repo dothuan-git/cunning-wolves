@@ -1,34 +1,32 @@
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseRoute, usePathname } from './router';
 import { HomeScreen } from './screens/home/HomeScreen';
-import { TestRoomScreen } from './screens/test-room/TestRoomScreen';
+import { CreateRoomScreen } from './screens/name-entry/CreateRoomScreen';
+import { RoomScreen } from './screens/room/RoomScreen';
 
 const DesignPreview = import.meta.env.DEV
   ? lazy(() => import('./design/preview/PreviewApp'))
   : null;
 
-const TEST_ROOM_PATH = /^\/test\/([^/]+)$/;
-
 export function App() {
   const { t } = useTranslation();
-  const path = window.location.pathname.replace(/\/$/, '');
-  if (DesignPreview && path === '/design') {
-    return (
-      <Suspense fallback={<p role="status">{t('preview.loading')}</p>}>
-        <DesignPreview />
-      </Suspense>
-    );
-  }
-  const testRoom = TEST_ROOM_PATH.exec(path)?.[1];
-  if (testRoom !== undefined) return <TestRoomScreen roomId={safeDecode(testRoom)} />;
-  return <HomeScreen />;
-}
-
-// A malformed escape like %E0 throws; the raw text then fails the room id check instead.
-function safeDecode(text: string): string {
-  try {
-    return decodeURIComponent(text);
-  } catch {
-    return text;
+  const route = parseRoute(usePathname());
+  switch (route.name) {
+    case 'design':
+      return DesignPreview ? (
+        <Suspense fallback={<p role="status">{t('preview.loading')}</p>}>
+          <DesignPreview />
+        </Suspense>
+      ) : (
+        <HomeScreen />
+      );
+    case 'create':
+      return <CreateRoomScreen />;
+    case 'room':
+      // Keyed so a different room starts with a fresh connection and empty state.
+      return <RoomScreen key={route.id} roomId={route.id} />;
+    case 'home':
+      return <HomeScreen />;
   }
 }
