@@ -40,9 +40,9 @@ The worker builds each viewer's state before sending it. A player's client never
 
 ## Nights and mornings
 
-- Play alternates **Night 1 → Morning 1 → Night 2 → Morning 2 → …** until the master taps **Finish game**. **End night** moves to the morning; **End morning** starts the next night. There is no going back to an earlier phase.
+- Play alternates **Night 1 → Morning 1 → Night 2 → Morning 2 → …** until the master presses and holds **Finish game** (the flag button beside End night) for about a second. **End night** moves to the morning; **End morning** starts the next night. There is no going back to an earlier phase.
 - The narrator page is one list for the whole game. Roles are listed in wake order, each with its holders underneath; the narrator can reorder waking roles for this room. Roles that never wake are listed last so their players can still be marked.
-- The status control marks a player dead or undoes it, at night and in the morning, with one tap. An Undo bar appears for a few seconds after each tap. Each death records the phase it was marked in (for example Morning 1) and shows in that player's history. Dead players stay visible, grayed out.
+- The status control marks a player dead or undoes it, at night and in the morning, with one tap; tapping again undoes it. Each death records the phase it was marked in (for example Morning 1) and shows in that player's history. A history shows one row per phase: when a player died in a night that has a note (or the open note box), only the note row is shown; the struck-through name and Dead pill still mark the death. Dead players stay visible, grayed out.
 - At night a **wake guide** names the role to wake, in this room's wake order, with Back and Next, and highlights that role's players. It only guides the narrator; it changes no room state and starts again at the first role each night.
 - **End night** and **End morning** need a press and hold, so a stray tap can't skip a phase.
 - **A player is dead from the phase they were marked in onward.** Undoing removes the death entirely; a death is always recorded at the current phase.

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { HoldButton } from '../../components/HoldButton';
@@ -9,12 +9,11 @@ import { Modal } from '../../components/Modal';
 import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
+import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { NoteField } from '../../components/TextField';
-import { UndoBar } from '../../components/UndoBar';
 import { useLocale } from '../../i18n/useLocale';
 import type { Phase, PlayerListItem, RoleGroupItem } from '../types';
-import { playerTimeline, wakeStep } from './phase';
-import { WakeGuide } from './WakeGuide';
+import { playerTimeline } from './phase';
 
 export function NarratorScreen({
   groups,
@@ -39,16 +38,11 @@ export function NarratorScreen({
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [confirmFinish, setConfirmFinish] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [orderedGroups, setOrderedGroups] = useState(() =>
     groups.filter((group) => group.role.defaultWakeOrder !== null),
   );
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
-  // The wake guide starts again at the first role each night.
-  const [wake, setWake] = useState({ night: phase.number, step: 0 });
-  const [undo, setUndo] = useState<{ key: number; playerId: string; message: string } | null>(null);
-  const groupRefs = useRef(new Map<string, HTMLElement>());
   const [seconds, setSeconds] = useState(120);
   const [running, setRunning] = useState(false);
   const [sound, setSound] = useState(false);
@@ -68,40 +62,9 @@ export function NarratorScreen({
     .flatMap((group) => group.players)
     .filter((player) => !(player.id in deaths)).length;
   const isNight = phase.kind === 'night';
-  const step = wake.night === phase.number ? wake.step : 0;
-  const wakingRole = isNight ? orderedGroups[step]?.role.id : undefined;
-
-  function moveWake(delta: number) {
-    const next = wakeStep(step, delta, orderedGroups.length);
-    setWake({ night: phase.number, step: next });
-    const roleId = orderedGroups[next]?.role.id;
-    const element = roleId === undefined ? undefined : groupRefs.current.get(roleId);
-    if (!element) return;
-    const smooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-    element.scrollIntoView({ block: 'center', behavior: smooth ? 'smooth' : 'auto' });
-  }
-
-  function togglePlayer(player: PlayerListItem) {
-    const nowDead = !(player.id in deaths);
-    onTogglePlayer(player.id);
-    setUndo((current) => ({
-      key: (current?.key ?? 0) + 1,
-      playerId: player.id,
-      message: t(nowDead ? 'player.markedDead' : 'player.markedAlive', { name: player.name }),
-    }));
-  }
 
   function phaseLabel(value: Phase) {
     return t(value.kind === 'night' ? 'common.night' : 'common.morning', { number: value.number });
-  }
-
-  function moveRole(index: number, direction: number) {
-    const next = [...orderedGroups];
-    const item = next[index];
-    if (!item || index + direction < 0 || index + direction >= next.length) return;
-    next.splice(index, 1);
-    next.splice(index + direction, 0, item);
-    setOrderedGroups(next);
   }
 
   function renderPlayer(player: PlayerListItem) {
@@ -118,25 +81,30 @@ export function NarratorScreen({
       current: phase,
       editingNight: editing?.playerId === player.id ? editing.night : undefined,
     });
-    const labelClass = `w-20 shrink-0 text-control font-medium ${dead ? 'text-muted' : 'text-ink'}`;
+    // Phase labels stay small and grey so the player's name leads the row.
+    const labelClass = 'min-w-11 shrink-0 text-caption whitespace-nowrap text-muted';
     return (
-      <div key={player.id} className="px-3.5 pt-1 pb-2">
+      <li key={player.id} className="px-3.5 pb-1.5">
         <div className="flex min-h-12 items-center justify-between gap-2">
-          <PlayerChip name={player.name} dead={dead} />
+          <PlayerChip name={player.name} dead={dead} large />
           <PlayerStatusControl
             name={player.name}
             dead={dead}
             onToggle={() => {
-              togglePlayer(player);
+              onTogglePlayer(player.id);
             }}
           />
         </div>
         {entries.length > 0 && (
-          <ol aria-label={t('narrator.history', { name: player.name })}>
+          // The top padding keeps the first note's overlap off the status pill above it.
+          <ol aria-label={t('narrator.history', { name: player.name })} className="pt-1">
             {entries.map((entry) => {
               if (entry.type === 'death') {
                 return (
-                  <li key="death" className="flex min-h-10 items-center gap-3 text-body text-muted">
+                  <li
+                    key="death"
+                    className="name-pop flex min-h-8 items-center gap-3 text-body text-muted"
+                  >
                     <span className={labelClass}>{phaseLabel(entry.phase)}</span>
                     <span className="inline-flex items-center gap-1.5">
                       <Icon name="tombstone" className="size-4" />
@@ -148,13 +116,16 @@ export function NarratorScreen({
               const night = { kind: 'night', number: entry.night } as const;
               if (entry.type === 'input') {
                 return (
-                  <li key={`night-${String(entry.night)}`} className="flex items-start gap-3">
-                    <span aria-hidden="true" className={`${labelClass} pt-3.5`}>
+                  <li
+                    key={`night-${String(entry.night)}`}
+                    className="name-pop flex items-start gap-3 py-1"
+                  >
+                    <span aria-hidden="true" className={`${labelClass} pt-2.5`}>
                       {phaseLabel(night)}
                     </span>
                     <div className="min-w-0 flex-1">
                       <NoteField
-                        appearance="line"
+                        appearance="box"
                         hideLabel
                         label={t('player.note', { name: player.name })}
                         placeholder={t('player.notePlaceholder')}
@@ -172,13 +143,13 @@ export function NarratorScreen({
               return (
                 <li key={`night-${String(entry.night)}`}>
                   {isEditing ? (
-                    <div className="flex items-start gap-3">
-                      <span aria-hidden="true" className={`${labelClass} pt-3.5`}>
+                    <div className="name-pop flex items-start gap-3 py-1">
+                      <span aria-hidden="true" className={`${labelClass} pt-2.5`}>
                         {phaseLabel(night)}
                       </span>
                       <div className="min-w-0 flex-1">
                         <NoteField
-                          appearance="line"
+                          appearance="box"
                           hideLabel
                           autoFocus
                           label={t('narrator.noteFor', {
@@ -204,9 +175,11 @@ export function NarratorScreen({
                       </div>
                     </div>
                   ) : (
+                    // A full 48px target that overlaps its neighbours by 4px each way, so notes sit
+                    // 40px apart; `relative` keeps it above the next row's padding for taps.
                     <button
                       type="button"
-                      className={`flex min-h-12 w-full items-baseline gap-3 rounded-control py-2.5 text-left text-body ${dead ? 'text-muted' : 'text-ink'}`}
+                      className={`press relative -my-1 flex min-h-12 w-full items-baseline gap-3 rounded-control py-3 text-left text-body ${dead ? 'text-muted' : 'text-ink'}`}
                       onClick={() => {
                         setEditing({ playerId: player.id, night: entry.night });
                       }}
@@ -228,7 +201,7 @@ export function NarratorScreen({
             })}
           </ol>
         )}
-      </div>
+      </li>
     );
   }
 
@@ -239,76 +212,66 @@ export function NarratorScreen({
         setShowTools(true);
       }}
       footer={
-        <>
-          {undo && (
-            <UndoBar
-              key={undo.key}
-              message={undo.message}
-              onUndo={() => {
-                onTogglePlayer(undo.playerId);
-                setUndo(null);
+        <div className="flex gap-2">
+          <div className="grid min-w-0 flex-1">
+            <HoldButton
+              onComplete={() => {
+                setEditing(null);
+                onEndPhase();
               }}
-              onClose={() => {
-                setUndo(null);
-              }}
-            />
-          )}
+            >
+              <Icon name={isNight ? 'moon' : 'sun'} />
+              {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
+            </HoldButton>
+          </div>
           <HoldButton
-            onComplete={() => {
-              setEditing(null);
-              setUndo(null);
-              onEndPhase();
-            }}
+            variant="danger"
+            iconOnly
+            label={t('common.finish')}
+            duration={1200}
+            onComplete={onFinish}
           >
-            <Icon name={isNight ? 'moon' : 'sun'} />
-            {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
+            <Icon name="flag" />
           </HoldButton>
-        </>
+        </div>
       }
     >
       <section className="flex items-center justify-between gap-3" aria-label={phaseLabel(phase)}>
-        <h2 className="flex items-center gap-2 font-display text-role font-semibold">
+        <h2
+          key={`${phase.kind}-${String(phase.number)}`}
+          className="name-pop flex items-center gap-2 font-display text-role font-semibold"
+        >
           <Icon name={isNight ? 'moon' : 'sun'} className="size-4" />
           {phaseLabel(phase)}
         </h2>
-        <p role="status" className="text-caption text-muted">
+        <p key={alive} role="status" className="name-pop text-caption text-muted">
           {t('narrator.alive', { count: alive })}
         </p>
       </section>
-      {isNight && orderedGroups.length > 0 && (
-        <WakeGuide
-          roles={orderedGroups.map((group) => ({
-            id: group.role.id,
-            name: group.role.name[locale],
-            image: group.role.image,
-          }))}
-          step={step}
-          onStep={moveWake}
-        />
-      )}
-      <div className="grid min-w-0 gap-3">
+      <div className="grid min-w-0 gap-2.5">
         {[...orderedGroups, ...restingGroups].map((group) => {
-          const waking = group.role.id === wakingRole;
-          const wash = group.role.team === 'werewolf' ? 'bg-werewolf-wash' : 'bg-village-wash';
+          // A role whose players are all dead goes grey: band, name and art.
+          const out = group.players.length > 0 && group.players.every((p) => p.id in deaths);
+          const wash = out
+            ? 'bg-line'
+            : group.role.team === 'werewolf'
+              ? 'bg-werewolf-wash'
+              : 'bg-village-wash';
           return (
             <section
               key={group.role.id}
-              ref={(element) => {
-                if (element) groupRefs.current.set(group.role.id, element);
-                else groupRefs.current.delete(group.role.id);
-              }}
-              className={`panel min-w-0 scroll-my-24 overflow-hidden ${waking ? `${wash} outline-2 outline-ink` : ''}`}
+              className="panel min-w-0 overflow-hidden"
               aria-label={group.role.name[locale]}
-              aria-current={waking ? 'step' : undefined}
             >
-              <h3 className="px-3.5 pt-3">
+              <h3 className={`px-3.5 py-1.5 motion-safe:transition-colors ${wash}`}>
                 <RoleBanner
                   name={group.role.name[locale]}
                   team={group.role.team}
                   image={group.role.image}
+                  dead={out}
                 />
               </h3>
-              <div className="divide-y divide-line">{group.players.map(renderPlayer)}</div>
+              <ul className="divide-y divide-line">{group.players.map(renderPlayer)}</ul>
             </section>
           );
         })}
@@ -367,74 +330,14 @@ export function NarratorScreen({
               />
               {t('setup.sound')}
             </label>
-            <div>
-              <h3 className="mb-1 text-control font-medium">{t('narrator.reorder')}</h3>
-              {orderedGroups.map((group, index) => (
-                <div
-                  key={group.role.id}
-                  className="flex items-center justify-between border-b border-line"
-                >
-                  <span className="text-control">{group.role.name[locale]}</span>
-                  <div className="flex">
-                    <Button
-                      variant="quiet"
-                      disabled={index === 0}
-                      aria-label={t('narrator.moveUp', { role: group.role.name[locale] })}
-                      onClick={() => {
-                        moveRole(index, -1);
-                      }}
-                      size="icon"
-                    >
-                      <Icon name="arrow" className="rotate-90" />
-                    </Button>
-                    <Button
-                      variant="quiet"
-                      disabled={index === orderedGroups.length - 1}
-                      aria-label={t('narrator.moveDown', { role: group.role.name[locale] })}
-                      onClick={() => {
-                        moveRole(index, 1);
-                      }}
-                      size="icon"
-                    >
-                      <Icon name="arrow" className="-rotate-90" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Button
-            variant="danger"
-            className="w-full"
-            onClick={() => {
-              setShowTools(false);
-              setConfirmFinish(true);
-            }}
-          >
-            {t('common.finish')}
-          </Button>
-        </Modal>
-      )}
-      {confirmFinish && (
-        <Modal
-          title={t('narrator.finishTitle')}
-          onClose={() => {
-            setConfirmFinish(false);
-          }}
-        >
-          <p className="mb-5 text-control">{t('narrator.finishBody')}</p>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="quiet"
-              onClick={() => {
-                setConfirmFinish(false);
+            <WakeOrderSetting
+              roles={orderedGroups.map((group) => group.role)}
+              onChange={(order) => {
+                setOrderedGroups((current) =>
+                  order.flatMap((role) => current.filter((group) => group.role.id === role.id)),
+                );
               }}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button variant="danger" onClick={onFinish}>
-              {t('common.finish')}
-            </Button>
+            />
           </div>
         </Modal>
       )}

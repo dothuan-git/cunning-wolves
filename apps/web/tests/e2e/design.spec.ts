@@ -118,16 +118,19 @@ test('a player who died before the night gets no new note', async ({ page }) => 
   await expect(page.getByRole('textbox', { name: 'Note for Linh', exact: true })).toBeVisible();
 });
 
-test('marking a player dead during the night keeps that night’s note', async ({ page }) => {
+test('marking a player dead during the night keeps that night’s note as its only row', async ({
+  page,
+}) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   const linh = page.getByRole('textbox', { name: 'Note for Linh', exact: true });
   const record = page.getByRole('list', { name: 'Linh’s record', exact: true });
   await linh.fill('Bitten by the wolves');
   await page.getByRole('button', { name: 'Mark Linh dead', exact: true }).click();
   await expect(linh).toHaveValue('Bitten by the wolves');
-  await expect(record).toContainText('Died');
-  await page.getByRole('button', { name: 'Restore Linh', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Restore Linh', exact: true })).toBeVisible();
   await expect(record).not.toContainText('Died');
+  await page.getByRole('button', { name: 'Restore Linh', exact: true }).click();
+  await expect(linh).toHaveValue('Bitten by the wolves');
 });
 
 test('tapping an earlier note edits it without changing the player status', async ({ page }) => {
@@ -204,6 +207,39 @@ for (const size of [
     });
   }
 }
+
+test('the setup settings sheet sets the wake order, and it is kept when reopened', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  const open = async () => {
+    await page.getByRole('button', { name: 'Menu', exact: true }).click();
+    await settle(page);
+  };
+  await open();
+  await expect(page.getByRole('heading', { name: 'Wake order', level: 3 })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Seer, 1 of 3', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Wolf, 2 of 3', exact: true })).toBeVisible();
+  const witch = page.getByRole('button', { name: 'Witch, 3 of 3', exact: true });
+  await witch.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('button', { name: 'Witch, 2 of 3', exact: true })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await open();
+  await expect(page.getByRole('button', { name: 'Witch, 2 of 3', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Wolf, 3 of 3', exact: true })).toBeVisible();
+});
+
+test('the wake order title keeps a gap above its tiles', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  await settle(page);
+  const title = await page.getByRole('heading', { name: 'Wake order', level: 3 }).boundingBox();
+  const tile = await page.getByRole('button', { name: 'Seer, 1 of 3', exact: true }).boundingBox();
+  if (!title || !tile) throw new Error('wake order is not rendered');
+  expect(tile.y - (title.y + title.height)).toBeGreaterThanOrEqual(16);
+});
 
 test('all seats must be filled before reviewing the rules', async ({ page }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
@@ -327,7 +363,17 @@ test('narrator tools can reorder roles without mixing their player notes', async
   await page.getByRole('textbox', { name: 'Note for Minh', exact: true }).fill('Wolf observation');
   const menu = page.getByRole('button', { name: 'Menu', exact: true });
   await menu.click();
-  await page.getByRole('button', { name: 'Move Wolf earlier', exact: true }).click();
+  await settle(page);
+  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 3', exact: true });
+  const seer = page.getByRole('button', { name: 'Seer, 1 of 3', exact: true });
+  const from = await wolf.boundingBox();
+  const to = await seer.boundingBox();
+  if (!from || !to) throw new Error('wake tiles are not rendered');
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await expect(page.getByRole('button', { name: 'Wolf, 1 of 3', exact: true })).toBeVisible();
   await closeSheet(page);
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(menu).toBeFocused();
@@ -335,6 +381,24 @@ test('narrator tools can reorder roles without mixing their player notes', async
   await expect(page.getByRole('textbox', { name: 'Note for Minh', exact: true })).toHaveValue(
     'Wolf observation',
   );
+});
+
+test('wake order tiles sit four to a row and move with the arrow keys', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  const seer = page.getByRole('button', { name: 'Seer, 1 of 3', exact: true });
+  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 3', exact: true });
+  const [seerBox, wolfBox] = await Promise.all([seer.boundingBox(), wolf.boundingBox()]);
+  if (!seerBox || !wolfBox) throw new Error('wake tiles are not rendered');
+  expect(Math.round(wolfBox.y)).toBe(Math.round(seerBox.y));
+  expect(wolfBox.x).toBeGreaterThan(seerBox.x);
+  await seer.focus();
+  await page.keyboard.press('ArrowRight');
+  const moved = page.getByRole('button', { name: 'Seer, 2 of 3', exact: true });
+  await expect(moved).toBeFocused();
+  await expect(page.getByText('Seer is now 2 of 3', { exact: true })).toBeAttached();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('button', { name: 'Seer, 1 of 3', exact: true })).toBeFocused();
 });
 
 test('removed players see a clear return action', async ({ page }) => {
@@ -390,11 +454,25 @@ test('summary separates roles and night notes with keyboard-accessible tabs', as
   await expect(notes).toHaveAttribute('aria-selected', 'true');
   await expect(note).toBeVisible();
   await expect(revealed).toHaveCount(0);
-  await page.getByText('Morning 1', { exact: true }).click();
+  // The journal is open top to bottom, with no phase to expand.
+  await expect(page.getByRole('heading', { name: 'Morning 1', exact: true })).toBeVisible();
   await expect(page.getByText('Huy died', { exact: true })).toBeVisible();
   await notes.press('Home');
   await expect(roles).toBeFocused();
   await expect(revealed).toBeVisible();
+});
+
+test('summary journal sections fold away and open again', async ({ page }) => {
+  await page.goto('/design?screen=summary&state=notes&lang=en&capture=1');
+  const night = page.getByRole('button', { name: 'Night 1', exact: true });
+  const note = page.getByText('Checked Minh: a Wolf.', { exact: true });
+  await expect(night).toHaveAttribute('aria-expanded', 'true');
+  await expect(note).toBeVisible();
+  await night.click();
+  await expect(night).toHaveAttribute('aria-expanded', 'false');
+  await expect(note).toBeHidden();
+  await night.click();
+  await expect(note).toBeVisible();
 });
 
 test('empty night journal and return-home action are clear', async ({ page }) => {
@@ -408,16 +486,74 @@ test('empty night journal and return-home action are clear', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Cunning Wolves', level: 1 })).toBeVisible();
 });
 
-test('one tap marks a player dead and Undo restores them', async ({ page }) => {
+test('one tap marks a player dead and a second tap restores them, with no Undo bar', async ({
+  page,
+}) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await expect(page.getByRole('status')).toHaveText('6 players alive');
   await page.getByRole('button', { name: 'Mark Minh dead', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('5 players alive');
-  await expect(page.getByText('Minh marked dead', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Undo', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Restore Minh', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('6 players alive');
   await expect(page.getByRole('button', { name: 'Mark Minh dead', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Undo', exact: true })).toHaveCount(0);
+});
+
+test('the square finish button needs a long hold, and finishing is not in the menu', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  const finish = page.locator('footer').getByRole('button', { name: 'Finish game', exact: true });
+  const box = await finish.boundingBox();
+  if (!box) throw new Error('finish button is not rendered');
+  expect(Math.round(box.width)).toBe(Math.round(box.height));
+  await page.getByRole('button', { name: 'Menu', exact: true }).click();
+  const menu = page.getByRole('dialog');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole('button', { name: 'Finish game', exact: true })).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+  await hold(page, 'Finish game', 500);
+  await expect(page.getByText('Narrator', { exact: true }).first()).toBeVisible();
+  await hold(page, 'Finish game', 1600);
+  await expect(page.getByText('Game record', { exact: true }).first()).toBeVisible();
+});
+
+test('a status change animates its pill and the alive count, and holds still with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  const mark = page.getByRole('button', { name: 'Mark Minh dead', exact: true });
+  await expect(mark.locator('span').first()).toHaveCSS('animation-name', 'none');
+  await mark.click();
+  const pill = page
+    .getByRole('button', { name: 'Restore Minh', exact: true })
+    .locator('span')
+    .first();
+  await expect(pill).toHaveCSS('animation-name', 'count-pop');
+  await expect(page.getByRole('status')).toHaveCSS('animation-name', 'name-pop');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(pill).toHaveCSS('animation-name', 'none');
+});
+
+test('a role goes grey only when all its players are dead', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  const band = (role: string) =>
+    page.getByRole('region', { name: role, exact: true }).locator('h3');
+  const seerTitle = band('Seer').locator('span').last();
+  const wolfBand = band('Wolf');
+  const seerBefore = await seerTitle.evaluate((el) => getComputedStyle(el).color);
+  await page.getByRole('button', { name: 'Mark Linh dead', exact: true }).click();
+  await expect(seerTitle).toHaveCSS('color', 'rgb(92, 88, 82)');
+  await expect(band('Seer')).toHaveCSS('background-color', 'rgb(207, 202, 193)');
+  expect(seerBefore).not.toBe('rgb(92, 88, 82)');
+  const wolfBefore = await wolfBand.evaluate((el) => getComputedStyle(el).backgroundColor);
+  await page.getByRole('button', { name: 'Mark Minh dead', exact: true }).click();
+  await expect(wolfBand).toHaveCSS('background-color', wolfBefore);
+  await page.getByRole('button', { name: 'Mark An dead', exact: true }).click();
+  await expect(wolfBand).toHaveCSS('background-color', 'rgb(207, 202, 193)');
+  await page.getByRole('button', { name: 'Restore An', exact: true }).click();
+  await expect(wolfBand).toHaveCSS('background-color', wolfBefore);
 });
 
 test('a short press does not end the night', async ({ page }) => {
@@ -432,33 +568,17 @@ test('a short press does not end the night', async ({ page }) => {
   await page.keyboard.up('Enter');
 });
 
-test('the wake guide steps through waking roles in order', async ({ page }) => {
+test('the narrator has no wake guide and every alive dot is green and blinks', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
-  const guide = page.getByRole('region', { name: 'Wake order', exact: true });
-  const next = guide.getByRole('button', { name: 'Wake the next role', exact: true });
-  await expect(guide).toContainText('Waking 1 of 3');
-  await expect(guide).toContainText('Seer wakes up');
-  await expect(page.getByRole('region', { name: 'Seer', exact: true })).toHaveAttribute(
-    'aria-current',
-    'step',
-  );
-  await next.click();
-  await expect(guide).toContainText('Wolf wakes up');
-  await expect(page.getByRole('region', { name: 'Wolf', exact: true })).toHaveAttribute(
-    'aria-current',
-    'step',
-  );
-  await expect(page.getByRole('region', { name: 'Seer', exact: true })).not.toHaveAttribute(
-    'aria-current',
-  );
-  await next.click();
-  await next.click();
-  await expect(guide).toContainText('Everyone has woken');
-  await expect(next).toHaveCount(0);
-  await guide.getByRole('button', { name: 'Back to the previous role', exact: true }).click();
-  await expect(guide).toContainText('Witch wakes up');
-  await hold(page, 'Hold to end night');
-  await expect(guide).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Wake order', exact: true })).toHaveCount(0);
+  const dot = page
+    .getByRole('button', { name: 'Mark Linh dead', exact: true })
+    .locator('span span')
+    .first();
+  await expect(dot).toHaveCSS('background-color', 'rgb(42, 143, 85)');
+  await expect(dot).toHaveCSS('animation-name', 'blink');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(dot).toHaveCSS('animation-name', 'none');
 });
 
 test('narrator note fields grow with their text instead of scrolling inside', async ({ page }) => {

@@ -120,6 +120,48 @@
     transform: scale(0.97);
   }
 
+  /* A list's children rise in one after another; a tab's content does this each time it opens. */
+  .stagger > * {
+    animation: rise 220ms ease-out backwards;
+  }
+
+  .stagger > :nth-child(2) {
+    animation-delay: 45ms;
+  }
+
+  .stagger > :nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .stagger > :nth-child(4) {
+    animation-delay: 135ms;
+  }
+
+  .stagger > :nth-child(n + 5) {
+    animation-delay: 180ms;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  /* A folding section's body eases between no height and its own. */
+  .fold {
+    transition: grid-template-rows 220ms ease-out;
+  }
+
+  /* Hidden only once the fold has closed, so the notes stay visible while it shuts. */
+  .fold > * {
+    transition: visibility 0s linear 220ms;
+  }
+
+  .fold[data-open] > * {
+    transition-delay: 0s;
+  }
+
   /* The picked player's name slides in. */
   .name-pop {
     animation: name-pop 180ms ease-out;
@@ -210,17 +252,6 @@
     transition: transform 250ms ease-in-out;
   }
 
-  .undo-bar {
-    animation: undo-in 180ms ease-out;
-  }
-
-  @keyframes undo-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-  }
-
   /* The fill tracks the user's own press, so it lasts as long as the hold (see decision 0012). */
   .hold-button[data-holding='true'] .hold-fill {
     scale: 1 1;
@@ -252,16 +283,24 @@
     right: calc(var(--scroll-room) - 0.75rem);
   }
 
+  /* A folding section's body: no height when closed, its own when open (animated below). */
+  .fold {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+
+  .fold[data-open] {
+    grid-template-rows: 1fr;
+  }
+
+  .fold:not([data-open]) > * {
+    visibility: hidden;
+  }
+
   /* One level of panel on the paper, set apart by a tone step alone (decision 0013). */
   .panel {
     border-radius: var(--radius-card);
     background: var(--color-surface);
-  }
-
-  /* Role art set into the wake line as if it were a word, standing on the baseline. */
-  .wake-art {
-    height: 0.9em;
-    width: 0.9em;
   }
 
   /* Full-length role art cropped to the head and shoulders (the top third, centred) in a small frame. */
@@ -382,6 +421,11 @@
   }
 
   /* A sheet sized to its content, at most three quarters of the screen. */
+  /* A centered dialog keeps the page gutter (20px) on both sides and stops at 24rem. */
+  .modal-centered {
+    width: min(100% - 2.5rem, 24rem);
+  }
+
   .modal-steady {
     max-height: 75dvh;
   }

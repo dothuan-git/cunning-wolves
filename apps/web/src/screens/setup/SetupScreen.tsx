@@ -11,6 +11,7 @@ import { Modal, ModalDone } from '../../components/Modal';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
+import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { useLocale } from '../../i18n/useLocale';
 
 // Wolves first, like the summary and the rules review.
@@ -30,7 +31,8 @@ export function SetupScreen({
 }: {
   roles: readonly PoolRole[];
   initialSlots: readonly (string | null)[];
-  onReady: () => void;
+  /** Called with the ids of the waking roles in the order the narrator will wake them. */
+  onReady: (wakeOrder: string[]) => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -49,6 +51,8 @@ export function SetupScreen({
   const [error, setError] = useState(false);
   const [sound, setSound] = useState(false);
   const [timer, setTimer] = useState('120');
+  // The order the narrator reordered the waking roles into; roles not in it yet follow their default.
+  const [customOrder, setCustomOrder] = useState<readonly string[]>([]);
   // The rule as it was when the detailed card opened, to put back if it is emptied.
   const ruleBefore = useRef('');
   // Roles just taken out of the game, still on the page while their card shrinks away.
@@ -58,6 +62,16 @@ export function SetupScreen({
   const filled = slots.filter(Boolean).length;
   const full = filled === slots.length;
   const viewing = roles.find((role) => role.id === viewingId);
+  // The waking roles in the game, in wake order: the narrator's order first, then the rest by default.
+  const waking = roles
+    .filter((role) => role.defaultWakeOrder !== null && slots.includes(role.id))
+    .sort((a, b) => {
+      const place = (role: PoolRole) => {
+        const index = customOrder.indexOf(role.id);
+        return index < 0 ? customOrder.length + (role.defaultWakeOrder ?? 0) : index;
+      };
+      return place(a) - place(b);
+    });
 
   function quantity(id: string) {
     return slots.filter((slot) => slot === id).length;
@@ -164,7 +178,13 @@ export function SetupScreen({
           <p key={slots.length - filled} className="name-pop text-center text-caption text-muted">
             {full ? t('setup.allSeated') : t('setup.remaining', { count: slots.length - filled })}
           </p>
-          <Button disabled={!full || slots.length === 0} className="press" onClick={onReady}>
+          <Button
+            disabled={!full || slots.length === 0}
+            className="press"
+            onClick={() => {
+              onReady(waking.map((role) => role.id));
+            }}
+          >
             {t('setup.ready')}
           </Button>
         </>
@@ -348,6 +368,14 @@ export function SetupScreen({
               />
               {t('setup.sound')}
             </label>
+            {waking.length > 0 && (
+              <WakeOrderSetting
+                roles={waking}
+                onChange={(order) => {
+                  setCustomOrder(order.map((role) => role.id));
+                }}
+              />
+            )}
           </div>
         </Modal>
       )}

@@ -21,7 +21,7 @@
   --color-danger: #a3321f;
 
   --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
-  /* Condensed wood type for titles, role names and the wake line. */
+  /* Condensed wood type for titles, role names and the narrator's player names. */
   --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
 
   --text-caption: 0.8125rem;

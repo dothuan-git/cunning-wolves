@@ -8,7 +8,8 @@ import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { Tabs } from '../../components/Tabs';
 import { useLocale } from '../../i18n/useLocale';
-import type { JournalPhase, RevealedPlayerItem } from '../types';
+import type { JournalPhase, Phase, RevealedPlayerItem } from '../types';
+import { PhasePanel } from './PhasePanel';
 
 const TEAMS: readonly Team[] = ['werewolf', 'village'];
 
@@ -32,21 +33,29 @@ export function SummaryScreen({
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
+  const phaseLabel = (phase: Phase) =>
+    t(phase.kind === 'night' ? 'common.night' : 'common.morning', { number: phase.number });
+  // A player restored and killed again counts from the last time they died.
+  const diedIn = new Map<string, Phase>();
+  for (const { phase, deaths } of journal) {
+    for (const player of deaths) diedIn.set(player.id, phase);
+  }
+  const roleOf = new Map(players.map((player) => [player.id, player.role]));
   return (
     <ScreenLayout
       title={t('screens.summary')}
       footer={
-        <>
-          <Button onClick={onPlayAgain}>{t('summary.playAgain')}</Button>
+        <div className="grid grid-cols-2 gap-2">
           <Button variant="secondary" onClick={onHome}>
             {t('common.home')}
           </Button>
-        </>
+          <Button onClick={onPlayAgain}>{t('summary.playAgain')}</Button>
+        </div>
       }
     >
-      <section>
-        <h2 className="font-display text-heading font-semibold">{roomName}</h2>
-        <div className="mt-1 flex flex-wrap gap-4 text-caption text-muted">
+      <section className="panel p-4">
+        <h2 className="font-display text-title font-semibold break-words">{roomName}</h2>
+        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted">
           <span className="inline-flex items-center gap-1.5">
             <Icon name="person" className="size-4" />
             {t('common.countPlayers', { count: players.length })}
@@ -54,6 +63,10 @@ export function SummaryScreen({
           <span className="inline-flex items-center gap-1.5">
             <Icon name="moon" className="size-4" />
             {t('summary.nightCount', { count: nights })}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Icon name="tombstone" className="size-4" />
+            {t('summary.deadCount', { count: diedIn.size })}
           </span>
         </div>
       </section>
@@ -65,41 +78,60 @@ export function SummaryScreen({
             id: 'roles',
             label: t('summary.rolesTab'),
             content: (
-              <div className="grid gap-5">
-                <p className="px-0.5 text-caption text-muted">{t('summary.revealedNotice')}</p>
+              <div className="stagger grid gap-3">
+                <p className="text-caption text-muted">{t('summary.revealedNotice')}</p>
                 {/* The reveal answers "who were the wolves?" first, so each faction is its own list. */}
                 {TEAMS.map((team) => {
                   const members = players.filter((player) => player.role.team === team);
                   if (members.length === 0) return null;
                   return (
-                    <section key={team} aria-label={t(`faction.${team}`)} className="grid gap-2">
-                      <h3 className="flex items-center gap-3">
-                        <FactionEmblem team={team} className="size-12" />
-                        <span
-                          className={`font-display text-role font-semibold ${team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+                    <section
+                      key={team}
+                      aria-labelledby={`summary-${team}`}
+                      className="panel min-w-0 overflow-hidden"
+                    >
+                      <div
+                        className={`flex items-center justify-between gap-3 px-3.5 py-2 ${team === 'werewolf' ? 'bg-werewolf-wash' : 'bg-village-wash'}`}
+                      >
+                        <h3
+                          id={`summary-${team}`}
+                          className={`flex min-w-0 items-center gap-2.5 font-display text-role font-semibold ${team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
                         >
+                          <FactionEmblem team={team} className="size-10 shrink-0" />
                           {t(`faction.${team}`)}
-                        </span>
-                        <span className="ml-auto text-caption text-muted tabular-nums">
-                          {t('common.countPlayers', { count: members.length })}
-                        </span>
-                      </h3>
-                      <ul className="panel divide-y divide-line">
-                        {members.map((player) => (
-                          <li
-                            key={player.id}
-                            className="flex min-h-14 items-center justify-between gap-3 px-3.5 py-2"
-                          >
-                            <PlayerChip name={player.name} />
-                            <span className="min-w-0 text-right">
-                              <RoleBanner
-                                name={player.role.name[locale]}
-                                team={player.role.team}
-                                image={player.role.image}
+                        </h3>
+                        <p className="shrink-0 text-caption text-muted tabular-nums">
+                          {t('summary.aliveOfTotal', {
+                            alive: members.filter((member) => !diedIn.has(member.id)).length,
+                            total: members.length,
+                          })}
+                        </p>
+                      </div>
+                      <ul className="divide-y divide-line">
+                        {members.map((player) => {
+                          const death = diedIn.get(player.id);
+                          return (
+                            <li
+                              key={player.id}
+                              className="flex min-h-16 items-center justify-between gap-3 px-3.5 py-2"
+                            >
+                              <PlayerChip
+                                name={player.name}
+                                dead={death !== undefined}
+                                detail={death && t('summary.diedIn', { phase: phaseLabel(death) })}
+                                large
                               />
-                            </span>
-                          </li>
-                        ))}
+                              <span className="min-w-0 shrink-0 text-right">
+                                <RoleBanner
+                                  name={player.role.name[locale]}
+                                  team={player.role.team}
+                                  image={player.role.image}
+                                  dead={death !== undefined}
+                                />
+                              </span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </section>
                   );
@@ -112,50 +144,57 @@ export function SummaryScreen({
             label: t('summary.notesTab'),
             content:
               journal.length === 0 ? (
-                <div className="panel p-3.5 text-control text-muted">{t('summary.noNotes')}</div>
+                <p className="panel p-3.5 text-body text-muted">{t('summary.noNotes')}</p>
               ) : (
-                <div className="grid gap-3">
-                  {journal.map(({ phase, notes, deaths }, index) => (
-                    <details
-                      key={`${phase.kind}-${String(phase.number)}`}
-                      className="group panel px-3.5"
-                      open={index === 0}
-                    >
-                      <summary className="flex min-h-12 cursor-pointer items-center gap-2 py-3 font-display text-role font-semibold">
-                        <Icon
-                          name={phase.kind === 'night' ? 'moon' : 'sun'}
-                          className="size-4 text-muted"
-                        />
-                        {t(phase.kind === 'night' ? 'common.night' : 'common.morning', {
-                          number: phase.number,
-                        })}
-                        <Icon
-                          name="arrow"
-                          className="ml-auto size-4 rotate-180 text-muted group-open:-rotate-90 motion-safe:transition-transform"
-                        />
-                      </summary>
-                      <ul className="grid gap-3 pb-4 text-control">
-                        {notes.map((note) => (
-                          <li key={note.id}>
-                            <span className="block text-name font-medium">{note.name}</span>
-                            <span className="block break-words whitespace-pre-wrap text-muted">
-                              {note.text}
-                            </span>
-                          </li>
-                        ))}
-                        {deaths.map((player) => (
-                          <li
-                            key={`death-${player.id}`}
-                            className="flex items-center gap-2 text-muted"
-                          >
-                            <Icon name="tombstone" className="size-4" />
-                            {t('summary.died', { name: player.name })}
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
-                  ))}
-                </div>
+                // The whole story reads top to bottom; nights sit on ink so they stand apart from mornings.
+                <ol className="stagger grid gap-2.5">
+                  {journal.map(({ phase, notes, deaths }) => {
+                    const night = phase.kind === 'night';
+                    return (
+                      <PhasePanel
+                        key={`${phase.kind}-${String(phase.number)}`}
+                        title={phaseLabel(phase)}
+                        night={night}
+                      >
+                        <ul className="divide-y divide-line">
+                          {notes.map((note) => {
+                            const role = roleOf.get(note.id);
+                            return (
+                              <li key={note.id} className="px-3.5 py-2.5">
+                                <p className="flex flex-wrap items-baseline gap-x-2">
+                                  <span className="font-display text-role font-semibold break-words">
+                                    {note.name}
+                                  </span>
+                                  {role && (
+                                    <span
+                                      className={`text-caption font-medium ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+                                    >
+                                      {role.name[locale]}
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="mt-0.5 text-body break-words whitespace-pre-wrap">
+                                  {note.text}
+                                </p>
+                              </li>
+                            );
+                          })}
+                          {deaths.map((player) => (
+                            <li
+                              key={`death-${player.id}`}
+                              className="flex min-h-12 items-center px-3.5 py-2"
+                            >
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-line px-2.5 py-0.5 text-caption font-medium">
+                                <Icon name="tombstone" className="size-3.5" />
+                                {t('summary.died', { name: player.name })}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </PhasePanel>
+                    );
+                  })}
+                </ol>
               ),
           },
         ]}
