@@ -73,7 +73,7 @@ export function SetupScreen({
         <p className="mb-1.5 px-0.5 text-caption text-muted" role="status">
           {t('setup.filled', { filled, total: slots.length })}
         </p>
-        <div className="folio overflow-hidden">
+        <div className="panel overflow-hidden">
           {filled === 0 && (
             <p className="px-3.5 py-6 text-control text-muted">{t('setup.empty')}</p>
           )}
@@ -90,7 +90,7 @@ export function SetupScreen({
                       openEditor(role);
                     }}
                   >
-                    <RoleBanner name={role.name[locale]} team={role.team} />
+                    <RoleBanner name={role.name[locale]} team={role.team} image={role.image} />
                   </button>
                   <Button
                     variant="quiet"
@@ -124,7 +124,7 @@ export function SetupScreen({
           </ul>
           <button
             type="button"
-            className={`flex min-h-12 w-full items-center gap-2 px-3.5 text-control font-semibold text-forest hover:bg-folio ${filled > 0 ? 'border-t border-line' : ''}`}
+            className={`flex min-h-12 w-full items-center gap-2 px-3.5 text-control font-medium text-ink hover:bg-field ${filled > 0 ? 'border-t border-line' : ''}`}
             onClick={() => {
               setShowPool(true);
             }}
@@ -221,7 +221,7 @@ export function SetupScreen({
             />
             <label className="flex min-h-12 items-center gap-3 text-control">
               <input
-                className="size-5 accent-forest"
+                className="size-5 accent-ink"
                 type="checkbox"
                 checked={sound}
                 onChange={(event) => {
@@ -300,7 +300,7 @@ export function SetupScreen({
             <label className="grid gap-1.5 text-control">
               {t('setup.team')}
               <select
-                className="min-h-12 rounded-control border border-field-border bg-surface px-3 text-body"
+                className="min-h-12 rounded-control border border-field-border bg-field px-3 text-body"
                 value={team}
                 onChange={(event) => {
                   setTeam(event.target.value === 'werewolf' ? 'werewolf' : 'village');

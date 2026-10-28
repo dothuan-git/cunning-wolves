@@ -2,9 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { PlayerChip } from '../../components/PlayerChip';
-import { RoleArtwork } from '../../components/RoleArtwork';
 import { RoleBanner } from '../../components/RoleBanner';
-import { SceneBanner } from '../../components/SceneBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { Tabs } from '../../components/Tabs';
 import { useLocale } from '../../i18n/useLocale';
@@ -42,7 +40,7 @@ export function SummaryScreen({
         </>
       }
     >
-      <SceneBanner className="folio p-3.5 pb-14">
+      <section>
         <h2 className="font-display text-heading font-semibold">{roomName}</h2>
         <div className="mt-1 flex flex-wrap gap-4 text-caption text-muted">
           <span className="inline-flex items-center gap-1.5">
@@ -54,7 +52,7 @@ export function SummaryScreen({
             {t('summary.nightCount', { count: nights })}
           </span>
         </div>
-      </SceneBanner>
+      </section>
       <Tabs
         label={t('summary.sections')}
         initialId={initialTab}
@@ -65,18 +63,19 @@ export function SummaryScreen({
             content: (
               <div className="grid gap-2">
                 <p className="px-0.5 text-caption text-muted">{t('summary.revealedNotice')}</p>
-                <ul className="folio divide-y divide-line">
+                <ul className="panel divide-y divide-line">
                   {players.map((player) => (
                     <li
                       key={player.id}
-                      className="grid min-h-13 grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1fr)] items-center gap-3 px-3.5 py-2"
+                      className="flex min-h-14 items-center justify-between gap-3 px-3.5 py-2"
                     >
-                      <div className="size-9 rounded-full bg-folio p-1 ring-1 ring-edge ring-inset">
-                        <RoleArtwork file={player.role.image} />
-                      </div>
                       <PlayerChip name={player.name} />
-                      <span className="min-w-0">
-                        <RoleBanner name={player.role.name[locale]} team={player.role.team} />
+                      <span className="min-w-0 text-right">
+                        <RoleBanner
+                          name={player.role.name[locale]}
+                          team={player.role.team}
+                          image={player.role.image}
+                        />
                         <span className="sr-only">, {t(`faction.${player.role.team}`)}</span>
                       </span>
                     </li>
@@ -90,19 +89,19 @@ export function SummaryScreen({
             label: t('summary.notesTab'),
             content:
               journal.length === 0 ? (
-                <div className="folio p-3.5 text-control text-muted">{t('summary.noNotes')}</div>
+                <div className="panel p-3.5 text-control text-muted">{t('summary.noNotes')}</div>
               ) : (
                 <div className="grid gap-3">
                   {journal.map(({ phase, notes, deaths }, index) => (
                     <details
                       key={`${phase.kind}-${String(phase.number)}`}
-                      className="group folio px-3.5"
+                      className="group panel px-3.5"
                       open={index === 0}
                     >
-                      <summary className="flex min-h-12 cursor-pointer items-center gap-2 py-3 text-role font-semibold">
+                      <summary className="flex min-h-12 cursor-pointer items-center gap-2 py-3 font-display text-role font-semibold">
                         <Icon
                           name={phase.kind === 'night' ? 'moon' : 'sun'}
-                          className="size-4 text-brass"
+                          className="size-4 text-muted"
                         />
                         {t(phase.kind === 'night' ? 'common.night' : 'common.morning', {
                           number: phase.number,
@@ -115,7 +114,7 @@ export function SummaryScreen({
                       <ul className="grid gap-3 pb-4 text-control">
                         {notes.map((note) => (
                           <li key={note.id}>
-                            <span className="block text-name font-semibold">{note.name}</span>
+                            <span className="block text-name font-medium">{note.name}</span>
                             <span className="block break-words whitespace-pre-wrap text-muted">
                               {note.text}
                             </span>

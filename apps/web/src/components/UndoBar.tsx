@@ -27,13 +27,13 @@ export function UndoBar({
   return (
     <div
       aria-live="polite"
-      className="undo-bar flex items-center justify-between gap-3 rounded-control bg-ink pl-4 text-control text-surface shadow-card"
+      className="undo-bar flex items-center justify-between gap-3 rounded-control bg-ink pl-4 text-control text-field shadow-float"
     >
       <span className="min-w-0 py-2">{message}</span>
       <button
         type="button"
         onClick={onUndo}
-        className="min-h-12 min-w-12 shrink-0 rounded-control px-4 font-semibold text-brass hover:bg-surface/10"
+        className="min-h-12 min-w-12 shrink-0 rounded-control px-4 font-medium text-field underline underline-offset-4 hover:bg-field/10"
       >
         {t('common.undo')}
       </button>

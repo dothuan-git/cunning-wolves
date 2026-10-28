@@ -34,7 +34,7 @@ export function Modal({
       ref={ref}
       onCancel={onClose}
       aria-labelledby={titleId}
-      className={`${sheet ? 'mt-auto mb-0 max-w-md rounded-t-2xl rounded-b-none pb-8' : 'my-auto max-w-sm rounded-card'} mx-auto max-h-[85dvh] w-full overflow-y-auto border border-line bg-surface p-5 text-ink shadow-card backdrop:bg-ink/30`}
+      className={`${sheet ? 'mt-auto mb-0 max-w-md pb-8' : 'my-auto max-w-sm'} mx-auto max-h-[85dvh] w-full overflow-y-auto rounded-card bg-field p-5 text-ink shadow-float backdrop:bg-ink/40`}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 id={titleId} className="font-display text-heading font-semibold">

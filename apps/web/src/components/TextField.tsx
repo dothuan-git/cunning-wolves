@@ -10,7 +10,7 @@ type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 };
 
 const fieldClass =
-  'min-h-12 w-full min-w-0 rounded-control border bg-surface px-3 py-2.5 font-sans text-body text-ink shadow-field placeholder:text-muted disabled:opacity-50';
+  'min-h-12 w-full min-w-0 rounded-control border bg-field px-3 py-2.5 font-sans text-body text-ink placeholder:text-muted disabled:opacity-50';
 
 export function TextField({
   label,

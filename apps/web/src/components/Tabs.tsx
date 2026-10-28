@@ -16,11 +16,7 @@ export function Tabs({
   const active = items.find((item) => item.id === selected);
   return (
     <div className="grid gap-4">
-      <div
-        role="tablist"
-        aria-label={label}
-        className="flex rounded-control border border-line bg-folio shadow-field"
-      >
+      <div role="tablist" aria-label={label} className="flex border-b border-line">
         {items.map((item, index) => (
           <button
             key={item.id}
@@ -50,7 +46,7 @@ export function Tabs({
                 buttons.current[next]?.focus();
               }
             }}
-            className={`min-h-12 min-w-12 flex-1 rounded-control border-t-2 px-3 py-2 font-display text-name font-semibold ${selected === item.id ? 'border-ochre bg-surface text-ink shadow-card' : 'border-transparent text-muted'}`}
+            className={`-mb-px min-h-12 min-w-12 flex-1 border-b-2 px-3 py-2 font-display text-role font-semibold ${selected === item.id ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'}`}
           >
             {item.label}
           </button>

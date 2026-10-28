@@ -6,10 +6,10 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants = {
-  primary: 'tabletop-primary border-brass bg-forest text-surface hover:bg-forest/90',
-  secondary: 'border-edge bg-surface text-ink hover:border-field-border',
+  primary: 'border-ink bg-ink text-field hover:bg-ink/85',
+  secondary: 'border-field-border bg-field text-ink hover:border-ink',
   quiet: 'border-transparent bg-transparent text-muted hover:text-ink',
-  danger: 'border-danger/30 bg-surface text-danger hover:border-danger',
+  danger: 'border-danger/40 bg-field text-danger hover:border-danger',
 };
 
 const sizes = {
@@ -28,7 +28,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-control border font-semibold disabled:cursor-not-allowed disabled:opacity-45 motion-safe:transition-colors ${size === 'compact' ? 'font-sans text-caption' : 'font-sans text-control'} ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-control border font-medium disabled:cursor-not-allowed disabled:opacity-45 motion-safe:transition-colors ${size === 'compact' ? 'font-sans text-caption' : 'font-sans text-control'} ${sizes[size]} ${variants[variant]} ${className}`}
       {...props}
     />
   );

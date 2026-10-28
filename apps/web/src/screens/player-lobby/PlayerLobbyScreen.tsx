@@ -25,7 +25,7 @@ export function PlayerLobbyScreen({
         title={t('screens.playerLobby')}
         footer={<Button onClick={onLeave}>{t('common.back')}</Button>}
       >
-        <div className="folio grid gap-2 p-3.5" role="alert">
+        <div className="panel grid gap-2 p-3.5" role="alert">
           <h2 className="font-display text-heading font-semibold">{t('lobby.removed')}</h2>
           <p className="text-control text-muted">{t('lobby.removedHint')}</p>
         </div>
@@ -40,14 +40,14 @@ export function PlayerLobbyScreen({
         </Button>
       }
     >
-      <section className="folio flex items-start gap-3 p-3.5">
-        <Icon name="moon" className="mt-1 size-6 text-ochre" />
+      <section className="panel flex items-start gap-3 p-3.5">
+        <Icon name="moon" className="mt-1 size-6 text-muted" />
         <div className="min-w-0">
           <h2 className="font-display text-heading font-semibold">{roomName}</h2>
           <p className="text-control text-muted">{t('lobby.waitingBody')}</p>
           <p
             role="status"
-            className={`mt-2 inline-flex items-center gap-1.5 text-caption ${reconnecting ? 'text-ochre' : 'text-alive'}`}
+            className={`mt-2 inline-flex items-center gap-1.5 text-caption ${reconnecting ? 'text-muted' : 'font-medium text-ink'}`}
           >
             <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
             {t(reconnecting ? 'preview.reconnecting' : 'lobby.ready')}
@@ -58,7 +58,7 @@ export function PlayerLobbyScreen({
         <h2 className="mb-1.5 px-0.5 text-caption text-muted">
           {t('common.countPlayers', { count: players.length })}
         </h2>
-        <ul className="folio divide-y divide-line">
+        <ul className="panel divide-y divide-line">
           {players.map((player, index) => (
             <li key={player.id} className="flex min-h-12 items-center px-3.5 py-1.5">
               <PlayerChip name={player.name} detail={index === 0 ? t('player.you') : undefined} />

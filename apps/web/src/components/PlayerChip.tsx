@@ -16,7 +16,7 @@ export function PlayerChip({
       {dead && <Icon name="tombstone" className="size-4" />}
       <span className="min-w-0">
         <span
-          className={`block font-sans text-name font-semibold break-words ${dead ? 'line-through' : ''}`}
+          className={`block font-sans text-name font-medium break-words ${dead ? 'line-through' : ''}`}
         >
           {name}
         </span>

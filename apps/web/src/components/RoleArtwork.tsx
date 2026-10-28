@@ -8,7 +8,16 @@ const artwork = import.meta.glob<string>('../assets/cards/*.{webp,png,jpg,jpeg,s
   import: 'default',
 });
 
-export function RoleArtwork({ file, className = '' }: { file?: string; className?: string }) {
+export function RoleArtwork({
+  file,
+  className = '',
+  fit = 'contain',
+}: {
+  file?: string;
+  className?: string;
+  /** `cover` crops to the frame from the top, so a thumbnail shows the figure's head. */
+  fit?: 'contain' | 'cover';
+}) {
   const { t } = useTranslation();
   const source = file ? artwork[`../assets/cards/${file}`] : undefined;
   return (
@@ -16,7 +25,7 @@ export function RoleArtwork({ file, className = '' }: { file?: string; className
       key={source ?? placeholder}
       src={source ?? placeholder}
       alt={source ? '' : t('card.artPlaceholder')}
-      className={`h-full w-full object-contain ${className}`}
+      className={`h-full w-full ${fit === 'cover' ? 'object-cover object-top' : 'object-contain'} ${className}`}
       onError={(event) => {
         if (event.currentTarget.dataset.fallback) return;
         // A missing/corrupt optional image must not prevent reading a role card.

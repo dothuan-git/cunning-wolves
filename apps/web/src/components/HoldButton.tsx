@@ -36,7 +36,7 @@ export function HoldButton({
         className="hold-button relative overflow-hidden"
         style={{ '--hold-duration': `${String(duration)}ms` } as CSSProperties}
       >
-        <span aria-hidden="true" className="hold-fill bg-surface/20 motion-reduce:hidden" />
+        <span aria-hidden="true" className="hold-fill bg-field/25 motion-reduce:hidden" />
         <span
           className={`relative inline-flex items-center gap-2 ${holding ? 'motion-reduce:hidden' : ''}`}
         >

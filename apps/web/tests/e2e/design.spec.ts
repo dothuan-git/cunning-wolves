@@ -142,7 +142,10 @@ test('a concealed card removes its role and description from the page', async ({
   await page.getByRole('button', { name: 'Hold to see your card', exact: true }).hover();
   await page.mouse.down();
   await expect(seer).toBeVisible();
-  await expect(page.getByRole('img', { name: 'Placeholder role illustration' })).toBeVisible();
+  // The seer has its own art now; the name beside it is the accessible text, so the art has empty alt.
+  const art = page.locator('.role-card[data-revealed="true"] img');
+  await expect(art).toBeVisible();
+  await expect(art).toHaveAttribute('src', /seer/);
   await page.mouse.up();
   await expect(seer).toHaveCount(0);
   await expect(rule).toHaveCount(0);
@@ -272,7 +275,7 @@ test('keyboard focus is visible and reduced motion disables card animation', asy
   const language = page.getByRole('combobox', { name: 'Language', exact: true });
   await language.focus();
   await expect(language).toHaveCSS('outline-style', 'solid');
-  await expect(language).toHaveCSS('outline-color', 'rgb(44, 79, 143)');
+  await expect(language).toHaveCSS('outline-color', 'rgb(42, 65, 112)');
   await page.keyboard.press('Escape');
   await expect(page.locator('.role-card')).toHaveCSS('animation-name', 'none');
 });

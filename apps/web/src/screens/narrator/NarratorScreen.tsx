@@ -118,7 +118,7 @@ export function NarratorScreen({
       current: phase,
       editingNight: editing?.playerId === player.id ? editing.night : undefined,
     });
-    const labelClass = `w-20 shrink-0 text-control font-semibold ${dead ? 'text-muted' : 'text-ochre'}`;
+    const labelClass = `w-20 shrink-0 text-control font-medium ${dead ? 'text-muted' : 'text-ink'}`;
     return (
       <div key={player.id} className="px-3.5 pt-1 pb-2">
         <div className="flex min-h-12 items-center justify-between gap-2">
@@ -220,7 +220,7 @@ export function NarratorScreen({
                       <span className="min-w-0 flex-1 break-words whitespace-pre-wrap">
                         {entry.text}
                       </span>
-                      <Icon name="pencil" className="size-3.5 text-muted/60" />
+                      <Icon name="pencil" className="size-3.5 text-muted" />
                     </button>
                   )}
                 </li>
@@ -260,14 +260,14 @@ export function NarratorScreen({
               onEndPhase();
             }}
           >
-            <Icon name={isNight ? 'moon' : 'sun'} className="text-brass" />
+            <Icon name={isNight ? 'moon' : 'sun'} />
             {t(isNight ? 'narrator.holdEndNight' : 'narrator.holdEndMorning')}
           </HoldButton>
         </>
       }
     >
       <section className="flex items-center justify-between gap-3" aria-label={phaseLabel(phase)}>
-        <h2 className="flex items-center gap-2 text-role font-semibold text-ochre">
+        <h2 className="flex items-center gap-2 font-display text-role font-semibold">
           <Icon name={isNight ? 'moon' : 'sun'} className="size-4" />
           {phaseLabel(phase)}
         </h2>
@@ -277,7 +277,11 @@ export function NarratorScreen({
       </section>
       {isNight && orderedGroups.length > 0 && (
         <WakeGuide
-          roles={orderedGroups.map((group) => group.role.name[locale])}
+          roles={orderedGroups.map((group) => ({
+            id: group.role.id,
+            name: group.role.name[locale],
+            image: group.role.image,
+          }))}
           step={step}
           onStep={moveWake}
         />
@@ -293,12 +297,16 @@ export function NarratorScreen({
                 if (element) groupRefs.current.set(group.role.id, element);
                 else groupRefs.current.delete(group.role.id);
               }}
-              className={`folio min-w-0 scroll-my-24 overflow-hidden ${waking ? `${wash} ring-2 ring-brass` : ''}`}
+              className={`panel min-w-0 scroll-my-24 overflow-hidden ${waking ? `${wash} outline-2 outline-ink` : ''}`}
               aria-label={group.role.name[locale]}
               aria-current={waking ? 'step' : undefined}
             >
               <h3 className="px-3.5 pt-3">
-                <RoleBanner name={group.role.name[locale]} team={group.role.team} />
+                <RoleBanner
+                  name={group.role.name[locale]}
+                  team={group.role.team}
+                  image={group.role.image}
+                />
               </h3>
               <div className="divide-y divide-line">{group.players.map(renderPlayer)}</div>
             </section>
@@ -351,7 +359,7 @@ export function NarratorScreen({
             <label className="flex min-h-12 items-center gap-3 text-control">
               <input
                 type="checkbox"
-                className="size-5 accent-forest"
+                className="size-5 accent-ink"
                 checked={sound}
                 onChange={(event) => {
                   setSound(event.target.checked);
@@ -360,7 +368,7 @@ export function NarratorScreen({
               {t('setup.sound')}
             </label>
             <div>
-              <h3 className="mb-1 text-control font-semibold">{t('narrator.reorder')}</h3>
+              <h3 className="mb-1 text-control font-medium">{t('narrator.reorder')}</h3>
               {orderedGroups.map((group, index) => (
                 <div
                   key={group.role.id}

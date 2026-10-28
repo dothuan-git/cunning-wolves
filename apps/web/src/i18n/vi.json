@@ -233,5 +233,9 @@
     "states": "Trạng thái người chơi",
     "type": "Kiểu chữ",
     "body": "Ngôi làng yên ắng, vai trò bí mật, câu chuyện kể cùng nhau."
+  },
+  "credits": {
+    "title": "Nguồn hình ảnh",
+    "woodcut": "Tranh khắc gỗ ngôi làng: “Người sói”, Lucas Cranach Cha, khoảng năm 1512. Bảo tàng Nghệ thuật Metropolitan, CC0."
   }
 }

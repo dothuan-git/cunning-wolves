@@ -33,7 +33,7 @@ export function NameEntryScreen({
       <p className="text-body text-muted">{t('nameEntry.intro')}</p>
       <form
         id="name-entry"
-        className="folio p-3.5"
+        className="panel p-3.5"
         noValidate
         onSubmit={(event) => {
           event.preventDefault();

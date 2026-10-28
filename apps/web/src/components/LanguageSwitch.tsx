@@ -12,7 +12,7 @@ export function LanguageSwitch({ compact = false }: { compact?: boolean }) {
         onChange={(event) => {
           setLocale(event.target.value === 'vi' ? 'vi' : 'en');
         }}
-        className="min-h-12 rounded-control border border-field-border bg-surface px-2 text-control text-ink"
+        className="min-h-12 rounded-control border border-field-border bg-field px-2 text-control text-ink"
       >
         {LOCALES.map((locale) => (
           <option key={locale} value={locale}>
@@ -31,7 +31,7 @@ export function LanguageSwitch({ compact = false }: { compact?: boolean }) {
           onClick={() => {
             setLocale(locale);
           }}
-          className={`min-h-12 min-w-12 border-b px-1 text-control motion-safe:transition-colors ${i18n.language === locale ? 'border-forest font-medium text-forest' : 'border-transparent text-muted hover:border-line hover:text-ink'}`}
+          className={`min-h-12 min-w-12 border-b px-1 text-control motion-safe:transition-colors ${i18n.language === locale ? 'border-ink font-medium text-ink' : 'border-transparent text-muted hover:border-line hover:text-ink'}`}
         >
           {t(`language.${locale}`)}
         </button>

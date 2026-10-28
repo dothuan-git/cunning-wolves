@@ -233,5 +233,9 @@
     "states": "Player states",
     "type": "Typography",
     "body": "A quiet village, a hidden role, a story told together."
+  },
+  "credits": {
+    "title": "Picture credits",
+    "woodcut": "Village woodcut: “The Werewolf”, Lucas Cranach the Elder, about 1512. The Metropolitan Museum of Art, CC0."
   }
 }

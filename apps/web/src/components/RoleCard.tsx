@@ -2,7 +2,7 @@ import type { Locale, PoolRole } from '@werewolf/shared';
 import { useTranslation } from 'react-i18next';
 import { FactionLabel } from './FactionLabel';
 import { RoleArtwork } from './RoleArtwork';
-import seal from '../assets/tabletop/wolf-seal.png';
+import cardBack from '../assets/art/card-back.webp';
 
 export function RoleCard({ role, revealed = true }: { role: PoolRole; revealed?: boolean }) {
   const { t, i18n } = useTranslation();
@@ -10,31 +10,28 @@ export function RoleCard({ role, revealed = true }: { role: PoolRole; revealed?:
   return (
     <div
       data-revealed={revealed}
-      className="role-card folio relative flex min-h-130 flex-col overflow-hidden p-5 shadow-card"
+      className="role-card panel relative flex flex-col overflow-hidden"
     >
       {revealed ? (
         <>
-          <div className="relative flex min-h-56 flex-1">
-            <div className="min-w-0 flex-1 pr-12">
-              <RoleArtwork file={role.image} />
-            </div>
+          <div className="aspect-4/5 bg-field">
+            <RoleArtwork file={role.image} fit="cover" />
+          </div>
+          <div className="grid gap-2 p-5">
             <h2
-              className={`role-title absolute top-0 right-0 font-display text-heading font-semibold ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+              className={`font-display text-title font-semibold break-words ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
             >
               {role.name[locale]}
             </h2>
-          </div>
-          <div className="mt-4 grid justify-items-center gap-2 border-t border-line pt-4 text-center">
             <FactionLabel team={role.team} />
             <p className="text-body">{role.rule[locale]}</p>
           </div>
         </>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center text-forest">
-          <img src={seal} alt="" aria-hidden="true" className="size-20 object-contain" />
-          <span className="font-display text-title font-bold">{t('app.name')}</span>
-          <p className="max-w-60 text-control text-balance text-muted">{t('card.hiddenHint')}</p>
-        </div>
+        <>
+          <img src={cardBack} alt="" className="aspect-2/3 w-full object-cover" />
+          <p className="p-4 text-control text-muted">{t('card.hiddenHint')}</p>
+        </>
       )}
     </div>
   );

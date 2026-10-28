@@ -16,7 +16,7 @@
   }
 
   ::selection {
-    @apply bg-village text-surface;
+    @apply bg-village text-field;
   }
 }
 
@@ -55,39 +55,16 @@
 }
 
 @layer components {
-  .folio {
-    border: 1px solid var(--color-edge);
+  /* One level of panel on the paper, set apart by a tone step alone (decision 0013). */
+  .panel {
     border-radius: var(--radius-card);
     background: var(--color-surface);
-    box-shadow: var(--shadow-card);
   }
 
-  .tabletop-heading {
-    border-bottom: 1px solid var(--color-edge);
-    position: relative;
-  }
-
-  .tabletop-heading::after {
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    transform: rotate(45deg);
-    background: var(--color-brass);
-  }
-
-  .tabletop-primary {
-    box-shadow:
-      inset 0 0 0 2px var(--color-forest),
-      inset 0 0 0 3px var(--color-brass),
-      0 4px 12px color-mix(in srgb, var(--color-forest) 20%, transparent);
-  }
-
-  /* Heraldic pennant: a flat ribbon with a notched right edge. */
-  .role-banner {
-    clip-path: polygon(0 0, 100% 0, calc(100% - 0.5rem) 50%, 100% 100%, 0 100%);
+  /* Role art set into the wake line as if it were a word, standing on the baseline. */
+  .wake-art {
+    height: 0.9em;
+    width: 1.3em;
   }
 
   .hold-button {
@@ -105,21 +82,5 @@
 
   .screen-footer {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-
-  .role-title {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    max-height: 100%;
-    overflow-wrap: anywhere;
-  }
-
-  .role-card::before {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border: 1px solid var(--color-line);
-    border-radius: 4px;
-    pointer-events: none;
   }
 }

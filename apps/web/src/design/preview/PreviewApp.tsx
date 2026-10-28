@@ -383,7 +383,7 @@ export default function PreviewApp() {
       {framed ? (
         <figure className="grid justify-items-center gap-2 px-5 py-6">
           <figcaption className="text-caption text-muted">{t('preview.frame', PHONE)}</figcaption>
-          <div className="rounded-4xl bg-ink p-2.5 shadow-card">
+          <div className="rounded-4xl bg-ink p-2.5 shadow-float">
             <iframe
               key={`${frameQuery.toString()}-${String(revision)}`}
               title={t('preview.frame', PHONE)}

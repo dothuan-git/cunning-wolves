@@ -38,11 +38,11 @@ export function RulesReviewScreen({
       <p className="text-control text-muted">{t('rules.intro')}</p>
       <ul className="grid gap-3">
         {roles.map(({ role, count }) => (
-          <li key={role.id} className="folio grid grid-cols-[2.5rem_1fr] gap-3 p-3.5">
-            <div className="size-10 rounded-full bg-folio p-1 ring-1 ring-edge ring-inset">
-              <RoleArtwork file={role.image} />
+          <li key={role.id} className="panel flex gap-3 p-3.5">
+            <div className="size-12 shrink-0 overflow-hidden">
+              <RoleArtwork file={role.image} fit="cover" />
             </div>
-            <div className="grid gap-1">
+            <div className="grid min-w-0 flex-1 gap-1">
               <div className="flex flex-wrap items-baseline justify-between gap-x-2">
                 <h2
                   className={`font-display text-role font-semibold ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}

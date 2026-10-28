@@ -1,6 +1,6 @@
 # Role artwork
 
-Every role card and thumbnail uses `RoleArtwork`. Until final art is supplied, all missing images use `placeholder.svg`, the same neutral hooded figure.
+Every role card and thumbnail uses `RoleArtwork`. `seer.webp` and `villager.webp` are in (generated for Cunning Wolves, `output/imagegen/`, resized to 720px wide). Every other role uses `placeholder.svg`, the same neutral hooded figure, until its art is supplied. Art on a transparent background works best: cards and thumbnails show it on the paper tones.
 
 ## Adding final art
 

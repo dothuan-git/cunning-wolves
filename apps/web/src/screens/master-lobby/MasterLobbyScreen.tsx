@@ -29,13 +29,12 @@ export function MasterLobbyScreen({
         </Button>
       }
     >
-      <section aria-label={t('lobby.room')} className="folio p-3.5">
-        <p className="text-caption text-muted">{t('lobby.room')}</p>
+      <section aria-label={t('lobby.room')} className="panel p-3.5">
         <h2 className="font-display text-heading font-semibold">{roomName}</h2>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
           <p
             role="status"
-            className={`inline-flex items-center gap-1.5 text-caption ${open ? 'text-alive' : 'text-muted'}`}
+            className={`inline-flex items-center gap-1.5 text-caption ${open ? 'font-medium text-ink' : 'text-muted'}`}
           >
             <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
             {t(open ? 'lobby.openHint' : 'lobby.closedHint')}
@@ -55,9 +54,9 @@ export function MasterLobbyScreen({
           {t('common.countPlayers', { count: players.length })}
         </h2>
         {players.length === 0 && (
-          <p className="folio p-3.5 text-control text-muted">{t('lobby.noPlayers')}</p>
+          <p className="panel p-3.5 text-control text-muted">{t('lobby.noPlayers')}</p>
         )}
-        <ul className="folio divide-y divide-line overflow-hidden empty:hidden">
+        <ul className="panel divide-y divide-line overflow-hidden empty:hidden">
           {players.map((player) => (
             <li key={player.id} className="flex min-h-12 items-center justify-between gap-3 pl-3.5">
               <PlayerChip name={player.name} />
