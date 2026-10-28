@@ -10,6 +10,7 @@ import { DurableObject } from 'cloudflare:workers';
 import { LOBBY_NAME } from '../lobby/Lobby';
 import { deviceIdFromToken } from './deviceId';
 import { apply, createRoom, type RoomState } from './machine';
+import { cryptoRandom } from './random';
 import { parseClientMessage } from './messages';
 import { deleteRoom, loadRoom, saveRoom } from './storage';
 import { buildSummary, buildView } from './view';
@@ -113,7 +114,7 @@ export class Room extends DurableObject<Env> {
       this.rejectSocket(ws);
       return;
     }
-    const result = apply(this.state, deviceId, message, Date.now());
+    const result = apply(this.state, deviceId, message, Date.now(), cryptoRandom);
     if (!result.ok) {
       this.sendError(ws, result.error);
       return;

@@ -131,6 +131,7 @@ describe('Room', () => {
         wakeOrder: [],
         settings: { timerSeconds: 120, soundOn: false },
       },
+      assignments: [],
     });
   });
 
@@ -292,7 +293,64 @@ describe('Room', () => {
         wakeOrder: [],
         settings: { timerSeconds: 120, soundOn: false },
       });
+      expect(loaded?.assignments).toEqual({});
     });
+  });
+
+  it('shows the rules, goes back to setup, then deals each player only their card', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    const lan = await join(roomId, TOKENS.lan, 'Lan');
+    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'addPick', roleId: 'werewolf' });
+    master.send({ type: 'review' });
+    await master.next(masterView((view) => view.room.status === 'reveal' && !view.room.open));
+    const { view: rules } = await minh.next(playerView((view) => view.room.status === 'reveal'));
+    expect(rules.roles.map(({ role, count }) => [role.id, count])).toEqual([
+      ['seer', 1],
+      ['werewolf', 1],
+    ]);
+    expect(rules.card).toBeNull();
+
+    master.send({ type: 'backToSetup' });
+    await lan.next(playerView((view) => view.room.status === 'lobby' && view.roles.length === 0));
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    const { view: dealt } = await master.next(masterView((view) => view.room.status === 'playing'));
+    const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
+    const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
+    const holder = (playerId: string) =>
+      dealt.assignments.find((assignment) => assignment.playerId === playerId)?.roleId;
+    expect([holder(minhId), holder(lanId)].sort()).toEqual(['seer', 'werewolf']);
+
+    const { view: minhCard } = await minh.next(playerView((view) => view.card !== null));
+    const { view: lanCard } = await lan.next(playerView((view) => view.card !== null));
+    expect(minhCard.card?.id).toBe(holder(minhId));
+    expect(lanCard.card?.id).toBe(holder(lanId));
+    for (const text of [...minh.received, ...lan.received]) {
+      expect(text).not.toContain('assignments');
+      expect(text).not.toContain('"setup"');
+    }
+
+    // The deal survives a reconnect and a reload from storage.
+    const again = await enter(roomId, TOKENS.minh);
+    const { view: kept } = await again.next(playerView());
+    expect(kept.card?.id).toBe(holder(minhId));
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      expect(loadRoom(state.storage.sql)?.assignments).toEqual({
+        [minhId]: holder(minhId),
+        [lanId]: holder(lanId),
+      });
+    });
+  });
+
+  it('refuses to show the rules until roles equal players', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    await join(roomId, TOKENS.minh, 'Minh');
+    master.send({ type: 'review' });
+    await master.next(error('not-allowed'));
   });
 
   it('closes a socket that acts before saying hello', async () => {
@@ -390,6 +448,9 @@ describe('parseClientMessage', () => {
     ],
     [{ type: 'setWakeOrder', order: ['witch', 'seer'] }],
     [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }],
+    [{ type: 'review' }],
+    [{ type: 'backToSetup' }],
+    [{ type: 'startGame' }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
   });

@@ -1,10 +1,13 @@
 import { CUSTOM_ROLES_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
 import { describe, expect, it } from 'vitest';
-import { apply, createRoom, seatedPlayers, type RoomState } from '../src/room/machine';
+import { apply, createRoom, seatedPlayers, type Random, type RoomState } from '../src/room/machine';
+import { cryptoRandom } from '../src/room/random';
 import { buildMasterView, buildPlayerView, buildSummary } from '../src/room/view';
 
 const MASTER = 'master-id';
 const NOW = 1_000;
+/** Leaves every card where it is: the deal follows the pick order. */
+const KEEP: Random = (below) => below - 1;
 
 function room(): RoomState {
   return createRoom({
@@ -19,14 +22,14 @@ function room(): RoomState {
 /** Applies actions in turn and fails the test if any is refused. */
 function run(state: RoomState, ...steps: [actor: string, action: RoomAction][]): RoomState {
   return steps.reduce((current, [actor, action]) => {
-    const result = apply(current, actor, action, NOW);
+    const result = apply(current, actor, action, NOW, KEEP);
     if (!result.ok) throw new Error(`${action.type} by ${actor} refused: ${result.error}`);
     return result.state;
   }, state);
 }
 
 function refusal(state: RoomState, actor: string, action: RoomAction) {
-  const result = apply(state, actor, action, NOW);
+  const result = apply(state, actor, action, NOW, KEEP);
   return result.ok ? null : result.error;
 }
 
@@ -313,6 +316,112 @@ describe('locks after the lobby', () => {
   );
 });
 
+/** Two players and a card set that matches them: seer for Minh, werewolf for Lan. */
+function ready(): RoomState {
+  return run(
+    room(),
+    ['a', { type: 'join', name: 'Minh' }],
+    ['b', { type: 'join', name: 'Lan' }],
+    [MASTER, { type: 'addPick', roleId: 'seer' }],
+    [MASTER, { type: 'addPick', roleId: 'werewolf' }],
+  );
+}
+
+describe('review', () => {
+  it('shows the rules and closes the room when roles equal players', () => {
+    const state = run(ready(), [MASTER, { type: 'review' }]);
+    expect(state.status).toBe('reveal');
+    expect(state.open).toBe(false);
+  });
+
+  it('refuses when the roles do not match the players', () => {
+    const short = run(ready(), [MASTER, { type: 'removePick', roleId: 'seer' }]);
+    expect(refusal(short, MASTER, { type: 'review' })).toBe('not-allowed');
+    const extra = run(ready(), [MASTER, { type: 'addPick', roleId: 'witch' }]);
+    expect(refusal(extra, MASTER, { type: 'review' })).toBe('not-allowed');
+    const kicked = run(ready(), [MASTER, { type: 'kick', playerId: 'b' }]);
+    expect(refusal(kicked, MASTER, { type: 'review' })).toBe('not-allowed');
+  });
+
+  it('refuses an empty room, even with nothing picked', () => {
+    expect(refusal(room(), MASTER, { type: 'review' })).toBe('not-allowed');
+  });
+
+  it('refuses anyone but the master', () => {
+    expect(refusal(ready(), 'a', { type: 'review' })).toBe('not-master');
+  });
+});
+
+describe('back to setup', () => {
+  it('returns to the lobby with the room still closed and the card set kept', () => {
+    const reviewed = run(ready(), [MASTER, { type: 'review' }]);
+    const state = run(reviewed, [MASTER, { type: 'backToSetup' }]);
+    expect(state.status).toBe('lobby');
+    expect(state.open).toBe(false);
+    expect(state.setup).toEqual(reviewed.setup);
+    // Setup works again.
+    run(
+      state,
+      [MASTER, { type: 'addPick', roleId: 'witch' }],
+      [MASTER, { type: 'kick', playerId: 'a' }],
+    );
+  });
+
+  it('refuses outside the rules review, and from anyone but the master', () => {
+    expect(refusal(ready(), MASTER, { type: 'backToSetup' })).toBe('not-allowed');
+    const reviewed = run(ready(), [MASTER, { type: 'review' }]);
+    expect(refusal(reviewed, 'a', { type: 'backToSetup' })).toBe('not-master');
+    const playing = run(reviewed, [MASTER, { type: 'startGame' }]);
+    expect(refusal(playing, MASTER, { type: 'backToSetup' })).toBe('not-allowed');
+  });
+});
+
+describe('start game', () => {
+  const reviewed = () => run(ready(), [MASTER, { type: 'review' }]);
+
+  it('deals one card to each player in join order from the shuffled picks', () => {
+    const state = run(reviewed(), [MASTER, { type: 'startGame' }]);
+    expect(state.status).toBe('playing');
+    expect(state.assignments).toEqual({ a: 'seer', b: 'werewolf' });
+  });
+
+  it('deals what the shuffle says', () => {
+    // Swaps the last card with the first: Minh gets the werewolf.
+    const result = apply(reviewed(), MASTER, { type: 'startGame' }, NOW, () => 0);
+    expect(result.ok && result.state.assignments).toEqual({ a: 'werewolf', b: 'seer' });
+  });
+
+  it('deals every pick exactly once, for any shuffle', () => {
+    const names = ['Ana', 'Bao', 'Chi', 'Dung', 'Em', 'Giang', 'Hoa'];
+    const picks = ['seer', 'werewolf', 'werewolf', 'witch', 'villager', 'villager', 'hunter'];
+    let state = room();
+    names.forEach((name, index) => {
+      state = run(state, [`p${String(index)}`, { type: 'join', name }]);
+    });
+    for (const roleId of picks) state = run(state, [MASTER, { type: 'addPick', roleId }]);
+    state = run(state, [MASTER, { type: 'review' }]);
+    let seed = 7;
+    const lcg: Random = (below) => {
+      seed = (seed * 1103515245 + 12345) % 2 ** 31;
+      return seed % below;
+    };
+    const result = apply(state, MASTER, { type: 'startGame' }, NOW, lcg);
+    if (!result.ok) throw new Error(result.error);
+    expect(Object.keys(result.state.assignments).sort()).toEqual(
+      names.map((_, index) => `p${String(index)}`),
+    );
+    expect(Object.values(result.state.assignments).sort()).toEqual([...picks].sort());
+  });
+
+  it('refuses outside the rules review, and from anyone but the master', () => {
+    expect(refusal(ready(), MASTER, { type: 'startGame' })).toBe('not-allowed');
+    expect(refusal(reviewed(), 'a', { type: 'startGame' })).toBe('not-master');
+    const playing = run(reviewed(), [MASTER, { type: 'startGame' }]);
+    expect(refusal(playing, MASTER, { type: 'startGame' })).toBe('not-allowed');
+    expect(refusal(playing, MASTER, { type: 'review' })).toBe('not-allowed');
+  });
+});
+
 describe('views', () => {
   const state = run(
     room(),
@@ -329,6 +438,7 @@ describe('views', () => {
       room: { id: 'mill', name: 'The mill', status: 'lobby', open: true },
       players: [{ id: 'a', name: 'Minh', connected: true }],
       setup: state.setup,
+      assignments: [],
     });
   });
 
@@ -363,6 +473,63 @@ describe('views', () => {
     for (const secret of ['seer', 'Secret house rule', 'Baker']) expect(text).not.toContain(secret);
   });
 
+  it('shows seated players the rules from the review on, but nobody else', () => {
+    const reviewed = run(
+      ready(),
+      [MASTER, { type: 'editRule', roleId: 'seer', rule: 'House rule' }],
+      [MASTER, { type: 'review' }],
+    );
+    const view = buildPlayerView(reviewed, connected, 'a');
+    expect(view.roles.map(({ role, count }) => [role.id, count])).toEqual([
+      ['seer', 1],
+      ['werewolf', 1],
+    ]);
+    expect(view.roles[0]?.role.rule).toEqual({ vi: 'House rule', en: 'House rule' });
+    expect(view.card).toBeNull();
+    expect(buildPlayerView(reviewed, connected, 'c').roles).toEqual([]);
+    expect(buildPlayerView(ready(), connected, 'a').roles).toEqual([]);
+  });
+
+  it('gives each player only their own card', () => {
+    const playing = run(ready(), [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    const minh = buildPlayerView(playing, connected, 'a');
+    const lan = buildPlayerView(playing, connected, 'b');
+    expect(minh.card?.id).toBe('seer');
+    expect(lan.card?.id).toBe('werewolf');
+    for (const view of [minh, lan]) {
+      expect(view).not.toHaveProperty('assignments');
+      expect(view).not.toHaveProperty('setup');
+      // Nothing ties another player's id to a role.
+      expect(Object.keys(view)).toEqual([
+        'kind',
+        'you',
+        'room',
+        'players',
+        'seat',
+        'roles',
+        'card',
+      ]);
+    }
+    expect(buildPlayerView(playing, connected, 'c').card).toBeNull();
+    expect(buildMasterView(playing, connected).assignments).toEqual([
+      { playerId: 'a', roleId: 'seer' },
+      { playerId: 'b', roleId: 'werewolf' },
+    ]);
+  });
+
+  it('gives a kicked phone no rules and no card', () => {
+    const playing = run(
+      ready(),
+      [MASTER, { type: 'kick', playerId: 'b' }],
+      [MASTER, { type: 'removePick', roleId: 'werewolf' }],
+      [MASTER, { type: 'review' }],
+      [MASTER, { type: 'startGame' }],
+    );
+    const kicked = buildPlayerView(playing, connected, 'b');
+    expect(kicked.roles).toEqual([]);
+    expect(kicked.card).toBeNull();
+  });
+
   it('never tells a player who the master is', () => {
     expect(JSON.stringify(buildPlayerView(state, connected, 'a'))).not.toContain(MASTER);
   });
@@ -376,5 +543,23 @@ describe('views', () => {
       status: 'lobby',
       isOpen: true,
     });
+  });
+});
+
+describe('cryptoRandom', () => {
+  it('stays in range and reaches every value', () => {
+    const seen = new Set<number>();
+    for (let draw = 0; draw < 300; draw += 1) {
+      const value = cryptoRandom(3);
+      expect(Number.isInteger(value) && value >= 0 && value < 3).toBe(true);
+      seen.add(value);
+    }
+    expect(seen.size).toBe(3);
+    expect(cryptoRandom(1)).toBe(0);
+  });
+
+  it('refuses a range it cannot draw from', () => {
+    expect(() => cryptoRandom(0)).toThrow();
+    expect(() => cryptoRandom(1.5)).toThrow();
   });
 });

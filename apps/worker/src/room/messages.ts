@@ -60,6 +60,9 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
       return typeof name === 'string' ? { type, name } : null;
     }
     case 'leave':
+    case 'review':
+    case 'backToSetup':
+    case 'startGame':
       return { type };
     case 'kick': {
       const playerId = field(data, 'playerId');

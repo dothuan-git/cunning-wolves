@@ -1,11 +1,15 @@
-import type {
-  MasterView,
-  PlayerInfo,
-  PlayerView,
-  RoomInfo,
-  RoomSetup,
-  RoomSummary,
-  RoomView,
+import {
+  gameRoles,
+  roomRoles,
+  type GameRole,
+  type MasterView,
+  type PlayerInfo,
+  type PlayerView,
+  type RoomInfo,
+  type RoomRole,
+  type RoomSetup,
+  type RoomSummary,
+  type RoomView,
 } from '@werewolf/shared';
 import { seatedPlayers, type RoomState } from './machine';
 
@@ -47,7 +51,38 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
     room: roomInfo(state),
     players: playerList(state, connected),
     setup: setupInfo(state.setup),
+    assignments: Object.entries(state.assignments).map(([playerId, roleId]) => ({
+      playerId,
+      roleId,
+    })),
   };
+}
+
+function roleInfo(role: RoomRole): RoomRole {
+  return {
+    id: role.id,
+    name: { vi: role.name.vi, en: role.name.en },
+    rule: { vi: role.rule.vi, en: role.rule.en },
+    team: role.team,
+    defaultWakeOrder: role.defaultWakeOrder,
+    image: role.image,
+    custom: role.custom,
+  };
+}
+
+/** The roles in this game once the rules are shown; nothing about who holds them. */
+function gameInfo(state: RoomState): GameRole[] {
+  if (state.status === 'lobby') return [];
+  return gameRoles(state.setup).map(({ role, count }) => ({ role: roleInfo(role), count }));
+}
+
+/** The viewer's own card, and only theirs. */
+function cardInfo(state: RoomState, viewer: string): RoomRole | null {
+  if (state.status === 'lobby' || !Object.hasOwn(state.assignments, viewer)) return null;
+  const roleId = state.assignments[viewer];
+  const role = roomRoles(state.setup).find((known) => known.id === roleId);
+  if (!role) throw new Error(`Room view: dealt role ${String(roleId)} is not in the room`);
+  return roleInfo(role);
 }
 
 export function buildPlayerView(
@@ -56,12 +91,15 @@ export function buildPlayerView(
   viewer: string,
 ): PlayerView {
   const own = state.players.find((player) => player.id === viewer);
+  const seated = own !== undefined && !own.kicked;
   return {
     kind: 'player',
     you: viewer,
     room: roomInfo(state),
     players: playerList(state, connected),
     seat: own ? (own.kicked ? 'removed' : 'joined') : 'none',
+    roles: seated ? gameInfo(state) : [],
+    card: seated ? cardInfo(state, viewer) : null,
   };
 }
 
