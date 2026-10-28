@@ -33,15 +33,23 @@
 
 - **Setup is the master's lobby** (2026-10-28): the "Gather the village" screen is gone. Setup opens with a room panel (players sheet with kick, close/re-open). Roles are chosen freely, and Review rules opens only when roles equal joined players; it closes the room.
 
+- **Phase 1 foundation** (branch `feat/phase-1-foundation`, 2026-10-28):
+  - Device token in localStorage.
+  - Room WebSocket at `/api/rooms/:id/ws` on the Hibernation API. The token goes only in the first message, and the device id is a hash of it.
+  - A second connection from the same phone replaces the first.
+  - The client reconnects with backoff and a ping/pong heartbeat, and checks right away when the screen wakes or the network returns.
+  - The temporary `/test/<room>` page shows the connected phones. Two browsers keep their ids across a refresh (e2e).
+  - See decision 0016. The production deploy is still open (Next, item 1).
+
 ## Next
 
-1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check.
-2. **Phase 1 (foundation):** i18n wiring is done; still to do are the device token and the WebSocket connection with auto-reconnect. Done when two phones connect to a test room and survive a refresh.
+1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: open `/test/<room>` on two phones and refresh one.
+2. **Phase 2 (rooms and lobby):** home room list, create/join with name, kick and close/re-open from setup, room expiry. Remove the `/test/<room>` page once the lobby replaces it.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
-- Screen templates and example interactions are implemented; real room/gameplay wiring is not. The development gallery uses synthetic data and is excluded from production JavaScript. Room state/message types, temporal death behavior, and server privacy tests belong to later phases.
+- Screen templates and example interactions are implemented; real room/gameplay wiring is not. The development gallery uses synthetic data and is excluded from production JavaScript. The Room state machine, game messages, temporal death behavior, and server privacy tests belong to later phases.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
