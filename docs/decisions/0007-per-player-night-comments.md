@@ -1,6 +1,6 @@
 # 0007 — Per-player night comments
 
-Date: 2026-10-27. Status: accepted.
+Date: 2026-10-27. Status: accepted; the night switcher and general night note are superseded by decision 0010.
 
 ## Context
 

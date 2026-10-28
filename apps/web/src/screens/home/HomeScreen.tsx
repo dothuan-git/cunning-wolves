@@ -37,8 +37,16 @@ export function HomeScreen() {
       </div>
 
       <div className="flex flex-1 flex-col justify-center gap-3 py-12">
-        <h1 className="font-display text-title font-medium">{t('app.name')}</h1>
+        <h1 className="font-display text-title font-semibold">{t('app.name')}</h1>
         <p className="text-body text-muted">{t('home.tagline')}</p>
+        {import.meta.env.DEV && (
+          <a
+            href="/design"
+            className="inline-flex min-h-12 items-center text-control text-village underline underline-offset-4"
+          >
+            {t('preview.title')}
+          </a>
+        )}
       </div>
 
       <p

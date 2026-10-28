@@ -34,7 +34,7 @@
     ]
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
     "playwright@claude-plugins-official": true
   },
   "hooks": {
@@ -46,7 +46,7 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-lint.mjs\"",
             "timeout": 60,
-            "statusMessage": "Formatting and linting"
+            "statusMessage": "Formatting"
           }
         ]
       }

@@ -47,18 +47,18 @@ Nine screens: three shared, three for the room master, three for players.
 
 1. **Home / room list** — open rooms with name, master, player count and status (open / closed / in game). Buttons: Create room, language switch.
 2. **Name entry** — a single field shown when creating or joining. Remembered on the device for next time.
-3. **Game summary** — after Finish game: every player's role revealed, plus the night-by-night log. Master gets Play again.
+3. **Game summary** — after Finish game: every player's role revealed, plus the night-and-morning log. Master gets Play again.
 
 **Room master**
 
 1. **Master lobby** — live player list with a kick button per player; Close room / Re-open room toggle.
-2. **Setup** — one empty card slot per player at the top; the role pool below. Tap a pool card to fill the next slot, tap a filled slot to empty it. Tap any card to edit its rule for this room only, or create a custom role. Room settings (timer, sound) live here too. Ready is enabled only when every slot is filled.
-3. **Narrator page** — one night at a time:
-   - Roles listed in wake order (drag to reorder), each with its holders underneath.
-   - Tap a player to mark dead, tap again to undo. Dead players stay visible but grayed out.
-   - A comment field per player per night, plus one general night note. Players sharing a role have separate fields.
-   - End night moves to the next night; a night switcher lets the narrator go back and correct an earlier one.
-   - Timer and sound controls as configured in setup; Finish game is always available.
+2. **Setup** — one selected-role list with quantity controls. Add roles opens the role library and custom-role entry in a bottom sheet. Tap a role name to edit its rule for this room. Settings (timer, sound, language) live in the header menu. Counts fill the underlying slots; Ready is enabled only when every slot is filled.
+3. **Narrator page** — one list for the whole game, alternating Night 1 → Morning 1 → Night 2 → …:
+   - Roles listed in wake order (drag to reorder), each with its holders underneath. Roles that never wake come last.
+   - Mark a player dead, or undo it, at night or in the morning. Dead players stay visible but grayed out.
+   - Each player shows a status control and, underneath, their history: earlier notes as text (`Night 1: …`, tap to edit) and deaths. At night, each player who was alive when the night started gets a note field right in the list. Mornings only record deaths.
+   - End night moves to the morning; End morning starts the next night. There is no going back to an earlier phase.
+   - Timer, sound, wake order, language, and Finish game live in the header menu.
 
 **Player**
 
@@ -70,18 +70,20 @@ Nine screens: three shared, three for the room master, three for players.
 
 The role pool is static data shipped with the app; everything else lives inside the room's Durable Object.
 
-| Entity            | Key fields                                                               | Notes                                                            |
-| ----------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| PoolRole (static) | id, name {vi, en}, rule {vi, en}, team, defaultWakeOrder, image          | Fixed; never edited at runtime                                   |
-| Room              | id, name, status, masterDeviceId, createdAt, lastActiveAt                | status: lobby, setup, reveal, playing, finished                  |
-| Player            | deviceId, name, joinedAt, kicked                                         | deviceId comes from the device token                             |
-| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                           | A copy of a pool role (edits stay in this room) or a custom role |
-| Slot              | index, roomRoleId?                                                       | One per player; filled in setup                                  |
-| Assignment        | deviceId, roomRoleId, flipped                                            | Created at Start game by shuffling slots                         |
-| Night             | number, deadDeviceIds\[\], playerComments {deviceId: text}, nightComment | One per night; editable later                                    |
-| Settings          | timerSeconds, soundOn, soundPack                                         | Set in setup, locked at Start game                               |
+| Entity            | Key fields                                                       | Notes                                                            |
+| ----------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| PoolRole (static) | id, name {vi, en}, rule {vi, en}, team, defaultWakeOrder, image  | Fixed; never edited at runtime                                   |
+| Room              | id, name, status, phase, masterDeviceId, createdAt, lastActiveAt | status: lobby, setup, reveal, playing, finished                  |
+| Player            | deviceId, name, joinedAt, kicked                                 | deviceId comes from the device token                             |
+| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                   | A copy of a pool role (edits stay in this room) or a custom role |
+| Slot              | index, roomRoleId?                                               | One per player; filled in setup                                  |
+| Assignment        | deviceId, roomRoleId, flipped                                    | Created at Start game by shuffling slots                         |
+| Phase             | kind (night, morning), number                                    | Current phase while playing: Night 1, Morning 1, Night 2, …      |
+| Night             | number, playerComments {deviceId: text}                          | One per night; notes editable later                              |
+| Death             | deviceId, phase                                                  | At most one per player; removed when undone                      |
+| Settings          | timerSeconds, soundOn, soundPack                                 | Set in setup, locked at Start game                               |
 
-A player is dead in night N if they were marked in any night before N; marking is undoable in any night.
+A player is dead from the phase they were marked in onward; marking can be undone at any time.
 
 ## Real-time and visibility
 
@@ -93,7 +95,7 @@ The server sends each phone only what it is allowed to see, so no one can find a
 | Role list + rules (after Ready)  | Yes         | Yes           |
 | Who holds which role             | Yes         | Own card only |
 | Who has flipped their card       | Yes         | No            |
-| Nights, deaths, comments         | Yes         | No            |
+| Phases, deaths, notes            | Yes         | No            |
 | Full reveal + log (after Finish) | Yes         | Yes           |
 
 **Reconnection.** Each device gets a random token in localStorage on first visit. Every WebSocket connects with it, and the room recognizes the same person after a refresh, tab switch or screen lock. The client reconnects automatically with backoff and re-syncs the full state for its view.
@@ -106,17 +108,19 @@ The server sends each phone only what it is allowed to see, so no one can find a
 
 ## Visual direction (Phase 0)
 
-**Approved 2026-10-27:** Village ink — medieval minimalism with a light ivory background, hand-colored ink engraving, manuscript-inspired headings, fine borders, and subtle depth.
+**Current choice: Woodcut**, selected 2026-10-28 (decision 0013). It's black ink on putty paper with Barlow Condensed wood-type titles, panels set apart by a tone step, lapis village and madder wolf names, real card art, and a Cranach woodcut on home. At night the wake line is the narrator's biggest text.
 
-The source of truth is [the design brief](design/direction.md), [tokens](design/tokens.md), and [approved reference](design/mockups/approved-village-ink.png).
+The source of truth is [the design direction](design/direction.md), the tokens in `apps/web/src/design/tokens.css`. The `/design` route shows every screen and state.
 
-- Cormorant Unicase headings; Be Vietnam Pro for body, controls, and notes, self-hosted with Vietnamese coverage.
-- Village faction blue; wolf faction red. Forest-green primary actions and restrained ochre detail.
-- Centered card character, vertical role name at the upper right, description centered at the bottom.
-- Compact narrator role groups, one comment field under each player, and a general night note.
-- Slim visual controls with at least 48px touch targets. No oversized bold type, heavy borders, or pill-shaped buttons.
+Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. The seer, villager and wolf, the card back and both factions have their own art; other roles show a hooded fallback figure until their artwork is supplied. On the narrator screen:
 
-Direction, tokens, fonts, and current home styling are in place. Phase 0 still needs shared components, individual mockups for all nine screens in both languages, standalone card art, and screen-by-screen phone verification. See decisions [0006](decisions/0006-village-ink-visual-direction.md) and [0007](decisions/0007-per-player-night-comments.md).
+- Players have one-tap status pills with Undo, their note history, and the current night's field inline.
+- At night a wake guide steps through the roles.
+- Ending a phase needs a press and hold.
+
+Players tap their card to flip it. Setup uses role quantities and an on-demand library. Finished-game roles and night records have separate tabs.
+
+Device identity, sockets, real rooms, state-machine actions, and privacy enforcement remain in their planned phases. See decisions [0007](decisions/0007-per-player-night-comments.md), [0008](decisions/0008-phase-zero-previews-and-placeholder-art.md), [0009](decisions/0009-tabletop-visual-direction.md), [0010](decisions/0010-single-list-night-and-morning.md), [0011](decisions/0011-compact-tabletop-layouts.md), [0012](decisions/0012-medieval-light-redesign.md), and [0013](decisions/0013-woodcut-redesign.md).
 
 ## Build phases
 
@@ -126,13 +130,13 @@ After Phase 0, six phases, each ending in something playable on real phones.
 2. **Rooms and lobby** — home room list, create/join with name, master lobby, kick, close/re-open, room expiry. _Done when:_ a full group can gather in a room.
 3. **Setup** — role pool data (vi + en), card slots, fill/empty, per-room rule edits, custom roles, settings. _Done when:_ the master can build a valid card set for any player count.
 4. **Reveal and deal** — rules review screen, Start game shuffle, card flip, flipped indicator for the master. _Done when:_ every player sees only their own card.
-5. **Narrator page** — nights, wake order, mark/unmark, gray-out, comments, night switcher, timer and sound. _Done when:_ a full game can be run start to finish.
+5. **Narrator page** — night and morning phases, wake order, mark/unmark, gray-out, per-night notes with tap-to-edit, timer and sound. _Done when:_ a full game can be run start to finish.
 6. **Finish and polish** — summary screen, Play again, phone UI polish, playtest with a real group. _Done when:_ the group plays two games back to back without help.
 
 ## Out of scope for v1
 
 - Third-party and role-changing roles (Vampire, Cupid's lovers, Thief, Wild Child)
-- Day-phase tracking (votes, lynch results)
+- Day-phase votes and lynch tracking (mornings only record who died)
 - Any public alive/dead board for players
 - Automatic ability resolution or win detection
 - Room PINs and narrator device recovery

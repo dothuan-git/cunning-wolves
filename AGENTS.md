@@ -67,15 +67,13 @@ React 19, Vite 8, Tailwind CSS 4, i18next · Cloudflare Workers + Durable Object
 
 - When a phase finishes, update `docs/progress.md`.
 - A change to game behavior updates `docs/game-rules.md` in the same commit.
-- A new big choice (library, data shape, rule change) gets `docs/decisions/NNNN-short-title.md`: context, choice, why.
-- Mockups in `docs/design/mockups/` are the source of truth for UI. If code and mockup differ, ask before changing either.
+- A new dependency or architecture change gets `docs/decisions/NNNN-short-title.md`: context, choice, why. Visual tweaks do not.
 
 ### Git
 
 - Never commit to `main` directly. One branch per task: `feat/…`, `fix/…`, `chore/…`, `docs/…`.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`), one logical change per commit.
 - Never `git push`, deploy, or run `wrangler deploy` / `wrangler versions upload` without asking first.
-- Start each task with a plan and get it approved before writing code.
 
 ## Deploy
 

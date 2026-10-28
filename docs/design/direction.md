@@ -1,55 +1,67 @@
-# Visual direction
+# Visual direction: Woodcut
 
-**Approved by Thuan on 2026-10-27:** Village ink, revised with a lighter background, colored engraving, manuscript-style headings, compact narrator groups, and per-player comments.
+Chosen by Thuan on 2026-10-28 with taste-skill. See [decision 0013](../decisions/0013-woodcut-redesign.md). Tokens live in `apps/web/src/design/tokens.css`; use them by name, never raw colors.
 
-The approved reference is [Village ink — manuscript type](mockups/approved-village-ink.png). Earlier options in `concepts/` are exploration history. The reference establishes art, hierarchy, card composition, and narrator structure; production sizes and fonts are specified below and in [tokens.md](tokens.md).
+The idea: a 16th-century werewolf broadside printed from wood. Black ink on putty paper, condensed wood-type titles, real art set large, and color only where the game has it.
 
-## Character
+## Palette
 
-A quiet medieval village, rendered through fine ink engraving and restrained hand-applied color. Character artwork carries the detail; the surrounding interface stays simple, mature, readable, and lightly tactile.
+| Token                        | Value                 | Use                                                       |
+| ---------------------------- | --------------------- | --------------------------------------------------------- |
+| `paper`                      | `#dedad3`             | Page ground                                               |
+| `surface`                    | `#e9e7e3`             | Panels: one tone step above the page, no border or shadow |
+| `field`                      | `#f5f4f2`             | Inputs, secondary buttons, sheets, text on ink            |
+| `ink` / `muted`              | `#0a0a0a` / `#5c5852` | Text; `ink` is also the primary button fill               |
+| `line`                       | `#cfcac1`             | Row rules inside a panel, the tab rail, the Dead pill     |
+| `field-border`               | `#8f897f`             | Input and secondary button outlines                       |
+| `village` / `village-wash`   | `#2a4170` / `#dfe3ec` | Village roles (lapis from the card back), focus ring      |
+| `werewolf` / `werewolf-wash` | `#8a1f24` / `#efdcda` | Wolf roles (madder from the wolf seal)                    |
+| `danger`                     | `#a3321f`             | Destructive actions only                                  |
 
-| Area       | Direction                                                                                                                                                                  |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Background | Luminous near-white ivory with almost-white cards. No heavy parchment aging or brown wash.                                                                                 |
-| Palette    | Charcoal copy, muted secondary text, forest-green actions. Slate blue for the village faction, wine red for wolves. Ochre, burgundy, blue, and sage in artwork.            |
-| Typography | Cormorant Unicase Medium for titles and role headings; Be Vietnam Pro Regular/Medium for body copy, controls, names, and notes. Both self-hosted with Vietnamese coverage. |
-| Hierarchy  | Screen headings 28px, home title 32px, role headings 18px, body/editable text 16px, control labels 14px, captions 13px. No heavy headings or all-caps UI labels.           |
-| Surfaces   | Fine borders, 6px control corners, 12px card corners, subtle elevation and inset fields. No chunky outlines or pill-shaped controls.                                       |
-| Layout     | Phone-first, 24px gutters, clear grouping and quiet whitespace. At least 48px touch targets without oversized text/icons.                                                  |
-| Motion     | Brief feedback for direct actions, restrained card flip and alive/dead transition. Respect reduced motion; no ambient animation.                                           |
-| Sound      | Optional sound controls remain planned; the sound pack is still an open item.                                                                                              |
+Faction color is the only hue. Status, phases and actions are ink and paper. Alive is neutral, and a death is marked with ✝, a struck-through name and the `line` pill. Meaning never relies on color alone.
 
-Generated lettering is an aesthetic reference rather than a font file. Cormorant Unicase is the concrete display-family choice; see [decision 0006](../decisions/0006-village-ink-visual-direction.md). Keep display lettering out of editable fields and long instructions.
+## Type
 
-## Role cards
+Barlow Condensed 600 (`font-display`) and Barlow 400/500 (`font-sans`), self-hosted with Vietnamese subsets (`src/design/fonts.css`). No uppercase and no letter-spaced labels.
 
-- A single medieval character centered in the card, with fine engraved lines and visible muted pigment colors.
-- Role name in a reserved rail at the upper right, rotated 90 degrees clockwise. Rotate the whole phrase, not individual letters. Keep real text and normal reading order for assistive technology.
-- Description horizontally typeset and centered at the bottom, separate from the character/title. Long names and rules must wrap or allow the card to grow; never crop or shrink below readable sizes.
-- No role name or description baked into artwork: Vietnamese and English share the art.
-- Village titles blue, wolf titles red. Written identity remains available independently of color.
-- Players only receive their own assignment during play. Styling does not change visibility rules.
+| Token          | Size / line height  | Use                                      |
+| -------------- | ------------------- | ---------------------------------------- |
+| `text-brand`   | 19vw (64–104) / .92 | The name on home only                    |
+| `text-title`   | 32 / 1.08           | The wake line, the role name on the card |
+| `text-heading` | 26 / 1.1            | Screen titles, room names                |
+| `text-role`    | 20 / 1.15           | Role names, section headings, tabs       |
+| `text-body`    | 16 / 1.5            | Body, notes, all input text              |
+| `text-control` | 16 / 1.3            | Buttons and labels (500)                 |
+| `text-caption` | 13 / 1.45           | Metadata                                 |
 
-### Shared card-art prompt
+Editable text stays at 16px so phones do not zoom in on focus.
 
-> One adult medieval village character for the specified Werewolf role, centered with natural proportions. Fine hand-engraved ink linework with delicate hatching, colored by restrained washes of slate blue, burgundy, ochre gold, sage, and natural skin tones. Light ivory paper, very faint grain, subtle village or woodland context fading into empty paper. Clear space at the upper right for a vertical role title and at the bottom for a centered description. No lettering, baked-in frame, UI, cartoon proportions, photorealism, or heavy distressed parchment. Match the approved Village ink reference.
+## Layout
 
-Generate one standalone test asset before producing the role pool. The approved board establishes style; its character is not yet a production asset or a finalized role rule.
+- **Panels on paper.** A block sits on a `.panel`: the `surface` tone, 2px corners, no border and no shadow. Only one level, never panels inside panels. Lists are one panel with `line` rules between rows.
+- **Header:** the screen title and the menu, nothing else. Home replaces it with the name, the woodcut and the intro.
+- **Footer:** the main action stays at the bottom in an opaque sticky footer.
+- **Spacing:** 20px phone gutters, and touch targets of at least 48×48px.
 
-## Narrator page
+## Components
 
-- Roles in wake order with small, lightly weighted headings/icons. Fine rules between groups instead of a card around every group.
-- Each player has a name/status row and their own comment field directly underneath. Two players sharing a role have separate fields. No role-level comment box.
-- Comments belong to the selected night and player. Retain the general night note. See [decision 0007](../decisions/0007-per-player-night-comments.md).
-- All village roles, including seer and witch, use blue headings/icons. Wolves use red. Small text legend for both factions; derive color from team data, not role name.
-- Neutral charcoal player names and editable text. Text labels for status; dead players remain visible with muted styling and a tombstone mark.
-- Status actions and comment inputs are separate targets. Focusing, typing, or selecting a comment must never toggle death marks.
-- Keep the night switcher and finish-game action available. Anchor the end-night action near the bottom without covering focused fields or the on-screen keyboard.
-- Notes stay private to the master during play and follow the existing full-log reveal at game finish.
+- **Buttons:** primary is a flat ink fill with a `field` label; secondary is `field` with a `field-border` outline; quiet is text only. All are square (2px).
+- **`RoleBanner`:** the role's art as a 40px head-and-shoulders thumbnail (`.art-bust`) and its name in the faction color.
+- **`FactionLabel` / `FactionEmblem`:** the faction's own emblem (the cottage for the village, the wolf's head for the wolves) beside its name in the rules review. The summary's Roles tab lists each faction under its emblem, wolves first.
+- **`PlayerStatusControl`:** a one-tap pill. "● Alive" is outlined; "✝ Dead" is filled with `line`. The narrator shows an `UndoBar` after each tap.
+- **Wake guide:** the line the narrator reads aloud, at `text-title`, with the waking role's art inside the sentence. Under it is the wake order (the current role underlined, past roles struck through) and Back / Next. The waking role's panel takes its faction wash and a 2px ink outline.
+- **`HoldButton`:** fires after an 800 ms press and hold, for End night and End morning.
+- **Scrolling part of a screen:** always through `ScrollArea`: a thin scrollbar in the border color, and the content fading out over 2rem at an edge only while more lies past it (the fade eases in and out, and switches with reduced motion). A whole page that scrolls is the browser's own; this is for a section inside a one-screen page, such as the village players.
+- **Role cards, two kinds, shared everywhere:** the **thumbnail card** (`ThumbnailCard`) is a role card without its rule: the art, a small vertical name in the faction color, and optionally a `×N` count. It is a button that fills any 2:3 box and scales its name, padding and corners to the box's width (container query units), so one layout serves a row of three and a wide carousel card. The **detailed card** (`DetailedCard`) is the popup it opens: the full card with the rule, 4:7, at most 84% of the screen high, closed by a tap on the background or Escape. Both are drawn by `RoleFace` (`variant`); use these components on any page that shows role cards instead of making new card markup.
+- **The village (waiting page):** one screen high. The room panel (the room name at `text-title`, a status chip with a green blinking dot and "You're in the room", and the waiting line) comes first. Then a looping row of thumbnail cards, one for every pool role (swiped by touch, dragged by mouse), as tall as the space allows. Then the players at the bottom as 5-per-row rounded tiles with their first letter; your own tile glows green (`shadow-glow`). The players section is always the same height: two rows of tiles and a little of the third, so the cards never change size as players join; with more players only the tiles scroll (`ScrollArea`). Tapping a tile shows the full name beside the count, in the same size as the hint so the row never changes height. Pressing a tile, card or the Leave button sinks it a little; the picked name slides in; an enlarged card scales and fades in and out. Tapping a card opens the detailed card in the middle of the phone; tapping the dimmed background or pressing Escape closes it, with no visible Close button. See decision 0015.
+- **Tonight's roles (rules review):** one block per faction, wolves first like the summary, each on its own faction wash with the emblem, the faction name and its player count. Inside, thumbnail cards with a small black `×N` chip for how many are in the game, three to a row. The page scrolls; the footer holds the Done button. Tapping a card enlarges just that card (a `DetailedCard`, with its count); tapping the background or pressing Escape closes it.
+- **My card:** one screen high, never scrolls. A round card with a 1px `field-border` outline and a small soft shadow (`shadow-card`) fills the space between the header and the hint and shows the card-back art; tapping it flips it (250 ms) to the role, and tapping again hides it. The face is plain ivory-white (`ivory`, `#f8f5ec`). It has the role name vertical top right in its faction color, the role's art, and the rule centered. It has no faction emblem. See decision 0014.
 
-## Handoff status
+## Art
 
-- Approved: direction, card composition, narrator structure, per-player comments, faction colors.
-- Applied to current scaffold: palette/type/shape tokens, self-hosted fonts, lighter home hierarchy, restrained language controls, focus styling.
-- Still to do in Phase 0: shared button/field/card/player-chip components, individual mockups for all nine screens at 390×844 in both languages, standalone card art, phone comparison of implemented screens.
-- The approved board combines two screens. Neither gameplay screen is implemented yet; not every interaction/state is specified.
+- **Role art:** `src/assets/cards/<role-id>.webp` (see its README).
+- **Card back and the woodcut:** `src/assets/art/` (see its README for credits). Found pictures are credited in the menu sheet.
+
+## Preview
+
+`/design` shows every screen and state. On wide screens it renders inside a 390×844 phone frame.

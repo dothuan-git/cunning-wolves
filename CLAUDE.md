@@ -8,12 +8,12 @@
 
 # Claude Code
 
-- Start every task in plan mode; write code only after the plan is approved.
-- Use the frontend-design skill for all UI work (screens, components, styling).
-- After any UI change, run the `ui-checker` subagent: it screenshots each changed screen at 390px and compares it with `docs/design/mockups/`. Fix the differences, or ask if the mockup looks wrong.
-- After code changes, run the `test-runner` subagent. It may fix failures but never weakens a test.
-- Before every commit, run the `reviewer` subagent and resolve its blockers.
+- Plan mode only for new features or changes across several files. Small fixes and tweaks: just do them.
+- Always use the `design-taste-frontend` skill (taste-skill, installed in Thuan's user skills) for any frontend, UI or UX task: new screens, redesigns, small tweaks and reviews. For a small tweak, take its single-component path: match `docs/design/direction.md`, apply its house rules, and run its inspector (`inspect.mjs --app`). Run its scripts with `pnpm exec node`, because they need Node 22+. Don't use frontend-design.
+- After a visual change, look at one 390px screenshot of the changed screen (the inspector's `mobile-fold.jpg` counts). No subagent.
+- Before a commit, run `pnpm check` (about 35s). Fix failures; never weaken a test. Run `pnpm test:e2e` only when a UI flow or route changed; CI runs it otherwise.
+- Before a PR that touches `apps/worker` or `packages/shared`, run the `reviewer` subagent and resolve its blockers.
 - Add pool roles only through the `add-role` skill.
-- Hooks format and lint every file you edit and type-check when you finish a turn. Fix what they report; never work around them.
-- For library or API questions (React, Vite, Tailwind, i18next, Workers, Durable Objects), check current docs before relying on memory; these move fast.
+- Hooks run Prettier on every file you edit and type-check when you finish a turn. Fix what they report; never work around them.
+- Check current docs for a library only when unsure or when something breaks.
 - Personal notes (local URLs, test room names) belong in `CLAUDE.local.md`, which is gitignored.

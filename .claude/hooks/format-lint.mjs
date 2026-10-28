@@ -1,10 +1,8 @@
-// PostToolUse (Edit|Write): run Prettier, then ESLint --fix, on the file Claude just edited.
-// Exit 2 sends anything left unfixed back to Claude so it is corrected right away.
+// PostToolUse (Edit|Write): run Prettier on the file Claude just edited.
+// ESLint is not run per edit (too slow); `pnpm check` and CI run it.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-
-const LINTABLE = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs']);
 
 const projectDir = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const input = JSON.parse(readFileSync(0, 'utf8'));
@@ -34,11 +32,6 @@ const problems = [];
 
 const prettier = run('prettier', ['--write', '--ignore-unknown', '--log-level', 'warn', absolute]);
 if (prettier.status !== 0) problems.push(`Prettier failed:\n${prettier.stderr || prettier.stdout}`);
-
-if (LINTABLE.has(path.extname(absolute))) {
-  const eslint = run('eslint', ['--fix', '--no-warn-ignored', absolute]);
-  if (eslint.status !== 0) problems.push(`ESLint:\n${eslint.stdout || eslint.stderr}`);
-}
 
 if (problems.length > 0) {
   console.error(`${relative}\n${problems.join('\n').trim()}`);

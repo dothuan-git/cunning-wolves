@@ -48,13 +48,13 @@ AGENTS.md holds the shared rules any AI coding tool can read; CLAUDE.md imports 
 
 Claude Code reads AGENTS.md on its own only when no CLAUDE.md exists, so the import line is what makes both load together. [source](https://code.claude.com/docs/en/memory)
 
-| File                        | Holds                                           | Example lines                                                                                                                                                        |
-| --------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md`                 | Project facts and rules for any AI tool         | Commands (`pnpm dev`, `pnpm test`), stack, folder purposes, "never send another player's role to a player client", "every UI string goes through i18n, vi and en"    |
-| `CLAUDE.md`                 | `@AGENTS.md` on line 1, then Claude-only rules  | "Use the frontend-design skill for all UI work", "after any UI change, screenshot at 390px and compare to the mockup", "use the reviewer subagent before committing" |
-| `.claude/rules/frontend.md` | Rules loaded only when editing `apps/web/**`    | Use design tokens only, touch targets at least 48px, components from `components/` before new ones                                                                   |
-| `.claude/rules/worker.md`   | Rules loaded only when editing `apps/worker/**` | All state changes go through the room state machine, filter state per viewer before sending                                                                          |
-| `CLAUDE.local.md`           | Your personal notes, not committed              | Local URLs, test room names                                                                                                                                          |
+| File                        | Holds                                           | Example lines                                                                                                                                                     |
+| --------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                 | Project facts and rules for any AI tool         | Commands (`pnpm dev`, `pnpm test`), stack, folder purposes, "never send another player's role to a player client", "every UI string goes through i18n, vi and en" |
+| `CLAUDE.md`                 | `@AGENTS.md` on line 1, then Claude-only rules  | "Always use taste-skill for frontend, UI and UX work", "screenshot a changed screen at 390px", "run the reviewer subagent before a PR that touches the worker"    |
+| `.claude/rules/frontend.md` | Rules loaded only when editing `apps/web/**`    | Use design tokens only, touch targets at least 48px, components from `components/` before new ones                                                                |
+| `.claude/rules/worker.md`   | Rules loaded only when editing `apps/worker/**` | All state changes go through the room state machine, filter state per viewer before sending                                                                       |
+| `CLAUDE.local.md`           | Your personal notes, not committed              | Local URLs, test room names                                                                                                                                       |
 
 Keep each file under 200 lines and write rules you can check ("use 2-space indentation", not "format nicely"); longer files reduce how well Claude follows them. [source](https://code.claude.com/docs/en/memory)
 
@@ -62,16 +62,16 @@ Run `/init` first to generate a starting file, then edit it toward the table abo
 
 ## Claude Code setup
 
-One official plugin, one browser server, three subagents, one project skill and two hooks give Claude taste, eyes, a reviewer and automatic checks.
+One design skill, one browser server, one subagent, one project skill and two hooks give Claude taste, eyes, a reviewer and automatic checks.
 
-**Plugin: frontend-design** (Anthropic's official design skill; Claude uses it automatically for UI work)
+**Skill: taste-skill** (`design-taste-frontend`, a third-party design skill with a real-browser inspector; `CLAUDE.md` makes it the rule for every frontend, UI and UX task). Install it in your user skills, pinned to a version you have read, so it never updates without review:
 
 ```
-/plugin install frontend-design@claude-plugins-official
-/reload-plugins
+git clone --depth 1 https://github.com/Leonxlnx/taste-skill
+cp -r taste-skill/skills/taste-skill ~/.claude/skills/design-taste-frontend
 ```
 
-If the marketplace isn't listed yet, first run `/plugin marketplace add anthropics/claude-plugins-official`. [source](https://dev.to/nishilbhave/how-to-use-claude-codes-frontend-design-plugin-511i)
+Its scripts need Node 22+ and Chrome or Edge; run them with `pnpm exec node`. The frontend-design plugin is turned off in `.claude/settings.json` so the two design skills don't give conflicting directions. [source](https://github.com/Leonxlnx/taste-skill)
 
 **Browser: Playwright MCP** (lets Claude open the app, screenshot it at phone width and check its own work). Project scope writes `.mcp.json`, so it's saved in the repo:
 
@@ -83,17 +83,15 @@ claude mcp add --scope project playwright -- npx -y @playwright/mcp@latest
 
 **Subagents** in `.claude/agents/`, each with its own context, so long checks don't clutter the main session. [source](https://code.claude.com/docs/en/sub-agents)
 
-| Subagent      | Job                                                                                            | Tools                  |
-| ------------- | ---------------------------------------------------------------------------------------------- | ---------------------- |
-| `reviewer`    | Before each commit: checks game-rule bugs, role leaks to player clients, missing vi/en strings | Read, Grep, Glob, Bash |
-| `ui-checker`  | Opens the app at 390px, compares each screen with `docs/design/mockups/`, lists differences    | Read, Playwright       |
-| `test-runner` | Runs tests after changes, fixes failures without weakening the test                            | Read, Edit, Bash       |
+| Subagent   | Job                                                                                                | Tools                  |
+| ---------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
+| `reviewer` | Before a PR touching worker or shared code: checks role leaks to player clients and game-rule bugs | Read, Grep, Glob, Bash |
 
 **Project skill** in `.claude/skills/add-role/`: the step-by-step for adding a role (pool data, vi and en text, card art slot, wake order, tests), so every role is added the same way.
 
 **Hooks** in `.claude/settings.json` (these always run, unlike instructions Claude may forget):
 
-- After every file edit: format and lint that file, so Claude sees and fixes errors right away.
+- After every file edit: run Prettier on that file. ESLint runs in `pnpm check` and CI.
 - When Claude finishes a turn: run the TypeScript type check.
 
 **Permissions** in `.claude/settings.json`: allow `pnpm` test, lint and dev commands without asking; always ask before `wrangler deploy` and `git push`.
@@ -111,8 +109,7 @@ docs/
 │   └── 0002-no-accounts-device-token.md
 ├── design/
 │   ├── direction.md      # vibe, colors, fonts, sounds, animation
-│   ├── tokens.md         # design tokens and how to use them
-│   └── mockups/          # approved screen images, one per screen
+│   └── tokens.md         # design tokens and how to use them
 ├── roles/                # one file per pool role: vi + en name and rule
 └── progress.md           # what's done, what's next, known issues
 ```
@@ -122,7 +119,6 @@ docs/
 - When a phase finishes, update `progress.md`.
 - A change to game behavior updates `game-rules.md` in the same commit.
 - A new big choice (library, data shape, rule change) gets a decision file: context, choice, why.
-- Mockups are the source of truth for UI; if code and mockup differ, ask before changing either.
 
 ## Tooling and quality
 
@@ -132,7 +128,7 @@ Automatic checks catch mistakes before you do, which matters most when an AI wri
 | ---------------- | ----------------------- | --------------------------------------------------------------------------- |
 | Packages         | pnpm workspaces         | One install for all three packages                                          |
 | Language         | TypeScript, strict mode | No `any`; shared types in `packages/shared`                                 |
-| Lint             | ESLint                  | Runs on every edit (hook) and in CI                                         |
+| Lint             | ESLint                  | Runs in `pnpm check` and CI                                                 |
 | Format           | Prettier                | Runs on every edit (hook)                                                   |
 | Unit tests       | Vitest                  | Game logic and visibility filtering always tested                           |
 | End-to-end tests | Playwright              | One full game on phone-size screens: create, join, deal, two nights, finish |
@@ -158,9 +154,9 @@ Twelve steps, in order; give this doc to Claude Code and ask it to do them one a
 - [ ] Scaffold `apps/web` (Vite + React + TypeScript), `apps/worker` (Worker + Durable Objects) and `packages/shared`
 - [ ] Add TypeScript strict mode, ESLint, Prettier, Vitest and Playwright
 - [ ] Run `/init`, then rewrite `AGENTS.md` and `CLAUDE.md` as in the section above, plus the two `.claude/rules/` files
-- [ ] Install the frontend-design plugin
+- [ ] Install taste-skill in your user skills
 - [ ] Add Playwright MCP at project scope
-- [ ] Create the `reviewer`, `ui-checker` and `test-runner` subagents with `/agents`
+- [ ] Create the `reviewer` subagent with `/agents`
 - [ ] Create the `add-role` skill
 - [ ] Add hooks and permissions to `.claude/settings.json`
 - [ ] Create the `docs/` skeleton and copy in the project plan and visual direction

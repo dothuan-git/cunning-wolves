@@ -2,6 +2,19 @@
 @import './design/tokens.css';
 @import './design/fonts.css';
 
+/* Registered so the scroll fades can ease in and out instead of switching. */
+@property --fade-above {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0rem;
+}
+
+@property --fade-below {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0rem;
+}
+
 @layer base {
   html {
     color-scheme: light;
@@ -16,6 +29,302 @@
   }
 
   ::selection {
-    @apply bg-village text-surface;
+    @apply bg-village text-field;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-area {
+    transition:
+      --fade-above 200ms ease-out,
+      --fade-below 200ms ease-out;
+  }
+
+  /* A slow status blink; it signals the connection is live and stops with reduced motion. */
+  .live-dot {
+    animation: blink 1.6s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  /* Press feedback: the control sinks a little under the finger. */
+  .press {
+    transition-property:
+      transform, color, background-color, border-color, box-shadow, outline-color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  .press:active {
+    transform: scale(0.95);
+  }
+
+  .press-card:active {
+    transform: scale(0.97);
+  }
+
+  /* The picked player's name slides in. */
+  .name-pop {
+    animation: name-pop 180ms ease-out;
+  }
+
+  @keyframes name-pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .detailed-dialog[open] .detailed-card {
+    animation: zoom-in 220ms ease-out;
+  }
+
+  .detailed-dialog::backdrop {
+    animation: fade-in 200ms ease-out;
+  }
+
+  /* Closing runs the opening backwards, a little faster, before the dialog is removed. */
+  .detailed-dialog[data-closing='true'] .detailed-card {
+    animation: zoom-out 160ms ease-in forwards;
+  }
+
+  .detailed-dialog[data-closing='true']::backdrop {
+    animation: fade-out 160ms ease-in forwards;
+  }
+
+  @keyframes zoom-out {
+    to {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes zoom-in {
+    from {
+      opacity: 0;
+      transform: scale(0.88);
+    }
+  }
+
+  .role-card {
+    transition: transform 250ms ease-in-out;
+  }
+
+  .undo-bar {
+    animation: undo-in 180ms ease-out;
+  }
+
+  @keyframes undo-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* The fill tracks the user's own press, so it lasts as long as the hold (see decision 0012). */
+  .hold-button[data-holding='true'] .hold-fill {
+    scale: 1 1;
+    transition: scale var(--hold-duration) linear;
+  }
+}
+
+@layer components {
+  /* One level of panel on the paper, set apart by a tone step alone (decision 0013). */
+  .panel {
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  /* Role art set into the wake line as if it were a word, standing on the baseline. */
+  .wake-art {
+    height: 0.9em;
+    width: 0.9em;
+  }
+
+  /* Full-length role art cropped to the head and shoulders (the top third, centred) in a small frame. */
+  .art-bust {
+    object-fit: cover;
+    object-position: top;
+    transform: scale(1.8);
+    transform-origin: 50% 0;
+  }
+
+  /* The stage is the space left on screen; the card stretches to fill all of it. */
+  .card-stage {
+    container-type: size;
+  }
+
+  .flip-card {
+    position: relative;
+    width: 100cqw;
+    height: 100cqh;
+    perspective: 1200px;
+  }
+
+  .role-card {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .role-card[data-revealed='true'] {
+    transform: rotateY(180deg);
+  }
+
+  .flip-face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-playing);
+    backface-visibility: hidden;
+  }
+
+  .flip-front {
+    transform: rotateY(180deg);
+  }
+
+  /* Role previews in a sideways row: each card snaps to the middle, and the next one peeks in.
+     The cards are as tall as the row allows (up to 24rem), always 2:3. */
+  /* The one scroll design (ScrollArea): a thin scrollbar, and a fade at each edge only while more
+     content lies past it. */
+  .scroll-area {
+    --fade-above: 0rem;
+    --fade-below: 0rem;
+    scrollbar-color: var(--color-field-border) transparent;
+    scrollbar-width: thin;
+    /* The edge stays faintly visible, so a peeking row still shows there is more. */
+    --fade-edge: color-mix(in srgb, var(--color-ink) 30%, transparent);
+    mask-image: linear-gradient(
+      to bottom,
+      var(--fade-edge),
+      var(--color-ink) var(--fade-above),
+      var(--color-ink) calc(100% - var(--fade-below)),
+      var(--fade-edge)
+    );
+  }
+
+  .scroll-area[data-more-above='true'] {
+    --fade-above: 1rem;
+  }
+
+  .scroll-area[data-more-below='true'] {
+    --fade-below: 1rem;
+  }
+
+  /* The village players: always the same height, two rows of tiles and a little of the third,
+     so the cards above never change size as players join. Tiles are a fifth of the width less the
+     gaps (cqw is the section's width); the 0.75rem is the room left for your tile's glow. */
+  .players {
+    container-type: inline-size;
+  }
+
+  .players-scroll {
+    height: calc(0.75rem + 2.2 * (100cqw - 2rem) / 5 + 2 * 0.5rem);
+  }
+
+  .deck {
+    container-type: size;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  /* With a mouse the row is dragged by hand, so it shows a hand. */
+  @media (hover: hover) and (pointer: fine) {
+    .deck {
+      cursor: grab;
+    }
+  }
+
+  .deck[data-dragging='true'] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .deck-card {
+    flex: none;
+    height: min(100cqh, 24rem);
+    width: calc(min(100cqh, 24rem) * 2 / 3);
+    scroll-snap-align: center;
+  }
+
+  /* The detailed card: a little taller than a thumbnail (4:7 against 2:3), never above 84% of the
+     screen. */
+  .detailed-card {
+    width: min(88vw, 24rem, calc(84dvh * 4 / 7));
+    aspect-ratio: 4 / 7;
+  }
+
+  /* A thumbnail card scales with its own width: the name, padding and corners are set from the
+     width of this box (cqw), so one layout serves a row of three and a wide carousel card. */
+  .thumbnail-card {
+    --pad: clamp(0.5rem, 6cqw, 0.75rem);
+    container-type: inline-size;
+  }
+
+  .thumbnail-card > button {
+    border-radius: clamp(var(--radius-tile), 11cqw, var(--radius-playing));
+  }
+
+  .thumbnail-face {
+    padding: var(--pad);
+  }
+
+  .thumbnail-name {
+    /* Physical sides: the name's own writing mode is vertical, which turns logical ones. */
+    top: var(--pad);
+    right: var(--pad);
+    font-size: clamp(var(--text-caption), 9cqw, var(--text-role));
+    line-height: 1.15;
+  }
+
+  .thumbnail-chip {
+    top: var(--pad);
+    left: var(--pad);
+  }
+
+  /* Room around the figure, so it sits in the card instead of filling it. */
+  .thumbnail-art {
+    padding: 10cqw 4cqw;
+  }
+
+  /* The role name runs down the card's top right edge. */
+  .role-title {
+    writing-mode: vertical-rl;
+    max-height: calc(100% - 2.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  .hold-button {
+    -webkit-touch-callout: none;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .hold-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    scale: 0 1;
+  }
+
+  .screen-footer {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
