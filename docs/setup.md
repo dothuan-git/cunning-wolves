@@ -51,7 +51,7 @@ Claude Code reads AGENTS.md on its own only when no CLAUDE.md exists, so the imp
 | File                        | Holds                                           | Example lines                                                                                                                                                     |
 | --------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md`                 | Project facts and rules for any AI tool         | Commands (`pnpm dev`, `pnpm test`), stack, folder purposes, "never send another player's role to a player client", "every UI string goes through i18n, vi and en" |
-| `CLAUDE.md`                 | `@AGENTS.md` on line 1, then Claude-only rules  | "Use the frontend-design skill for new screens", "screenshot a changed screen at 390px", "run the reviewer subagent before a PR that touches the worker"          |
+| `CLAUDE.md`                 | `@AGENTS.md` on line 1, then Claude-only rules  | "Always use taste-skill for frontend, UI and UX work", "screenshot a changed screen at 390px", "run the reviewer subagent before a PR that touches the worker"    |
 | `.claude/rules/frontend.md` | Rules loaded only when editing `apps/web/**`    | Use design tokens only, touch targets at least 48px, components from `components/` before new ones                                                                |
 | `.claude/rules/worker.md`   | Rules loaded only when editing `apps/worker/**` | All state changes go through the room state machine, filter state per viewer before sending                                                                       |
 | `CLAUDE.local.md`           | Your personal notes, not committed              | Local URLs, test room names                                                                                                                                       |
@@ -62,16 +62,16 @@ Run `/init` first to generate a starting file, then edit it toward the table abo
 
 ## Claude Code setup
 
-One official plugin, one browser server, one subagent, one project skill and two hooks give Claude taste, eyes, a reviewer and automatic checks.
+One design skill, one browser server, one subagent, one project skill and two hooks give Claude taste, eyes, a reviewer and automatic checks.
 
-**Plugin: frontend-design** (Anthropic's official design skill; Claude uses it automatically for UI work)
+**Skill: taste-skill** (`design-taste-frontend`, a third-party design skill with a real-browser inspector; `CLAUDE.md` makes it the rule for every frontend, UI and UX task). Install it in your user skills, pinned to a version you have read, so it never updates without review:
 
 ```
-/plugin install frontend-design@claude-plugins-official
-/reload-plugins
+git clone --depth 1 https://github.com/Leonxlnx/taste-skill
+cp -r taste-skill/skills/taste-skill ~/.claude/skills/design-taste-frontend
 ```
 
-If the marketplace isn't listed yet, first run `/plugin marketplace add anthropics/claude-plugins-official`. [source](https://dev.to/nishilbhave/how-to-use-claude-codes-frontend-design-plugin-511i)
+Its scripts need Node 22+ and Chrome or Edge; run them with `pnpm exec node`. The frontend-design plugin is turned off in `.claude/settings.json` so the two design skills don't give conflicting directions. [source](https://github.com/Leonxlnx/taste-skill)
 
 **Browser: Playwright MCP** (lets Claude open the app, screenshot it at phone width and check its own work). Project scope writes `.mcp.json`, so it's saved in the repo:
 
@@ -154,7 +154,7 @@ Twelve steps, in order; give this doc to Claude Code and ask it to do them one a
 - [ ] Scaffold `apps/web` (Vite + React + TypeScript), `apps/worker` (Worker + Durable Objects) and `packages/shared`
 - [ ] Add TypeScript strict mode, ESLint, Prettier, Vitest and Playwright
 - [ ] Run `/init`, then rewrite `AGENTS.md` and `CLAUDE.md` as in the section above, plus the two `.claude/rules/` files
-- [ ] Install the frontend-design plugin
+- [ ] Install taste-skill in your user skills
 - [ ] Add Playwright MCP at project scope
 - [ ] Create the `reviewer` subagent with `/agents`
 - [ ] Create the `add-role` skill
