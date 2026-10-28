@@ -243,5 +243,18 @@
   "credits": {
     "title": "Nguồn hình ảnh",
     "woodcut": "Tranh khắc gỗ ngôi làng: “Người sói”, Lucas Cranach Cha, khoảng năm 1512. Bảo tàng Nghệ thuật Metropolitan, CC0."
+  },
+  "testRoom": {
+    "title": "Kiểm tra kết nối",
+    "connecting": "Đang kết nối…",
+    "connected": "Đã kết nối",
+    "reconnecting": "Đang kết nối lại…",
+    "replaced": "Đang mở ở thẻ khác",
+    "hint": "Mở trang này trên một điện thoại thứ hai, rồi tải lại một trong hai máy. Máy đó sẽ quay lại đúng là điện thoại cũ.",
+    "replacedHint": "Điện thoại này đã vào phòng từ một thẻ khác. Tải lại trang này để dùng thẻ này.",
+    "phones": "Điện thoại trong phòng: {{count}}",
+    "thisPhone": "Điện thoại này",
+    "badRoom": "Tên phòng thử không hợp lệ",
+    "badRoomHint": "Dùng chữ thường, số và dấu gạch ngang, ví dụ /test/mill."
   }
 }

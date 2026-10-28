@@ -243,5 +243,18 @@
   "credits": {
     "title": "Picture credits",
     "woodcut": "Village woodcut: “The Werewolf”, Lucas Cranach the Elder, about 1512. The Metropolitan Museum of Art, CC0."
+  },
+  "testRoom": {
+    "title": "Connection test",
+    "connecting": "Connecting…",
+    "connected": "Connected",
+    "reconnecting": "Reconnecting…",
+    "replaced": "Open in another tab",
+    "hint": "Open this page on a second phone, then refresh either one. It comes back as the same phone.",
+    "replacedHint": "This phone joined the room from another tab. Refresh here to use this tab instead.",
+    "phones": "Phones in the room: {{count}}",
+    "thisPhone": "This phone",
+    "badRoom": "Not a test room name",
+    "badRoomHint": "Use lowercase letters, numbers and dashes, like /test/mill."
   }
 }
