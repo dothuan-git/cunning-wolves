@@ -72,6 +72,8 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'review':
     case 'backToSetup':
     case 'startGame':
+    case 'finishGame':
+    case 'playAgain':
       return { type };
     case 'kick':
     case 'toggleDeath': {

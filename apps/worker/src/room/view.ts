@@ -6,6 +6,7 @@ import {
   type MasterView,
   type PlayerInfo,
   type PlayerView,
+  type Reveal,
   type RoomInfo,
   type RoomRole,
   type RoomSetup,
@@ -103,6 +104,18 @@ function cardInfo(state: RoomState, viewer: string): RoomRole | null {
   return roleInfo(role);
 }
 
+/** Every player's role and the marks, once the game is finished. */
+function revealInfo(state: RoomState): Reveal | null {
+  if (state.status !== 'finished' || !state.game) return null;
+  return {
+    assignments: Object.entries(state.assignments).map(([playerId, roleId]) => ({
+      playerId,
+      roleId,
+    })),
+    game: gameStateInfo(state.game),
+  };
+}
+
 export function buildPlayerView(
   state: RoomState,
   connected: ReadonlySet<string>,
@@ -118,6 +131,7 @@ export function buildPlayerView(
     seat: own ? (own.kicked ? 'removed' : 'joined') : 'none',
     roles: seated ? gameInfo(state) : [],
     card: seated ? cardInfo(state, viewer) : null,
+    reveal: seated ? revealInfo(state) : null,
   };
 }
 

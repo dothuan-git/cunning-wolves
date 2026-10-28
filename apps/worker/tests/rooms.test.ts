@@ -516,6 +516,8 @@ describe('parseClientMessage', () => {
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
+    [{ type: 'finishGame' }],
+    [{ type: 'playAgain' }],
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
     [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
