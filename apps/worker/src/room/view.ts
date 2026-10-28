@@ -2,6 +2,7 @@ import {
   gameRoles,
   roomRoles,
   type GameRole,
+  type GameState,
   type MasterView,
   type PlayerInfo,
   type PlayerView,
@@ -55,6 +56,23 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
       playerId,
       roleId,
     })),
+    game: state.game ? gameStateInfo(state.game) : null,
+  };
+}
+
+/** The narrator's marks, for the master only. */
+function gameStateInfo(game: GameState): GameState {
+  return {
+    phase: { kind: game.phase.kind, number: game.phase.number },
+    deaths: Object.fromEntries(
+      Object.entries(game.deaths).map(([id, death]) => [
+        id,
+        { kind: death.kind, number: death.number },
+      ]),
+    ),
+    notes: Object.fromEntries(
+      Object.entries(game.notes).map(([night, byPlayer]) => [night, { ...byPlayer }]),
+    ),
   };
 }
 

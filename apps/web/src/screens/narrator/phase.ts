@@ -1,25 +1,9 @@
-import type { Phase } from '../types';
+import { canNoteNight, type Phase } from '@werewolf/shared';
 
 export type TimelineEntry =
   | { type: 'note'; night: number; text: string }
   | { type: 'input'; night: number }
   | { type: 'death'; phase: Phase };
-
-// Night 1 < Morning 1 < Night 2 < Morning 2 …
-export function phaseIndex(phase: Phase): number {
-  return (phase.number - 1) * 2 + (phase.kind === 'night' ? 0 : 1);
-}
-
-export function nextPhase(phase: Phase): Phase {
-  return phase.kind === 'night'
-    ? { kind: 'morning', number: phase.number }
-    : { kind: 'night', number: phase.number + 1 };
-}
-
-/** Players who died before a night started get no note for that night. */
-export function canNoteNight(death: Phase | undefined, night: number): boolean {
-  return death === undefined || phaseIndex(death) >= phaseIndex({ kind: 'night', number: night });
-}
 
 /**
  * One player's history up to the current phase. Empty notes are skipped unless

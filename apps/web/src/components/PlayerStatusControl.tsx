@@ -7,10 +7,12 @@ export function PlayerStatusControl({
   name,
   dead,
   onToggle,
+  disabled = false,
 }: {
   name: string;
   dead: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }) {
   const { t } = useTranslation();
   // The pill pops when the status changes, not when the list first appears.
@@ -25,7 +27,8 @@ export function PlayerStatusControl({
       type="button"
       aria-label={t(dead ? 'player.restore' : 'player.markDead', { name })}
       onClick={onToggle}
-      className="press group -mr-2 flex min-h-12 shrink-0 items-center px-2"
+      disabled={disabled}
+      className="press group -mr-2 flex min-h-12 shrink-0 items-center px-2 disabled:cursor-not-allowed disabled:opacity-45"
     >
       {/* Alive keeps a quiet outline with a live green dot; a death fills the pill. */}
       <span

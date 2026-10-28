@@ -1,4 +1,4 @@
-import type { ClientMessage, CustomRoleInput, RoomSettings } from '@werewolf/shared';
+import type { ClientMessage, CustomRoleInput, Phase, RoomSettings } from '@werewolf/shared';
 
 // Exactly what crypto.randomUUID() makes on the client.
 export const TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -36,6 +36,15 @@ function parseSettings(value: unknown): RoomSettings | null {
     : null;
 }
 
+function parsePhase(value: unknown): Phase | null {
+  if (!isObject(value)) return null;
+  const kind = field(value, 'kind');
+  const number = field(value, 'number');
+  return (kind === 'night' || kind === 'morning') && typeof number === 'number'
+    ? { kind, number }
+    : null;
+}
+
 /**
  * Narrows a raw socket message to a ClientMessage, or null if it isn't one. Only the shape is
  * checked here; whether the sender may do it is the state machine's job.
@@ -64,7 +73,8 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'backToSetup':
     case 'startGame':
       return { type };
-    case 'kick': {
+    case 'kick':
+    case 'toggleDeath': {
       const playerId = field(data, 'playerId');
       return typeof playerId === 'string' ? { type, playerId } : null;
     }
@@ -95,6 +105,18 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'setSettings': {
       const settings = parseSettings(field(data, 'settings'));
       return settings ? { type, settings } : null;
+    }
+    case 'endPhase': {
+      const phase = parsePhase(field(data, 'phase'));
+      return phase ? { type, phase } : null;
+    }
+    case 'setNote': {
+      const night = field(data, 'night');
+      const playerId = field(data, 'playerId');
+      const text = field(data, 'text');
+      return typeof night === 'number' && typeof playerId === 'string' && typeof text === 'string'
+        ? { type, night, playerId, text }
+        : null;
     }
     default:
       return null;

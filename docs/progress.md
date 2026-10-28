@@ -70,18 +70,28 @@
   - The narrator page lists the real holders of each role.
   - See decision 0019.
 
+- **Phase 5 narrator page** (branch `feat/phase-5-narrator`, 2026-10-28):
+  - The room keeps the phase, deaths and per-night notes, so a refresh no longer starts again at Night 1. Only the master's phone receives them.
+  - Notes save a second after typing stops and when the field is left, and are retried after a reconnect.
+  - End night carries the phase being ended, so a repeated hold skips nothing.
+  - The wake order, timer length and sound stay editable while playing.
+  - The timer counts down on the narrator's phone, and a Web Audio chime plays at zero when sound is on.
+  - While reconnecting, the narrator's controls are disabled and the footer says so.
+  - See decision 0020.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
-2. **Phase 5 (narrator page):**
-   - Night and morning phases, deaths, per-night notes, the timer, sound and the in-game wake order, all kept by the room.
+2. **Phase 6 (finish and polish):**
+   - Finish game, the summary screen with every role and the night-and-morning log, and Play again.
+   - Phone UI polish and a playtest with a real group.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
-- Open items from the plan: standalone assets in the approved engraving style, and the sound pack contents.
-- Home, create, join, the village, Setup, the rules review and My card run on real rooms. The narrator page shows the real deal, but its phases, deaths and notes are kept on the master's phone only until Phase 5, so a refresh starts again at Night 1. The narrator page has no Finish game control until Phase 6. The summary still runs on sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
+- Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
+- Every screen but the summary runs on real rooms. The narrator page has no Finish game control until Phase 6, and the summary still runs on sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
 - Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

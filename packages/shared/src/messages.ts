@@ -1,5 +1,13 @@
 import type { RoomSummary } from './api';
-import type { CustomRoleInput, RoomRole, RoomSettings, RoomSetup, RoomStatus } from './types';
+import type {
+  CustomRoleInput,
+  GameState,
+  Phase,
+  RoomRole,
+  RoomSettings,
+  RoomSetup,
+  RoomStatus,
+} from './types';
 
 /** Room ids, as the create route makes them: in `/room/:id` and `/api/rooms/:id/ws`. */
 export const ROOM_ID_PATTERN = /^[a-z0-9]{8}$/;
@@ -35,7 +43,13 @@ export type ClientMessage =
   | { type: 'review' }
   | { type: 'backToSetup' }
   /** Shuffles the picks and deals one to each player */
-  | { type: 'startGame' };
+  | { type: 'startGame' }
+  /** Names the phase being ended, so a repeated hold can't skip a second one */
+  | { type: 'endPhase'; phase: Phase }
+  /** Marks a player dead in the current phase, or undoes it */
+  | { type: 'toggleDeath'; playerId: string }
+  /** Empty text removes the note */
+  | { type: 'setNote'; night: number; playerId: string; text: string };
 
 export type RoomAction = Exclude<ClientMessage, { type: 'hello' }>;
 
@@ -64,6 +78,8 @@ export interface MasterView {
   setup: RoomSetup;
   /** Who holds which role; empty until the game starts */
   assignments: Assignment[];
+  /** Phases, deaths and notes; null until the game starts */
+  game: GameState | null;
 }
 
 export interface Assignment {

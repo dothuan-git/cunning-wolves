@@ -1,4 +1,4 @@
-import { CUSTOM_ROLES_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
+import { CUSTOM_ROLES_MAX, NOTE_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
 import { describe, expect, it } from 'vitest';
 import { apply, createRoom, seatedPlayers, type Random, type RoomState } from '../src/room/machine';
 import { cryptoRandom } from '../src/room/random';
@@ -303,15 +303,15 @@ describe('locks after the lobby', () => {
           role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false },
         }),
       ).toBe('not-allowed');
-      expect(refusal(locked, MASTER, { type: 'setWakeOrder', order: ['seer'] })).toBe(
-        'not-allowed',
-      );
+      // The narrator's tools stay open while playing; see 'narrator tools in play'.
+      const tools = status === 'playing' ? null : 'not-allowed';
+      expect(refusal(locked, MASTER, { type: 'setWakeOrder', order: ['seer'] })).toBe(tools);
       expect(
         refusal(locked, MASTER, {
           type: 'setSettings',
           settings: { timerSeconds: 60, soundOn: true },
         }),
-      ).toBe('not-allowed');
+      ).toBe(tools);
     },
   );
 });
@@ -422,6 +422,122 @@ describe('start game', () => {
   });
 });
 
+/** Minh holds the seer and Lan the werewolf, at Night 1. */
+function playing(): RoomState {
+  return run(ready(), [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+}
+
+const NIGHT_1 = { kind: 'night', number: 1 } as const;
+const MORNING_1 = { kind: 'morning', number: 1 } as const;
+const NIGHT_2 = { kind: 'night', number: 2 } as const;
+
+describe('end phase', () => {
+  it('starts at Night 1 and moves night, morning, night', () => {
+    expect(playing().game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {} });
+    const state = run(
+      playing(),
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, { type: 'endPhase', phase: MORNING_1 }],
+    );
+    expect(state.game?.phase).toEqual(NIGHT_2);
+  });
+
+  it('ends only the phase it names, so a repeated hold skips nothing', () => {
+    const morning = run(playing(), [MASTER, { type: 'endPhase', phase: NIGHT_1 }]);
+    expect(refusal(morning, MASTER, { type: 'endPhase', phase: NIGHT_1 })).toBe('not-allowed');
+    expect(refusal(morning, MASTER, { type: 'endPhase', phase: NIGHT_2 })).toBe('not-allowed');
+  });
+
+  it('refuses before the game and from anyone but the master', () => {
+    const reviewed = run(ready(), [MASTER, { type: 'review' }]);
+    expect(refusal(reviewed, MASTER, { type: 'endPhase', phase: NIGHT_1 })).toBe('not-allowed');
+    expect(refusal(playing(), 'a', { type: 'endPhase', phase: NIGHT_1 })).toBe('not-master');
+  });
+});
+
+describe('toggle death', () => {
+  it('marks a player dead in the current phase, and a second tap undoes it', () => {
+    const morning = run(playing(), [MASTER, { type: 'endPhase', phase: NIGHT_1 }]);
+    const dead = run(morning, [MASTER, { type: 'toggleDeath', playerId: 'a' }]);
+    expect(dead.game?.deaths).toEqual({ a: MORNING_1 });
+    const undone = run(dead, [MASTER, { type: 'toggleDeath', playerId: 'a' }]);
+    expect(undone.game?.deaths).toEqual({});
+  });
+
+  it('refuses a player without a card, before the game, and from a player', () => {
+    expect(refusal(playing(), MASTER, { type: 'toggleDeath', playerId: 'z' })).toBe('not-allowed');
+    expect(refusal(playing(), MASTER, { type: 'toggleDeath', playerId: '__proto__' })).toBe(
+      'not-allowed',
+    );
+    expect(refusal(ready(), MASTER, { type: 'toggleDeath', playerId: 'a' })).toBe('not-allowed');
+    expect(refusal(playing(), 'a', { type: 'toggleDeath', playerId: 'b' })).toBe('not-master');
+  });
+});
+
+describe('set note', () => {
+  const note = (night: number, playerId: string, text: string) =>
+    ({ type: 'setNote', night, playerId, text }) as const;
+
+  it('keeps a cleaned note per night and player, and empty text removes it', () => {
+    const noted = run(playing(), [MASTER, note(1, 'a', '  Saw   Lan. ')]);
+    expect(noted.game?.notes).toEqual({ 1: { a: 'Saw Lan.' } });
+    const both = run(noted, [MASTER, note(1, 'b', 'Woke.')]);
+    expect(both.game?.notes).toEqual({ 1: { a: 'Saw Lan.', b: 'Woke.' } });
+    const cleared = run(both, [MASTER, note(1, 'a', '  ')], [MASTER, note(1, 'b', '')]);
+    expect(cleared.game?.notes).toEqual({});
+  });
+
+  it('edits an earlier night, but not one that has not started', () => {
+    const night2 = run(
+      playing(),
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, { type: 'endPhase', phase: MORNING_1 }],
+    );
+    expect(run(night2, [MASTER, note(1, 'a', 'Later.')]).game?.notes).toEqual({
+      1: { a: 'Later.' },
+    });
+    expect(refusal(night2, MASTER, note(3, 'a', 'Soon.'))).toBe('not-allowed');
+    expect(refusal(night2, MASTER, note(0, 'a', 'Never.'))).toBe('not-allowed');
+    expect(refusal(night2, MASTER, note(1.5, 'a', 'Half.'))).toBe('not-allowed');
+  });
+
+  it('keeps the night of a death, but no later night', () => {
+    const died = run(playing(), [MASTER, { type: 'toggleDeath', playerId: 'a' }]);
+    run(died, [MASTER, note(1, 'a', 'Bitten.')]);
+    const night2 = run(
+      died,
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, { type: 'endPhase', phase: MORNING_1 }],
+    );
+    expect(refusal(night2, MASTER, note(2, 'a', 'Ghost.'))).toBe('not-allowed');
+  });
+
+  it('refuses a long note, a player without a card, and anyone but the master', () => {
+    run(playing(), [MASTER, note(1, 'a', 'x'.repeat(NOTE_MAX))]);
+    expect(refusal(playing(), MASTER, note(1, 'a', 'x'.repeat(NOTE_MAX + 1)))).toBe('not-allowed');
+    expect(refusal(playing(), MASTER, note(1, 'z', 'Who?'))).toBe('not-allowed');
+    expect(refusal(playing(), 'a', note(1, 'a', 'Me.'))).toBe('not-master');
+    expect(refusal(ready(), MASTER, note(1, 'a', 'Early.'))).toBe('not-allowed');
+  });
+});
+
+describe('narrator tools in play', () => {
+  it('keeps wake order, timer and sound open, and the card set locked', () => {
+    const state = run(
+      playing(),
+      [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
+      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+    );
+    expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
+    expect(refusal(state, MASTER, { type: 'editRule', roleId: 'seer', rule: 'x' })).toBe(
+      'not-allowed',
+    );
+    expect(refusal(state, 'a', { type: 'setWakeOrder', order: [] })).toBe('not-master');
+  });
+});
+
 describe('views', () => {
   const state = run(
     room(),
@@ -439,6 +555,7 @@ describe('views', () => {
       players: [{ id: 'a', name: 'Minh', connected: true }],
       setup: state.setup,
       assignments: [],
+      game: null,
     });
   });
 
@@ -515,6 +632,24 @@ describe('views', () => {
       { playerId: 'a', roleId: 'seer' },
       { playerId: 'b', roleId: 'werewolf' },
     ]);
+  });
+
+  it('shows the narrator the marks, and no player any of them', () => {
+    const marked = run(
+      playing(),
+      [MASTER, { type: 'toggleDeath', playerId: 'b' }],
+      [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Secret note' }],
+    );
+    expect(buildMasterView(marked, connected).game).toEqual({
+      phase: NIGHT_1,
+      deaths: { b: NIGHT_1 },
+      notes: { 1: { a: 'Secret note' } },
+    });
+    for (const viewer of ['a', 'b', 'c']) {
+      const view = buildPlayerView(marked, connected, viewer);
+      expect(view).not.toHaveProperty('game');
+      expect(JSON.stringify(view)).not.toContain('Secret note');
+    }
   });
 
   it('gives a kicked phone no rules and no card', () => {

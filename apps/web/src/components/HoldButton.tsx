@@ -15,6 +15,7 @@ export function HoldButton({
   variant = 'primary',
   iconOnly = false,
   label,
+  disabled = false,
 }: {
   children: ReactNode;
   onComplete: () => void;
@@ -22,20 +23,21 @@ export function HoldButton({
   variant?: 'primary' | 'danger';
   iconOnly?: boolean;
   label?: string;
+  disabled?: boolean;
 }) {
   const { t } = useTranslation();
   const hintId = useId();
   const { holding, handlers } = useHold();
   const complete = useEffectEvent(onComplete);
   useEffect(() => {
-    if (!holding) return;
+    if (!holding || disabled) return;
     const timer = window.setTimeout(() => {
       complete();
     }, duration);
     return () => {
       window.clearTimeout(timer);
     };
-  }, [holding, duration]);
+  }, [holding, duration, disabled]);
   return (
     <>
       <Button
@@ -43,7 +45,8 @@ export function HoldButton({
         variant={variant}
         size={iconOnly ? 'icon' : 'normal'}
         aria-label={label}
-        data-holding={holding}
+        disabled={disabled}
+        data-holding={holding && !disabled}
         aria-describedby={hintId}
         className="hold-button relative overflow-hidden"
         style={{ '--hold-duration': `${String(duration)}ms` } as CSSProperties}

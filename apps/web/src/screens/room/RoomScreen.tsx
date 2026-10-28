@@ -3,6 +3,7 @@ import {
   ROLE_POOL,
   roomRoles,
   wakingOrder,
+  type GameState,
   type MasterView,
   type PlayerView,
   type ServerErrorCode,
@@ -17,11 +18,10 @@ import { NameEntryScreen } from '../name-entry/NameEntryScreen';
 import { readSavedName, saveName } from '../name-entry/savedName';
 import { MyCardScreen } from '../my-card/MyCardScreen';
 import { NarratorScreen } from '../narrator/NarratorScreen';
-import { nextPhase } from '../narrator/phase';
 import { PlayerLobbyScreen } from '../player-lobby/PlayerLobbyScreen';
 import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
-import type { Phase, RoleGroupItem } from '../types';
+import type { RoleGroupItem } from '../types';
 
 function goHome() {
   navigate(paths.home);
@@ -73,7 +73,9 @@ export function RoomScreen({ roomId }: { roomId: string }) {
         />
       );
     }
-    if (view.room.status !== 'lobby') return <NarratorRoom view={view} />;
+    if (view.room.status !== 'lobby') {
+      return <NarratorRoom view={view} reconnecting={reconnecting} send={send} />;
+    }
     return (
       <SetupScreen
         roomName={view.room.name}
@@ -100,12 +102,20 @@ export function RoomScreen({ roomId }: { roomId: string }) {
   return <PlayerRoom view={view} error={error} reconnecting={status !== 'connected'} send={send} />;
 }
 
-/**
- * The narrator page on the real deal. Phases, deaths and notes live here until the room keeps them
- * (Phase 5), so a refresh starts again at Night 1.
- */
-function NarratorRoom({ view }: { view: MasterView }) {
+const FIRST_NIGHT: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} };
+
+/** The narrator page: the room keeps the deal, phases, deaths and notes. */
+function NarratorRoom({
+  view,
+  reconnecting,
+  send,
+}: {
+  view: MasterView;
+  reconnecting: boolean;
+  send: ReturnType<typeof useRoomConnection>['send'];
+}) {
   const { setup, assignments, players } = view;
+  const game = view.game ?? FIRST_NIGHT;
   const groups = useMemo<RoleGroupItem[]>(() => {
     const picked = gameRoles(setup).map(({ role }) => role);
     const waking = wakingOrder(roomRoles(setup), setup.picks, setup.wakeOrder);
@@ -121,28 +131,19 @@ function NarratorRoom({ view }: { view: MasterView }) {
         .map(({ id, name }) => ({ id, name })),
     }));
   }, [setup, assignments, players]);
-  const [phase, setPhase] = useState<Phase>({ kind: 'night', number: 1 });
-  const [deaths, setDeaths] = useState<Record<string, Phase>>({});
-  const [notes, setNotes] = useState<Record<number, Record<string, string>>>({});
   return (
     <NarratorScreen
       groups={groups}
-      phase={phase}
-      notes={notes}
-      deaths={deaths}
-      onPlayerNote={(night, playerId, text) => {
-        setNotes((current) => ({ ...current, [night]: { ...current[night], [playerId]: text } }));
-      }}
-      onTogglePlayer={(playerId) => {
-        setDeaths((current) =>
-          playerId in current
-            ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== playerId))
-            : { ...current, [playerId]: phase },
-        );
-      }}
-      onEndPhase={() => {
-        setPhase(nextPhase);
-      }}
+      phase={game.phase}
+      notes={game.notes}
+      deaths={game.deaths}
+      settings={setup.settings}
+      reconnecting={reconnecting}
+      onPlayerNote={(night, playerId, text) => send({ type: 'setNote', night, playerId, text })}
+      onTogglePlayer={(playerId) => send({ type: 'toggleDeath', playerId })}
+      onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
+      onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
+      onSettings={(settings) => send({ type: 'setSettings', settings })}
     />
   );
 }

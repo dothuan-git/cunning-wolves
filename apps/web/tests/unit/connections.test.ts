@@ -40,6 +40,11 @@ const MASTER = {
   players: [],
   setup: SETUP,
   assignments: [{ playerId: 'aaaa', roleId: 'custom-0' }],
+  game: {
+    phase: { kind: 'morning', number: 2 },
+    deaths: { aaaa: { kind: 'night', number: 2 } },
+    notes: { 1: { aaaa: 'Saw the baker.' } },
+  },
 } as const;
 const SUMMARY: RoomSummary = {
   id: 'mill',
@@ -138,6 +143,21 @@ describe('parseServerMessage', () => {
     [
       'a master view without assignments',
       { type: 'state', view: { ...MASTER, assignments: undefined } },
+    ],
+    ['a master view without a game', { type: 'state', view: { ...MASTER, game: undefined } }],
+    [
+      'a death in an unknown phase',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          game: { ...MASTER.game, deaths: { aaaa: { kind: 'dusk', number: 1 } } },
+        },
+      },
+    ],
+    [
+      'a note that is not text',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, notes: { 1: { aaaa: 2 } } } } },
     ],
     ['a player view without roles', { type: 'state', view: { ...VIEW, roles: undefined } }],
     [

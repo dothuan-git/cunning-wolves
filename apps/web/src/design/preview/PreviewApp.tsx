@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, type PoolRole } from '@werewolf/shared';
+import { DEFAULT_SETTINGS, nextPhase, type PoolRole } from '@werewolf/shared';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -8,7 +8,6 @@ import { RoomListScreen } from '../../screens/home/RoomListScreen';
 import { MyCardScreen } from '../../screens/my-card/MyCardScreen';
 import { NameEntryScreen } from '../../screens/name-entry/NameEntryScreen';
 import { NarratorScreen } from '../../screens/narrator/NarratorScreen';
-import { nextPhase } from '../../screens/narrator/phase';
 import { PlayerLobbyScreen } from '../../screens/player-lobby/PlayerLobbyScreen';
 import { RulesReviewScreen } from '../../screens/rules-review/RulesReviewScreen';
 import { SetupScreen } from '../../screens/setup/SetupScreen';
@@ -66,6 +65,7 @@ function PreviewScene({
   });
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
+  const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
   // A full table: the sample players and twelve more.
@@ -240,12 +240,16 @@ function PreviewScene({
             ]),
           )}
           deaths={deaths}
+          settings={narratorSettings}
           onPlayerNote={(night, id, text) => {
             setNoteEdits((current) => ({
               ...current,
               [night]: { ...current[night], [id]: text },
             }));
+            return true;
           }}
+          onWakeOrder={setWakeOrder}
+          onSettings={setNarratorSettings}
           onTogglePlayer={(id) => {
             setDeaths((current) =>
               id in current

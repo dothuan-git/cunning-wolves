@@ -2,9 +2,11 @@ import {
   CLOSE_REPLACED,
   CLOSE_ROOM_GONE,
   type CreateRoomResponse,
+  type GameState,
   type LobbyMessage,
   type MasterView,
   type PlayerView,
+  type Phase,
   type ServerErrorCode,
   type ServerMessage,
 } from '@werewolf/shared';
@@ -15,7 +17,7 @@ import { LOBBY_NAME } from '../src/lobby/Lobby';
 import { deviceIdFromToken } from '../src/room/deviceId';
 import { parseClientMessage } from '../src/room/messages';
 import { ROOM_EXPIRY_MS } from '../src/room/Room';
-import { loadRoom } from '../src/room/storage';
+import { loadRoom, saveRoom } from '../src/room/storage';
 import { createRoom, openSocket, TOKENS, type TestSocket } from './sockets';
 
 function isServerMessage(message: unknown): message is ServerMessage {
@@ -132,6 +134,7 @@ describe('Room', () => {
         settings: { timerSeconds: 120, soundOn: false },
       },
       assignments: [],
+      game: null,
     });
   });
 
@@ -294,6 +297,7 @@ describe('Room', () => {
         settings: { timerSeconds: 120, soundOn: false },
       });
       expect(loaded?.assignments).toEqual({});
+      expect(loaded?.game).toBeNull();
     });
   });
 
@@ -342,6 +346,67 @@ describe('Room', () => {
         [minhId]: holder(minhId),
         [lanId]: holder(lanId),
       });
+    });
+  });
+
+  it('keeps the narrator marks across a reload, and sends them to the master only', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    const lan = await join(roomId, TOKENS.lan, 'Lan');
+    const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
+    const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
+    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'addPick', roleId: 'werewolf' });
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    master.send({ type: 'toggleDeath', playerId: lanId });
+    master.send({ type: 'setNote', night: 1, playerId: minhId, text: 'Secret note' });
+    master.send({ type: 'endPhase', phase: { kind: 'night', number: 1 } });
+    master.send({ type: 'setWakeOrder', order: ['werewolf', 'seer'] });
+    await master.next(masterView((view) => view.setup.wakeOrder[0] === 'werewolf'));
+
+    const again = await enter(roomId, TOKENS.master);
+    const { view } = await again.next(masterView());
+    expect(view.game).toEqual({
+      phase: { kind: 'morning', number: 1 },
+      deaths: { [lanId]: { kind: 'night', number: 1 } },
+      notes: { 1: { [minhId]: 'Secret note' } },
+    });
+    for (const text of [...minh.received, ...lan.received]) {
+      expect(text).not.toContain('Secret note');
+      expect(text).not.toContain('"game"');
+    }
+  });
+
+  it('starts a game dealt before the room kept marks at Night 1, and round-trips what it keeps', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    await join(roomId, TOKENS.minh, 'Minh');
+    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    await master.next(masterView((view) => view.room.status === 'playing'));
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      const { sql } = state.storage;
+      sql.exec('DELETE FROM game');
+      sql.exec('DELETE FROM deaths');
+      sql.exec('DELETE FROM notes');
+      const older = loadRoom(sql);
+      expect(older?.game).toEqual({ phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} });
+      if (!older) throw new Error('room did not load');
+      // A player id that is also an object key survives saving and loading.
+      const death: Phase = { kind: 'night', number: 2 };
+      const game: GameState = {
+        phase: { kind: 'morning', number: 2 },
+        deaths: Object.fromEntries([['__proto__', death]]),
+        notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
+      };
+      saveRoom(state.storage, { ...older, game });
+      const loaded = loadRoom(sql)?.game;
+      expect(Object.keys(loaded?.deaths ?? {})).toEqual(['__proto__']);
+      expect(Object.keys(loaded?.notes[1] ?? {})).toEqual(['__proto__']);
+      expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
     });
   });
 
@@ -451,6 +516,9 @@ describe('parseClientMessage', () => {
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
+    [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
+    [{ type: 'toggleDeath', playerId: 'abc' }],
+    [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
   });
@@ -474,6 +542,15 @@ describe('parseClientMessage', () => {
         type: 'addCustomRole',
         role: { name: 'Vampire', rule: 'Bites.', team: 'vampire', wakes: true },
       }),
+    ],
+    [
+      'a phase of another kind',
+      JSON.stringify({ type: 'endPhase', phase: { kind: 'dusk', number: 1 } }),
+    ],
+    ['a note without text', JSON.stringify({ type: 'setNote', night: 1, playerId: 'abc' })],
+    [
+      'a note for a night given as text',
+      JSON.stringify({ type: 'setNote', night: '1', playerId: 'abc', text: '' }),
     ],
     ['a wake order with a number', JSON.stringify({ type: 'setWakeOrder', order: ['seer', 1] })],
     [
