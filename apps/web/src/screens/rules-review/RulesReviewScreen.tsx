@@ -40,7 +40,7 @@ export function RulesReviewScreen({
         {roles.map(({ role, count }) => (
           <li key={role.id} className="panel flex gap-3 p-3.5">
             <div className="size-12 shrink-0 overflow-hidden">
-              <RoleArtwork file={role.image} fit="cover" />
+              <RoleArtwork file={role.image} fit="bust" />
             </div>
             <div className="grid min-w-0 flex-1 gap-1">
               <div className="flex flex-wrap items-baseline justify-between gap-x-2">

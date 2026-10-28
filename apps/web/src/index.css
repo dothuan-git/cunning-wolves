@@ -64,7 +64,15 @@
   /* Role art set into the wake line as if it were a word, standing on the baseline. */
   .wake-art {
     height: 0.9em;
-    width: 1.3em;
+    width: 0.9em;
+  }
+
+  /* Full-length role art cropped to the head and shoulders (the top third, centred) in a small frame. */
+  .art-bust {
+    object-fit: cover;
+    object-position: top;
+    transform: scale(1.8);
+    transform-origin: 50% 0;
   }
 
   .hold-button {

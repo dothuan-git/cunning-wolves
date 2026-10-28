@@ -143,9 +143,7 @@ test('a concealed card removes its role and description from the page', async ({
   await page.mouse.down();
   await expect(seer).toBeVisible();
   // The seer has its own art now; the name beside it is the accessible text, so the art has empty alt.
-  const art = page.locator('.role-card[data-revealed="true"] img');
-  await expect(art).toBeVisible();
-  await expect(art).toHaveAttribute('src', /seer/);
+  await expect(page.locator('.role-card[data-revealed="true"] img[src*="seer"]')).toBeVisible();
   await page.mouse.up();
   await expect(seer).toHaveCount(0);
   await expect(rule).toHaveCount(0);

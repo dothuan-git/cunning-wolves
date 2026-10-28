@@ -32,7 +32,7 @@ export function WakeGuide({
             {/* The role's card art sits inside the sentence, at the height of its letters. */}
             <p className="font-display text-title font-semibold break-words">
               <span className="wake-art mr-2 inline-block overflow-hidden align-baseline">
-                <RoleArtwork file={role.image} fit="cover" />
+                <RoleArtwork file={role.image} fit="bust" />
               </span>
               {t('narrator.wakes', { role: role.name })}
             </p>

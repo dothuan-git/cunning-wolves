@@ -7,7 +7,7 @@ export function RoleBanner({ name, team, image }: { name: string; team: Team; im
     <span className="inline-flex max-w-full items-center gap-2.5">
       {image !== undefined && (
         <span className="size-10 shrink-0 overflow-hidden">
-          <RoleArtwork file={image} fit="cover" />
+          <RoleArtwork file={image} fit="bust" />
         </span>
       )}
       <span

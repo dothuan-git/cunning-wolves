@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import placeholder from '../assets/cards/placeholder.svg';
+import fallback from '../assets/art/card-art-fallback.webp';
 
-// New role artwork is discovered at build time; a missing file intentionally uses the shared placeholder.
+// Role art is found at build time; a missing file intentionally uses the shared fallback figure.
 const artwork = import.meta.glob<string>('../assets/cards/*.{webp,png,jpg,jpeg,svg}', {
   eager: true,
   query: '?url',
@@ -15,22 +15,22 @@ export function RoleArtwork({
 }: {
   file?: string;
   className?: string;
-  /** `cover` crops to the frame from the top, so a thumbnail shows the figure's head. */
-  fit?: 'contain' | 'cover';
+  /** `cover` fills the frame from the top; `bust` crops to the head and shoulders for thumbnails. */
+  fit?: 'contain' | 'cover' | 'bust';
 }) {
   const { t } = useTranslation();
   const source = file ? artwork[`../assets/cards/${file}`] : undefined;
   return (
     <img
-      key={source ?? placeholder}
-      src={source ?? placeholder}
+      key={source ?? fallback}
+      src={source ?? fallback}
       alt={source ? '' : t('card.artPlaceholder')}
-      className={`h-full w-full ${fit === 'cover' ? 'object-cover object-top' : 'object-contain'} ${className}`}
+      className={`h-full w-full ${fit === 'contain' ? 'object-contain' : fit === 'bust' ? 'art-bust' : 'object-cover object-top'} ${className}`}
       onError={(event) => {
         if (event.currentTarget.dataset.fallback) return;
         // A missing/corrupt optional image must not prevent reading a role card.
         event.currentTarget.dataset.fallback = 'true';
-        event.currentTarget.src = placeholder;
+        event.currentTarget.src = fallback;
         event.currentTarget.alt = t('card.artPlaceholder');
       }}
     />
