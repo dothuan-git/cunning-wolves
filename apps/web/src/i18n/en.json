@@ -176,6 +176,8 @@
   "rules": {
     "intro": "Everyone can read the rules. Your role stays secret until the game starts.",
     "copies": "{{count}} in this game",
+    "hint": "Tap a card to read its rule.",
+    "lookCloser": "Look closer at {{role}}, {{count}} in this game",
     "understood": "I’ve read the rules",
     "waiting": "Waiting for the narrator to begin.",
     "start": "Start example game"

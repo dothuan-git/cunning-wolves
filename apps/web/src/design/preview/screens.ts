@@ -45,7 +45,7 @@ export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
   setup: ['default', 'empty'],
   narrator: ['default', 'dead', 'morning', 'long'],
   'player-lobby': ['default', 'loading', 'long', 'many', 'removed'],
-  'rules-review': ['default'],
+  'rules-review': ['default', 'many'],
   'my-card': ['default', 'hidden', 'long'],
   components: ['default'],
 };

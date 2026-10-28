@@ -486,7 +486,7 @@ test('a role card in the village carousel opens enlarged and closes again', asyn
   await expect(dialog.getByRole('heading', { name: 'Seer', exact: true })).toBeVisible();
   await expect(dialog.getByText('Each night, choose one player', { exact: false })).toBeVisible();
   // The enlarged card sits in the middle of the phone.
-  const box = await dialog.locator('.zoom-card').boundingBox();
+  const box = await dialog.locator('.detailed-card').boundingBox();
   const viewport = page.viewportSize();
   expect(box).not.toBeNull();
   expect(viewport).not.toBeNull();
@@ -494,7 +494,7 @@ test('a role card in the village carousel opens enlarged and closes again', asyn
     2,
   );
   // Tapping the card itself keeps it open; only the background and Escape close it.
-  await dialog.locator('.zoom-card').click();
+  await dialog.locator('.detailed-card').click();
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText('Close', { exact: true })).toHaveCount(1);
   await page.keyboard.press('Escape');
@@ -587,7 +587,7 @@ test('an enlarged card animates out before it is removed', async ({ page }) => {
   await page.goto('/design?screen=player-lobby&lang=en&capture=1');
   await page.getByRole('button', { name: 'Look closer at Seer', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Seer', exact: true });
-  await expect(dialog.locator('.zoom-card')).toHaveCSS('animation-name', 'zoom-in');
+  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'zoom-in');
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveAttribute('data-closing', 'true');
   await expect(dialog).toHaveCount(0);
@@ -695,4 +695,135 @@ test('the role carousel stays still with reduced motion', async ({ page }) => {
   await page.clock.runFor(9000);
   await page.waitForTimeout(600);
   expect(Math.abs((await deck.evaluate((el) => el.scrollLeft)) - start)).toBeLessThan(4);
+});
+
+test('tonight’s roles lists the cards three to a row, one block per faction', async ({ page }) => {
+  await page.goto('/design?screen=rules-review&state=many&lang=en&capture=1');
+  const blocks = page.locator('main section');
+  await expect(blocks).toHaveCount(2);
+  await expect(blocks.nth(0).getByRole('heading', { level: 2 })).toHaveText('Wolves');
+  await expect(blocks.nth(1).getByRole('heading', { level: 2 })).toHaveText('Village');
+  await expect(blocks.nth(0).getByRole('button')).toHaveCount(2);
+  await expect(blocks.nth(1).getByRole('button')).toHaveCount(7);
+  const tops = await blocks
+    .nth(1)
+    .getByRole('button')
+    .evaluateAll((cards) => cards.map((card) => Math.round(card.getBoundingClientRect().top)));
+  expect(new Set(tops.slice(0, 3)).size).toBe(1);
+  expect(new Set(tops.slice(3, 6)).size).toBe(1);
+  expect(tops[3]).toBeGreaterThan(tops[0] ?? 0);
+  // Each card says how many of it are in the game.
+  await expect(
+    page.getByRole('button', { name: 'Look closer at Villager, 2 in this game', exact: true }),
+  ).toBeVisible();
+});
+
+test('tonight’s roles fits the narrowest phone in both languages', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  for (const lang of ['en', 'vi']) {
+    await page.goto(`/design?screen=rules-review&state=many&lang=${lang}&capture=1`);
+    await expect(page.locator('[data-design-screen]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      320,
+    );
+  }
+});
+
+test('a card opens enlarged on its own with its count, and a tap on the background closes it', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=rules-review&lang=en&capture=1');
+  const opener = page.getByRole('button', {
+    name: 'Look closer at Witch, 1 in this game',
+    exact: true,
+  });
+  await opener.click();
+  const dialog = page.getByRole('dialog', { name: 'Witch', exact: true });
+  await expect(dialog.locator('.detailed-card')).toHaveCount(1);
+  await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Witch');
+  await expect(dialog).toContainText('1 in this game');
+  // A tap on the card keeps it open; a tap on the background closes it and returns focus.
+  await dialog.locator('.detailed-card').click();
+  await expect(dialog).toBeVisible();
+  await page.mouse.click(5, 5);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(opener).toBeFocused();
+});
+
+test('an enlarged role card closes with Escape and animates in, but not with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=rules-review&lang=en&capture=1');
+  await page
+    .getByRole('button', { name: 'Look closer at Wolf, 2 in this game', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'Wolf', exact: true });
+  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'zoom-in');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'none');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+
+test('reading the rules marks the button done', async ({ page }) => {
+  await page.goto('/design?screen=rules-review&lang=en&capture=1');
+  await page.getByRole('button', { name: 'I’ve read the rules', exact: true }).click();
+  const done = page.getByRole('button', { name: 'Done', exact: true });
+  await expect(done).toBeDisabled();
+  await expect(done.locator('.name-pop')).toHaveCSS('animation-name', 'name-pop');
+});
+
+test('the role carousel can be dragged with a mouse, settles on a card, and a drag opens nothing', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const left = () => deck.evaluate((el) => Math.round(el.scrollLeft));
+  const start = await left();
+  const box = await deck.boundingBox();
+  if (!box) throw new Error('the carousel has no box');
+  const y = box.y + box.height / 2;
+  // Press on a card and drag it sideways; release over another card.
+  await page.mouse.move(box.x + box.width * 0.5, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.5 - 120, y, { steps: 10 });
+  await expect(deck).toHaveAttribute('data-dragging', 'true');
+  await page.mouse.up();
+  await expect(deck).not.toHaveAttribute('data-dragging');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect.poll(left).toBeGreaterThan(start + 60);
+  // It comes to rest with a card in the middle.
+  await page.waitForTimeout(700);
+  const off = await deck.evaluate((el) => {
+    const middle = el.getBoundingClientRect().x + el.clientWidth / 2;
+    return Math.min(
+      ...[...el.children].map((card) => {
+        const rect = card.getBoundingClientRect();
+        return Math.abs(rect.x + rect.width / 2 - middle);
+      }),
+    );
+  });
+  expect(off).toBeLessThan(3);
+  // A plain click, with no movement, still opens the card in the middle.
+  await page.mouse.click(box.x + box.width / 2, y);
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+});
+
+test('the role carousel resting a pixel short of the first card does not jump a whole set', async ({
+  page,
+}) => {
+  // No auto-advance, so only the loop's own wrap can move the row.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const left = () => deck.evaluate((el) => el.scrollLeft);
+  const start = await left();
+  // Rounding on some screens leaves the row a fraction short of the card; snapping is turned off
+  // here so the row can be put there.
+  await deck.evaluate((el) => {
+    el.style.scrollSnapType = 'none';
+    el.scrollLeft -= 1;
+  });
+  await page.waitForTimeout(500);
+  expect(Math.abs((await left()) - (start - 1))).toBeLessThan(2);
 });

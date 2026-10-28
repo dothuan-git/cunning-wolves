@@ -15,7 +15,7 @@ import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
 import type { Phase } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
-import { exampleGroups, examplePlayers, exampleRoles, seer, villager } from './fixtures';
+import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
 import type { PreviewState, ScreenId } from './screens';
 
@@ -179,9 +179,11 @@ function PreviewScene({
     case 'rules-review':
       return (
         <RulesReviewScreen
-          roles={exampleRoles.map((role) => ({
+          roles={(state === 'many' ? manyRoles : exampleRoles).map((role) => ({
             role,
-            count: examplePlayers.filter((player) => player.role.id === role.id).length,
+            count:
+              examplePlayers.filter((player) => player.role.id === role.id).length ||
+              (role.team === 'werewolf' ? 1 : 2),
           }))}
         />
       );

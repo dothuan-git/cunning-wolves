@@ -60,20 +60,20 @@
     }
   }
 
-  .zoom-dialog[open] .zoom-card {
+  .detailed-dialog[open] .detailed-card {
     animation: zoom-in 220ms ease-out;
   }
 
-  .zoom-dialog::backdrop {
+  .detailed-dialog::backdrop {
     animation: fade-in 200ms ease-out;
   }
 
   /* Closing runs the opening backwards, a little faster, before the dialog is removed. */
-  .zoom-dialog[data-closing='true'] .zoom-card {
+  .detailed-dialog[data-closing='true'] .detailed-card {
     animation: zoom-out 160ms ease-in forwards;
   }
 
-  .zoom-dialog[data-closing='true']::backdrop {
+  .detailed-dialog[data-closing='true']::backdrop {
     animation: fade-out 160ms ease-in forwards;
   }
 
@@ -188,6 +188,19 @@
     scrollbar-width: none;
   }
 
+  /* With a mouse the row is dragged by hand, so it shows a hand. */
+  @media (hover: hover) and (pointer: fine) {
+    .deck {
+      cursor: grab;
+    }
+  }
+
+  .deck[data-dragging='true'] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
   .deck-card {
     flex: none;
     height: min(100cqh, 24rem);
@@ -195,10 +208,44 @@
     scroll-snap-align: center;
   }
 
-  /* An enlarged card: as wide as fits, never taller than 78% of the screen. */
-  .zoom-card {
-    width: min(88vw, 24rem, calc(78dvh * 2 / 3));
-    aspect-ratio: 2 / 3;
+  /* The detailed card: a little taller than a thumbnail (4:7 against 2:3), never above 84% of the
+     screen. */
+  .detailed-card {
+    width: min(88vw, 24rem, calc(84dvh * 4 / 7));
+    aspect-ratio: 4 / 7;
+  }
+
+  /* A thumbnail card scales with its own width: the name, padding and corners are set from the
+     width of this box (cqw), so one layout serves a row of three and a wide carousel card. */
+  .thumbnail-card {
+    --pad: clamp(0.5rem, 6cqw, 0.75rem);
+    container-type: inline-size;
+  }
+
+  .thumbnail-card > button {
+    border-radius: clamp(var(--radius-tile), 11cqw, var(--radius-playing));
+  }
+
+  .thumbnail-face {
+    padding: var(--pad);
+  }
+
+  .thumbnail-name {
+    /* Physical sides: the name's own writing mode is vertical, which turns logical ones. */
+    top: var(--pad);
+    right: var(--pad);
+    font-size: clamp(var(--text-caption), 9cqw, var(--text-role));
+    line-height: 1.15;
+  }
+
+  .thumbnail-chip {
+    top: var(--pad);
+    left: var(--pad);
+  }
+
+  /* Room around the figure, so it sits in the card instead of filling it. */
+  .thumbnail-art {
+    padding: 10cqw 4cqw;
   }
 
   /* The role name runs down the card's top right edge. */

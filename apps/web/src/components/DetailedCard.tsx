@@ -1,16 +1,25 @@
 import type { Locale, PoolRole } from '@werewolf/shared';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RoleFace } from '../../components/RoleFace';
+import { RoleFace } from './RoleFace';
 
 // How long the closing animation runs before the dialog is removed.
 const CLOSE_MS = 160;
 
 /**
- * A role card enlarged in the middle of the phone. Tapping the dimmed background or pressing
- * Escape closes it. The Close button is only for screen readers and keyboards.
+ * The detailed card: a role card enlarged in the middle of the phone, with its rule. Tapping the dimmed background or pressing
+ * Escape closes it. The Close button is only for screen readers and keyboards. `count` shows how
+ * many of this role are in the game.
  */
-export function CardZoom({ role, onClose }: { role: PoolRole; onClose: () => void }) {
+export function DetailedCard({
+  role,
+  count,
+  onClose,
+}: {
+  role: PoolRole;
+  count?: number;
+  onClose: () => void;
+}) {
   const { t, i18n } = useTranslation();
   const locale: Locale = i18n.language === 'vi' ? 'vi' : 'en';
   const ref = useRef<HTMLDialogElement>(null);
@@ -54,10 +63,10 @@ export function CardZoom({ role, onClose }: { role: PoolRole; onClose: () => voi
       onClick={(event) => {
         if (event.target === event.currentTarget) requestClose();
       }}
-      className="zoom-dialog m-auto max-h-none max-w-none overflow-visible border-0 bg-transparent p-0 backdrop:bg-ink/70"
+      className="detailed-dialog m-auto max-h-none max-w-none overflow-visible border-0 bg-transparent p-0 backdrop:bg-ink/70"
     >
-      <div className="zoom-card relative overflow-hidden rounded-playing border border-field-border bg-ivory shadow-float">
-        <RoleFace role={role} />
+      <div className="detailed-card relative overflow-hidden rounded-playing border border-field-border bg-ivory shadow-float">
+        <RoleFace role={role} count={count} />
       </div>
       <button type="button" onClick={requestClose} className="sr-only">
         {t('common.close')}
