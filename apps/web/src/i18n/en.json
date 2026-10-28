@@ -95,6 +95,8 @@
     "nameYou": "{{name}} (you)"
   },
   "card": {
+    "tapToEdit": "Tap to edit rule.",
+    "editDone": "Tap outside the box when done.",
     "artPlaceholder": "Placeholder role illustration",
     "roleDetails": "Role details",
     "flip": "Flip your card",
@@ -168,9 +170,13 @@
     "needRoles": "Fill every seat to continue.",
     "roleRequired": "Enter a name and description.",
     "timerHint": "0 turns the timer off.",
-    "addRoles": "Add roles",
+    "addWerewolf": "Add wolf roles",
+    "addVillage": "Add village roles",
+    "search": "Search roles",
+    "noMatch": "No roles match your search.",
+    "customShort": "Custom",
+    "allSeated": "Every seat has a role.",
     "removeRole": "Remove one {{role}}",
-    "empty": "No roles selected yet.",
     "remaining_one": "Choose {{count}} more role.",
     "remaining_other": "Choose {{count}} more roles."
   },

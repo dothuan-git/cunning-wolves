@@ -29,7 +29,7 @@ export function Icon({
   return (
     <svg
       {...props}
-      className={`size-5 shrink-0 ${className}`}
+      className={`${className.includes('size-') ? '' : 'size-5'} shrink-0 ${className}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

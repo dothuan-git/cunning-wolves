@@ -18,6 +18,13 @@
 @layer base {
   html {
     color-scheme: light;
+    /* The app's one scrollbar, everywhere something scrolls: the page, sheets, lists, text boxes.
+       The color inherits; the width does not, so it is set on every element. */
+    scrollbar-color: var(--color-field-border) transparent;
+  }
+
+  * {
+    scrollbar-width: thin;
   }
 
   body {
@@ -34,6 +41,52 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* A card dealt onto the table, the "x" appearing, and a count that has just changed. */
+  .card-in {
+    animation: card-in 200ms ease-out;
+  }
+
+  .remove-pop {
+    animation: pop-in 180ms ease-out;
+  }
+
+  .count-pop {
+    animation: count-pop 200ms ease-out;
+  }
+
+  /* A card taken out of the game shrinks and fades before it leaves the grid. */
+  .card-out {
+    animation: card-out 160ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  @keyframes card-out {
+    to {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+  }
+
+  @keyframes count-pop {
+    from {
+      transform: scale(1.35);
+    }
+  }
+
   .scroll-area {
     transition:
       --fade-above 200ms ease-out,
@@ -54,7 +107,7 @@
   /* Press feedback: the control sinks a little under the finger. */
   .press {
     transition-property:
-      transform, color, background-color, border-color, box-shadow, outline-color;
+      transform, color, background-color, border-color, box-shadow, outline-color, opacity;
     transition-duration: 150ms;
     transition-timing-function: ease-out;
   }
@@ -79,7 +132,38 @@
     }
   }
 
-  .detailed-dialog[open] .detailed-card {
+  /* Sheets and dialogs slide up and fade in, and back out before they are removed. */
+  .modal[open] {
+    animation: sheet-in 220ms ease-out;
+  }
+
+  .modal[open]::backdrop {
+    animation: fade-in 200ms ease-out;
+  }
+
+  .modal[data-closing='true'] {
+    animation: sheet-out 160ms ease-in forwards;
+  }
+
+  .modal[data-closing='true']::backdrop {
+    animation: fade-out 160ms ease-in forwards;
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  @keyframes sheet-out {
+    to {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  .detailed-dialog[open] {
     animation: zoom-in 220ms ease-out;
   }
 
@@ -88,7 +172,7 @@
   }
 
   /* Closing runs the opening backwards, a little faster, before the dialog is removed. */
-  .detailed-dialog[data-closing='true'] .detailed-card {
+  .detailed-dialog[data-closing='true'] {
     animation: zoom-out 160ms ease-in forwards;
   }
 
@@ -145,6 +229,29 @@
 }
 
 @layer components {
+  /* The screen's right padding gives up the width of the page scrollbar when one appears, so the
+     content keeps its width instead of narrowing. */
+  :root {
+    /* What the column gives up at its right edge: the scrollbar's width (--scrollbar, measured in
+       design/scrollbar.ts), but only while the column fills the page; a wider screen just moves
+       the column over. */
+    --scroll-room: clamp(0px, 28rem - (100vw - var(--scrollbar, 0px)), var(--scrollbar, 0px));
+  }
+
+  .page {
+    padding-right: calc(1.25rem - var(--scroll-room));
+  }
+
+  /* Header tools reach 0.75rem into the page's right padding; with a scrollbar they reach that much
+     less, so they never cross the right edge. */
+  .page-edge {
+    margin-right: calc(var(--scroll-room) - 0.75rem);
+  }
+
+  .page-edge-absolute {
+    right: calc(var(--scroll-room) - 0.75rem);
+  }
+
   /* One level of panel on the paper, set apart by a tone step alone (decision 0013). */
   .panel {
     border-radius: var(--radius-card);
@@ -201,13 +308,11 @@
 
   /* Role previews in a sideways row: each card snaps to the middle, and the next one peeks in.
      The cards are as tall as the row allows (up to 24rem), always 2:3. */
-  /* The one scroll design (ScrollArea): a thin scrollbar, and a fade at each edge only while more
-     content lies past it. */
+  /* A scrolling section inside a page (ScrollArea) adds a fade at each edge only while more
+     content lies past it; the thin scrollbar is the global one (base layer). */
   .scroll-area {
     --fade-above: 0rem;
     --fade-below: 0rem;
-    scrollbar-color: var(--color-field-border) transparent;
-    scrollbar-width: thin;
     /* The edge stays faintly visible, so a peeking row still shows there is more. */
     --fade-edge: color-mix(in srgb, var(--color-ink) 30%, transparent);
     mask-image: linear-gradient(
@@ -271,6 +376,16 @@
     aspect-ratio: 4 / 7;
   }
 
+  /* With controls under it the card gives up some height. */
+  .detailed-dialog[data-editing='true'] .detailed-card {
+    width: min(88vw, 24rem, calc(72dvh * 4 / 7));
+  }
+
+  /* A sheet sized to its content, at most three quarters of the screen. */
+  .modal-steady {
+    max-height: 75dvh;
+  }
+
   /* A thumbnail card scales with its own width: the name, padding and corners are set from the
      width of this box (cqw), so one layout serves a row of three and a wide carousel card. */
   .thumbnail-card {
@@ -292,6 +407,11 @@
     right: var(--pad);
     font-size: clamp(var(--text-caption), 9cqw, var(--text-role));
     line-height: 1.15;
+  }
+
+  /* A card with an "x" over its corner keeps its name clear of it. */
+  .thumbnail-card[data-removable='true'] .thumbnail-name {
+    top: calc(var(--pad) + 0.75rem);
   }
 
   .thumbnail-chip {
