@@ -181,7 +181,7 @@ function PreviewScene({
               },
             }
           : seer;
-      return <MyCardScreen role={role} peeking={state !== 'hidden'} />;
+      return <MyCardScreen key={state} role={role} initiallyRevealed={state !== 'hidden'} />;
     }
     case 'narrator':
       return (

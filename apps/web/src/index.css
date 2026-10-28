@@ -21,19 +21,8 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .role-card[data-revealed='true'] {
-    animation: reveal-card 220ms ease-out;
-  }
-
-  @keyframes reveal-card {
-    from {
-      opacity: 0;
-      transform: perspective(1000px) rotateY(-12deg);
-    }
-    to {
-      opacity: 1;
-      transform: perspective(1000px) rotateY(0);
-    }
+  .role-card {
+    transition: transform 250ms ease-in-out;
   }
 
   .undo-bar {
@@ -73,6 +62,47 @@
     object-position: top;
     transform: scale(1.8);
     transform-origin: 50% 0;
+  }
+
+  /* The stage is the space left on screen; the card stretches to fill all of it. */
+  .card-stage {
+    container-type: size;
+  }
+
+  .flip-card {
+    position: relative;
+    width: 100cqw;
+    height: 100cqh;
+    perspective: 1200px;
+  }
+
+  .role-card {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .role-card[data-revealed='true'] {
+    transform: rotateY(180deg);
+  }
+
+  .flip-face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-playing);
+    backface-visibility: hidden;
+  }
+
+  .flip-front {
+    transform: rotateY(180deg);
+  }
+
+  /* The role name runs down the card's top right edge. */
+  .role-title {
+    writing-mode: vertical-rl;
+    max-height: calc(100% - 2.5rem);
+    overflow-wrap: anywhere;
   }
 
   .hold-button {

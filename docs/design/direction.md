@@ -47,11 +47,11 @@ Editable text stays at 16px so phones do not zoom in on focus.
 
 - **Buttons:** primary is a flat ink fill with a `field` label; secondary is `field` with a `field-border` outline; quiet is text only. All are square (2px).
 - **`RoleBanner`:** the role's art as a 40px head-and-shoulders thumbnail (`.art-bust`) and its name in the faction color.
-- **`FactionLabel` / `FactionEmblem`:** the faction's own emblem (the cottage for the village, the wolf's head for the wolves) beside its name, on the role card and in the rules review. The summary's Roles tab lists each faction under its emblem, wolves first.
+- **`FactionLabel` / `FactionEmblem`:** the faction's own emblem (the cottage for the village, the wolf's head for the wolves) beside its name in the rules review. The summary's Roles tab lists each faction under its emblem, wolves first.
 - **`PlayerStatusControl`:** a one-tap pill. "● Alive" is outlined; "✝ Dead" is filled with `line`. The narrator shows an `UndoBar` after each tap.
 - **Wake guide:** the line the narrator reads aloud, at `text-title`, with the waking role's art inside the sentence. Under it is the wake order (the current role underlined, past roles struck through) and Back / Next. The waking role's panel takes its faction wash and a 2px ink outline.
 - **`HoldButton`:** fires after an 800 ms press and hold, for End night and End morning.
-- **My card:** the back is the card-back art. Holding the card or the button shows the role's art, its name, its faction and its rule until release.
+- **My card:** one screen high, never scrolls. A round card with a 1px `field-border` outline and a small soft shadow (`shadow-card`) fills the space between the header and the hint and shows the card-back art; tapping it flips it (250 ms) to the role, and tapping again hides it. The face is plain ivory-white (`ivory`, `#f8f5ec`). It has the role name vertical top right in its faction color, the role's art, and the rule centered. It has no faction emblem. See decision 0014.
 
 ## Art
 

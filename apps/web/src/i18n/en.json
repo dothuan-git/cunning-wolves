@@ -96,11 +96,9 @@
   },
   "card": {
     "artPlaceholder": "Placeholder role illustration",
-    "hiddenHint": "Keep your role secret. Press and hold to see it.",
-    "private": "Only you can see this card.",
     "roleDetails": "Role details",
-    "hold": "Hold to see your card",
-    "holdHint": "Let go to hide it"
+    "flip": "Flip your card",
+    "hint": "Tap the card to flip it. Keep your role secret."
   },
   "rooms": {
     "intro": "A village gathers. A story begins.",

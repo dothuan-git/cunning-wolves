@@ -1,37 +1,31 @@
 import type { PoolRole } from '@werewolf/shared';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../../components/Button';
-import { Icon } from '../../components/Icon';
 import { RoleCard } from '../../components/RoleCard';
 import { ScreenLayout } from '../../components/ScreenLayout';
-import { useHold } from '../../components/useHold';
 
 export function MyCardScreen({
   role,
-  peeking = false,
+  initiallyRevealed = false,
 }: {
   role: PoolRole;
-  /** Shows the face without a hold. Only the design preview uses it. */
-  peeking?: boolean;
+  /** Starts with the role showing. Only the design preview uses it. */
+  initiallyRevealed?: boolean;
 }) {
   const { t } = useTranslation();
-  const { holding, handlers } = useHold();
-  const revealed = peeking || holding;
+  const [revealed, setRevealed] = useState(initiallyRevealed);
   return (
-    <ScreenLayout
-      title={t('screens.myCard')}
-      footer={
-        <Button {...handlers} variant="secondary" className="hold-button">
-          <Icon name="eye" />
-          {t(revealed ? 'card.holdHint' : 'card.hold')}
-        </Button>
-      }
-    >
-      {/* Touch and mouse can also hold the card itself; the button below covers the keyboard. */}
-      <div {...handlers} className="hold-button">
-        <RoleCard role={role} revealed={revealed} />
+    <ScreenLayout title={t('screens.myCard')} fixed>
+      <div className="card-stage -mx-2 flex min-h-0 flex-1 items-center justify-center">
+        <RoleCard
+          role={role}
+          revealed={revealed}
+          onToggle={() => {
+            setRevealed((value) => !value);
+          }}
+        />
       </div>
-      <p className="text-center text-caption text-muted">{t('card.private')}</p>
+      <p className="text-center text-caption text-muted">{t('card.hint')}</p>
     </ScreenLayout>
   );
 }

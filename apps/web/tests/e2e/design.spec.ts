@@ -133,31 +133,65 @@ test('tapping an earlier note edits it without changing the player status', asyn
   await expect(page.getByRole('status')).toHaveText('6 players alive');
 });
 
-test('a concealed card removes its role and description from the page', async ({ page }) => {
+test('the card shows its back, flips on a tap, and removes the role when hidden', async ({
+  page,
+}) => {
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
   const seer = page.getByRole('heading', { name: 'Seer', exact: true });
   const rule = page.getByText('Each night, choose one player', { exact: false });
+  const card = page.getByRole('button', { name: 'Flip your card', exact: true });
   await expect(seer).toHaveCount(0);
   await expect(rule).toHaveCount(0);
-  await page.getByRole('button', { name: 'Hold to see your card', exact: true }).hover();
-  await page.mouse.down();
+  await expect(card).toHaveAttribute('aria-pressed', 'false');
+  await card.click();
+  await expect(card).toHaveAttribute('aria-pressed', 'true');
   await expect(seer).toBeVisible();
-  // The seer has its own art now; the name beside it is the accessible text, so the art has empty alt.
-  await expect(page.locator('.role-card[data-revealed="true"] img[src*="seer"]')).toBeVisible();
-  await page.mouse.up();
+  await expect(rule).toBeVisible();
+  // The seer has its own art; the name beside it is the accessible text, so the art has empty alt.
+  await expect(page.locator('.role-card img[src*="seer"]')).toBeVisible();
+  await card.click();
   await expect(seer).toHaveCount(0);
   await expect(rule).toHaveCount(0);
 });
 
-test('the card can be held from the keyboard and hides when released', async ({ page }) => {
+test('the card can be flipped from the keyboard', async ({ page }) => {
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
   const seer = page.getByRole('heading', { name: 'Seer', exact: true });
-  await page.getByRole('button', { name: 'Hold to see your card', exact: true }).focus();
-  await page.keyboard.down('Enter');
+  await page.getByRole('button', { name: 'Flip your card', exact: true }).focus();
+  await page.keyboard.press('Enter');
   await expect(seer).toBeVisible();
-  await page.keyboard.up('Enter');
+  await page.keyboard.press('Space');
   await expect(seer).toHaveCount(0);
 });
+
+for (const size of [
+  { width: 390, height: 844 },
+  { width: 360, height: 640 },
+  { width: 320, height: 568 },
+]) {
+  for (const lang of ['en', 'vi']) {
+    test(`the card page never scrolls at ${String(size.width)}x${String(size.height)} in ${lang}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto(`/design?screen=my-card&lang=${lang}&capture=1`);
+      const card = page.locator('.flip-card');
+      await expect(card).toBeVisible();
+      const fit = await page.evaluate(() => ({
+        pageHeight: document.documentElement.scrollHeight,
+        pageWidth: document.documentElement.scrollWidth,
+        face: (() => {
+          const face = document.querySelector<HTMLElement>('.flip-front');
+          return face ? face.scrollHeight - face.clientHeight : 0;
+        })(),
+      }));
+      expect(fit.pageHeight).toBeLessThanOrEqual(size.height);
+      expect(fit.pageWidth).toBeLessThanOrEqual(size.width);
+      // Nothing inside the revealed face is cut off at the bottom.
+      expect(fit.face).toBeLessThanOrEqual(0);
+    });
+  }
+}
 
 test('all seats must be filled before reviewing the rules', async ({ page }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
@@ -275,7 +309,7 @@ test('keyboard focus is visible and reduced motion disables card animation', asy
   await expect(language).toHaveCSS('outline-style', 'solid');
   await expect(language).toHaveCSS('outline-color', 'rgb(42, 65, 112)');
   await page.keyboard.press('Escape');
-  await expect(page.locator('.role-card')).toHaveCSS('animation-name', 'none');
+  await expect(page.locator('.role-card')).toHaveCSS('transition-duration', '0s');
 });
 
 test('summary separates roles and night notes with keyboard-accessible tabs', async ({ page }) => {

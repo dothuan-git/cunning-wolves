@@ -14,6 +14,7 @@ export function ScreenLayout({
   headerTools,
   onOpenMenu,
   hero,
+  fixed = false,
 }: {
   title: string;
   children: ReactNode;
@@ -24,6 +25,8 @@ export function ScreenLayout({
   onOpenMenu?: () => void;
   /** Replaces the title row with the screen's own first block, which must hold the h1. */
   hero?: ReactNode;
+  /** Fills the screen height with no page scroll; the content must fit or size itself. */
+  fixed?: boolean;
 }) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -43,7 +46,10 @@ export function ScreenLayout({
     </Button>
   );
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pt-3" data-design-screen>
+    <main
+      className={`mx-auto flex w-full max-w-md flex-col px-5 pt-3 ${fixed ? 'h-dvh overflow-hidden' : 'min-h-dvh'}`}
+      data-design-screen
+    >
       {hero ? (
         <header className={`relative ${compact ? 'mb-4' : 'mb-6'}`}>
           <div className="absolute top-0 -right-3 z-10 flex items-center">
@@ -65,7 +71,9 @@ export function ScreenLayout({
           </div>
         </header>
       )}
-      <div className={`flex min-w-0 flex-1 flex-col ${compact ? 'gap-3 pb-4' : 'gap-4 pb-6'}`}>
+      <div
+        className={`flex min-w-0 flex-1 flex-col ${fixed ? 'screen-footer min-h-0 gap-3' : compact ? 'gap-3 pb-4' : 'gap-4 pb-6'}`}
+      >
         {children}
       </div>
       {footer && (

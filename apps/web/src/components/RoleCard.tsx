@@ -1,38 +1,68 @@
 import type { Locale, PoolRole } from '@werewolf/shared';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FactionLabel } from './FactionLabel';
-import { RoleArtwork } from './RoleArtwork';
 import cardBack from '../assets/art/card-back.webp';
+import { RoleArtwork } from './RoleArtwork';
 
-export function RoleCard({ role, revealed = true }: { role: PoolRole; revealed?: boolean }) {
+const FLIP_MS = 250;
+
+/** A round playing card that shows its back until it is tapped, then flips to the role. */
+export function RoleCard({
+  role,
+  revealed,
+  onToggle,
+}: {
+  role: PoolRole;
+  revealed: boolean;
+  onToggle: () => void;
+}) {
   const { t, i18n } = useTranslation();
   const locale: Locale = i18n.language === 'vi' ? 'vi' : 'en';
+  // The role is in the page only while it shows or turns away, so a hidden card can't be read.
+  const [faceMounted, setFaceMounted] = useState(revealed);
+  if (revealed && !faceMounted) setFaceMounted(true);
+  useEffect(() => {
+    if (revealed) return;
+    const timer = window.setTimeout(() => {
+      setFaceMounted(false);
+    }, FLIP_MS);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [revealed]);
   return (
-    <div
-      data-revealed={revealed}
-      className="role-card panel relative flex flex-col overflow-hidden"
-    >
-      {revealed ? (
-        <>
-          <div className="aspect-4/5 bg-field">
-            <RoleArtwork file={role.image} fit="cover" />
-          </div>
-          <div className="grid gap-2 p-5">
-            <h2
-              className={`font-display text-title font-semibold break-words ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
-            >
-              {role.name[locale]}
-            </h2>
-            <FactionLabel team={role.team} />
-            <p className="text-body">{role.rule[locale]}</p>
-          </div>
-        </>
-      ) : (
-        <>
-          <img src={cardBack} alt="" className="aspect-2/3 w-full object-cover" />
-          <p className="p-4 text-control text-muted">{t('card.hiddenHint')}</p>
-        </>
-      )}
+    <div className="flip-card">
+      <div className="role-card" data-revealed={revealed}>
+        <div className="flip-face border border-field-border shadow-card">
+          <img src={cardBack} alt="" className="size-full object-cover" />
+        </div>
+        <div
+          className="flip-face flip-front border border-field-border bg-ivory shadow-card"
+          aria-hidden={!revealed}
+          inert={!revealed}
+        >
+          {faceMounted && (
+            <div className="flex h-full flex-col p-5">
+              <h2
+                className={`role-title absolute top-5 right-5 z-10 font-display text-title font-semibold ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+              >
+                {role.name[locale]}
+              </h2>
+              <div className="min-h-0 flex-1">
+                <RoleArtwork file={role.image} />
+              </div>
+              <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>
+            </div>
+          )}
+        </div>
+      </div>
+      <button
+        type="button"
+        aria-pressed={revealed}
+        aria-label={t('card.flip')}
+        onClick={onToggle}
+        className="absolute inset-0 rounded-playing"
+      />
     </div>
   );
 }

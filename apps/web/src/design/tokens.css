@@ -5,6 +5,8 @@
   --color-paper: #dedad3;
   --color-surface: #e9e7e3;
   --color-field: #f5f4f2;
+  /* The role card's face: plain white with a touch of ivory. */
+  --color-ivory: #f8f5ec;
   --color-ink: #0a0a0a;
   --color-muted: #5c5852;
   --color-line: #cfcac1;
@@ -45,6 +47,10 @@
 
   --radius-control: 2px;
   --radius-card: 2px;
-  /* Only what floats (sheets, dialogs, the Undo bar) casts a shadow. */
+  /* The role card is a playing card: round corners, and the only round surface in the app. */
+  --radius-playing: 1.5rem;
+  /* The role card rests on the table like a real card: a small, soft shadow. */
+  --shadow-card: 0 1px 2px rgb(10 10 10 / 12%), 0 6px 14px rgb(10 10 10 / 10%);
+  /* Sheets, dialogs and the Undo bar float and cast a larger shadow. */
   --shadow-float: 0 8px 24px rgb(10 10 10 / 18%);
 }

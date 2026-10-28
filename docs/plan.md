@@ -118,7 +118,7 @@ Phase 0 includes shared components, nine screen templates, a development-only ga
 - At night a wake guide steps through the roles.
 - Ending a phase needs a press and hold.
 
-Players hold to see their card. Setup uses role quantities and an on-demand library. Finished-game roles and night records have separate tabs.
+Players tap their card to flip it. Setup uses role quantities and an on-demand library. Finished-game roles and night records have separate tabs.
 
 Device identity, sockets, real rooms, state-machine actions, and privacy enforcement remain in their planned phases. See decisions [0007](decisions/0007-per-player-night-comments.md), [0008](decisions/0008-phase-zero-previews-and-placeholder-art.md), [0009](decisions/0009-tabletop-visual-direction.md), [0010](decisions/0010-single-list-night-and-morning.md), [0011](decisions/0011-compact-tabletop-layouts.md), [0012](decisions/0012-medieval-light-redesign.md), and [0013](decisions/0013-woodcut-redesign.md).
 

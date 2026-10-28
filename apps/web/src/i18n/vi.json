@@ -96,11 +96,9 @@
   },
   "card": {
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
-    "hiddenHint": "Giữ bí mật vai của bạn. Nhấn giữ để xem.",
-    "private": "Chỉ bạn được xem lá bài này.",
     "roleDetails": "Chi tiết vai trò",
-    "hold": "Giữ để xem lá bài",
-    "holdHint": "Thả tay để úp bài lại"
+    "flip": "Lật lá bài của bạn",
+    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn."
   },
   "rooms": {
     "intro": "Dân làng tụ họp. Câu chuyện bắt đầu.",
