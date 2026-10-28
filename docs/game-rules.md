@@ -69,7 +69,20 @@ The worker builds each viewer's state before sending it. A player's client never
 
 Each pool role has a `defaultWakeOrder` (`null` = never wakes); the room copy can be reordered by the narrator.
 
-_No pool roles yet. The `add-role` skill adds each role here._
+The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.md`.
+
+1. Stuttering Judge (`stuttering-judge`, 10): Night 1 only
+2. Two Sisters (`two-sisters`, 20)
+3. Three Brothers (`three-brothers`, 30)
+4. Fox (`fox`, 40)
+5. Seer (`seer`, 50)
+6. Bodyguard (`bodyguard`, 60)
+7. Werewolf (`werewolf`, 70)
+8. Big Bad Wolf (`big-bad-wolf`, 80)
+9. Witch (`witch`, 90)
+10. Raven (`raven`, 100)
+
+Never wake: Bear Tamer, Elder, Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Scapegoat, Village Idiot, Villager.
 
 ## Connections and lifetime
 

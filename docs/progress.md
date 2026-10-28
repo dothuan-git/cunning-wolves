@@ -63,5 +63,6 @@
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
 - Home, create, join, the village and Setup's room panel run on real rooms. Setup's role picks, rules review, cards, the narrator and the summary still run on local or sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
-- The role pool is empty, so Setup and the village carousel show no roles until Phase 3.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
+- Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
+- The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).
