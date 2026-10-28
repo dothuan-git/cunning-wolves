@@ -190,7 +190,9 @@
     "remaining_other": "Choose {{count}} more roles.",
     "noPlayers": "Waiting for players to join.",
     "tooMany_one": "{{count}} role too many.",
-    "tooMany_other": "{{count}} roles too many."
+    "tooMany_other": "{{count}} roles too many.",
+    "wakes": "Wakes at night",
+    "reconnecting": "Reconnecting… changes can’t be saved yet."
   },
   "rules": {
     "intro": "Everyone can read the rules. Your role stays secret until the game starts.",

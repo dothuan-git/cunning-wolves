@@ -1,4 +1,204 @@
 import type { PoolRole } from '../types';
 
 // Add roles with the add-role skill (.claude/skills/add-role) so each one gets docs, art and tests.
-export const ROLE_POOL: readonly PoolRole[] = [];
+// Sorted by wake order, then the roles that never wake by id.
+export const ROLE_POOL: readonly PoolRole[] = [
+  {
+    id: 'stuttering-judge',
+    name: { vi: 'Thẩm phán', en: 'Stuttering Judge' },
+    rule: {
+      vi: 'Đêm đầu tiên, thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, ra ký hiệu đó khi bỏ phiếu thì sẽ có thêm một lượt bỏ phiếu ngay sau đó.',
+      en: 'On the first night, agree on a secret sign with the narrator. Once per game, make that sign during a vote and a second vote follows at once.',
+    },
+    team: 'village',
+    defaultWakeOrder: 10,
+    image: 'stuttering-judge.webp',
+  },
+  {
+    id: 'two-sisters',
+    name: { vi: 'Hai chị em', en: 'Two Sisters' },
+    rule: {
+      vi: 'Hai chị em cùng thức dậy vào ban đêm, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
+      en: 'The sisters wake together at night, recognize each other and may silently share their suspicions.',
+    },
+    team: 'village',
+    defaultWakeOrder: 20,
+    image: 'two-sisters.webp',
+  },
+  {
+    id: 'three-brothers',
+    name: { vi: 'Ba anh em', en: 'Three Brothers' },
+    rule: {
+      vi: 'Ba anh em cùng thức dậy vào ban đêm, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
+      en: 'The brothers wake together at night, recognize each other and may silently share their suspicions.',
+    },
+    team: 'village',
+    defaultWakeOrder: 30,
+    image: 'three-brothers.webp',
+  },
+  {
+    id: 'fox',
+    name: { vi: 'Cáo', en: 'Fox' },
+    rule: {
+      vi: 'Mỗi đêm, có thể chỉ vào một người: quản trò gật đầu nếu người đó hoặc một trong hai người ngồi cạnh là sói. Nếu không có sói, bạn mất năng lực.',
+      en: 'Each night you may point at a player: the narrator nods if that player or one of their two neighbors is a werewolf. If none is, you lose your power.',
+    },
+    team: 'village',
+    defaultWakeOrder: 40,
+    image: 'fox.webp',
+  },
+  {
+    id: 'seer',
+    name: { vi: 'Tiên tri', en: 'Seer' },
+    rule: {
+      vi: 'Mỗi đêm, chỉ vào một người chơi: quản trò cho bạn xem lá bài của người đó.',
+      en: "Each night, point at a player: the narrator shows you that player's card.",
+    },
+    team: 'village',
+    defaultWakeOrder: 50,
+    image: 'seer.webp',
+  },
+  {
+    id: 'bodyguard',
+    name: { vi: 'Bảo vệ', en: 'Bodyguard' },
+    rule: {
+      vi: 'Mỗi đêm, chọn một người để bảo vệ khỏi sói. Có thể tự bảo vệ mình, nhưng không được bảo vệ cùng một người hai đêm liền.',
+      en: 'Each night, choose a player to protect from the werewolves. You may protect yourself, but not the same player two nights in a row.',
+    },
+    team: 'village',
+    defaultWakeOrder: 60,
+    image: 'bodyguard.webp',
+  },
+  {
+    id: 'werewolf',
+    name: { vi: 'Ma sói', en: 'Werewolf' },
+    rule: {
+      vi: 'Mỗi đêm, thức dậy cùng bầy sói và thống nhất giết một người. Ban ngày, giả làm dân làng.',
+      en: 'Each night, wake with the other werewolves and agree on one player to kill. By day, pass as a villager.',
+    },
+    team: 'werewolf',
+    defaultWakeOrder: 70,
+    image: 'werewolf.webp',
+  },
+  {
+    id: 'big-bad-wolf',
+    name: { vi: 'Sói hung tợn', en: 'Big Bad Wolf' },
+    rule: {
+      vi: 'Thức dậy và giết người cùng bầy sói. Sau đó thức dậy một mình và giết thêm một người, chừng nào chưa có con sói nào chết.',
+      en: 'Wake and kill with the werewolves. Then wake again alone and kill a second player, as long as no werewolf has died.',
+    },
+    team: 'werewolf',
+    defaultWakeOrder: 80,
+    image: 'big-bad-wolf.webp',
+  },
+  {
+    id: 'witch',
+    name: { vi: 'Phù thủy', en: 'Witch' },
+    rule: {
+      vi: 'Có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân.',
+      en: "You have two potions, each usable once per game: one saves the werewolves' victim, the other kills any player. Each night the narrator shows you the victim.",
+    },
+    team: 'village',
+    defaultWakeOrder: 90,
+    image: 'witch.webp',
+  },
+  {
+    id: 'raven',
+    name: { vi: 'Quạ', en: 'Raven' },
+    rule: {
+      vi: 'Mỗi đêm, có thể chỉ vào một người. Hôm sau, người đó bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.',
+      en: 'Each night you may point at a player. The next day, that player starts the vote with two votes against them.',
+    },
+    team: 'village',
+    defaultWakeOrder: 100,
+    image: 'raven.webp',
+  },
+  {
+    id: 'bear-tamer',
+    name: { vi: 'Người dạy gấu', en: 'Bear Tamer' },
+    rule: {
+      vi: 'Mỗi sáng, nếu có sói ngồi ngay cạnh bạn, quản trò gầm gừ như gấu.',
+      en: 'Each morning, if a werewolf sits right beside you, the narrator growls like a bear.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'bear-tamer.webp',
+  },
+  {
+    id: 'elder',
+    name: { vi: 'Già làng', en: 'Elder' },
+    rule: {
+      vi: 'Sống sót qua lần bị sói cắn đầu tiên. Nếu bị dân làng bỏ phiếu loại, mọi dân làng có năng lực đều mất năng lực.',
+      en: 'You survive the first werewolf attack. If the village votes you out, every villager with a power loses it.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'elder.webp',
+  },
+  {
+    id: 'hunter',
+    name: { vi: 'Thợ săn', en: 'Hunter' },
+    rule: {
+      vi: 'Khi chết, dù ban đêm hay do bỏ phiếu, bạn bắn ngay: chỉ vào một người, người đó chết theo bạn.',
+      en: 'When you die, at night or by vote, you shoot at once: point at a player, who dies with you.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'hunter.webp',
+  },
+  {
+    id: 'knight',
+    name: { vi: 'Hiệp sĩ kiếm gỉ', en: 'Knight with the Rusty Sword' },
+    rule: {
+      vi: 'Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái bạn nhiễm bệnh: nó chết vào đêm hôm sau.',
+      en: 'If the werewolves kill you, your rusty sword infects the first werewolf on your left: they die the next night.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'knight.webp',
+  },
+  {
+    id: 'little-girl',
+    name: { vi: 'Cô bé', en: 'Little Girl' },
+    rule: {
+      vi: 'Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay nạn nhân của sói.',
+      en: 'While the werewolves are awake, you may peek. If they catch you, you die in place of their victim.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'little-girl.webp',
+  },
+  {
+    id: 'scapegoat',
+    name: { vi: 'Vật tế thần', en: 'Scapegoat' },
+    rule: {
+      vi: 'Nếu cuộc bỏ phiếu hòa, bạn bị loại thay. Trước khi đi, bạn chọn ai được bỏ phiếu ngày hôm sau.',
+      en: 'If a vote ends in a tie, you are eliminated instead. Before you go, you choose who may vote the next day.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'scapegoat.webp',
+  },
+  {
+    id: 'village-idiot',
+    name: { vi: 'Thằng ngốc', en: 'Village Idiot' },
+    rule: {
+      vi: 'Nếu bị dân làng bỏ phiếu loại, bạn lật bài và ở lại chơi, nhưng không được bỏ phiếu nữa.',
+      en: 'If the village votes you out, you show your card and stay in the game, but you can no longer vote.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'village-idiot.webp',
+  },
+  {
+    id: 'villager',
+    name: { vi: 'Dân làng', en: 'Villager' },
+    rule: {
+      vi: 'Không có năng lực. Trò chuyện, tìm ra sói và bỏ phiếu loại chúng.',
+      en: 'You have no power. Talk, find the werewolves and vote them out.',
+    },
+    team: 'village',
+    defaultWakeOrder: null,
+    image: 'villager.webp',
+  },
+];

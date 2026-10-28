@@ -15,6 +15,7 @@ import { LOBBY_NAME } from '../src/lobby/Lobby';
 import { deviceIdFromToken } from '../src/room/deviceId';
 import { parseClientMessage } from '../src/room/messages';
 import { ROOM_EXPIRY_MS } from '../src/room/Room';
+import { loadRoom } from '../src/room/storage';
 import { createRoom, openSocket, TOKENS, type TestSocket } from './sockets';
 
 function isServerMessage(message: unknown): message is ServerMessage {
@@ -123,6 +124,13 @@ describe('Room', () => {
       you: await deviceIdFromToken(TOKENS.master, roomId),
       room: { id: roomId, name: 'The mill', status: 'lobby', open: true },
       players: [],
+      setup: {
+        picks: [],
+        ruleEdits: {},
+        customRoles: [],
+        wakeOrder: [],
+        settings: { timerSeconds: 120, soundOn: false },
+      },
     });
   });
 
@@ -220,6 +228,73 @@ describe('Room', () => {
     await master.next(masterView((view) => view.players.length === 0));
   });
 
+  it('keeps the card set across a reconnect, and shows it to the master only', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    master.send({ type: 'addPick', roleId: 'werewolf' });
+    master.send({ type: 'editRule', roleId: 'werewolf', rule: 'House rule' });
+    master.send({
+      type: 'addCustomRole',
+      role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
+    });
+    master.send({ type: 'setWakeOrder', order: ['custom-0', 'werewolf'] });
+    master.send({ type: 'setSettings', settings: { timerSeconds: 45, soundOn: true } });
+    await master.next(masterView((view) => view.setup.settings.timerSeconds === 45));
+
+    const again = await enter(roomId, TOKENS.master);
+    const { view } = await again.next(masterView());
+    expect(view.setup).toEqual({
+      picks: ['werewolf'],
+      ruleEdits: { werewolf: 'House rule' },
+      customRoles: [
+        { id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
+      ],
+      wakeOrder: ['custom-0', 'werewolf'],
+      settings: { timerSeconds: 45, soundOn: true },
+    });
+    for (const text of minh.received) {
+      expect(text).not.toContain('House rule');
+      expect(text).not.toContain('Baker');
+    }
+  });
+
+  it('keeps the card set when the room is loaded again from storage', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    master.send({ type: 'addPick', roleId: 'seer' });
+    await master.next(masterView((view) => view.setup.picks.length === 1));
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      expect(loadRoom(state.storage.sql)?.setup.picks).toEqual(['seer']);
+    });
+  });
+
+  it('loads a room saved before the card set existed, with an empty set', async () => {
+    await runInDurableObject(env.ROOM.getByName('phase2rm'), (_instance, state) => {
+      const { sql } = state.storage;
+      // The Phase 2 schema, without the setup tables.
+      sql.exec(`CREATE TABLE room (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, status TEXT NOT NULL, open INTEGER NOT NULL,
+        master_id TEXT NOT NULL, master_name TEXT NOT NULL, created_at INTEGER NOT NULL,
+        last_active_at INTEGER NOT NULL
+      )`);
+      sql.exec(`CREATE TABLE players (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, joined_at INTEGER NOT NULL, kicked INTEGER NOT NULL
+      )`);
+      sql.exec("INSERT INTO room VALUES ('phase2rm', 'Old mill', 'lobby', 1, 'm', 'Thuận', 0, 0)");
+      sql.exec("INSERT INTO players VALUES ('a', 'Minh', 0, 0)");
+      const loaded = loadRoom(sql);
+      expect(loaded?.players).toHaveLength(1);
+      expect(loaded?.setup).toEqual({
+        picks: [],
+        ruleEdits: {},
+        customRoles: [],
+        wakeOrder: [],
+        settings: { timerSeconds: 120, soundOn: false },
+      });
+    });
+  });
+
   it('closes a socket that acts before saying hello', async () => {
     const roomId = await newRoom();
     const socket = await openSocket(`/api/rooms/${roomId}/ws`);
@@ -304,6 +379,17 @@ describe('parseClientMessage', () => {
     [{ type: 'leave' }],
     [{ type: 'kick', playerId: 'abc' }],
     [{ type: 'setOpen', open: false }],
+    [{ type: 'addPick', roleId: 'seer' }],
+    [{ type: 'removePick', roleId: 'seer' }],
+    [{ type: 'editRule', roleId: 'seer', rule: 'Sees.' }],
+    [
+      {
+        type: 'addCustomRole',
+        role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false },
+      },
+    ],
+    [{ type: 'setWakeOrder', order: ['witch', 'seer'] }],
+    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
   });
@@ -313,12 +399,26 @@ describe('parseClientMessage', () => {
     ['not JSON', '{'],
     ['null', 'null'],
     ['unknown type', JSON.stringify({ type: 'deal' })],
-    ['too long', JSON.stringify({ type: 'join', name: 'x'.repeat(300) })],
+    ['too long', JSON.stringify({ type: 'join', name: 'x'.repeat(5000) })],
     ['a token that is not a UUID', JSON.stringify({ type: 'hello', token: 'a'.repeat(36) })],
     ['a short token', JSON.stringify({ type: 'hello', token: 'abc' })],
     ['a token with spaces', JSON.stringify({ type: 'hello', token: `${TOKENS.minh} x` })],
     ['a join without a name', JSON.stringify({ type: 'join' })],
     ['setOpen with a string', JSON.stringify({ type: 'setOpen', open: 'no' })],
+    ['a pick without a role', JSON.stringify({ type: 'addPick' })],
+    ['a rule that is not text', JSON.stringify({ type: 'editRule', roleId: 'seer', rule: 1 })],
+    [
+      'a custom role of another team',
+      JSON.stringify({
+        type: 'addCustomRole',
+        role: { name: 'Vampire', rule: 'Bites.', team: 'vampire', wakes: true },
+      }),
+    ],
+    ['a wake order with a number', JSON.stringify({ type: 'setWakeOrder', order: ['seer', 1] })],
+    [
+      'settings without sound',
+      JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60 } }),
+    ],
   ])('rejects %s', (_label, raw) => {
     expect(parseClientMessage(raw)).toBeNull();
   });

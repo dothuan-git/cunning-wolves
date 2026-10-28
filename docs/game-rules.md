@@ -23,7 +23,7 @@ The spec the code follows, taken from `docs/plan.md`. Any change to game behavio
 
 Gathering players and choosing roles happen at the same time, so they are one status, `lobby` (decision 0017).
 
-**Locks:** kick and close/re-open work until **Review rules**, which closes the room. After that, the roster and the settings are locked.
+**Locks:** kick, close/re-open and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; once the room leaves `lobby` (Phase 4), the roster, card set and settings are locked.
 
 ## Rooms
 
@@ -37,19 +37,31 @@ Gathering players and choosing roles happen at the same time, so they are one st
 - **Room list:** home shows every room live: name, master, player count, and Open / Closed / In play. Only an open room in `lobby` can be joined from it.
 - **Expiry:** a room with no message or connection for 6 hours is deleted, its phones are told it has closed, and it leaves the list.
 
+## Setup (the card set)
+
+While players gather, the master builds the card set on **Setup**. The room keeps it, so it survives a refresh. See decision 0018.
+
+- **Roles:** any number of copies of any pool or custom role, up to 40 in all. Roles are chosen freely; **Review rules** is enabled only when the roles equal the joined players (more than zero).
+- **Rule edits:** tapping a chosen role's rule edits it for this room only. The edited rule is one text, shown to every player whatever their language. An emptied rule keeps the rule it had.
+- **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night. A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
+- **Wake order:** the master can reorder the waking roles in the game; roles not reordered follow their default order.
+- **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default) and sound cues (off by default). Language is per phone, not a room setting.
+- All of this is master-only and locked once the room leaves `lobby`.
+
 ## Visibility
 
 The worker builds each viewer's state before sending it. A player's client never receives data outside the Player column.
 
-| Data                             | Room master | Player        |
-| -------------------------------- | ----------- | ------------- |
-| Player list                      | Yes         | Yes           |
-| Role list + rules (after Ready)  | Yes         | Yes           |
-| Role pool cards (browse only)    | Yes         | Yes, any time |
-| Who holds which role             | Yes         | Own card only |
-| Who has flipped their card       | Yes         | No            |
-| Phases, deaths, notes            | Yes         | No            |
-| Full reveal + log (after Finish) | Yes         | Yes           |
+| Data                                                                            | Room master | Player        |
+| ------------------------------------------------------------------------------- | ----------- | ------------- |
+| Player list                                                                     | Yes         | Yes           |
+| Card set while building (picks, rule edits, custom roles, wake order, settings) | Yes         | No            |
+| Role list + rules (after Ready)                                                 | Yes         | Yes           |
+| Role pool cards (browse only)                                                   | Yes         | Yes, any time |
+| Who holds which role                                                            | Yes         | Own card only |
+| Who has flipped their card                                                      | Yes         | No            |
+| Phases, deaths, notes                                                           | Yes         | No            |
+| Full reveal + log (after Finish)                                                | Yes         | Yes           |
 
 ## Nights and mornings
 
@@ -69,7 +81,20 @@ The worker builds each viewer's state before sending it. A player's client never
 
 Each pool role has a `defaultWakeOrder` (`null` = never wakes); the room copy can be reordered by the narrator.
 
-_No pool roles yet. The `add-role` skill adds each role here._
+The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.md`.
+
+1. Stuttering Judge (`stuttering-judge`, 10): Night 1 only
+2. Two Sisters (`two-sisters`, 20)
+3. Three Brothers (`three-brothers`, 30)
+4. Fox (`fox`, 40)
+5. Seer (`seer`, 50)
+6. Bodyguard (`bodyguard`, 60)
+7. Werewolf (`werewolf`, 70)
+8. Big Bad Wolf (`big-bad-wolf`, 80)
+9. Witch (`witch`, 90)
+10. Raven (`raven`, 100)
+
+Never wake: Bear Tamer, Elder, Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Scapegoat, Village Idiot, Villager.
 
 ## Connections and lifetime
 

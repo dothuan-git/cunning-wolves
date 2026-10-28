@@ -52,16 +52,30 @@
   - The temporary test page is removed.
   - See decision 0017.
 
+- **Phase 3 setup** (branch `feat/phase-3-setup`, 2026-10-28):
+  - The role pool has 18 roles from _Werewolves of Millers Hollow_: ten that wake and eight that don't. Role-changing and third-party roles stay out. Each has a `docs/roles/` file.
+  - The room keeps the card set: picks, rule edits, custom roles, wake order and settings survive a refresh.
+  - An edited rule is one text for every player.
+  - Custom roles can wake at night.
+  - Only the master's view carries the card set.
+  - Setup is driven by the room; while reconnecting it says changes can't be saved yet.
+  - Review rules is gated on roles = players.
+  - See decision 0018.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
-2. **Phase 3 (setup):** the role pool data (vi + en), free role picks kept in the room, the roles = players gate, per-room rule edits, custom roles, and settings.
+2. **Phase 4 (reveal and deal):**
+   - The `reveal` transition, with the server checking roles = players.
+   - The rules review from `roomRoles`.
+   - Start game shuffle, card flip, and the flipped indicator for the master.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
-- Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
-- Home, create, join, the village and Setup's room panel run on real rooms. Setup's role picks, rules review, cards, the narrator and the summary still run on local or sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
-- The role pool is empty, so Setup and the village carousel show no roles until Phase 3.
+- Open items from the plan: standalone assets in the approved engraving style, and the sound pack contents.
+- Home, create, join, the village and Setup run on real rooms. The rules review, cards, the narrator and the summary still run on local or sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
+- Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
+- The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

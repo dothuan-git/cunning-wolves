@@ -1,4 +1,4 @@
-import { ROLE_POOL, type PlayerView, type ServerErrorCode } from '@werewolf/shared';
+import { ROLE_POOL, roomRoles, type PlayerView, type ServerErrorCode } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -46,6 +46,7 @@ export function RoomScreen({ roomId }: { roomId: string }) {
   if (!view) return <Notice live title={t('room.connecting')} body={t('lobby.seatKept')} />;
 
   if (view.kind === 'master') {
+    const { setup } = view;
     return (
       <SetupScreen
         roomName={view.room.name}
@@ -53,8 +54,17 @@ export function RoomScreen({ roomId }: { roomId: string }) {
         open={view.room.open}
         onToggleOpen={() => send({ type: 'setOpen', open: !view.room.open })}
         onRemove={(playerId) => send({ type: 'kick', playerId })}
-        roles={ROLE_POOL}
-        initialPicks={[]}
+        roles={roomRoles(setup)}
+        picks={setup.picks}
+        wakeOrder={setup.wakeOrder}
+        settings={setup.settings}
+        reconnecting={status !== 'connected'}
+        onAddPick={(roleId) => send({ type: 'addPick', roleId })}
+        onRemovePick={(roleId) => send({ type: 'removePick', roleId })}
+        onEditRule={(roleId, rule) => send({ type: 'editRule', roleId, rule })}
+        onAddCustomRole={(role) => send({ type: 'addCustomRole', role })}
+        onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
+        onSettings={(settings) => send({ type: 'setSettings', settings })}
         // Dealing comes in a later phase; for now reviewing the rules closes the room.
         onReady={() => send({ type: 'setOpen', open: false })}
       />

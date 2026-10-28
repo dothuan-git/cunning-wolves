@@ -1,4 +1,4 @@
-import type { RoomSummary, RoomView } from '@werewolf/shared';
+import type { RoomSetup, RoomSummary, RoomView } from '@werewolf/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LobbyConnection } from '../../src/realtime/LobbyConnection';
 import { parseLobbyMessage, parseServerMessage } from '../../src/realtime/parse';
@@ -14,6 +14,14 @@ const VIEW: RoomView = {
   players: [{ id: 'aaaa', name: 'Minh', connected: true }],
   seat: 'joined',
 };
+const SETUP: RoomSetup = {
+  picks: ['werewolf', 'custom-0'],
+  ruleEdits: { werewolf: 'House rule' },
+  customRoles: [{ id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false }],
+  wakeOrder: ['werewolf'],
+  settings: { timerSeconds: 60, soundOn: true },
+};
+const MASTER = { kind: 'master', you: 'm', room: ROOM, players: [], setup: SETUP } as const;
 const SUMMARY: RoomSummary = {
   id: 'mill',
   name: 'The mill',
@@ -91,7 +99,7 @@ describe('parseServerMessage', () => {
   it('accepts views and errors', () => {
     const state = { type: 'state', view: VIEW };
     expect(parseServerMessage(JSON.stringify(state))).toEqual(state);
-    const master = { type: 'state', view: { kind: 'master', you: 'm', room: ROOM, players: [] } };
+    const master = { type: 'state', view: MASTER };
     expect(parseServerMessage(JSON.stringify(master))).toEqual(master);
     const error = { type: 'error', code: 'room-closed' };
     expect(parseServerMessage(JSON.stringify(error))).toEqual(error);
@@ -105,6 +113,21 @@ describe('parseServerMessage', () => {
     ['an unknown seat', { type: 'state', view: { ...VIEW, seat: 'boss' } }],
     ['a bad player', { type: 'state', view: { ...VIEW, players: [{ id: 1 }] } }],
     ['an unknown status', { type: 'state', view: { ...VIEW, room: { ...ROOM, status: 'x' } } }],
+    ['a master view without setup', { type: 'state', view: { ...MASTER, setup: undefined } }],
+    [
+      'a custom role of another team',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          setup: { ...SETUP, customRoles: [{ ...SETUP.customRoles[0], team: 'vampire' }] },
+        },
+      },
+    ],
+    [
+      'a rule edit that is not text',
+      { type: 'state', view: { ...MASTER, setup: { ...SETUP, ruleEdits: { seer: 1 } } } },
+    ],
   ])('rejects %s', (_label, data) => {
     expect(
       parseServerMessage(

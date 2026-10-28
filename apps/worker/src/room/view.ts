@@ -3,6 +3,7 @@ import type {
   PlayerInfo,
   PlayerView,
   RoomInfo,
+  RoomSetup,
   RoomSummary,
   RoomView,
 } from '@werewolf/shared';
@@ -22,12 +23,30 @@ function playerList(state: RoomState, connected: ReadonlySet<string>): PlayerInf
   }));
 }
 
+/** The card set, for the master only until the rules are reviewed. Copies so no state is shared. */
+function setupInfo(setup: RoomSetup): RoomSetup {
+  return {
+    picks: [...setup.picks],
+    ruleEdits: { ...setup.ruleEdits },
+    customRoles: setup.customRoles.map((role) => ({
+      id: role.id,
+      name: role.name,
+      rule: role.rule,
+      team: role.team,
+      wakes: role.wakes,
+    })),
+    wakeOrder: [...setup.wakeOrder],
+    settings: { timerSeconds: setup.settings.timerSeconds, soundOn: setup.settings.soundOn },
+  };
+}
+
 export function buildMasterView(state: RoomState, connected: ReadonlySet<string>): MasterView {
   return {
     kind: 'master',
     you: state.masterId,
     room: roomInfo(state),
     players: playerList(state, connected),
+    setup: setupInfo(state.setup),
   };
 }
 

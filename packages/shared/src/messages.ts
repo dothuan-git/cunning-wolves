@@ -1,5 +1,5 @@
 import type { RoomSummary } from './api';
-import type { RoomStatus } from './types';
+import type { CustomRoleInput, RoomSettings, RoomSetup, RoomStatus } from './types';
 
 /** Room ids, as the create route makes them: in `/room/:id` and `/api/rooms/:id/ws`. */
 export const ROOM_ID_PATTERN = /^[a-z0-9]{8}$/;
@@ -22,7 +22,15 @@ export type ClientMessage =
   | { type: 'join'; name: string }
   | { type: 'leave' }
   | { type: 'kick'; playerId: string }
-  | { type: 'setOpen'; open: boolean };
+  | { type: 'setOpen'; open: boolean }
+  | { type: 'addPick'; roleId: string }
+  /** Takes one copy of the role out of the game */
+  | { type: 'removePick'; roleId: string }
+  /** The new rule replaces both languages for this room */
+  | { type: 'editRule'; roleId: string; rule: string }
+  | { type: 'addCustomRole'; role: CustomRoleInput }
+  | { type: 'setWakeOrder'; order: string[] }
+  | { type: 'setSettings'; settings: RoomSettings };
 
 export type RoomAction = Exclude<ClientMessage, { type: 'hello' }>;
 
@@ -48,6 +56,7 @@ export interface MasterView {
   you: string;
   room: RoomInfo;
   players: PlayerInfo[];
+  setup: RoomSetup;
 }
 
 /** What any other phone sees: the player list and its own seat, never other players' secrets. */
@@ -63,7 +72,13 @@ export interface PlayerView {
 export type RoomView = MasterView | PlayerView;
 
 export type ServerErrorCode =
-  'bad-message' | 'name-invalid' | 'name-taken' | 'room-closed' | 'not-master' | 'not-allowed';
+  | 'bad-message'
+  | 'name-invalid'
+  | 'name-taken'
+  | 'room-closed'
+  | 'not-master'
+  | 'not-allowed'
+  | 'role-invalid';
 
 /** Room → phone. */
 export type ServerMessage =

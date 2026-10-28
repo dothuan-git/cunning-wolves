@@ -1,7 +1,9 @@
 import type {
+  CustomRole,
   LobbyMessage,
   PlayerInfo,
   RoomInfo,
+  RoomSetup,
   RoomStatus,
   RoomSummary,
   RoomView,
@@ -21,7 +23,9 @@ const ERROR_CODES: readonly ServerErrorCode[] = [
   'room-closed',
   'not-master',
   'not-allowed',
+  'role-invalid',
 ];
+const TEAMS = ['village', 'werewolf'] as const;
 const SEATS = ['none', 'joined', 'removed'] as const;
 
 function isObject(value: unknown): value is Fields {
@@ -66,12 +70,58 @@ function list<T>(value: unknown, item: (entry: unknown) => T | null): T[] | null
   return items.every((entry) => entry !== null) ? items : null;
 }
 
+function text(value: unknown): string | null {
+  return typeof value === 'string' ? value : null;
+}
+
+function customRole(value: unknown): CustomRole | null {
+  if (!isObject(value)) return null;
+  const { id, name, rule, team, wakes } = value;
+  const known = oneOf(TEAMS, team);
+  if (
+    typeof id !== 'string' ||
+    typeof name !== 'string' ||
+    typeof rule !== 'string' ||
+    !known ||
+    typeof wakes !== 'boolean'
+  ) {
+    return null;
+  }
+  return { id, name, rule, team: known, wakes };
+}
+
+function roomSetup(value: unknown): RoomSetup | null {
+  if (!isObject(value) || !isObject(value.ruleEdits) || !isObject(value.settings)) return null;
+  const picks = list(value.picks, text);
+  const customRoles = list(value.customRoles, customRole);
+  const wakeOrder = list(value.wakeOrder, text);
+  const ruleEdits: Record<string, string> = {};
+  for (const [roleId, rule] of Object.entries(value.ruleEdits)) {
+    if (typeof rule !== 'string') return null;
+    ruleEdits[roleId] = rule;
+  }
+  const { timerSeconds, soundOn } = value.settings;
+  if (
+    !picks ||
+    !customRoles ||
+    !wakeOrder ||
+    typeof timerSeconds !== 'number' ||
+    typeof soundOn !== 'boolean'
+  ) {
+    return null;
+  }
+  return { picks, ruleEdits, customRoles, wakeOrder, settings: { timerSeconds, soundOn } };
+}
+
 function roomView(value: unknown): RoomView | null {
   if (!isObject(value) || typeof value.you !== 'string') return null;
   const room = roomInfo(value.room);
   const players = list(value.players, playerInfo);
   if (!room || !players) return null;
-  if (value.kind === 'master') return { kind: 'master', you: value.you, room, players };
+  if (value.kind === 'master') {
+    const setup = roomSetup(value.setup);
+    return setup ? { kind: 'master', you: value.you, room, players, setup } : null;
+  }
   const seat = oneOf(SEATS, value.seat);
   if (value.kind === 'player' && seat) {
     return { kind: 'player', you: value.you, room, players, seat };
