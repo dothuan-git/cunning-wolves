@@ -120,6 +120,18 @@
     transform: scale(0.97);
   }
 
+  /* The master deals the card: it is flicked in from above the screen and lands face down. */
+  .deal-in {
+    animation: deal-in 450ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  }
+
+  @keyframes deal-in {
+    from {
+      opacity: 0;
+      transform: translateY(-110%) rotate(-7deg) scale(0.9);
+    }
+  }
+
   /* A list's children rise in one after another; a tab's content does this each time it opens. */
   .stagger > * {
     animation: rise 220ms ease-out backwards;

@@ -168,6 +168,17 @@ test('the card shows its back, flips on a tap, and removes the role when hidden'
   await expect(rule).toHaveCount(0);
 });
 
+test('the card is dealt in from above when the page opens, but not with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'deal-in');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-duration', '0.45s');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
+});
+
 test('the card can be flipped from the keyboard', async ({ page }) => {
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
   const seer = page.getByRole('heading', { name: 'Seer', exact: true });
