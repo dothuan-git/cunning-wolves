@@ -112,7 +112,7 @@ The server sends each phone only what it is allowed to see, so no one can find a
 
 The source of truth is [the design direction](design/direction.md), the tokens in `apps/web/src/design/tokens.css`. The `/design` route shows every screen and state.
 
-Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. The seer, the villager and the card back have their own art; other roles use the shared placeholder until their artwork is supplied. On the narrator screen:
+Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. The seer, villager and wolf, the card back and both factions have their own art; other roles show a hooded fallback figure until their artwork is supplied. On the narrator screen:
 
 - Players have one-tap status pills with Undo, their note history, and the current night's field inline.
 - At night a wake guide steps through the roles.

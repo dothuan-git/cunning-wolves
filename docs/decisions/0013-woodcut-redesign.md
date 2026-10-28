@@ -14,7 +14,7 @@ Thuan asked for a redesign that does not look generic, using the third-party tas
 - **Surfaces:** panels are set apart from the page by a tone step only, with no border and no shadow. One radius of 2px for panels and controls. The primary button is a flat ink fill. Only what floats (sheets, dialogs, the Undo bar) casts a shadow. The footer is opaque.
 - **Signature:** at night the narrator's wake line ("Seer wakes up") is the largest text on the screen. The role's card art sits inside the sentence as if it were a word, and the wake order is a row of role names under it.
 - **Home:** the app's name at poster size on two lines, with a crop of Lucas Cranach the Elder's woodcut _The Werewolf_ (about 1512, The Met, CC0) between them. Only the top of the print is used (the house, the castle, the villagers); the lower half is graphic.
-- **Art:** the seer and villager card art and the card back come from Thuan's generated images. Other roles keep the shared placeholder. The tabletop seal and village panorama are removed.
+- **Art:** the seer, villager and wolf card art, the card back, the fallback figure and the two faction emblems come from Thuan's generated images. The hooded fallback figure replaces the SVG placeholder for roles without art. The tabletop seal and village panorama are removed.
 - **Credits:** the woodcut's credit is in the menu sheet.
 
 ## Why
@@ -28,4 +28,4 @@ Thuan asked for a redesign that does not look generic, using the third-party tas
 - **Home title exception:** the home title is 74px at 390px wide, above the skill's 32px app-title limit. It is the one poster-size moment and appears on no other screen. The inspector warns about it (`app-title-size`) and nothing else on that screen.
 - **Tests:** the e2e focus color follows the new lapis. The concealed-card test checks the seer's own art rather than the placeholder.
 - **Ignored folder:** the skill's working files live in `.taste-skill/`, which is ignored by git.
-- **Mixed art:** the art set is not yet consistent. The seer and villager are generated engravings, wolf and witch are placeholders, and the woodcut is a real print.
+- **Mixed art:** the generated engravings are one family; the woodcut is a real print in a different hand and appears only on home. Roles without art (the witch, for now) show the hooded fallback figure.

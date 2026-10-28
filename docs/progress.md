@@ -38,4 +38,4 @@
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
 - Screen templates and example interactions are implemented; real room/gameplay wiring is not. The development gallery uses synthetic data and is excluded from production JavaScript. Room state/message types, temporal death behavior, and server privacy tests belong to later phases.
-- Only the seer and villager have card art; other roles use the shared placeholder. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
+- The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
