@@ -2,9 +2,11 @@ import {
   CLOSE_REPLACED,
   CLOSE_ROOM_GONE,
   type CreateRoomResponse,
+  type GameState,
   type LobbyMessage,
   type MasterView,
   type PlayerView,
+  type Phase,
   type ServerErrorCode,
   type ServerMessage,
 } from '@werewolf/shared';
@@ -15,7 +17,7 @@ import { LOBBY_NAME } from '../src/lobby/Lobby';
 import { deviceIdFromToken } from '../src/room/deviceId';
 import { parseClientMessage } from '../src/room/messages';
 import { ROOM_EXPIRY_MS } from '../src/room/Room';
-import { loadRoom } from '../src/room/storage';
+import { loadRoom, saveRoom } from '../src/room/storage';
 import { createRoom, openSocket, TOKENS, type TestSocket } from './sockets';
 
 function isServerMessage(message: unknown): message is ServerMessage {
@@ -375,6 +377,37 @@ describe('Room', () => {
       expect(text).not.toContain('Secret note');
       expect(text).not.toContain('"game"');
     }
+  });
+
+  it('starts a game dealt before the room kept marks at Night 1, and round-trips what it keeps', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    await join(roomId, TOKENS.minh, 'Minh');
+    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    await master.next(masterView((view) => view.room.status === 'playing'));
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      const { sql } = state.storage;
+      sql.exec('DELETE FROM game');
+      sql.exec('DELETE FROM deaths');
+      sql.exec('DELETE FROM notes');
+      const older = loadRoom(sql);
+      expect(older?.game).toEqual({ phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} });
+      if (!older) throw new Error('room did not load');
+      // A player id that is also an object key survives saving and loading.
+      const death: Phase = { kind: 'night', number: 2 };
+      const game: GameState = {
+        phase: { kind: 'morning', number: 2 },
+        deaths: Object.fromEntries([['__proto__', death]]),
+        notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
+      };
+      saveRoom(state.storage, { ...older, game });
+      const loaded = loadRoom(sql)?.game;
+      expect(Object.keys(loaded?.deaths ?? {})).toEqual(['__proto__']);
+      expect(Object.keys(loaded?.notes[1] ?? {})).toEqual(['__proto__']);
+      expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
+    });
   });
 
   it('refuses to show the rules until roles equal players', async () => {
