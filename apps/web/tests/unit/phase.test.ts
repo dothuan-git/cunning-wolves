@@ -4,7 +4,6 @@ import {
   nextPhase,
   phaseIndex,
   playerTimeline,
-  wakeStep,
 } from '../../src/screens/narrator/phase';
 
 describe('phase order', () => {
@@ -96,42 +95,39 @@ describe('playerTimeline', () => {
     ]);
   });
 
-  it('keeps the input above a death marked during the current night', () => {
+  it('keeps only the input for a death marked during the current night', () => {
     expect(
       playerTimeline({
-        notes: {},
+        notes: { 2: 'Bitten' },
         death: { kind: 'night', number: 2 },
         current: { kind: 'night', number: 2 },
       }),
-    ).toEqual([
-      { type: 'input', night: 2 },
-      { type: 'death', phase: { kind: 'night', number: 2 } },
-    ]);
+    ).toEqual([{ type: 'input', night: 2 }]);
+  });
+
+  it('keeps only the note for a death in a past night that has one', () => {
+    expect(
+      playerTimeline({
+        notes: { 1: 'Bitten' },
+        death: { kind: 'night', number: 1 },
+        current: { kind: 'morning', number: 2 },
+      }),
+    ).toEqual([{ type: 'note', night: 1, text: 'Bitten' }]);
+  });
+
+  it('shows the death of a past night that has no note', () => {
+    expect(
+      playerTimeline({
+        notes: {},
+        death: { kind: 'night', number: 1 },
+        current: { kind: 'morning', number: 2 },
+      }),
+    ).toEqual([{ type: 'death', phase: { kind: 'night', number: 1 } }]);
   });
 
   it('gives the input back when a death is undone', () => {
     expect(
       playerTimeline({ notes: {}, death: undefined, current: { kind: 'night', number: 3 } }),
     ).toEqual([{ type: 'input', night: 3 }]);
-  });
-});
-
-describe('wakeStep', () => {
-  it('moves through the waking roles in order', () => {
-    expect(wakeStep(0, 1, 3)).toBe(1);
-    expect(wakeStep(2, -1, 3)).toBe(1);
-  });
-
-  it('ends on the done step after the last role', () => {
-    expect(wakeStep(2, 1, 3)).toBe(3);
-    expect(wakeStep(3, 1, 3)).toBe(3);
-  });
-
-  it('never goes before the first role', () => {
-    expect(wakeStep(0, -1, 3)).toBe(0);
-  });
-
-  it('is done straight away when no role wakes', () => {
-    expect(wakeStep(0, 1, 0)).toBe(0);
   });
 });

@@ -72,7 +72,6 @@
     "home": "Back to home",
     "morning": "Morning {{number}}",
     "menu": "Menu",
-    "undo": "Undo",
     "holdHint": "Press and hold",
     "keepHolding": "Keep holding…"
   },
@@ -90,8 +89,6 @@
     "note": "Note for {{name}}",
     "notePlaceholder": "Add an observation…",
     "statusFor": "Status for {{name}}",
-    "markedDead": "{{name}} marked dead",
-    "markedAlive": "{{name}} is alive again",
     "nameYou": "{{name}} (you)"
   },
   "card": {
@@ -192,8 +189,6 @@
   "narrator": {
     "alive": "{{count}} players alive",
     "endNight": "End night",
-    "finishTitle": "Finish this game?",
-    "finishBody": "The game record reveals everyone’s role and your notes.",
     "timer": "Timer",
     "startTimer": "Start timer",
     "pauseTimer": "Pause timer",
@@ -201,8 +196,6 @@
     "soundOn": "Sound on",
     "soundOff": "Sound off",
     "reorder": "Wake order",
-    "moveUp": "Move {{role}} earlier",
-    "moveDown": "Move {{role}} later",
     "endMorning": "End morning",
     "died": "Died",
     "history": "{{name}}’s record",
@@ -210,14 +203,9 @@
     "noteFor": "{{name}}’s note for {{phase}}",
     "holdEndNight": "Hold to end night",
     "holdEndMorning": "Hold to end morning",
-    "wakeGuide": "Wake order",
-    "wakeStep": "Waking {{current}} of {{total}}",
-    "wakes": "{{role}} wakes up",
-    "wakeNext": "Next",
-    "wakeNextLabel": "Wake the next role",
-    "wakePrevious": "Back to the previous role",
-    "wakeDone": "Everyone has woken",
-    "wakeDoneHint": "End the night when you are ready."
+    "wakeTile": "{{role}}, {{position}} of {{total}}",
+    "wakeHint": "Drag, or use the arrow keys, to change the order.",
+    "wakeMoved": "{{role}} is now {{position}} of {{total}}"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",

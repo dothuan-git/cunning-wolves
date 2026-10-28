@@ -6,11 +6,13 @@ type InputProps = Labels & InputHTMLAttributes<HTMLInputElement>;
 type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string;
   hideLabel?: boolean;
-  appearance?: 'field' | 'line';
+  /** `box` is a field that grows with its text instead of scrolling inside. */
+  appearance?: 'field' | 'box';
 };
 
-const fieldClass =
-  'min-h-12 w-full min-w-0 rounded-control border bg-field px-3 py-2.5 font-sans text-body text-ink placeholder:text-muted disabled:opacity-50';
+const fieldBase =
+  'w-full min-w-0 rounded-control border bg-field px-3 font-sans text-body text-ink placeholder:text-muted disabled:opacity-50';
+const fieldClass = `${fieldBase} min-h-12 py-2.5`;
 
 export function TextField({
   label,
@@ -58,12 +60,10 @@ export function NoteField({
   const generatedId = useId();
   const id = suppliedId ?? generatedId;
   const ref = useRef<HTMLTextAreaElement>(null);
-  const grows = appearance === 'line';
+  const grows = appearance === 'box';
   useLayoutEffect(() => {
     const textarea = ref.current;
     if (!grows || !textarea) return;
-    // Underlined notes grow with their text instead of scrolling inside one line.
-    // Their scroll margin (scroll-mb-24) keeps a focused note clear of the sticky footer.
     textarea.style.height = 'auto';
     const border = textarea.offsetHeight - textarea.clientHeight;
     textarea.style.height = `${String(textarea.scrollHeight + border)}px`;
@@ -78,9 +78,15 @@ export function NoteField({
         ref={ref}
         id={id}
         rows={props.rows ?? 1}
+        onFocus={(event) => {
+          props.onFocus?.(event);
+          // The browser skips scrolling a field that is on screen but under the sticky footer;
+          // scrolling to it with its scroll margin (scroll-mb-24) lifts it clear.
+          if (grows) event.currentTarget.scrollIntoView({ block: 'nearest' });
+        }}
         className={
           grows
-            ? `min-h-12 w-full min-w-0 resize-none scroll-mb-24 overflow-hidden border-0 border-b border-field-border bg-transparent px-0 py-2.5 font-sans text-body text-ink placeholder:text-muted focus-visible:outline-offset-2 ${className}`
+            ? `${fieldBase} min-h-10 resize-none scroll-mb-24 overflow-hidden border-field-border py-1.5 ${className}`
             : `${fieldClass} min-h-12 resize-y border-field-border ${className}`
         }
       />

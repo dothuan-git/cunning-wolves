@@ -64,6 +64,8 @@ function PreviewScene({
     if (state === 'morning') sample.linh = { kind: 'night', number: 2 };
     return sample;
   });
+  // The wake order set on the setup page, carried to the narrator while this scene stays open.
+  const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
   // A full table: the sample players and twelve more.
@@ -171,7 +173,8 @@ function PreviewScene({
               ? [null, null, null, null, null, null]
               : ['seer', 'werewolf', 'werewolf', 'witch', 'villager', null]
           }
-          onReady={() => {
+          onReady={(order) => {
+            setWakeOrder(order);
             onNavigate('rules-review');
           }}
         />
@@ -207,12 +210,20 @@ function PreviewScene({
     case 'narrator':
       return (
         <NarratorScreen
-          groups={exampleGroups.map((group) => ({
-            ...group,
-            players: group.players.map(
-              (player) => players.find((item) => item.id === player.id) ?? player,
-            ),
-          }))}
+          groups={[...exampleGroups]
+            .sort((a, b) => {
+              const place = (id: string) => {
+                const index = wakeOrder.indexOf(id);
+                return index < 0 ? wakeOrder.length : index;
+              };
+              return place(a.role.id) - place(b.role.id);
+            })
+            .map((group) => ({
+              ...group,
+              players: group.players.map(
+                (player) => players.find((item) => item.id === player.id) ?? player,
+              ),
+            }))}
           phase={phase}
           notes={Object.fromEntries(
             Array.from({ length: phase.number }, (_, index) => [

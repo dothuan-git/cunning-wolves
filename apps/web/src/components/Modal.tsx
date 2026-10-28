@@ -96,7 +96,7 @@ export function Modal({
       }}
       aria-labelledby={titleId}
       data-closing={closing}
-      className={`modal ${sheet ? 'mt-auto mb-0 max-w-md pb-8' : 'my-auto max-w-sm'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto w-full flex-col overflow-hidden rounded-card bg-field p-5 text-ink shadow-float backdrop:bg-ink/40 open:flex`}
+      className={`modal ${sheet ? 'mt-auto mb-0 w-full max-w-md pb-8' : 'modal-centered my-auto'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto flex-col overflow-hidden rounded-card bg-field p-5 text-ink shadow-float backdrop:bg-ink/40 open:flex`}
     >
       <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
         <h2 id={titleId} className="font-display text-heading font-semibold">

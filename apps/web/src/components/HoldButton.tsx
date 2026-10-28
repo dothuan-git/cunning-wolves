@@ -4,15 +4,24 @@ import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { useHold } from './useHold';
 
-/** A primary action that fires only after a deliberate press and hold. */
+/**
+ * An action that fires only after a deliberate press and hold. `iconOnly` makes it a square
+ * button whose accessible name is `label`.
+ */
 export function HoldButton({
   children,
   onComplete,
   duration = 800,
+  variant = 'primary',
+  iconOnly = false,
+  label,
 }: {
   children: ReactNode;
   onComplete: () => void;
   duration?: number;
+  variant?: 'primary' | 'danger';
+  iconOnly?: boolean;
+  label?: string;
 }) {
   const { t } = useTranslation();
   const hintId = useId();
@@ -31,18 +40,24 @@ export function HoldButton({
     <>
       <Button
         {...handlers}
+        variant={variant}
+        size={iconOnly ? 'icon' : 'normal'}
+        aria-label={label}
         data-holding={holding}
         aria-describedby={hintId}
         className="hold-button relative overflow-hidden"
         style={{ '--hold-duration': `${String(duration)}ms` } as CSSProperties}
       >
-        <span aria-hidden="true" className="hold-fill bg-field/25 motion-reduce:hidden" />
         <span
-          className={`relative inline-flex items-center gap-2 ${holding ? 'motion-reduce:hidden' : ''}`}
+          aria-hidden="true"
+          className={`hold-fill motion-reduce:hidden ${variant === 'danger' ? 'bg-danger/25' : 'bg-field/25'}`}
+        />
+        <span
+          className={`relative inline-flex items-center gap-2 ${holding && !iconOnly ? 'motion-reduce:hidden' : ''}`}
         >
           {children}
         </span>
-        {holding && (
+        {holding && !iconOnly && (
           <span className="relative hidden motion-reduce:inline">{t('common.keepHolding')}</span>
         )}
       </Button>

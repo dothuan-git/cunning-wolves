@@ -39,20 +39,19 @@ export function playerTimeline({
   const entries: TimelineEntry[] = [];
   for (let night = 1; night <= current.number; night++) {
     const text = notes[night] ?? '';
+    let noted = true;
     if (current.kind === 'night' && night === current.number && canNoteNight(death, night)) {
       entries.push({ type: 'input', night });
     } else if (text.trim() !== '' || night === editingNight) {
       entries.push({ type: 'note', night, text });
+    } else {
+      noted = false;
     }
-    if (death?.number === night) entries.push({ type: 'death', phase: death });
+    // One row per night: a night's note stands in for a death marked that same night.
+    const diedThisNight = death?.kind === 'night' && death.number === night;
+    if (death?.number === night && !(diedThisNight && noted)) {
+      entries.push({ type: 'death', phase: death });
+    }
   }
   return entries;
-}
-
-/**
- * Moves the night's wake guide by `delta`. Steps 0…total-1 are the waking roles in
- * order; step `total` means every role has had its turn.
- */
-export function wakeStep(step: number, delta: number, total: number): number {
-  return Math.min(Math.max(step + delta, 0), Math.max(total, 0));
 }

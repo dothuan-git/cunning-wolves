@@ -17,6 +17,7 @@ const paths = {
   check: 'm5 12 4 4L19 6',
   plus: 'M12 5v14M5 12h14',
   book: 'M3 4h6l3 2 3-2h6v16h-6l-3 2-3-2H3V4Zm9 2v16',
+  flag: 'M5 21V4m0 0h13l-3 4.5 3 4.5H5',
 } as const;
 
 export type IconName = keyof typeof paths;

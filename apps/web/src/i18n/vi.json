@@ -72,7 +72,6 @@
     "home": "Về trang chủ",
     "morning": "Sáng {{number}}",
     "menu": "Tùy chọn",
-    "undo": "Hoàn tác",
     "holdHint": "Nhấn và giữ",
     "keepHolding": "Giữ thêm chút nữa…"
   },
@@ -90,8 +89,6 @@
     "note": "Ghi chú cho {{name}}",
     "notePlaceholder": "Thêm ghi chú…",
     "statusFor": "Trạng thái của {{name}}",
-    "markedDead": "Đã đánh dấu {{name}} chết",
-    "markedAlive": "{{name}} sống lại",
     "nameYou": "{{name}} (bạn)"
   },
   "card": {
@@ -192,8 +189,6 @@
   "narrator": {
     "alive": "{{count}} người còn sống",
     "endNight": "Kết thúc đêm",
-    "finishTitle": "Kết thúc ván chơi?",
-    "finishBody": "Nhật ký sẽ mở vai trò của mọi người và các ghi chú của bạn.",
     "timer": "Bộ đếm",
     "startTimer": "Bắt đầu đếm",
     "pauseTimer": "Tạm dừng",
@@ -201,8 +196,6 @@
     "soundOn": "Bật âm thanh",
     "soundOff": "Tắt âm thanh",
     "reorder": "Thứ tự thức dậy",
-    "moveUp": "Gọi {{role}} sớm hơn",
-    "moveDown": "Gọi {{role}} muộn hơn",
     "endMorning": "Kết thúc sáng",
     "died": "Đã chết",
     "history": "Diễn biến của {{name}}",
@@ -210,14 +203,9 @@
     "noteFor": "Ghi chú {{phase}} của {{name}}",
     "holdEndNight": "Giữ để kết thúc đêm",
     "holdEndMorning": "Giữ để kết thúc sáng",
-    "wakeGuide": "Thứ tự gọi",
-    "wakeStep": "Đang gọi {{current}}/{{total}}",
-    "wakes": "{{role}} thức dậy",
-    "wakeNext": "Tiếp",
-    "wakeNextLabel": "Gọi vai tiếp theo",
-    "wakePrevious": "Quay lại vai trước",
-    "wakeDone": "Đã gọi hết các vai",
-    "wakeDoneHint": "Kết thúc đêm khi bạn sẵn sàng."
+    "wakeTile": "{{role}}, thứ {{position}}/{{total}}",
+    "wakeHint": "Kéo, hoặc dùng phím mũi tên, để đổi thứ tự.",
+    "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",

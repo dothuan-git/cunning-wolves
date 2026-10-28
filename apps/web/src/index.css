@@ -210,17 +210,6 @@
     transition: transform 250ms ease-in-out;
   }
 
-  .undo-bar {
-    animation: undo-in 180ms ease-out;
-  }
-
-  @keyframes undo-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-  }
-
   /* The fill tracks the user's own press, so it lasts as long as the hold (see decision 0012). */
   .hold-button[data-holding='true'] .hold-fill {
     scale: 1 1;
@@ -256,12 +245,6 @@
   .panel {
     border-radius: var(--radius-card);
     background: var(--color-surface);
-  }
-
-  /* Role art set into the wake line as if it were a word, standing on the baseline. */
-  .wake-art {
-    height: 0.9em;
-    width: 0.9em;
   }
 
   /* Full-length role art cropped to the head and shoulders (the top third, centred) in a small frame. */
@@ -382,6 +365,11 @@
   }
 
   /* A sheet sized to its content, at most three quarters of the screen. */
+  /* A centered dialog keeps the page gutter (20px) on both sides and stops at 24rem. */
+  .modal-centered {
+    width: min(100% - 2.5rem, 24rem);
+  }
+
   .modal-steady {
     max-height: 75dvh;
   }
