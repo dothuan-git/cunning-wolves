@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { ScreenLayout } from '../../components/ScreenLayout';
+import { ScrollArea } from '../../components/ScrollArea';
 import type { PlayerListItem } from '../types';
 import { RoleCarousel } from './RoleCarousel';
 
@@ -57,24 +58,27 @@ export function PlayerLobbyScreen({
       }
     >
       <section className="panel grid shrink-0 gap-2 p-4">
-        <div className="flex items-start justify-between gap-3">
+        {/* The chip moves under the name when both do not fit on one line. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <h2 className="min-w-0 font-display text-title font-semibold break-words">{roomName}</h2>
           <p
             role="status"
-            className={`mt-1.5 inline-flex shrink-0 items-center gap-2 rounded-full bg-field px-3 py-1 text-caption font-medium ${reconnecting ? 'text-muted' : 'text-ink'}`}
+            className={`inline-flex shrink-0 items-center gap-2 rounded-full bg-field px-3 py-1 text-caption font-medium ${reconnecting ? 'text-muted' : 'text-ink'}`}
           >
             <span
               aria-hidden="true"
               className={`size-2 rounded-full ${reconnecting ? 'bg-muted' : 'live-dot bg-live'}`}
             />
-            {t(reconnecting ? 'preview.reconnecting' : 'lobby.ready')}
+            {t(reconnecting ? 'lobby.reconnecting' : 'lobby.ready')}
           </p>
         </div>
-        <p className="text-body text-muted">{t('lobby.waitingBody')}</p>
+        <p className="text-body text-muted">
+          {t(reconnecting ? 'lobby.seatKept' : 'lobby.waitingBody')}
+        </p>
       </section>
       <RoleCarousel roles={roles} />
       {/* The players sit at the bottom. With many of them, only this section scrolls. */}
-      <section className="flex max-h-2/5 min-h-36 flex-col gap-2">
+      <section className="players flex shrink-0 flex-col gap-2">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="shrink-0 text-caption text-muted">
             {t('common.countPlayers', { count: players.length })}
@@ -92,33 +96,36 @@ export function PlayerLobbyScreen({
               : t('lobby.tapForName')}
           </p>
         </div>
-        {/* Padding makes room for the glow around your own tile, which the scroll area would clip. */}
-        <ul className="-m-3 grid min-h-0 grid-cols-5 content-start gap-2 overflow-y-auto p-3">
-          {players.map((player) => {
-            const self = player.id === selfId;
-            return (
-              <li
-                key={player.id}
-                aria-current={self ? 'true' : undefined}
-                className="aspect-square"
-              >
-                <button
-                  type="button"
-                  aria-pressed={pickedId === player.id}
-                  onClick={() => {
-                    setPickedId(pickedId === player.id ? null : player.id);
-                  }}
-                  className={`press flex size-full items-center justify-center rounded-tile font-display text-title font-semibold text-ink outline-2 outline-offset-2 focus-visible:outline-village ${self ? 'bg-field shadow-glow' : 'bg-surface'} ${pickedId === player.id ? 'outline-ink' : 'outline-transparent'}`}
+        {/* Padding makes room for the glow around your own tile, which the scroll area would clip.
+            No negative bottom margin: the footer would cover the peeking third row. */}
+        <ScrollArea className="players-scroll -mx-3 -mt-3 p-3">
+          <ul className="grid grid-cols-5 content-start gap-2">
+            {players.map((player) => {
+              const self = player.id === selfId;
+              return (
+                <li
+                  key={player.id}
+                  aria-current={self ? 'true' : undefined}
+                  className="aspect-square"
                 >
-                  <span aria-hidden="true">{initial(player.name)}</span>
-                  <span className="sr-only">
-                    {self ? t('player.nameYou', { name: player.name }) : player.name}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                  <button
+                    type="button"
+                    aria-pressed={pickedId === player.id}
+                    onClick={() => {
+                      setPickedId(pickedId === player.id ? null : player.id);
+                    }}
+                    className={`press relative flex size-full items-center justify-center rounded-tile font-display text-title font-semibold text-ink outline-2 outline-offset-2 focus-visible:outline-village ${self ? 'bg-field shadow-glow' : 'bg-surface'} ${pickedId === player.id ? 'outline-ink' : 'outline-transparent'}`}
+                  >
+                    <span aria-hidden="true">{initial(player.name)}</span>
+                    <span className="sr-only">
+                      {self ? t('player.nameYou', { name: player.name }) : player.name}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </ScrollArea>
       </section>
     </ScreenLayout>
   );

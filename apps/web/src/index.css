@@ -2,6 +2,19 @@
 @import './design/tokens.css';
 @import './design/fonts.css';
 
+/* Registered so the scroll fades can ease in and out instead of switching. */
+@property --fade-above {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0rem;
+}
+
+@property --fade-below {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0rem;
+}
+
 @layer base {
   html {
     color-scheme: light;
@@ -21,6 +34,12 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .scroll-area {
+    transition:
+      --fade-above 200ms ease-out,
+      --fade-below 200ms ease-out;
+  }
+
   /* A slow status blink; it signals the connection is live and stops with reduced motion. */
   .live-dot {
     animation: blink 1.6s ease-in-out infinite;
@@ -182,6 +201,43 @@
 
   /* Role previews in a sideways row: each card snaps to the middle, and the next one peeks in.
      The cards are as tall as the row allows (up to 24rem), always 2:3. */
+  /* The one scroll design (ScrollArea): a thin scrollbar, and a fade at each edge only while more
+     content lies past it. */
+  .scroll-area {
+    --fade-above: 0rem;
+    --fade-below: 0rem;
+    scrollbar-color: var(--color-field-border) transparent;
+    scrollbar-width: thin;
+    /* The edge stays faintly visible, so a peeking row still shows there is more. */
+    --fade-edge: color-mix(in srgb, var(--color-ink) 30%, transparent);
+    mask-image: linear-gradient(
+      to bottom,
+      var(--fade-edge),
+      var(--color-ink) var(--fade-above),
+      var(--color-ink) calc(100% - var(--fade-below)),
+      var(--fade-edge)
+    );
+  }
+
+  .scroll-area[data-more-above='true'] {
+    --fade-above: 1rem;
+  }
+
+  .scroll-area[data-more-below='true'] {
+    --fade-below: 1rem;
+  }
+
+  /* The village players: always the same height, two rows of tiles and a little of the third,
+     so the cards above never change size as players join. Tiles are a fifth of the width less the
+     gaps (cqw is the section's width); the 0.75rem is the room left for your tile's glow. */
+  .players {
+    container-type: inline-size;
+  }
+
+  .players-scroll {
+    height: calc(0.75rem + 2.2 * (100cqw - 2rem) / 5 + 2 * 0.5rem);
+  }
+
   .deck {
     container-type: size;
     scroll-snap-type: x mandatory;

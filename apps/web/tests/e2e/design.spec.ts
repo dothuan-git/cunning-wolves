@@ -600,7 +600,7 @@ test('with many players only the players section scrolls, and the page stays one
   const tiles = page.locator('main ul.grid-cols-5 > li');
   await expect(tiles).toHaveCount(18);
   const fit = await page.evaluate(() => {
-    const list = document.querySelector<HTMLElement>('main ul.grid-cols-5');
+    const list = document.querySelector<HTMLElement>('main .scroll-area');
     const deck = document.querySelector<HTMLElement>('.deck');
     return {
       pageHeight: document.documentElement.scrollHeight,
@@ -817,6 +817,18 @@ test('the role carousel resting a pixel short of the first card does not jump a 
   await page.goto('/design?screen=player-lobby&lang=en&capture=1');
   const deck = page.locator('.deck');
   const left = () => deck.evaluate((el) => el.scrollLeft);
+  // Wait for fonts and art: until they load, the cards can still change size and the row move.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([...document.images].map((image) => image.decode()));
+  });
+  await expect
+    .poll(async () => {
+      const before = await left();
+      await page.waitForTimeout(200);
+      return (await left()) === before;
+    })
+    .toBe(true);
   const start = await left();
   // Rounding on some screens leaves the row a fraction short of the card; snapping is turned off
   // here so the row can be put there.
@@ -826,4 +838,62 @@ test('the role carousel resting a pixel short of the first card does not jump a 
   });
   await page.waitForTimeout(500);
   expect(Math.abs((await left()) - (start - 1))).toBeLessThan(2);
+});
+
+test('while reconnecting, the room name keeps its width and the chip moves under it', async ({
+  page,
+}) => {
+  for (const lang of ['en', 'vi']) {
+    await page.goto(`/design?screen=player-lobby&state=loading&lang=${lang}&capture=1`);
+    const name = page.getByRole('heading', { level: 2 }).first();
+    // The room name stays on one line instead of being squeezed into a narrow column.
+    expect(await name.evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(45);
+    const chip = page.getByRole('status').first();
+    await expect(chip).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      390,
+    );
+  }
+  await expect(page.getByRole('status').first()).toHaveText('Đang kết nối lại…');
+  await expect(page.getByText('Vị trí của bạn trong phòng vẫn được giữ.')).toBeVisible();
+});
+
+test('the players scroll area fades only at the edges with more past them', async ({ page }) => {
+  await page.goto('/design?screen=player-lobby&state=many&lang=en&capture=1');
+  const area = page.locator('main .scroll-area');
+  await expect(area).toHaveAttribute('data-more-above', 'false');
+  await expect(area).toHaveAttribute('data-more-below', 'true');
+  await area.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  await expect(area).toHaveAttribute('data-more-above', 'true');
+  await expect(area).toHaveAttribute('data-more-below', 'false');
+  // With few players nothing is hidden, so nothing fades.
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  await expect(page.locator('main .scroll-area')).toHaveAttribute('data-more-below', 'false');
+});
+
+test('the players section is the same height with few or many players, and the third row peeks in', async ({
+  page,
+}) => {
+  const measure = async (state: string) => {
+    await page.goto(`/design?screen=player-lobby&state=${state}&lang=en&capture=1`);
+    return page.locator('main .scroll-area').evaluate((el) => {
+      const area = el.getBoundingClientRect();
+      const tiles = [...el.querySelectorAll('li')].map((tile) => tile.getBoundingClientRect());
+      const footer = document.querySelector('footer')?.getBoundingClientRect();
+      return {
+        height: Math.round(area.height),
+        // How much of the third row (the 11th tile) shows above the bottom of the area.
+        peek: tiles[10] ? area.bottom - tiles[10].top : null,
+        coveredByFooter: footer ? footer.top < area.bottom - 1 : false,
+      };
+    });
+  };
+  const few = await measure('default');
+  const many = await measure('many');
+  expect(many.height).toBe(few.height);
+  expect(many.peek).toBeGreaterThan(8);
+  expect(many.peek).toBeLessThan(20);
+  expect(many.coveredByFooter).toBe(false);
 });
