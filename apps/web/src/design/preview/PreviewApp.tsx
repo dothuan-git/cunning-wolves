@@ -4,7 +4,6 @@ import { Button } from '../../components/Button';
 import { setLocale } from '../../i18n';
 import { useLocale } from '../../i18n/useLocale';
 import { RoomListScreen } from '../../screens/home/RoomListScreen';
-import { MasterLobbyScreen } from '../../screens/master-lobby/MasterLobbyScreen';
 import { MyCardScreen } from '../../screens/my-card/MyCardScreen';
 import { NameEntryScreen } from '../../screens/name-entry/NameEntryScreen';
 import { NarratorScreen } from '../../screens/narrator/NarratorScreen';
@@ -133,20 +132,10 @@ function PreviewScene({
       return (
         <NameEntryScreen
           onContinue={() => {
-            onNavigate('master-lobby');
+            onNavigate('setup');
           }}
           onBack={() => {
             onNavigate('home');
-          }}
-        />
-      );
-    case 'master-lobby':
-      return (
-        <MasterLobbyScreen
-          roomName={roomName}
-          players={state === 'empty' ? [] : players}
-          onPrepare={() => {
-            onNavigate('setup');
           }}
         />
       );
@@ -167,11 +156,11 @@ function PreviewScene({
     case 'setup':
       return (
         <SetupScreen
+          roomName={roomName}
+          players={state === 'empty' ? [] : players.map(({ id, name }) => ({ id, name }))}
           roles={manyRoles}
-          initialSlots={
-            state === 'empty'
-              ? [null, null, null, null, null, null]
-              : ['seer', 'werewolf', 'werewolf', 'witch', 'villager', null]
+          initialPicks={
+            state === 'empty' ? [] : ['seer', 'werewolf', 'werewolf', 'witch', 'villager']
           }
           onReady={(order) => {
             setWakeOrder(order);
@@ -292,7 +281,7 @@ function PreviewScene({
                 ]
           }
           onPlayAgain={() => {
-            onNavigate('master-lobby');
+            onNavigate('setup');
           }}
         />
       );

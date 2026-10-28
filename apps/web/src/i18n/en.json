@@ -48,7 +48,6 @@
     "home": "Cunning Wolves",
     "nameEntry": "Your name",
     "summary": "Game record",
-    "masterLobby": "Gather the village",
     "setup": "Prepare the roles",
     "narrator": "Narrator",
     "playerLobby": "The village",
@@ -129,7 +128,6 @@
     "reopen": "Reopen room",
     "openHint": "Others can still join.",
     "closedHint": "The guest list is closed.",
-    "prepare": "Prepare roles",
     "waitingTitle": "Make yourself comfortable",
     "waitingBody": "The narrator is preparing your game.",
     "reconnecting": "Reconnecting…",
@@ -144,11 +142,13 @@
     "cardsHeading": "The role cards",
     "cardsHint": "Swipe to look at them. Tap one to see it up close.",
     "lookCloser": "Look closer at {{role}}",
-    "tapForName": "Tap a tile for the full name."
+    "tapForName": "Tap a tile for the full name.",
+    "openChip": "Open",
+    "closedChip": "Closed",
+    "playersButton": "Players ({{count}})"
   },
   "setup": {
     "intro": "Give every player a place in the story.",
-    "filled": "{{filled}} of {{total}} roles assigned",
     "slots": "Assigned roles",
     "emptySlot": "Choose role for seat {{number}}",
     "removeSlot": "Remove role from seat {{number}}",
@@ -172,10 +172,13 @@
     "search": "Search roles",
     "noMatch": "No roles match your search.",
     "customShort": "Custom",
-    "allSeated": "Every seat has a role.",
+    "allSeated": "Every player has a role.",
     "removeRole": "Remove one {{role}}",
     "remaining_one": "Choose {{count}} more role.",
-    "remaining_other": "Choose {{count}} more roles."
+    "remaining_other": "Choose {{count}} more roles.",
+    "noPlayers": "Waiting for players to join.",
+    "tooMany_one": "{{count}} role too many.",
+    "tooMany_other": "{{count}} roles too many."
   },
   "rules": {
     "intro": "Everyone can read the rules. Your role stays secret until the game starts.",

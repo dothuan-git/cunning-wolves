@@ -13,6 +13,8 @@ import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { useLocale } from '../../i18n/useLocale';
+import type { PlayerListItem } from '../types';
+import { RoomPanel } from './RoomPanel';
 
 // Wolves first, like the summary and the rules review.
 const TEAMS: readonly Team[] = ['werewolf', 'village'];
@@ -25,19 +27,27 @@ function plain(text: string) {
 }
 
 export function SetupScreen({
+  roomName,
+  players: initialPlayers,
   roles: initialRoles,
-  initialSlots,
+  initialPicks,
   onReady,
 }: {
+  roomName: string;
+  /** Players who have joined so far; more join while the roles are set up. */
+  players: readonly PlayerListItem[];
   roles: readonly PoolRole[];
-  initialSlots: readonly (string | null)[];
+  /** Ids of the roles in the game, one per copy. There can be more or fewer than players. */
+  initialPicks: readonly string[];
   /** Called with the ids of the waking roles in the order the narrator will wake them. */
   onReady: (wakeOrder: string[]) => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
   const [roles, setRoles] = useState(initialRoles);
-  const [slots, setSlots] = useState(initialSlots);
+  const [players, setPlayers] = useState(initialPlayers);
+  const [open, setOpen] = useState(true);
+  const [picks, setPicks] = useState(initialPicks);
   // The faction whose roles are being picked from, and what was typed to narrow them.
   const [picking, setPicking] = useState<Team | null>(null);
   const [search, setSearch] = useState('');
@@ -59,12 +69,21 @@ export function SetupScreen({
   const [leaving, setLeaving] = useState<ReadonlyMap<string, number>>(new Map());
   const leaveTimers = useRef(new Map<string, number>());
   const searchId = useId();
-  const filled = slots.filter(Boolean).length;
-  const full = filled === slots.length;
+  // Roles are chosen freely; the rules can only be reviewed once there is one per player.
+  const gap = players.length - picks.length;
+  const matched = gap === 0 && players.length > 0;
+  const gapText =
+    players.length === 0
+      ? t('setup.noPlayers')
+      : gap > 0
+        ? t('setup.remaining', { count: gap })
+        : gap < 0
+          ? t('setup.tooMany', { count: -gap })
+          : t('setup.allSeated');
   const viewing = roles.find((role) => role.id === viewingId);
   // The waking roles in the game, in wake order: the narrator's order first, then the rest by default.
   const waking = roles
-    .filter((role) => role.defaultWakeOrder !== null && slots.includes(role.id))
+    .filter((role) => role.defaultWakeOrder !== null && picks.includes(role.id))
     .sort((a, b) => {
       const place = (role: PoolRole) => {
         const index = customOrder.indexOf(role.id);
@@ -74,7 +93,7 @@ export function SetupScreen({
     });
 
   function quantity(id: string) {
-    return slots.filter((slot) => slot === id).length;
+    return picks.filter((pick) => pick === id).length;
   }
 
   useEffect(() => {
@@ -115,17 +134,14 @@ export function SetupScreen({
       next.delete(id);
       return next;
     });
-    setSlots((current) => {
-      const empty = current.indexOf(null);
-      return current.map((item, index) => (index === empty ? id : item));
-    });
+    setPicks((current) => [...current, id]);
   }
 
   function removeOne(id: string, wait = 0) {
     if (quantity(id) === 1) startLeaving(id, wait);
-    setSlots((current) => {
+    setPicks((current) => {
       const index = current.lastIndexOf(id);
-      return current.map((item, slot) => (slot === index ? null : item));
+      return current.filter((_, pick) => pick !== index);
     });
   }
 
@@ -174,14 +190,16 @@ export function SetupScreen({
       }}
       footer={
         <>
-          {/* Always one line, so the footer keeps its height when the last seat is filled. */}
-          <p key={slots.length - filled} className="name-pop text-center text-caption text-muted">
-            {full ? t('setup.allSeated') : t('setup.remaining', { count: slots.length - filled })}
+          {/* Always one line, so the footer keeps its height as the count changes. */}
+          <p key={gapText} role="status" className="name-pop text-center text-caption text-muted">
+            {gapText}
           </p>
           <Button
-            disabled={!full || slots.length === 0}
+            disabled={!matched}
             className="press"
             onClick={() => {
+              // Reviewing the rules closes the room: the roster is fixed from here on.
+              setOpen(false);
               onReady(waking.map((role) => role.id));
             }}
           >
@@ -190,9 +208,17 @@ export function SetupScreen({
         </>
       }
     >
-      <p key={filled} className="name-pop text-caption text-muted" role="status">
-        {t('setup.filled', { filled, total: slots.length })}
-      </p>
+      <RoomPanel
+        roomName={roomName}
+        players={players}
+        open={open}
+        onToggleOpen={() => {
+          setOpen(!open);
+        }}
+        onRemove={(id) => {
+          setPlayers((current) => current.filter((player) => player.id !== id));
+        }}
+      />
       {TEAMS.map((faction) => {
         const chosen = roles.filter(
           (role) => role.team === faction && (quantity(role.id) > 0 || leaving.has(role.id)),
@@ -247,12 +273,8 @@ export function SetupScreen({
             setPicking(null);
           }}
         >
-          <p
-            key={full ? 'full' : filled}
-            role="status"
-            className="name-pop mb-3 text-caption text-muted"
-          >
-            {full ? t('setup.allSeated') : t('setup.filled', { filled, total: slots.length })}
+          <p key={gapText} className="name-pop mb-3 text-caption text-muted">
+            {gapText}
           </p>
           <div className="mb-3 flex items-center gap-2">
             <div className="min-w-0 flex-1">
@@ -290,7 +312,6 @@ export function SetupScreen({
                       role={role}
                       count={count > 0 ? count : undefined}
                       label={t('setup.addRole', { role: role.name[locale] })}
-                      disabled={full}
                       onClick={() => {
                         addRole(role.id);
                       }}
@@ -319,7 +340,7 @@ export function SetupScreen({
           }}
           quantity={{
             value: quantity(viewing.id),
-            canIncrease: !full,
+            canIncrease: true,
             decreaseLabel: t('setup.removeRole', { role: viewing.name[locale] }),
             increaseLabel: t('setup.addRole', { role: viewing.name[locale] }),
             onDecrease: () => {

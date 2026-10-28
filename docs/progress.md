@@ -31,6 +31,8 @@
 
 - **Role card page** (2026-10-28): the page is one screen high with no scroll, and the card is round. The back shows by default; tapping flips it to the role (name vertical top right, rule centered; a bordered card with a soft shadow, no faction logo) and tapping again hides it. The reveal button is gone. See decision 0014.
 
+- **Setup is the master's lobby** (2026-10-28): the "Gather the village" screen is gone. Setup opens with a room panel (players sheet with kick, close/re-open). Roles are chosen freely, and Review rules opens only when roles equal joined players; it closes the room.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check.

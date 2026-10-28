@@ -48,7 +48,6 @@
     "home": "Cunning Wolves",
     "nameEntry": "Tên của bạn",
     "summary": "Nhật ký ván chơi",
-    "masterLobby": "Tập hợp dân làng",
     "setup": "Chuẩn bị vai trò",
     "narrator": "Quản trò",
     "playerLobby": "Ngôi làng",
@@ -129,7 +128,6 @@
     "reopen": "Mở lại phòng",
     "openHint": "Mọi người vẫn có thể tham gia.",
     "closedHint": "Danh sách tham gia đã đóng.",
-    "prepare": "Chuẩn bị vai trò",
     "waitingTitle": "Cứ tự nhiên nhé",
     "waitingBody": "Quản trò đang chuẩn bị ván chơi.",
     "reconnecting": "Đang kết nối lại…",
@@ -144,11 +142,13 @@
     "cardsHeading": "Các lá bài vai trò",
     "cardsHint": "Vuốt để xem. Chạm vào một lá để xem rõ hơn.",
     "lookCloser": "Xem rõ lá {{role}}",
-    "tapForName": "Chạm vào ô để xem tên đầy đủ."
+    "tapForName": "Chạm vào ô để xem tên đầy đủ.",
+    "openChip": "Đang mở",
+    "closedChip": "Đã đóng",
+    "playersButton": "Người chơi ({{count}})"
   },
   "setup": {
     "intro": "Mỗi người một vai trong câu chuyện.",
-    "filled": "Đã xếp {{filled}} / {{total}} vai",
     "slots": "Vai đã xếp",
     "emptySlot": "Chọn vai cho vị trí {{number}}",
     "removeSlot": "Bỏ vai ở vị trí {{number}}",
@@ -172,10 +172,13 @@
     "search": "Tìm vai trò",
     "noMatch": "Không có vai trò nào khớp.",
     "customShort": "Tự tạo",
-    "allSeated": "Mọi chỗ ngồi đã có vai.",
+    "allSeated": "Mọi người chơi đã có vai.",
     "removeRole": "Bớt một {{role}}",
     "remaining_one": "Chọn thêm {{count}} vai trò.",
-    "remaining_other": "Chọn thêm {{count}} vai trò."
+    "remaining_other": "Chọn thêm {{count}} vai trò.",
+    "noPlayers": "Đang chờ người chơi vào phòng.",
+    "tooMany_one": "Thừa {{count}} vai trò.",
+    "tooMany_other": "Thừa {{count}} vai trò."
   },
   "rules": {
     "intro": "Mọi người cùng đọc luật. Vai của bạn được giữ bí mật đến khi bắt đầu.",
