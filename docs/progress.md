@@ -62,20 +62,26 @@
   - Review rules is gated on roles = players.
   - See decision 0018.
 
+- **Phase 4 reveal and deal** (branch `feat/phase-4-reveal-deal`, 2026-10-28):
+  - **Review rules** moves the room to `reveal` after the room checks roles = players. Everyone sees the rules review with this room's rules.
+  - **Edit roles** takes the master back to Setup until the game starts.
+  - **Start game** shuffles the picks with a crypto source and deals one to each player. Each phone receives only its own card.
+  - The card flip stays on the phone. At Thuan's request there is no flipped indicator.
+  - The narrator page lists the real holders of each role.
+  - See decision 0019.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
-2. **Phase 4 (reveal and deal):**
-   - The `reveal` transition, with the server checking roles = players.
-   - The rules review from `roomRoles`.
-   - Start game shuffle, card flip, and the flipped indicator for the master.
+2. **Phase 5 (narrator page):**
+   - Night and morning phases, deaths, per-night notes, the timer, sound and the in-game wake order, all kept by the room.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: standalone assets in the approved engraving style, and the sound pack contents.
-- Home, create, join, the village and Setup run on real rooms. The rules review, cards, the narrator and the summary still run on local or sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
+- Home, create, join, the village, Setup, the rules review and My card run on real rooms. The narrator page shows the real deal, but its phases, deaths and notes are kept on the master's phone only until Phase 5, so a refresh starts again at Night 1. The narrator page has no Finish game control until Phase 6. The summary still runs on sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
 - Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).
