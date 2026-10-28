@@ -64,10 +64,13 @@ function loadSetup(sql: SqlStorage): RoomSetup {
     .exec('SELECT role_id FROM picks ORDER BY idx')
     .toArray()
     .map((row) => text(row, 'role_id'));
-  const ruleEdits: Record<string, string> = {};
-  for (const row of sql.exec('SELECT * FROM rule_edits').toArray()) {
-    ruleEdits[text(row, 'role_id')] = text(row, 'rule');
-  }
+  // fromEntries, so even a stored `__proto__` key stays a plain key.
+  const ruleEdits: Record<string, string> = Object.fromEntries(
+    sql
+      .exec('SELECT * FROM rule_edits')
+      .toArray()
+      .map((row) => [text(row, 'role_id'), text(row, 'rule')]),
+  );
   const customRoles: CustomRole[] = sql
     .exec('SELECT * FROM custom_roles ORDER BY idx')
     .toArray()

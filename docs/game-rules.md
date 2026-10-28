@@ -23,7 +23,7 @@ The spec the code follows, taken from `docs/plan.md`. Any change to game behavio
 
 Gathering players and choosing roles happen at the same time, so they are one status, `lobby` (decision 0017).
 
-**Locks:** kick and close/re-open work until **Review rules**, which closes the room. After that, the roster and the settings are locked.
+**Locks:** kick, close/re-open and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; once the room leaves `lobby` (Phase 4), the roster, card set and settings are locked.
 
 ## Rooms
 

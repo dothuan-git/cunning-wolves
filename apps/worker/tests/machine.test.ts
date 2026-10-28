@@ -1,4 +1,4 @@
-import { PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
+import { CUSTOM_ROLES_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
 import { describe, expect, it } from 'vitest';
 import { apply, createRoom, seatedPlayers, type RoomState } from '../src/room/machine';
 import { buildMasterView, buildPlayerView, buildSummary } from '../src/room/view';
@@ -228,6 +228,16 @@ describe('setup', () => {
     );
   });
 
+  it('refuses a custom role past the limit', () => {
+    const steps = Array.from({ length: CUSTOM_ROLES_MAX }, (): [string, RoomAction] => [
+      MASTER,
+      { type: 'addCustomRole', role: custom },
+    ]);
+    const full = run(room(), ...steps);
+    expect(full.setup.customRoles).toHaveLength(CUSTOM_ROLES_MAX);
+    expect(refusal(full, MASTER, { type: 'addCustomRole', role: custom })).toBe('not-allowed');
+  });
+
   it('keeps a wake order of waking roles, without repeats', () => {
     const state = run(
       room(),
@@ -280,7 +290,17 @@ describe('locks after the lobby', () => {
       expect(refusal(locked, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'setOpen', open: false })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'removePick', roleId: 'seer' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'editRule', roleId: 'seer', rule: 'x' })).toBe(
+        'not-allowed',
+      );
+      expect(
+        refusal(locked, MASTER, {
+          type: 'addCustomRole',
+          role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false },
+        }),
+      ).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'setWakeOrder', order: ['seer'] })).toBe(
         'not-allowed',
       );
       expect(

@@ -269,6 +269,32 @@ describe('Room', () => {
     });
   });
 
+  it('loads a room saved before the card set existed, with an empty set', async () => {
+    await runInDurableObject(env.ROOM.getByName('phase2rm'), (_instance, state) => {
+      const { sql } = state.storage;
+      // The Phase 2 schema, without the setup tables.
+      sql.exec(`CREATE TABLE room (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, status TEXT NOT NULL, open INTEGER NOT NULL,
+        master_id TEXT NOT NULL, master_name TEXT NOT NULL, created_at INTEGER NOT NULL,
+        last_active_at INTEGER NOT NULL
+      )`);
+      sql.exec(`CREATE TABLE players (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, joined_at INTEGER NOT NULL, kicked INTEGER NOT NULL
+      )`);
+      sql.exec("INSERT INTO room VALUES ('phase2rm', 'Old mill', 'lobby', 1, 'm', 'Thuận', 0, 0)");
+      sql.exec("INSERT INTO players VALUES ('a', 'Minh', 0, 0)");
+      const loaded = loadRoom(sql);
+      expect(loaded?.players).toHaveLength(1);
+      expect(loaded?.setup).toEqual({
+        picks: [],
+        ruleEdits: {},
+        customRoles: [],
+        wakeOrder: [],
+        settings: { timerSeconds: 120, soundOn: false },
+      });
+    });
+  });
+
   it('closes a socket that acts before saying hello', async () => {
     const roomId = await newRoom();
     const socket = await openSocket(`/api/rooms/${roomId}/ws`);
