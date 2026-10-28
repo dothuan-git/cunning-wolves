@@ -1,4 +1,14 @@
-import { nameKey, type PoolRole, type Team } from '@werewolf/shared';
+import {
+  nameKey,
+  ROLE_NAME_MAX,
+  RULE_MAX,
+  TIMER_MAX,
+  wakingOrder,
+  type CustomRoleInput,
+  type PoolRole,
+  type RoomSettings,
+  type Team,
+} from '@werewolf/shared';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddCard } from '../../components/AddCard';
@@ -27,8 +37,17 @@ export function SetupScreen({
   open,
   onToggleOpen,
   onRemove,
-  roles: initialRoles,
-  initialPicks,
+  roles,
+  picks,
+  wakeOrder,
+  settings,
+  reconnecting = false,
+  onAddPick,
+  onRemovePick,
+  onEditRule,
+  onAddCustomRole,
+  onWakeOrder,
+  onSettings,
   onReady,
 }: {
   roomName: string;
@@ -38,9 +57,23 @@ export function SetupScreen({
   open: boolean;
   onToggleOpen: () => void;
   onRemove: (playerId: string) => void;
+  /** Every role the room can pick from, with this room's rules */
   roles: readonly PoolRole[];
   /** Ids of the roles in the game, one per copy. There can be more or fewer than players. */
-  initialPicks: readonly string[];
+  picks: readonly string[];
+  /** The waking roles in the order the narrator chose; the rest follow their default order. */
+  wakeOrder: readonly string[];
+  settings: RoomSettings;
+  /** The room can't be reached right now, so changes would not be kept. */
+  reconnecting?: boolean;
+  onAddPick: (roleId: string) => void;
+  /** Takes one copy of the role out of the game */
+  onRemovePick: (roleId: string) => void;
+  /** Called once the edited card closes, only if the rule changed */
+  onEditRule: (roleId: string, rule: string) => void;
+  onAddCustomRole: (role: CustomRoleInput) => void;
+  onWakeOrder: (order: string[]) => void;
+  onSettings: (settings: RoomSettings) => void;
   /**
    * Called with the ids of the waking roles in the order the narrator will wake them.
    * Reviewing the rules closes the room: the roster is fixed from here on.
@@ -49,25 +82,22 @@ export function SetupScreen({
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [roles, setRoles] = useState(initialRoles);
-  const [picks, setPicks] = useState(initialPicks);
   // The faction whose roles are being picked from, and what was typed to narrow them.
   const [picking, setPicking] = useState<Team | null>(null);
   const [search, setSearch] = useState('');
   // The selected role open as a detailed card.
   const [viewingId, setViewingId] = useState<string | null>(null);
+  // The rule being edited on the open card; the room keeps it once the card closes.
+  const [ruleDraft, setRuleDraft] = useState('');
   const [creating, setCreating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [name, setName] = useState('');
   const [rule, setRule] = useState('');
   const [team, setTeam] = useState<Team>('village');
+  const [wakes, setWakes] = useState(false);
   const [error, setError] = useState(false);
-  const [sound, setSound] = useState(false);
-  const [timer, setTimer] = useState('120');
-  // The order the narrator reordered the waking roles into; roles not in it yet follow their default.
-  const [customOrder, setCustomOrder] = useState<readonly string[]>([]);
-  // The rule as it was when the detailed card opened, to put back if it is emptied.
-  const ruleBefore = useRef('');
+  // Typed freely in the settings sheet; the room gets it when the sheet closes.
+  const [timer, setTimer] = useState('');
   // Roles just taken out of the game, still on the page while their card shrinks away.
   const [leaving, setLeaving] = useState<ReadonlyMap<string, number>>(new Map());
   const leaveTimers = useRef(new Map<string, number>());
@@ -75,8 +105,9 @@ export function SetupScreen({
   // Roles are chosen freely; the rules can only be reviewed once there is one per player.
   const gap = players.length - picks.length;
   const matched = gap === 0 && players.length > 0;
-  const gapText =
-    players.length === 0
+  const gapText = reconnecting
+    ? t('setup.reconnecting')
+    : players.length === 0
       ? t('setup.noPlayers')
       : gap > 0
         ? t('setup.remaining', { count: gap })
@@ -84,16 +115,7 @@ export function SetupScreen({
           ? t('setup.tooMany', { count: -gap })
           : t('setup.allSeated');
   const viewing = roles.find((role) => role.id === viewingId);
-  // The waking roles in the game, in wake order: the narrator's order first, then the rest by default.
-  const waking = roles
-    .filter((role) => role.defaultWakeOrder !== null && picks.includes(role.id))
-    .sort((a, b) => {
-      const place = (role: PoolRole) => {
-        const index = customOrder.indexOf(role.id);
-        return index < 0 ? customOrder.length + (role.defaultWakeOrder ?? 0) : index;
-      };
-      return place(a) - place(b);
-    });
+  const waking = wakingOrder(roles, picks, wakeOrder);
 
   function quantity(id: string) {
     return picks.filter((pick) => pick === id).length;
@@ -137,15 +159,12 @@ export function SetupScreen({
       next.delete(id);
       return next;
     });
-    setPicks((current) => [...current, id]);
+    onAddPick(id);
   }
 
   function removeOne(id: string, wait = 0) {
     if (quantity(id) === 1) startLeaving(id, wait);
-    setPicks((current) => {
-      const index = current.lastIndexOf(id);
-      return current.filter((_, pick) => pick !== index);
-    });
+    onRemovePick(id);
   }
 
   function openPicker(faction: Team) {
@@ -154,22 +173,30 @@ export function SetupScreen({
   }
 
   function openCard(role: PoolRole) {
-    ruleBefore.current = role.rule[locale];
+    setRuleDraft(role.rule[locale]);
     setViewingId(role.id);
   }
 
   function closeCard() {
-    // A card cannot be left without a rule.
-    if (viewing && !viewing.rule[locale].trim()) editRule(viewing.id, ruleBefore.current);
+    // A card cannot be left without a rule: an emptied one keeps the rule it had.
+    const draft = ruleDraft.trim();
+    if (viewing && draft && draft !== viewing.rule[locale].trim()) onEditRule(viewing.id, draft);
     setViewingId(null);
   }
 
-  function editRule(id: string, value: string) {
-    setRoles((current) =>
-      current.map((role) =>
-        role.id === id ? { ...role, rule: { ...role.rule, [locale]: value } } : role,
-      ),
-    );
+  function openSettings() {
+    setTimer(String(settings.timerSeconds));
+    setShowSettings(true);
+  }
+
+  function closeSettings() {
+    // A number outside the timer's range is pulled into it; anything else leaves the timer as it was.
+    const typed = Number.parseInt(timer, 10);
+    if (!Number.isNaN(typed)) {
+      const timerSeconds = Math.min(TIMER_MAX, Math.max(0, typed));
+      if (timerSeconds !== settings.timerSeconds) onSettings({ ...settings, timerSeconds });
+    }
+    setShowSettings(false);
   }
 
   function openCreator() {
@@ -178,6 +205,7 @@ export function SetupScreen({
     setName('');
     setRule('');
     setTeam(picking ?? 'village');
+    setWakes(false);
   }
 
   const query = nameKey(search);
@@ -188,9 +216,7 @@ export function SetupScreen({
   return (
     <ScreenLayout
       title={t('screens.setup')}
-      onOpenMenu={() => {
-        setShowSettings(true);
-      }}
+      onOpenMenu={openSettings}
       footer={
         <>
           {/* Always one line, so the footer keeps its height as the count changes. */}
@@ -198,7 +224,7 @@ export function SetupScreen({
             {gapText}
           </p>
           <Button
-            disabled={!matched}
+            disabled={!matched || reconnecting}
             className="press"
             onClick={() => {
               onReady(waking.map((role) => role.id));
@@ -329,11 +355,9 @@ export function SetupScreen({
           role={viewing}
           count={quantity(viewing.id)}
           editRule={{
-            value: viewing.rule[locale],
+            value: ruleDraft,
             label: t('setup.rule'),
-            onChange: (value) => {
-              editRule(viewing.id, value);
-            },
+            onChange: setRuleDraft,
           }}
           quantity={{
             value: quantity(viewing.id),
@@ -352,13 +376,7 @@ export function SetupScreen({
         />
       )}
       {showSettings && (
-        <Modal
-          sheet
-          title={t('setup.settings')}
-          onClose={() => {
-            setShowSettings(false);
-          }}
-        >
+        <Modal sheet title={t('setup.settings')} onClose={closeSettings}>
           <div className="mb-5 flex items-center justify-between text-control">
             <span>{t('language.label')}</span>
             <LanguageSwitch compact />
@@ -367,7 +385,7 @@ export function SetupScreen({
             <TextField
               type="number"
               min="0"
-              max="3600"
+              max={TIMER_MAX}
               label={t('setup.timer')}
               hint={t('setup.timerHint')}
               value={timer}
@@ -379,9 +397,9 @@ export function SetupScreen({
               <input
                 className="size-5 accent-ink"
                 type="checkbox"
-                checked={sound}
+                checked={settings.soundOn}
                 onChange={(event) => {
-                  setSound(event.target.checked);
+                  onSettings({ ...settings, soundOn: event.target.checked });
                 }}
               />
               {t('setup.sound')}
@@ -390,7 +408,7 @@ export function SetupScreen({
               <WakeOrderSetting
                 roles={waking}
                 onChange={(order) => {
-                  setCustomOrder(order.map((role) => role.id));
+                  onWakeOrder(order.map((role) => role.id));
                 }}
               />
             )}
@@ -413,24 +431,14 @@ export function SetupScreen({
                 setError(true);
                 return;
               }
-              setRoles([
-                ...roles,
-                {
-                  id: `custom-${String(roles.length)}`,
-                  name: { vi: name.trim(), en: name.trim() },
-                  rule: { vi: rule.trim(), en: rule.trim() },
-                  team,
-                  defaultWakeOrder: null,
-                  image: '',
-                },
-              ]);
+              onAddCustomRole({ name: name.trim(), rule: rule.trim(), team, wakes });
               setCreating(false);
             }}
           >
             <TextField
               label={t('setup.name')}
               value={name}
-              maxLength={60}
+              maxLength={ROLE_NAME_MAX}
               onChange={(event) => {
                 setName(event.target.value);
               }}
@@ -440,7 +448,7 @@ export function SetupScreen({
               label={t('setup.rule')}
               rows={3}
               value={rule}
-              maxLength={500}
+              maxLength={RULE_MAX}
               onChange={(event) => {
                 setRule(event.target.value);
               }}
@@ -457,6 +465,17 @@ export function SetupScreen({
                 <option value="village">{t('faction.village')}</option>
                 <option value="werewolf">{t('faction.werewolf')}</option>
               </select>
+            </label>
+            <label className="flex min-h-12 items-center gap-3 text-control">
+              <input
+                className="size-5 accent-ink"
+                type="checkbox"
+                checked={wakes}
+                onChange={(event) => {
+                  setWakes(event.target.checked);
+                }}
+              />
+              {t('setup.wakes')}
             </label>
             <Button type="submit">{t('common.save')}</Button>
           </form>

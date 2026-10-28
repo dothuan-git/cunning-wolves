@@ -190,7 +190,9 @@
     "remaining_other": "Chọn thêm {{count}} vai trò.",
     "noPlayers": "Đang chờ người chơi vào phòng.",
     "tooMany_one": "Thừa {{count}} vai trò.",
-    "tooMany_other": "Thừa {{count}} vai trò."
+    "tooMany_other": "Thừa {{count}} vai trò.",
+    "wakes": "Thức dậy vào ban đêm",
+    "reconnecting": "Đang kết nối lại… chưa thể lưu thay đổi."
   },
   "rules": {
     "intro": "Mọi người cùng đọc luật. Vai của bạn được giữ bí mật đến khi bắt đầu.",

@@ -1,3 +1,4 @@
+import { DEFAULT_SETTINGS, type PoolRole } from '@werewolf/shared';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -163,7 +164,7 @@ function PreviewScene({
           key={state}
           roomName={roomName}
           initialPlayers={state === 'empty' ? [] : players.map(({ id, name }) => ({ id, name }))}
-          roles={manyRoles}
+          initialRoles={manyRoles}
           initialPicks={
             state === 'empty' ? [] : ['seer', 'werewolf', 'werewolf', 'witch', 'villager']
           }
@@ -432,18 +433,29 @@ export default function PreviewApp() {
   );
 }
 
-/** Setup takes its players and open state from the room; here they live in the preview. */
+/** Setup takes its players, roles and card set from the room; here they live in the preview. */
 function PreviewSetup({
+  roomName,
   initialPlayers,
-  ...props
-}: Omit<Parameters<typeof SetupScreen>[0], 'players' | 'open' | 'onToggleOpen' | 'onRemove'> & {
+  initialRoles,
+  initialPicks,
+  onReady,
+}: {
+  roomName: string;
   initialPlayers: readonly PlayerListItem[];
+  initialRoles: readonly PoolRole[];
+  initialPicks: readonly string[];
+  onReady: (wakeOrder: string[]) => void;
 }) {
   const [players, setPlayers] = useState(initialPlayers);
   const [open, setOpen] = useState(true);
+  const [roles, setRoles] = useState(initialRoles);
+  const [picks, setPicks] = useState(initialPicks);
+  const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   return (
     <SetupScreen
-      {...props}
+      roomName={roomName}
       players={players}
       open={open}
       onToggleOpen={() => {
@@ -452,6 +464,42 @@ function PreviewSetup({
       onRemove={(id) => {
         setPlayers((current) => current.filter((player) => player.id !== id));
       }}
+      roles={roles}
+      picks={picks}
+      wakeOrder={wakeOrder}
+      settings={settings}
+      onAddPick={(id) => {
+        setPicks((current) => [...current, id]);
+      }}
+      onRemovePick={(id) => {
+        setPicks((current) => {
+          const index = current.lastIndexOf(id);
+          return current.filter((_, pick) => pick !== index);
+        });
+      }}
+      onEditRule={(id, rule) => {
+        setRoles((current) =>
+          current.map((role) =>
+            role.id === id ? { ...role, rule: { vi: rule, en: rule } } : role,
+          ),
+        );
+      }}
+      onAddCustomRole={(role) => {
+        setRoles((current) => [
+          ...current,
+          {
+            id: `custom-${String(current.length)}`,
+            name: { vi: role.name, en: role.name },
+            rule: { vi: role.rule, en: role.rule },
+            team: role.team,
+            defaultWakeOrder: role.wakes ? 1000 + current.length : null,
+            image: '',
+          },
+        ]);
+      }}
+      onWakeOrder={setWakeOrder}
+      onSettings={setSettings}
+      onReady={onReady}
     />
   );
 }

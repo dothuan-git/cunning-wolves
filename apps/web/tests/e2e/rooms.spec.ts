@@ -89,6 +89,67 @@ test('a group gathers in a room', async ({ browser }) => {
   }
 });
 
+test('the master builds a card set the room keeps, and players never see it', async ({
+  browser,
+}) => {
+  const roomName = `Barn ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await expect(master.getByRole('button', { name: 'Players (1)' })).toBeVisible();
+  const line = master.locator('footer').getByRole('status');
+  const ready = master.getByRole('button', { name: 'Review rules', exact: true });
+
+  // One werewolf for one player opens the rules review.
+  await master.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
+  const picker = master.getByRole('dialog', { name: 'Add wolf roles' });
+  await picker.getByRole('button', { name: 'Add Werewolf', exact: true }).click();
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(line).toHaveText('Every player has a role.');
+  await expect(ready).toBeEnabled();
+
+  // A custom role that wakes, picked once: one role too many.
+  await master.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const village = master.getByRole('dialog', { name: 'Add village roles' });
+  await village.getByRole('button', { name: 'Create custom role', exact: true }).click();
+  const creator = master.getByRole('dialog', { name: 'Create custom role' });
+  await creator.getByRole('textbox', { name: 'Role name', exact: true }).fill('Lantern keeper');
+  await creator
+    .getByRole('textbox', { name: 'Role description', exact: true })
+    .fill('Lights the way.');
+  await creator.getByRole('checkbox', { name: 'Wakes at night' }).check();
+  await creator.getByRole('button', { name: 'Save', exact: true }).click();
+  await village.getByRole('button', { name: 'Add Lantern keeper', exact: true }).click();
+  await village.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(line).toHaveText('1 role too many.');
+  await expect(ready).toBeDisabled();
+
+  // An edited rule is kept by the room.
+  await master.getByRole('button', { name: 'Edit Werewolf', exact: true }).click();
+  const card = master.getByRole('dialog', { name: 'Werewolf', exact: true });
+  await card.getByRole('button', { name: /^Each night, wake with the other werewolves/ }).click();
+  await card.getByRole('textbox', { name: 'Role description', exact: true }).fill('House rule.');
+  await master.mouse.click(5, 5);
+  await expect(master.getByRole('dialog')).toHaveCount(0);
+
+  // A refresh brings it all back from the room.
+  await master.reload();
+  await expect(line).toHaveText('1 role too many.');
+  await expect(
+    master.getByRole('button', { name: 'Edit Lantern keeper', exact: true }),
+  ).toBeVisible();
+  await master.getByRole('button', { name: 'Edit Werewolf', exact: true }).click();
+  await expect(card.getByRole('button', { name: 'House rule.', exact: true })).toBeVisible();
+
+  // Nothing of the card set reaches a player's phone.
+  await minh.reload();
+  await expect(minh.getByText('You’re in the room')).toBeVisible();
+  const text = await minh.content();
+  expect(text).not.toContain('Lantern keeper');
+  expect(text).not.toContain('House rule.');
+});
+
 test('an unknown room says it has closed', async ({ page }) => {
   await page.goto('/room/zzzzzzzz');
   await expect(page.getByRole('alert')).toContainText('This room has closed');
