@@ -1,10 +1,22 @@
-import { CLOSE_REPLACED, PING, PONG, type ServerMessage } from '@werewolf/shared';
+import {
+  CLOSE_REPLACED,
+  CLOSE_ROOM_GONE,
+  PING,
+  PONG,
+  type ServerErrorCode,
+  type ServerMessage,
+} from '@werewolf/shared';
 import { DurableObject } from 'cloudflare:workers';
+import { LOBBY_NAME } from '../lobby/Lobby';
 import { deviceIdFromToken } from './deviceId';
+import { apply, createRoom, type RoomState } from './machine';
 import { parseClientMessage } from './messages';
-import { buildView } from './view';
+import { ensureSchema, loadRoom, saveRoom } from './storage';
+import { buildSummary, buildView } from './view';
 
 const CLOSE_POLICY = 1008;
+/** A room with no message or connection for this long is deleted. */
+export const ROOM_EXPIRY_MS = 6 * 60 * 60 * 1000;
 
 /** Saved on each socket so it survives hibernation. */
 interface Attachment {
@@ -24,14 +36,28 @@ function send(ws: WebSocket, message: ServerMessage): void {
 }
 
 /**
- * One per room: holds the authoritative game state and every phone's WebSocket.
- * Phase 1 only tracks which devices are connected; the state machine arrives with rooms in Phase 2.
+ * One per room: holds the authoritative room state and every phone's WebSocket.
+ * Every change goes through the state machine in machine.ts, and each phone gets its own view.
  */
 export class Room extends DurableObject<Env> {
+  private state: RoomState | null;
+
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     // Keep-alives are answered by the runtime without waking the room.
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG));
+    ensureSchema(ctx.storage.sql);
+    this.state = loadRoom(ctx.storage.sql);
+  }
+
+  /** Called once by the create route. False if this id is already taken. */
+  async create(input: { id: string; name: string; masterId: string; masterName: string }) {
+    if (this.state) return false;
+    this.state = createRoom({ ...input, now: Date.now() });
+    saveRoom(this.ctx.storage, this.state);
+    await this.ctx.storage.setAlarm(this.state.lastActiveAt + ROOM_EXPIRY_MS);
+    await this.publish();
+    return true;
   }
 
   override fetch(request: Request): Response {
@@ -45,26 +71,53 @@ export class Room extends DurableObject<Env> {
 
   override async webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer): Promise<void> {
     const message = parseClientMessage(raw);
-    // hello is the only message so far, and a socket says it once.
-    if (!message || readDeviceId(ws) !== null) {
+    const deviceId = readDeviceId(ws);
+    if (!message) {
       this.rejectSocket(ws);
       return;
     }
 
-    const deviceId = await deviceIdFromToken(message.token);
-    // Two hellos sent back to back both pass the check above; the second must not win.
-    if (readDeviceId(ws) !== null) {
+    if (message.type === 'hello') {
+      // A socket says hello once, first.
+      if (deviceId !== null) {
+        this.rejectSocket(ws);
+        return;
+      }
+      const newId = await deviceIdFromToken(message.token);
+      // Two hellos sent back to back both pass the check above; the second must not win.
+      if (readDeviceId(ws) !== null) {
+        this.rejectSocket(ws);
+        return;
+      }
+      if (!this.state) {
+        ws.close(CLOSE_ROOM_GONE, 'room gone');
+        return;
+      }
+      // A refresh can open the new socket before the old one closes; keep only the newest.
+      for (const other of this.connectedSockets()) {
+        if (other !== ws && readDeviceId(other) === newId) {
+          other.close(CLOSE_REPLACED, 'replaced');
+        }
+      }
+      ws.serializeAttachment({ deviceId: newId } satisfies Attachment);
+      await this.touch();
+      this.broadcast();
+      return;
+    }
+
+    if (deviceId === null || !this.state) {
       this.rejectSocket(ws);
       return;
     }
-    // A refresh can open the new socket before the old one closes; keep only the newest.
-    for (const other of this.connectedSockets()) {
-      if (other !== ws && readDeviceId(other) === deviceId) {
-        other.close(CLOSE_REPLACED, 'replaced');
-      }
+    const result = apply(this.state, deviceId, message, Date.now());
+    if (!result.ok) {
+      this.sendError(ws, result.error);
+      return;
     }
-    ws.serializeAttachment({ deviceId } satisfies Attachment);
+    this.state = result.state;
+    await this.touch();
     this.broadcast();
+    await this.publish();
   }
 
   override webSocketClose(ws: WebSocket): void {
@@ -76,14 +129,57 @@ export class Room extends DurableObject<Env> {
     this.broadcast(ws);
   }
 
+  override async alarm(): Promise<void> {
+    // Storage is the source of truth; the copy in memory can't be newer.
+    this.state = loadRoom(this.ctx.storage.sql);
+    if (!this.state) return;
+    const expiresAt = this.state.lastActiveAt + ROOM_EXPIRY_MS;
+    if (Date.now() < expiresAt) {
+      await this.ctx.storage.setAlarm(expiresAt);
+      return;
+    }
+    const { id } = this.state;
+    this.state = null;
+    for (const ws of this.ctx.getWebSockets()) ws.close(CLOSE_ROOM_GONE, 'room expired');
+    await this.ctx.storage.deleteAll();
+    ensureSchema(this.ctx.storage.sql);
+    try {
+      await this.env.LOBBY.getByName(LOBBY_NAME).remove(id);
+    } catch (error) {
+      console.error('Room: could not remove the expired room from the lobby', id, error);
+    }
+  }
+
+  /** Saves the state with the time of this activity, and moves the expiry alarm out. */
+  private async touch(): Promise<void> {
+    if (!this.state) return;
+    this.state = { ...this.state, lastActiveAt: Date.now() };
+    saveRoom(this.ctx.storage, this.state);
+    await this.ctx.storage.setAlarm(this.state.lastActiveAt + ROOM_EXPIRY_MS);
+  }
+
+  /** Updates this room's row on the home list. The room works without it, so errors are logged. */
+  private async publish(): Promise<void> {
+    if (!this.state) return;
+    try {
+      await this.env.LOBBY.getByName(LOBBY_NAME).upsert(buildSummary(this.state));
+    } catch (error) {
+      console.error('Room: could not update the lobby', this.state.id, error);
+    }
+  }
+
+  private sendError(ws: WebSocket, code: ServerErrorCode): void {
+    try {
+      send(ws, { type: 'error', code });
+    } catch (error) {
+      // The socket is already closing; nothing to tell it.
+      console.warn('Room: could not send the error', code, error);
+    }
+  }
+
   private rejectSocket(ws: WebSocket): void {
     console.warn('Room: closing socket after a bad message');
-    try {
-      send(ws, { type: 'error', code: 'bad-message' });
-    } catch (error) {
-      // The socket is already closing; it still gets closed below.
-      console.warn('Room: could not send the error', error);
-    }
+    this.sendError(ws, 'bad-message');
     ws.close(CLOSE_POLICY, 'bad message');
   }
 
@@ -98,14 +194,15 @@ export class Room extends DurableObject<Env> {
 
   /** Sends every connected socket its own view of the room. */
   private broadcast(except?: WebSocket): void {
+    const state = this.state;
+    if (!state) return;
     const sockets = this.connectedSockets(except);
-    // getWebSockets() has no stable order; sorting keeps the list from jumping around.
-    const devices = [...new Set(sockets.map(readDeviceId).filter((id) => id !== null))].sort();
+    const connected = new Set(sockets.map(readDeviceId).filter((id) => id !== null));
     for (const ws of sockets) {
       const viewer = readDeviceId(ws);
       if (viewer === null) continue;
       try {
-        send(ws, { type: 'state', view: buildView(viewer, devices) });
+        send(ws, { type: 'state', view: buildView(state, connected, viewer) });
       } catch (error) {
         // The socket closed between the filter and the send; its close handler broadcasts again.
         console.warn('Room: send failed', error);
