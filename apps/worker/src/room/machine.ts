@@ -1,9 +1,18 @@
 import {
   cleanName,
+  cleanRule,
+  CUSTOM_ROLES_MAX,
+  DEFAULT_SETTINGS,
   isValidName,
   NAME_MAX,
   nameKey,
+  PICKS_MAX,
+  ROLE_NAME_MAX,
+  roomRoles,
+  RULE_MAX,
+  TIMER_MAX,
   type RoomAction,
+  type RoomSetup,
   type RoomStatus,
   type ServerErrorCode,
 } from '@werewolf/shared';
@@ -29,11 +38,14 @@ export interface RoomState {
   lastActiveAt: number;
   /** In the order they joined */
   players: Player[];
+  setup: RoomSetup;
 }
 
 export type ApplyResult = { ok: true; state: RoomState } | { ok: false; error: ServerErrorCode };
 
-const refuse = (error: ServerErrorCode): ApplyResult => ({ ok: false, error });
+type SetupResult = { ok: true; setup: RoomSetup } | { ok: false; error: ServerErrorCode };
+
+const refuse = (error: ServerErrorCode) => ({ ok: false, error }) as const;
 
 export function createRoom(input: {
   id: string;
@@ -52,6 +64,13 @@ export function createRoom(input: {
     createdAt: input.now,
     lastActiveAt: input.now,
     players: [],
+    setup: {
+      picks: [],
+      ruleEdits: {},
+      customRoles: [],
+      wakeOrder: [],
+      settings: { ...DEFAULT_SETTINGS },
+    },
   };
 }
 
@@ -119,6 +138,81 @@ export function apply(
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'lobby') return refuse('not-allowed');
       return { ok: true, state: { ...state, open: action.open } };
+    }
+    case 'addPick':
+    case 'removePick':
+    case 'editRule':
+    case 'addCustomRole':
+    case 'setWakeOrder':
+    case 'setSettings': {
+      if (!isMaster) return refuse('not-master');
+      // The card set and settings are locked once the rules are reviewed.
+      if (state.status !== 'lobby') return refuse('not-allowed');
+      const result = applySetup(state.setup, action);
+      return result.ok ? { ok: true, state: { ...state, setup: result.setup } } : result;
+    }
+  }
+}
+
+type SetupAction = Extract<
+  RoomAction,
+  { type: 'addPick' | 'removePick' | 'editRule' | 'addCustomRole' | 'setWakeOrder' | 'setSettings' }
+>;
+
+/** The master's changes to the card set. Who may make them is checked by `apply`. */
+function applySetup(setup: RoomSetup, action: SetupAction): SetupResult {
+  const roles = roomRoles(setup);
+  const known = (id: string) => roles.some((role) => role.id === id);
+
+  switch (action.type) {
+    case 'addPick': {
+      if (!known(action.roleId)) return refuse('role-invalid');
+      if (setup.picks.length >= PICKS_MAX) return refuse('not-allowed');
+      return { ok: true, setup: { ...setup, picks: [...setup.picks, action.roleId] } };
+    }
+    case 'removePick': {
+      const index = setup.picks.lastIndexOf(action.roleId);
+      if (index < 0) return refuse('not-allowed');
+      return {
+        ok: true,
+        setup: { ...setup, picks: setup.picks.filter((_, pick) => pick !== index) },
+      };
+    }
+    case 'editRule': {
+      if (!known(action.roleId)) return refuse('role-invalid');
+      const rule = cleanRule(action.rule);
+      if (!isValidName(rule, RULE_MAX)) return refuse('role-invalid');
+      return {
+        ok: true,
+        setup: { ...setup, ruleEdits: { ...setup.ruleEdits, [action.roleId]: rule } },
+      };
+    }
+    case 'addCustomRole': {
+      if (setup.customRoles.length >= CUSTOM_ROLES_MAX) return refuse('not-allowed');
+      const name = cleanName(action.role.name);
+      const rule = cleanRule(action.role.rule);
+      if (!isValidName(name, ROLE_NAME_MAX) || !isValidName(rule, RULE_MAX)) {
+        return refuse('role-invalid');
+      }
+      // Ids are never reused: custom roles can't be deleted, so the count only grows.
+      const id = `custom-${String(setup.customRoles.length)}`;
+      const role = { id, name, rule, team: action.role.team, wakes: action.role.wakes };
+      return { ok: true, setup: { ...setup, customRoles: [...setup.customRoles, role] } };
+    }
+    case 'setWakeOrder': {
+      const waking = new Set(
+        roles.filter((role) => role.defaultWakeOrder !== null).map((role) => role.id),
+      );
+      const order = [...new Set(action.order)];
+      if (!order.every((id) => waking.has(id))) return refuse('role-invalid');
+      return { ok: true, setup: { ...setup, wakeOrder: order } };
+    }
+    case 'setSettings': {
+      const { timerSeconds, soundOn } = action.settings;
+      if (!Number.isInteger(timerSeconds) || timerSeconds < 0 || timerSeconds > TIMER_MAX) {
+        return refuse('not-allowed');
+      }
+      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn } } };
     }
   }
 }

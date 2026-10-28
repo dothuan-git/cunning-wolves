@@ -1,7 +1,14 @@
-import type { RoomStatus } from '@werewolf/shared';
+import {
+  DEFAULT_SETTINGS,
+  type CustomRole,
+  type RoomSetup,
+  type RoomStatus,
+  type Team,
+} from '@werewolf/shared';
 import type { Player, RoomState } from './machine';
 
 const STATUSES: readonly RoomStatus[] = ['lobby', 'reveal', 'playing', 'finished'];
+const TEAMS: readonly Team[] = ['village', 'werewolf'];
 
 function ensureSchema(sql: SqlStorage): void {
   sql.exec(`CREATE TABLE IF NOT EXISTS room (
@@ -20,6 +27,24 @@ function ensureSchema(sql: SqlStorage): void {
     joined_at INTEGER NOT NULL,
     kicked INTEGER NOT NULL
   )`);
+  // Setup tables came in Phase 3. They are separate tables, so rooms saved before then still load.
+  sql.exec('CREATE TABLE IF NOT EXISTS picks (idx INTEGER PRIMARY KEY, role_id TEXT NOT NULL)');
+  sql.exec('CREATE TABLE IF NOT EXISTS rule_edits (role_id TEXT PRIMARY KEY, rule TEXT NOT NULL)');
+  sql.exec(`CREATE TABLE IF NOT EXISTS custom_roles (
+    idx INTEGER PRIMARY KEY,
+    id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    rule TEXT NOT NULL,
+    team TEXT NOT NULL,
+    wakes INTEGER NOT NULL
+  )`);
+  sql.exec(
+    'CREATE TABLE IF NOT EXISTS wake_order (idx INTEGER PRIMARY KEY, role_id TEXT NOT NULL)',
+  );
+  sql.exec(`CREATE TABLE IF NOT EXISTS settings (
+    timer_seconds INTEGER NOT NULL,
+    sound_on INTEGER NOT NULL
+  )`);
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -34,6 +59,44 @@ function integer(row: Record<string, SqlStorageValue>, column: string): number {
   return value;
 }
 
+function loadSetup(sql: SqlStorage): RoomSetup {
+  const picks = sql
+    .exec('SELECT role_id FROM picks ORDER BY idx')
+    .toArray()
+    .map((row) => text(row, 'role_id'));
+  const ruleEdits: Record<string, string> = {};
+  for (const row of sql.exec('SELECT * FROM rule_edits').toArray()) {
+    ruleEdits[text(row, 'role_id')] = text(row, 'rule');
+  }
+  const customRoles: CustomRole[] = sql
+    .exec('SELECT * FROM custom_roles ORDER BY idx')
+    .toArray()
+    .map((row) => {
+      const team = text(row, 'team');
+      const knownTeam = TEAMS.find((known) => known === team);
+      if (!knownTeam) throw new Error(`Room storage: unknown team ${team}`);
+      return {
+        id: text(row, 'id'),
+        name: text(row, 'name'),
+        rule: text(row, 'rule'),
+        team: knownTeam,
+        wakes: integer(row, 'wakes') === 1,
+      };
+    });
+  const wakeOrder = sql
+    .exec('SELECT role_id FROM wake_order ORDER BY idx')
+    .toArray()
+    .map((row) => text(row, 'role_id'));
+  const [settingsRow] = sql.exec('SELECT * FROM settings LIMIT 1').toArray();
+  const settings = settingsRow
+    ? {
+        timerSeconds: integer(settingsRow, 'timer_seconds'),
+        soundOn: integer(settingsRow, 'sound_on') === 1,
+      }
+    : { ...DEFAULT_SETTINGS };
+  return { picks, ruleEdits, customRoles, wakeOrder, settings };
+}
+
 /** The saved room, or null if this room was never created (or has expired). */
 export function loadRoom(sql: SqlStorage): RoomState | null {
   const [table] = sql
@@ -45,6 +108,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
   const status = text(row, 'status');
   const knownStatus = STATUSES.find((known) => known === status);
   if (!knownStatus) throw new Error(`Room storage: unknown status ${status}`);
+  ensureSchema(sql);
   const players: Player[] = sql
     .exec('SELECT * FROM players ORDER BY joined_at, id')
     .toArray()
@@ -64,6 +128,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     createdAt: integer(row, 'created_at'),
     lastActiveAt: integer(row, 'last_active_at'),
     players,
+    setup: loadSetup(sql),
   };
 }
 
@@ -94,6 +159,37 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
         player.kicked ? 1 : 0,
       );
     }
+    const { setup } = state;
+    sql.exec('DELETE FROM picks');
+    setup.picks.forEach((roleId, index) => {
+      sql.exec('INSERT INTO picks VALUES (?, ?)', index, roleId);
+    });
+    sql.exec('DELETE FROM rule_edits');
+    for (const [roleId, rule] of Object.entries(setup.ruleEdits)) {
+      sql.exec('INSERT INTO rule_edits VALUES (?, ?)', roleId, rule);
+    }
+    sql.exec('DELETE FROM custom_roles');
+    setup.customRoles.forEach((role, index) => {
+      sql.exec(
+        'INSERT INTO custom_roles VALUES (?, ?, ?, ?, ?, ?)',
+        index,
+        role.id,
+        role.name,
+        role.rule,
+        role.team,
+        role.wakes ? 1 : 0,
+      );
+    });
+    sql.exec('DELETE FROM wake_order');
+    setup.wakeOrder.forEach((roleId, index) => {
+      sql.exec('INSERT INTO wake_order VALUES (?, ?)', index, roleId);
+    });
+    sql.exec('DELETE FROM settings');
+    sql.exec(
+      'INSERT INTO settings VALUES (?, ?)',
+      setup.settings.timerSeconds,
+      setup.settings.soundOn ? 1 : 0,
+    );
   });
 }
 

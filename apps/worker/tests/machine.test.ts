@@ -1,4 +1,4 @@
-import type { RoomAction } from '@werewolf/shared';
+import { PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
 import { describe, expect, it } from 'vitest';
 import { apply, createRoom, seatedPlayers, type RoomState } from '../src/room/machine';
 import { buildMasterView, buildPlayerView, buildSummary } from '../src/room/view';
@@ -144,6 +144,131 @@ describe('setOpen', () => {
   });
 });
 
+describe('setup', () => {
+  const custom = {
+    name: '  Baker ',
+    rule: 'Bakes.\n\n\n\nBread.',
+    team: 'village',
+    wakes: true,
+  } as const;
+
+  it('starts empty, with a two-minute timer and no sound', () => {
+    expect(room().setup).toEqual({
+      picks: [],
+      ruleEdits: {},
+      customRoles: [],
+      wakeOrder: [],
+      settings: { timerSeconds: 120, soundOn: false },
+    });
+  });
+
+  it('adds and removes copies of a role', () => {
+    const state = run(
+      room(),
+      [MASTER, { type: 'addPick', roleId: 'werewolf' }],
+      [MASTER, { type: 'addPick', roleId: 'seer' }],
+      [MASTER, { type: 'addPick', roleId: 'werewolf' }],
+      [MASTER, { type: 'removePick', roleId: 'werewolf' }],
+    );
+    expect(state.setup.picks).toEqual(['werewolf', 'seer']);
+  });
+
+  it('refuses an unknown role, a role not picked, and more than the limit', () => {
+    expect(refusal(room(), MASTER, { type: 'addPick', roleId: 'vampire' })).toBe('role-invalid');
+    expect(refusal(room(), MASTER, { type: 'addPick', roleId: 'constructor' })).toBe(
+      'role-invalid',
+    );
+    expect(refusal(room(), MASTER, { type: 'removePick', roleId: 'seer' })).toBe('not-allowed');
+    const full: RoomState = {
+      ...room(),
+      setup: { ...room().setup, picks: Array.from({ length: PICKS_MAX }, () => 'villager') },
+    };
+    expect(refusal(full, MASTER, { type: 'addPick', roleId: 'villager' })).toBe('not-allowed');
+  });
+
+  it('keeps one cleaned rule text per edited role', () => {
+    const state = run(room(), [MASTER, { type: 'editRule', roleId: 'seer', rule: ' Sees. ' }]);
+    expect(state.setup.ruleEdits).toEqual({ seer: 'Sees.' });
+  });
+
+  it('refuses an empty or too long rule, or one for an unknown role', () => {
+    expect(refusal(room(), MASTER, { type: 'editRule', roleId: 'seer', rule: ' \n ' })).toBe(
+      'role-invalid',
+    );
+    expect(
+      refusal(room(), MASTER, { type: 'editRule', roleId: 'seer', rule: 'x'.repeat(RULE_MAX + 1) }),
+    ).toBe('role-invalid');
+    expect(refusal(room(), MASTER, { type: 'editRule', roleId: 'nobody', rule: 'x' })).toBe(
+      'role-invalid',
+    );
+  });
+
+  it('makes custom roles with ids from the room, which can then be picked and edited', () => {
+    const state = run(
+      room(),
+      [MASTER, { type: 'addCustomRole', role: custom }],
+      [MASTER, { type: 'addCustomRole', role: { ...custom, name: 'Miller', wakes: false } }],
+      [MASTER, { type: 'addPick', roleId: 'custom-1' }],
+      [MASTER, { type: 'editRule', roleId: 'custom-0', rule: 'Bakes bread.' }],
+    );
+    expect(state.setup.customRoles).toEqual([
+      { id: 'custom-0', name: 'Baker', rule: 'Bakes.\n\nBread.', team: 'village', wakes: true },
+      { id: 'custom-1', name: 'Miller', rule: 'Bakes.\n\nBread.', team: 'village', wakes: false },
+    ]);
+    expect(state.setup.picks).toEqual(['custom-1']);
+    expect(state.setup.ruleEdits).toEqual({ 'custom-0': 'Bakes bread.' });
+  });
+
+  it('refuses a custom role without a name or rule', () => {
+    expect(refusal(room(), MASTER, { type: 'addCustomRole', role: { ...custom, name: ' ' } })).toBe(
+      'role-invalid',
+    );
+    expect(refusal(room(), MASTER, { type: 'addCustomRole', role: { ...custom, rule: '' } })).toBe(
+      'role-invalid',
+    );
+  });
+
+  it('keeps a wake order of waking roles, without repeats', () => {
+    const state = run(
+      room(),
+      [MASTER, { type: 'addCustomRole', role: custom }],
+      [MASTER, { type: 'setWakeOrder', order: ['witch', 'custom-0', 'witch', 'seer'] }],
+    );
+    expect(state.setup.wakeOrder).toEqual(['witch', 'custom-0', 'seer']);
+    expect(refusal(state, MASTER, { type: 'setWakeOrder', order: ['villager'] })).toBe(
+      'role-invalid',
+    );
+  });
+
+  it('keeps settings with a whole-second timer up to an hour', () => {
+    const settings = { timerSeconds: 90, soundOn: true };
+    expect(run(room(), [MASTER, { type: 'setSettings', settings }]).setup.settings).toEqual(
+      settings,
+    );
+    for (const timerSeconds of [-1, 1.5, 3601]) {
+      expect(
+        refusal(room(), MASTER, { type: 'setSettings', settings: { timerSeconds, soundOn: true } }),
+      ).toBe('not-allowed');
+    }
+  });
+
+  it('is for the master only', () => {
+    const seated = run(room(), ['a', { type: 'join', name: 'Minh' }]);
+    const actions: RoomAction[] = [
+      { type: 'addPick', roleId: 'seer' },
+      { type: 'removePick', roleId: 'seer' },
+      { type: 'editRule', roleId: 'seer', rule: 'x' },
+      { type: 'addCustomRole', role: custom },
+      { type: 'setWakeOrder', order: [] },
+      { type: 'setSettings', settings: { timerSeconds: 0, soundOn: false } },
+    ];
+    for (const action of actions) {
+      expect(refusal(seated, 'a', action)).toBe('not-master');
+      expect(refusal(seated, 'z', action)).toBe('not-master');
+    }
+  });
+});
+
 describe('locks after the lobby', () => {
   it.each(['reveal', 'playing', 'finished'] as const)(
     'refuses every lobby action in %s',
@@ -154,6 +279,16 @@ describe('locks after the lobby', () => {
       expect(refusal(locked, 'a', { type: 'leave' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'setOpen', open: false })).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'editRule', roleId: 'seer', rule: 'x' })).toBe(
+        'not-allowed',
+      );
+      expect(
+        refusal(locked, MASTER, {
+          type: 'setSettings',
+          settings: { timerSeconds: 60, soundOn: true },
+        }),
+      ).toBe('not-allowed');
     },
   );
 });
@@ -173,6 +308,7 @@ describe('views', () => {
       you: MASTER,
       room: { id: 'mill', name: 'The mill', status: 'lobby', open: true },
       players: [{ id: 'a', name: 'Minh', connected: true }],
+      setup: state.setup,
     });
   });
 
@@ -186,6 +322,25 @@ describe('views', () => {
     expect(buildPlayerView(state, connected, 'c').players).toEqual(
       buildMasterView(state, connected).players,
     );
+  });
+
+  it('never sends the card set to a player', () => {
+    const built = run(
+      state,
+      [MASTER, { type: 'addPick', roleId: 'seer' }],
+      [MASTER, { type: 'editRule', roleId: 'seer', rule: 'Secret house rule' }],
+      [
+        MASTER,
+        {
+          type: 'addCustomRole',
+          role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false },
+        },
+      ],
+    );
+    const view = buildPlayerView(built, connected, 'a');
+    expect(view).not.toHaveProperty('setup');
+    const text = JSON.stringify(view);
+    for (const secret of ['seer', 'Secret house rule', 'Baker']) expect(text).not.toContain(secret);
   });
 
   it('never tells a player who the master is', () => {
