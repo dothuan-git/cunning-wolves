@@ -120,6 +120,48 @@
     transform: scale(0.97);
   }
 
+  /* A list's children rise in one after another; a tab's content does this each time it opens. */
+  .stagger > * {
+    animation: rise 220ms ease-out backwards;
+  }
+
+  .stagger > :nth-child(2) {
+    animation-delay: 45ms;
+  }
+
+  .stagger > :nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .stagger > :nth-child(4) {
+    animation-delay: 135ms;
+  }
+
+  .stagger > :nth-child(n + 5) {
+    animation-delay: 180ms;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  /* A folding section's body eases between no height and its own. */
+  .fold {
+    transition: grid-template-rows 220ms ease-out;
+  }
+
+  /* Hidden only once the fold has closed, so the notes stay visible while it shuts. */
+  .fold > * {
+    transition: visibility 0s linear 220ms;
+  }
+
+  .fold[data-open] > * {
+    transition-delay: 0s;
+  }
+
   /* The picked player's name slides in. */
   .name-pop {
     animation: name-pop 180ms ease-out;
@@ -239,6 +281,20 @@
 
   .page-edge-absolute {
     right: calc(var(--scroll-room) - 0.75rem);
+  }
+
+  /* A folding section's body: no height when closed, its own when open (animated below). */
+  .fold {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+
+  .fold[data-open] {
+    grid-template-rows: 1fr;
+  }
+
+  .fold:not([data-open]) > * {
+    visibility: hidden;
   }
 
   /* One level of panel on the paper, set apart by a tone step alone (decision 0013). */

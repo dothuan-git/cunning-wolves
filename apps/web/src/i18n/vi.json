@@ -219,7 +219,10 @@
     "sections": "Nội dung nhật ký ván chơi",
     "revealedNotice": "Vai trò đã được mở cho mọi người.",
     "nightCount": "{{count}} đêm",
-    "died": "{{name}} đã chết"
+    "died": "{{name}} đã chết",
+    "deadCount": "{{count}} đã chết",
+    "diedIn": "Đã chết · {{phase}}",
+    "aliveOfTotal": "{{alive}}/{{total}} người chơi"
   },
   "components": {
     "primary": "Thao tác chính",

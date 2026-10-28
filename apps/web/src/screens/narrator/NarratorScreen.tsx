@@ -253,7 +253,7 @@ export function NarratorScreen({
           // A role whose players are all dead goes grey: band, name and art.
           const out = group.players.length > 0 && group.players.every((p) => p.id in deaths);
           const wash = out
-            ? 'bg-paper'
+            ? 'bg-line'
             : group.role.team === 'werewolf'
               ? 'bg-werewolf-wash'
               : 'bg-village-wash';

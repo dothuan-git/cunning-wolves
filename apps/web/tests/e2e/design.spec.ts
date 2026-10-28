@@ -454,11 +454,25 @@ test('summary separates roles and night notes with keyboard-accessible tabs', as
   await expect(notes).toHaveAttribute('aria-selected', 'true');
   await expect(note).toBeVisible();
   await expect(revealed).toHaveCount(0);
-  await page.getByText('Morning 1', { exact: true }).click();
+  // The journal is open top to bottom, with no phase to expand.
+  await expect(page.getByRole('heading', { name: 'Morning 1', exact: true })).toBeVisible();
   await expect(page.getByText('Huy died', { exact: true })).toBeVisible();
   await notes.press('Home');
   await expect(roles).toBeFocused();
   await expect(revealed).toBeVisible();
+});
+
+test('summary journal sections fold away and open again', async ({ page }) => {
+  await page.goto('/design?screen=summary&state=notes&lang=en&capture=1');
+  const night = page.getByRole('button', { name: 'Night 1', exact: true });
+  const note = page.getByText('Checked Minh: a Wolf.', { exact: true });
+  await expect(night).toHaveAttribute('aria-expanded', 'true');
+  await expect(note).toBeVisible();
+  await night.click();
+  await expect(night).toHaveAttribute('aria-expanded', 'false');
+  await expect(note).toBeHidden();
+  await night.click();
+  await expect(note).toBeVisible();
 });
 
 test('empty night journal and return-home action are clear', async ({ page }) => {
@@ -531,13 +545,13 @@ test('a role goes grey only when all its players are dead', async ({ page }) => 
   const seerBefore = await seerTitle.evaluate((el) => getComputedStyle(el).color);
   await page.getByRole('button', { name: 'Mark Linh dead', exact: true }).click();
   await expect(seerTitle).toHaveCSS('color', 'rgb(92, 88, 82)');
-  await expect(band('Seer')).toHaveCSS('background-color', 'rgb(222, 218, 211)');
+  await expect(band('Seer')).toHaveCSS('background-color', 'rgb(207, 202, 193)');
   expect(seerBefore).not.toBe('rgb(92, 88, 82)');
   const wolfBefore = await wolfBand.evaluate((el) => getComputedStyle(el).backgroundColor);
   await page.getByRole('button', { name: 'Mark Minh dead', exact: true }).click();
   await expect(wolfBand).toHaveCSS('background-color', wolfBefore);
   await page.getByRole('button', { name: 'Mark An dead', exact: true }).click();
-  await expect(wolfBand).toHaveCSS('background-color', 'rgb(222, 218, 211)');
+  await expect(wolfBand).toHaveCSS('background-color', 'rgb(207, 202, 193)');
   await page.getByRole('button', { name: 'Restore An', exact: true }).click();
   await expect(wolfBand).toHaveCSS('background-color', wolfBefore);
 });

@@ -219,7 +219,10 @@
     "sections": "Game record sections",
     "revealedNotice": "Everyone’s roles are now revealed.",
     "nightCount": "{{count}} nights",
-    "died": "{{name}} died"
+    "died": "{{name}} died",
+    "deadCount": "{{count}} dead",
+    "diedIn": "Died · {{phase}}",
+    "aliveOfTotal": "{{alive}}/{{total}} players"
   },
   "components": {
     "primary": "Primary action",
