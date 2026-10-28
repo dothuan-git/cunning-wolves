@@ -18,7 +18,14 @@
   - Thuan discarded the Tabletop docs and chose a light medieval look: a parchment page with content on cards, forest and gilt, lapis/madder role banners, and Source Sans 3 everywhere.
   - UX additions: one-tap status with Undo, a night wake guide, press-and-hold to end a phase, and hold-to-peek cards.
   - `/design` shows screens in a 390×844 phone frame.
-  - See decision 0012 and `docs/design/direction.md`.
+  - See decision 0012.
+
+- **Woodcut redesign** (2026-10-28):
+  - Redesigned with taste-skill: putty paper and black ink, Barlow Condensed and Barlow, panels set apart by a tone step (no borders, shadows or ornaments), and faction color as the only hue.
+  - Home sets the name at poster size around a CC0 Cranach woodcut. At night the narrator's wake line is the largest text, with the role's art inside the sentence.
+  - The seer, villager and card-back art are in.
+  - Every flow from 0012 is kept.
+  - See decision 0013 and `docs/design/direction.md`.
 
 ## Next
 
@@ -31,4 +38,4 @@
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
 - Screen templates and example interactions are implemented; real room/gameplay wiring is not. The development gallery uses synthetic data and is excluded from production JavaScript. Room state/message types, temporal death behavior, and server privacy tests belong to later phases.
-- All card art currently uses the shared placeholder. Add final `<role-id>.webp` images later; see `apps/web/src/assets/cards/README.md`.
+- Only the seer and villager have card art; other roles use the shared placeholder. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.

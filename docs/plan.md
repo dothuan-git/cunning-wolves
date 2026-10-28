@@ -108,11 +108,11 @@ The server sends each phone only what it is allowed to see, so no one can find a
 
 ## Visual direction (Phase 0)
 
-**Current choice: Medieval light**, selected 2026-10-27 (decision 0012). It has a parchment page, content on cards, forest-green actions with gilt detail, lapis village and madder wolf banners, a night-blue wake guide, the wolf seal, and Source Sans 3 throughout.
+**Current choice: Woodcut**, selected 2026-10-28 (decision 0013). It's black ink on putty paper with Barlow Condensed wood-type titles, panels set apart by a tone step, lapis village and madder wolf names, real card art, and a Cranach woodcut on home. At night the wake line is the narrator's biggest text.
 
 The source of truth is [the design direction](design/direction.md), the tokens in `apps/web/src/design/tokens.css`. The `/design` route shows every screen and state.
 
-Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. Every card uses the shared placeholder until final artwork is supplied. On the narrator screen:
+Phase 0 includes shared components, nine screen templates, a development-only gallery (phone-framed on wide screens), and bilingual phone baselines. The seer, the villager and the card back have their own art; other roles use the shared placeholder until their artwork is supplied. On the narrator screen:
 
 - Players have one-tap status pills with Undo, their note history, and the current night's field inline.
 - At night a wake guide steps through the roles.
@@ -120,7 +120,7 @@ Phase 0 includes shared components, nine screen templates, a development-only ga
 
 Players hold to see their card. Setup uses role quantities and an on-demand library. Finished-game roles and night records have separate tabs.
 
-Device identity, sockets, real rooms, state-machine actions, and privacy enforcement remain in their planned phases. See decisions [0007](decisions/0007-per-player-night-comments.md), [0008](decisions/0008-phase-zero-previews-and-placeholder-art.md), [0009](decisions/0009-tabletop-visual-direction.md), [0010](decisions/0010-single-list-night-and-morning.md), [0011](decisions/0011-compact-tabletop-layouts.md), and [0012](decisions/0012-medieval-light-redesign.md).
+Device identity, sockets, real rooms, state-machine actions, and privacy enforcement remain in their planned phases. See decisions [0007](decisions/0007-per-player-night-comments.md), [0008](decisions/0008-phase-zero-previews-and-placeholder-art.md), [0009](decisions/0009-tabletop-visual-direction.md), [0010](decisions/0010-single-list-night-and-morning.md), [0011](decisions/0011-compact-tabletop-layouts.md), [0012](decisions/0012-medieval-light-redesign.md), and [0013](decisions/0013-woodcut-redesign.md).
 
 ## Build phases
 
