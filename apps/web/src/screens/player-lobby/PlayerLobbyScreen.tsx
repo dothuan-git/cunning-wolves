@@ -19,6 +19,7 @@ export function PlayerLobbyScreen({
   roles,
   selfId,
   onLeave,
+  onRejoin,
   reconnecting = false,
   removed = false,
 }: {
@@ -29,6 +30,8 @@ export function PlayerLobbyScreen({
   /** This device's own player, highlighted in the list. */
   selfId: string;
   onLeave: () => void;
+  /** Offered after a removal while the room is open again */
+  onRejoin?: () => void;
   reconnecting?: boolean;
   removed?: boolean;
 }) {
@@ -38,7 +41,22 @@ export function PlayerLobbyScreen({
     return (
       <ScreenLayout
         title={t('screens.playerLobby')}
-        footer={<Button onClick={onLeave}>{t('common.back')}</Button>}
+        footer={
+          <>
+            {onRejoin && (
+              <Button className="press" onClick={onRejoin}>
+                {t('lobby.joinAgain')}
+              </Button>
+            )}
+            <Button
+              variant={onRejoin ? 'secondary' : 'primary'}
+              className="press"
+              onClick={onLeave}
+            >
+              {t('common.back')}
+            </Button>
+          </>
+        }
       >
         <div className="panel grid gap-2 p-3.5" role="alert">
           <h2 className="font-display text-heading font-semibold">{t('lobby.removed')}</h2>

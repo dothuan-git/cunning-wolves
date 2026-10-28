@@ -119,7 +119,18 @@
     "placeholder": "Ví dụ: Linh",
     "hint": "Tối đa 24 ký tự. Có thể dùng dấu tiếng Việt.",
     "error": "Nhập tên từ 1–24 ký tự.",
-    "submit": "Vào làng"
+    "submit": "Vào làng",
+    "createIntro": "Đặt tên phòng, rồi nhập tên mà cả bàn vẫn gọi bạn.",
+    "joinIntro": "Bạn đang vào {{room}}. Chọn tên mà cả bàn vẫn gọi bạn.",
+    "roomLabel": "Tên phòng",
+    "roomHint": "Tối đa 32 ký tự. Bấm đổi để có gợi ý khác.",
+    "roomError": "Nhập tên phòng từ 1 đến 32 ký tự.",
+    "shuffle": "Gợi ý tên phòng khác",
+    "createSubmit": "Mở phòng",
+    "taken": "Tên này đã có người dùng trong phòng. Hãy chọn tên khác.",
+    "closed": "Quản trò đã đóng phòng, không nhận thêm người chơi.",
+    "createFailed": "Chưa mở được phòng. Kiểm tra kết nối rồi thử lại.",
+    "notConnected": "Đang kết nối tới phòng. Thử lại sau giây lát."
   },
   "lobby": {
     "room": "Phòng",
@@ -145,7 +156,8 @@
     "tapForName": "Chạm vào ô để xem tên đầy đủ.",
     "openChip": "Đang mở",
     "closedChip": "Đã đóng",
-    "playersButton": "Người chơi ({{count}})"
+    "playersButton": "Người chơi ({{count}})",
+    "joinAgain": "Vào lại phòng"
   },
   "setup": {
     "intro": "Mỗi người một vai trong câu chuyện.",
@@ -244,17 +256,26 @@
     "title": "Nguồn hình ảnh",
     "woodcut": "Tranh khắc gỗ ngôi làng: “Người sói”, Lucas Cranach Cha, khoảng năm 1512. Bảo tàng Nghệ thuật Metropolitan, CC0."
   },
-  "testRoom": {
-    "title": "Kiểm tra kết nối",
-    "connecting": "Đang kết nối…",
-    "connected": "Đã kết nối",
-    "reconnecting": "Đang kết nối lại…",
-    "replaced": "Đang mở ở thẻ khác",
-    "hint": "Mở trang này trên một điện thoại thứ hai, rồi tải lại một trong hai máy. Máy đó sẽ quay lại đúng là điện thoại cũ.",
-    "replacedHint": "Điện thoại này đã vào phòng từ một thẻ khác. Tải lại trang này để dùng thẻ này.",
-    "phones": "Điện thoại trong phòng: {{count}}",
-    "thisPhone": "Điện thoại này",
-    "badRoom": "Tên phòng thử không hợp lệ",
-    "badRoomHint": "Dùng chữ thường, số và dấu gạch ngang, ví dụ /test/mill."
+  "roomNames": {
+    "suggestion1": "Làng Trăng Khuyết",
+    "suggestion2": "Xóm Cây Đa",
+    "suggestion3": "Bến Đò Đêm",
+    "suggestion4": "Quán Đèn Dầu",
+    "suggestion5": "Làng Sương Mù",
+    "suggestion6": "Đình Làng Cổ",
+    "suggestion7": "Giếng Làng Xưa",
+    "suggestion8": "Xóm Rừng Thông",
+    "suggestion9": "Cổng Làng Rêu",
+    "suggestion10": "Chợ Phiên Đêm",
+    "suggestion11": "Làng Gác Chuông",
+    "suggestion12": "Đồi Hoa Sim"
+  },
+  "room": {
+    "connecting": "Đang vào phòng…",
+    "goneTitle": "Phòng này đã đóng",
+    "goneBody": "Phòng đã bỏ trống sáu tiếng, hoặc chưa từng tồn tại.",
+    "replacedTitle": "Đang mở ở thẻ khác",
+    "replacedBody": "Điện thoại này đang ở trong phòng từ một thẻ khác. Tải lại trang này để dùng thẻ này.",
+    "home": "Về danh sách phòng"
   }
 }

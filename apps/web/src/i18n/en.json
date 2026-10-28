@@ -119,7 +119,18 @@
     "placeholder": "For example, Linh",
     "hint": "Up to 24 characters. You can use accents.",
     "error": "Enter a name with 1–24 characters.",
-    "submit": "Enter the village"
+    "submit": "Enter the village",
+    "createIntro": "Name your room, then the name everyone at the table knows you by.",
+    "joinIntro": "You are joining {{room}}. Choose the name everyone at the table knows.",
+    "roomLabel": "Room name",
+    "roomHint": "Up to 32 characters. Shuffle for another idea.",
+    "roomError": "Enter a room name with 1–32 characters.",
+    "shuffle": "Suggest another room name",
+    "createSubmit": "Open the room",
+    "taken": "That name is taken in this room. Try another.",
+    "closed": "The narrator has closed this room to new players.",
+    "createFailed": "Couldn’t open the room. Check your connection, then try again.",
+    "notConnected": "Still reaching the room. Try again in a moment."
   },
   "lobby": {
     "room": "Room",
@@ -145,7 +156,8 @@
     "tapForName": "Tap a tile for the full name.",
     "openChip": "Open",
     "closedChip": "Closed",
-    "playersButton": "Players ({{count}})"
+    "playersButton": "Players ({{count}})",
+    "joinAgain": "Join again"
   },
   "setup": {
     "intro": "Give every player a place in the story.",
@@ -244,17 +256,26 @@
     "title": "Picture credits",
     "woodcut": "Village woodcut: “The Werewolf”, Lucas Cranach the Elder, about 1512. The Metropolitan Museum of Art, CC0."
   },
-  "testRoom": {
-    "title": "Connection test",
-    "connecting": "Connecting…",
-    "connected": "Connected",
-    "reconnecting": "Reconnecting…",
-    "replaced": "Open in another tab",
-    "hint": "Open this page on a second phone, then refresh either one. It comes back as the same phone.",
-    "replacedHint": "This phone joined the room from another tab. Refresh here to use this tab instead.",
-    "phones": "Phones in the room: {{count}}",
-    "thisPhone": "This phone",
-    "badRoom": "Not a test room name",
-    "badRoomHint": "Use lowercase letters, numbers and dashes, like /test/mill."
+  "roomNames": {
+    "suggestion1": "The old mill",
+    "suggestion2": "Lantern inn",
+    "suggestion3": "Crescent moon village",
+    "suggestion4": "Foggy hollow",
+    "suggestion5": "The bell tower",
+    "suggestion6": "Willow ford",
+    "suggestion7": "Pine hamlet",
+    "suggestion8": "Night market",
+    "suggestion9": "The mossy gate",
+    "suggestion10": "Old well square",
+    "suggestion11": "Ferry crossing",
+    "suggestion12": "Heather hill"
+  },
+  "room": {
+    "connecting": "Reaching the room…",
+    "goneTitle": "This room has closed",
+    "goneBody": "It was left unused for six hours, or it never existed.",
+    "replacedTitle": "Open in another tab",
+    "replacedBody": "This phone is in the room from another tab. Refresh here to use this tab instead.",
+    "home": "Back to the rooms"
   }
 }

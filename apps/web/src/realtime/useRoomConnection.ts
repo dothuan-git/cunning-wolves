@@ -1,30 +1,35 @@
-import { useEffect, useState } from 'react';
+import type { RoomAction } from '@werewolf/shared';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getDeviceToken } from './deviceToken';
 import { RoomConnection, roomSocketUrl, type RoomSnapshot } from './RoomConnection';
+import { wakeOnReturn } from './wake';
 
-/** Connects this phone to a room for as long as the component is mounted. */
-export function useRoomConnection(roomId: string): RoomSnapshot {
-  const [snapshot, setSnapshot] = useState<RoomSnapshot>({ status: 'connecting', view: null });
+const INITIAL: RoomSnapshot = { status: 'connecting', view: null, error: null };
+
+/** Connects this phone to a room while mounted. Key the screen by room id so a new room starts clean. */
+export function useRoomConnection(roomId: string): RoomSnapshot & {
+  send: (action: RoomAction) => boolean;
+} {
+  const [snapshot, setSnapshot] = useState<RoomSnapshot>(INITIAL);
+  const connectionRef = useRef<RoomConnection | null>(null);
 
   useEffect(() => {
     const connection = new RoomConnection(roomSocketUrl(roomId), getDeviceToken());
+    connectionRef.current = connection;
     const unsubscribe = connection.subscribe(setSnapshot);
     connection.start();
-
-    // Phones drop sockets on screen lock and network changes; check again as soon as they're back.
-    const wake = () => {
-      if (document.visibilityState === 'visible') connection.wake();
-    };
-    window.addEventListener('online', wake);
-    document.addEventListener('visibilitychange', wake);
-
+    const stopWaking = wakeOnReturn(connection);
     return () => {
-      window.removeEventListener('online', wake);
-      document.removeEventListener('visibilitychange', wake);
+      stopWaking();
       unsubscribe();
       connection.stop();
+      connectionRef.current = null;
     };
   }, [roomId]);
 
-  return snapshot;
+  const send = useCallback(
+    (action: RoomAction) => connectionRef.current?.send(action) ?? false,
+    [],
+  );
+  return { ...snapshot, send };
 }

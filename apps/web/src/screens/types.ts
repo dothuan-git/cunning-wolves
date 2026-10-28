@@ -1,4 +1,4 @@
-import type { PoolRole, RoomStatus } from '@werewolf/shared';
+import type { PoolRole, RoomSummary } from '@werewolf/shared';
 
 // Presentation props, not room state or wire messages.
 export interface PlayerListItem {
@@ -21,11 +21,5 @@ export interface RoleGroupItem {
   role: PoolRole;
   players: readonly PlayerListItem[];
 }
-export interface RoomListItem {
-  id: string;
-  name: string;
-  master: string;
-  count: number;
-  status: RoomStatus;
-  isOpen: boolean;
-}
+/** A row of the home room list, as the Lobby sends it. */
+export type RoomListItem = RoomSummary;

@@ -41,15 +41,27 @@
   - The temporary `/test/<room>` page shows the connected phones. Two browsers keep their ids across a refresh (e2e).
   - See decision 0016. The production deploy is still open (Next, item 1).
 
+- **Phase 2 rooms and lobby** (branch `feat/phase-2-rooms-lobby`, 2026-10-28):
+  - Create a room at `/new`. The room name starts as a random suggestion with a shuffle button.
+  - The home list is live over the Lobby socket.
+  - Players join at `/room/<id>` with a unique name (case and accents ignored), and keep their seat after a refresh.
+  - The master can kick, close and re-open from Setup. Players can leave.
+  - Rooms expire after 6 hours idle.
+  - The Room state machine (pure, unit-tested) works with SQLite storage and builds per-viewer master and player views.
+  - `lobby` and `setup` are one status now.
+  - The temporary test page is removed.
+  - See decision 0017.
+
 ## Next
 
-1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: open `/test/<room>` on two phones and refresh one.
-2. **Phase 2 (rooms and lobby):** home room list, create/join with name, kick and close/re-open from setup, room expiry. Remove the `/test/<room>` page once the lobby replaces it.
+1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
+2. **Phase 3 (setup):** the role pool data (vi + en), free role picks kept in the room, the roles = players gate, per-room rule edits, custom roles, and settings.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open items from the plan: the fixed role pool with vi/en rule text, standalone assets in the approved engraving style, and the sound pack contents.
-- Screen templates and example interactions are implemented; real room/gameplay wiring is not. The development gallery uses synthetic data and is excluded from production JavaScript. The Room state machine, game messages, temporal death behavior, and server privacy tests belong to later phases.
+- Home, create, join, the village and Setup's room panel run on real rooms. Setup's role picks, rules review, cards, the narrator and the summary still run on local or sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
+- The role pool is empty, so Setup and the village carousel show no roles until Phase 3.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
