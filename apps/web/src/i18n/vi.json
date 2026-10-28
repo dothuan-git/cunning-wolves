@@ -95,6 +95,8 @@
     "nameYou": "{{name}} (bạn)"
   },
   "card": {
+    "tapToEdit": "Chạm để sửa luật.",
+    "editDone": "Chạm ra ngoài ô khi xong.",
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
     "roleDetails": "Chi tiết vai trò",
     "flip": "Lật lá bài của bạn",
@@ -168,9 +170,13 @@
     "needRoles": "Xếp đủ vai để tiếp tục.",
     "roleRequired": "Nhập tên và mô tả vai.",
     "timerHint": "Đặt 0 để tắt bộ đếm.",
-    "addRoles": "Thêm vai trò",
+    "addWerewolf": "Thêm vai phe Sói",
+    "addVillage": "Thêm vai phe Dân",
+    "search": "Tìm vai trò",
+    "noMatch": "Không có vai trò nào khớp.",
+    "customShort": "Tự tạo",
+    "allSeated": "Mọi chỗ ngồi đã có vai.",
     "removeRole": "Bớt một {{role}}",
-    "empty": "Chưa chọn vai trò nào.",
     "remaining_one": "Chọn thêm {{count}} vai trò.",
     "remaining_other": "Chọn thêm {{count}} vai trò."
   },

@@ -47,12 +47,12 @@ export function ScreenLayout({
   );
   return (
     <main
-      className={`mx-auto flex w-full max-w-md flex-col px-5 pt-3 ${fixed ? 'h-dvh overflow-hidden' : 'min-h-dvh'}`}
+      className={`page mx-auto flex w-full max-w-md flex-col pt-3 pl-5 ${fixed ? 'h-dvh overflow-hidden' : 'min-h-dvh'}`}
       data-design-screen
     >
       {hero ? (
         <header className={`relative ${compact ? 'mb-4' : 'mb-6'}`}>
-          <div className="absolute top-0 -right-3 z-10 flex items-center">
+          <div className="page-edge-absolute absolute top-0 z-10 flex items-center">
             {headerTools}
             {action}
             {menu}
@@ -63,7 +63,7 @@ export function ScreenLayout({
         <header className={compact ? 'mb-3' : 'mb-5'}>
           <div className="flex min-h-12 items-center justify-between gap-2">
             <h1 className="min-w-0 font-display text-heading font-semibold">{title}</h1>
-            <div className="-mr-3 flex shrink-0 items-center">
+            <div className="page-edge flex shrink-0 items-center">
               {headerTools}
               {action}
               {menu}

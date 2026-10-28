@@ -1,14 +1,27 @@
 import type { PoolRole, Team } from '@werewolf/shared';
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AddCard } from '../../components/AddCard';
 import { Button } from '../../components/Button';
+import { DetailedCard } from '../../components/DetailedCard';
+import { FactionSection } from '../../components/FactionSection';
 import { Icon } from '../../components/Icon';
-import { Modal } from '../../components/Modal';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
-import { RoleBanner } from '../../components/RoleBanner';
+import { Modal, ModalDone } from '../../components/Modal';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { NoteField, TextField } from '../../components/TextField';
+import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { useLocale } from '../../i18n/useLocale';
+
+// Wolves first, like the summary and the rules review.
+const TEAMS: readonly Team[] = ['werewolf', 'village'];
+// A card taken out of the game shrinks away this long before it leaves the grid.
+const LEAVE_MS = 160;
+
+/** Lowercase without accents, so "soi" finds "Sói" and "dan" finds "Dân". */
+function plain(text: string) {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').replace(/[đĐ]/g, 'd').toLocaleLowerCase();
+}
 
 export function SetupScreen({
   roles: initialRoles,
@@ -23,32 +36,121 @@ export function SetupScreen({
   const locale = useLocale();
   const [roles, setRoles] = useState(initialRoles);
   const [slots, setSlots] = useState(initialSlots);
-  const [showPool, setShowPool] = useState(false);
+  // The faction whose roles are being picked from, and what was typed to narrow them.
+  const [picking, setPicking] = useState<Team | null>(null);
+  const [search, setSearch] = useState('');
+  // The selected role open as a detailed card.
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [editing, setEditing] = useState<PoolRole | 'new' | null>(null);
   const [name, setName] = useState('');
   const [rule, setRule] = useState('');
   const [team, setTeam] = useState<Team>('village');
   const [error, setError] = useState(false);
   const [sound, setSound] = useState(false);
   const [timer, setTimer] = useState('120');
+  // The rule as it was when the detailed card opened, to put back if it is emptied.
+  const ruleBefore = useRef('');
+  // Roles just taken out of the game, still on the page while their card shrinks away.
+  const [leaving, setLeaving] = useState<ReadonlyMap<string, number>>(new Map());
+  const leaveTimers = useRef(new Map<string, number>());
+  const searchId = useId();
   const filled = slots.filter(Boolean).length;
+  const full = filled === slots.length;
+  const viewing = roles.find((role) => role.id === viewingId);
 
-  function openEditor(role: PoolRole | 'new') {
-    setShowPool(false);
-    setEditing(role);
-    setError(false);
-    setName(role === 'new' ? '' : role.name[locale]);
-    setRule(role === 'new' ? '' : role.rule[locale]);
-    setTeam(role === 'new' ? 'village' : role.team);
+  function quantity(id: string) {
+    return slots.filter((slot) => slot === id).length;
+  }
+
+  useEffect(() => {
+    const timers = leaveTimers.current;
+    return () => {
+      for (const timer of timers.values()) window.clearTimeout(timer);
+    };
+  }, []);
+
+  /** Keeps a role's card on the page while it shrinks away; `wait` holds that back a moment. */
+  function startLeaving(id: string, wait: number) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    window.clearTimeout(leaveTimers.current.get(id));
+    setLeaving((current) => new Map(current).set(id, wait));
+    leaveTimers.current.set(
+      id,
+      window.setTimeout(
+        () => {
+          leaveTimers.current.delete(id);
+          setLeaving((current) => {
+            const next = new Map(current);
+            next.delete(id);
+            return next;
+          });
+        },
+        wait + LEAVE_MS + 20,
+      ),
+    );
   }
 
   function addRole(id: string) {
+    // Taken out and put straight back: the card stays.
+    window.clearTimeout(leaveTimers.current.get(id));
+    leaveTimers.current.delete(id);
+    setLeaving((current) => {
+      if (!current.has(id)) return current;
+      const next = new Map(current);
+      next.delete(id);
+      return next;
+    });
     setSlots((current) => {
       const empty = current.indexOf(null);
       return current.map((item, index) => (index === empty ? id : item));
     });
   }
+
+  function removeOne(id: string, wait = 0) {
+    if (quantity(id) === 1) startLeaving(id, wait);
+    setSlots((current) => {
+      const index = current.lastIndexOf(id);
+      return current.map((item, slot) => (slot === index ? null : item));
+    });
+  }
+
+  function openPicker(faction: Team) {
+    setSearch('');
+    setPicking(faction);
+  }
+
+  function openCard(role: PoolRole) {
+    ruleBefore.current = role.rule[locale];
+    setViewingId(role.id);
+  }
+
+  function closeCard() {
+    // A card cannot be left without a rule.
+    if (viewing && !viewing.rule[locale].trim()) editRule(viewing.id, ruleBefore.current);
+    setViewingId(null);
+  }
+
+  function editRule(id: string, value: string) {
+    setRoles((current) =>
+      current.map((role) =>
+        role.id === id ? { ...role, rule: { ...role.rule, [locale]: value } } : role,
+      ),
+    );
+  }
+
+  function openCreator() {
+    setCreating(true);
+    setError(false);
+    setName('');
+    setRule('');
+    setTeam(picking ?? 'village');
+  }
+
+  const query = plain(search.trim());
+  const pool = roles.filter(
+    (role) => role.team === picking && (!query || plain(role.name[locale]).includes(query)),
+  );
 
   return (
     <ScreenLayout
@@ -58,142 +160,158 @@ export function SetupScreen({
       }}
       footer={
         <>
-          {filled < slots.length && (
-            <p className="text-center text-caption text-muted">
-              {t('setup.remaining', { count: slots.length - filled })}
-            </p>
-          )}
-          <Button disabled={filled !== slots.length || slots.length === 0} onClick={onReady}>
+          {/* Always one line, so the footer keeps its height when the last seat is filled. */}
+          <p key={slots.length - filled} className="name-pop text-center text-caption text-muted">
+            {full ? t('setup.allSeated') : t('setup.remaining', { count: slots.length - filled })}
+          </p>
+          <Button disabled={!full || slots.length === 0} className="press" onClick={onReady}>
             {t('setup.ready')}
           </Button>
         </>
       }
     >
-      <section aria-label={t('setup.slots')}>
-        <p className="mb-1.5 px-0.5 text-caption text-muted" role="status">
-          {t('setup.filled', { filled, total: slots.length })}
-        </p>
-        <div className="panel overflow-hidden">
-          {filled === 0 && (
-            <p className="px-3.5 py-6 text-control text-muted">{t('setup.empty')}</p>
-          )}
-          <ul className="divide-y divide-line">
-            {roles
-              .filter((role) => slots.includes(role.id))
-              .map((role) => (
-                <li key={role.id} className="flex min-h-13 items-center gap-1 pr-1 pl-3.5">
-                  <button
-                    type="button"
-                    className="min-h-12 min-w-12 flex-1 text-left"
-                    aria-label={t('setup.editRole', { role: role.name[locale] })}
-                    onClick={() => {
-                      openEditor(role);
-                    }}
-                  >
-                    <RoleBanner name={role.name[locale]} team={role.team} image={role.image} />
-                  </button>
-                  <Button
-                    variant="quiet"
-                    size="icon"
-                    aria-label={t('setup.removeRole', { role: role.name[locale] })}
-                    onClick={() => {
-                      setSlots((current) => {
-                        const index = current.lastIndexOf(role.id);
-                        return current.map((item, slot) => (slot === index ? null : item));
-                      });
-                    }}
-                  >
-                    <Icon name="minus" />
-                  </Button>
-                  <span className="w-5 text-center text-control tabular-nums">
-                    {slots.filter((id) => id === role.id).length}
-                  </span>
-                  <Button
-                    variant="quiet"
-                    size="icon"
-                    disabled={filled === slots.length}
-                    aria-label={t('setup.addRole', { role: role.name[locale] })}
-                    onClick={() => {
-                      addRole(role.id);
-                    }}
-                  >
-                    <Icon name="plus" />
-                  </Button>
-                </li>
-              ))}
-          </ul>
-          <button
-            type="button"
-            className={`flex min-h-12 w-full items-center gap-2 px-3.5 text-control font-medium text-ink hover:bg-field ${filled > 0 ? 'border-t border-line' : ''}`}
-            onClick={() => {
-              setShowPool(true);
-            }}
+      <p key={filled} className="name-pop text-caption text-muted" role="status">
+        {t('setup.filled', { filled, total: slots.length })}
+      </p>
+      {TEAMS.map((faction) => {
+        const chosen = roles.filter(
+          (role) => role.team === faction && (quantity(role.id) > 0 || leaving.has(role.id)),
+        );
+        return (
+          <FactionSection
+            key={faction}
+            team={faction}
+            count={chosen.reduce((total, role) => total + quantity(role.id), 0)}
           >
-            <Icon name="plus" />
-            {t('setup.addRoles')}
-          </button>
-        </div>
-      </section>
-      {showPool && (
+            {chosen.map((role) => {
+              const count = quantity(role.id);
+              return (
+                <li
+                  key={role.id}
+                  className={`aspect-2/3 ${count > 0 ? 'card-in' : 'card-out'}`}
+                  style={
+                    count > 0
+                      ? undefined
+                      : { animationDelay: `${String(leaving.get(role.id) ?? 0)}ms` }
+                  }
+                >
+                  <ThumbnailCard
+                    role={role}
+                    count={count}
+                    label={t('setup.editRole', { role: role.name[locale] })}
+                    onClick={() => {
+                      openCard(role);
+                    }}
+                  />
+                </li>
+              );
+            })}
+            <li className="aspect-2/3">
+              <AddCard
+                label={t(faction === 'werewolf' ? 'setup.addWerewolf' : 'setup.addVillage')}
+                onClick={() => {
+                  openPicker(faction);
+                }}
+              />
+            </li>
+          </FactionSection>
+        );
+      })}
+      {picking && (
         <Modal
           sheet
-          title={t('setup.addRoles')}
+          steady
+          footer={<ModalDone />}
+          title={t(picking === 'werewolf' ? 'setup.addWerewolf' : 'setup.addVillage')}
           onClose={() => {
-            setShowPool(false);
+            setPicking(null);
           }}
         >
-          <p role="status" className="mb-3 text-caption text-muted">
-            {t('setup.filled', { filled, total: slots.length })}
+          <p
+            key={full ? 'full' : filled}
+            role="status"
+            className="name-pop mb-3 text-caption text-muted"
+          >
+            {full ? t('setup.allSeated') : t('setup.filled', { filled, total: slots.length })}
           </p>
-          <ul className="divide-y divide-line">
-            {roles.map((role) => (
-              <li key={role.id} className="flex min-h-14 items-center gap-3">
-                <button
-                  type="button"
-                  className={`min-h-12 min-w-12 flex-1 text-left text-control ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
-                  aria-label={t('setup.editRole', { role: role.name[locale] })}
-                  onClick={() => {
-                    openEditor(role);
-                  }}
-                >
-                  {role.name[locale]}
-                </button>
-                <span className="text-caption text-muted">
-                  {slots.filter((id) => id === role.id).length}
-                </span>
-                <Button
-                  variant="quiet"
-                  size="icon"
-                  disabled={filled === slots.length}
-                  aria-label={t('setup.addRole', { role: role.name[locale] })}
-                  onClick={() => {
-                    addRole(role.id);
-                  }}
-                >
-                  <Icon name="plus" />
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Button
-            variant="quiet"
-            className="mt-3 w-full"
-            onClick={() => {
-              openEditor('new');
-            }}
-          >
-            <Icon name="plus" />
-            {t('setup.custom')}
-          </Button>
-          <Button
-            className="mt-4 w-full"
-            onClick={() => {
-              setShowPool(false);
-            }}
-          >
-            {t('common.done')}
-          </Button>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <label htmlFor={searchId} className="sr-only">
+                {t('setup.search')}
+              </label>
+              <input
+                id={searchId}
+                type="search"
+                placeholder={t('setup.search')}
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                }}
+                className="min-h-12 w-full min-w-0 rounded-control border border-field-border bg-field px-3 py-2.5 font-sans text-body text-ink placeholder:text-muted"
+              />
+            </div>
+            <Button variant="secondary" aria-label={t('setup.custom')} onClick={openCreator}>
+              <Icon name="plus" />
+              {t('setup.customShort')}
+            </Button>
+          </div>
+          {pool.length === 0 ? (
+            <p className="name-pop py-6 text-center text-control text-muted">
+              {t('setup.noMatch')}
+            </p>
+          ) : (
+            // Top padding leaves room for the "−" over the first row's corners.
+            <ul className="grid grid-cols-3 gap-2 pt-3 pb-1">
+              {pool.map((role) => {
+                const count = quantity(role.id);
+                return (
+                  <li key={role.id} className="card-in aspect-2/3">
+                    <ThumbnailCard
+                      role={role}
+                      count={count > 0 ? count : undefined}
+                      label={t('setup.addRole', { role: role.name[locale] })}
+                      disabled={full}
+                      onClick={() => {
+                        addRole(role.id);
+                      }}
+                      decreaseLabel={t('setup.removeRole', { role: role.name[locale] })}
+                      onDecrease={() => {
+                        removeOne(role.id);
+                      }}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </Modal>
+      )}
+      {viewing && (
+        <DetailedCard
+          role={viewing}
+          count={quantity(viewing.id)}
+          editRule={{
+            value: viewing.rule[locale],
+            label: t('setup.rule'),
+            onChange: (value) => {
+              editRule(viewing.id, value);
+            },
+          }}
+          quantity={{
+            value: quantity(viewing.id),
+            canIncrease: !full,
+            decreaseLabel: t('setup.removeRole', { role: viewing.name[locale] }),
+            increaseLabel: t('setup.addRole', { role: viewing.name[locale] }),
+            onDecrease: () => {
+              // The card is on its way out too, so wait for it to close before the grid card shrinks.
+              removeOne(viewing.id, LEAVE_MS);
+            },
+            onIncrease: () => {
+              addRole(viewing.id);
+            },
+          }}
+          onClose={closeCard}
+        />
       )}
       {showSettings && (
         <Modal
@@ -233,12 +351,12 @@ export function SetupScreen({
           </div>
         </Modal>
       )}
-      {editing && (
+      {creating && (
         <Modal
           sheet
-          title={editing === 'new' ? t('setup.custom') : t('card.roleDetails')}
+          title={t('setup.custom')}
           onClose={() => {
-            setEditing(null);
+            setCreating(false);
           }}
         >
           <form
@@ -249,34 +367,18 @@ export function SetupScreen({
                 setError(true);
                 return;
               }
-              if (editing === 'new') {
-                setRoles([
-                  ...roles,
-                  {
-                    id: `custom-${String(roles.length)}`,
-                    name: { vi: name.trim(), en: name.trim() },
-                    rule: { vi: rule.trim(), en: rule.trim() },
-                    team,
-                    defaultWakeOrder: null,
-                    image: '',
-                  },
-                ]);
-              } else {
-                setRoles(
-                  roles.map((roleItem) =>
-                    roleItem.id === editing.id
-                      ? {
-                          ...roleItem,
-                          name: { ...roleItem.name, [locale]: name.trim() },
-                          rule: { ...roleItem.rule, [locale]: rule.trim() },
-                          team,
-                        }
-                      : roleItem,
-                  ),
-                );
-              }
-              setEditing(null);
-              if (editing === 'new') setShowPool(true);
+              setRoles([
+                ...roles,
+                {
+                  id: `custom-${String(roles.length)}`,
+                  name: { vi: name.trim(), en: name.trim() },
+                  rule: { vi: rule.trim(), en: rule.trim() },
+                  team,
+                  defaultWakeOrder: null,
+                  image: '',
+                },
+              ]);
+              setCreating(false);
             }}
           >
             <TextField

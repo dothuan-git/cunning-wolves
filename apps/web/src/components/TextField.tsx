@@ -37,7 +37,7 @@ export function TextField({
       {(error || hint) && (
         <p
           id={`${id}-help`}
-          className={`text-caption ${error ? 'text-danger' : 'text-muted'}`}
+          className={`text-caption ${error ? 'name-pop text-danger' : 'text-muted'}`}
           role={error ? 'alert' : undefined}
         >
           {error ?? hint}

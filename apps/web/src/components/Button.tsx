@@ -28,7 +28,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-control border font-medium disabled:cursor-not-allowed disabled:opacity-45 motion-safe:transition-colors ${size === 'compact' ? 'font-sans text-caption' : 'font-sans text-control'} ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-control border font-medium disabled:cursor-not-allowed disabled:opacity-45 motion-safe:transition ${size === 'compact' ? 'font-sans text-caption' : 'font-sans text-control'} ${sizes[size]} ${variants[variant]} ${className}`}
       {...props}
     />
   );

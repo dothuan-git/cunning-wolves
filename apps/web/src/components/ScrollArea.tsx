@@ -3,7 +3,7 @@ import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from '
 /**
  * The app's one way of scrolling part of a screen: a thin scrollbar in the border color, and the
  * content fading out at an edge only while there is more to see past it. Give it a bounded height
- * (for example `min-h-0` inside a flex column); it scrolls vertically.
+ * (for example `min-h-0` inside a flex column); it scrolls vertically, never sideways.
  */
 export function ScrollArea({
   children,
@@ -43,7 +43,7 @@ export function ScrollArea({
       onScroll={measure}
       data-more-above={more.above}
       data-more-below={more.below}
-      className={`scroll-area overflow-y-auto ${className}`}
+      className={`scroll-area overflow-x-hidden overflow-y-auto ${className}`}
     >
       {children}
     </div>

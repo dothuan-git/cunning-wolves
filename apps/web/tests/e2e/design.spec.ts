@@ -8,6 +8,18 @@ async function hold(page: Page, name: string, ms = 1000) {
   await page.mouse.up();
 }
 
+/** Waits for the animations that end (not the ones that loop, like the live dot). */
+async function settle(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
+}
+
 async function closeSheet(page: Page) {
   await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
 }
@@ -197,28 +209,78 @@ test('all seats must be filled before reviewing the rules', async ({ page }) => 
   await page.goto('/design?screen=setup&lang=en&capture=1');
   const ready = page.getByRole('button', { name: 'Review rules', exact: true });
   await expect(ready).toBeDisabled();
-  await page.getByRole('button', { name: 'Add Villager', exact: true }).click();
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await picker.getByRole('button', { name: 'Add Villager', exact: true }).click();
+  await expect(picker).toContainText('Every seat has a role.');
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
   await expect(ready).toBeEnabled();
-  await page.getByRole('button', { name: 'Remove one Wolf', exact: true }).click();
+  // Taking the last copy off in the detailed card takes the role out of the game.
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: 'Seer', exact: true })
+    .getByRole('button', { name: 'Remove one Seer', exact: true })
+    .click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(ready).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Edit Seer', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('status').first()).toHaveText('5 of 6 roles assigned');
 });
 
-test('role editor supports custom roles and an accessible dialog', async ({ page }) => {
+test('each faction has a grey card that opens its own list of roles to add', async ({ page }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
-  await expect(page.getByRole('button', { name: 'Create custom role', exact: true })).toHaveCount(
-    0,
-  );
-  await page.getByRole('button', { name: 'Add roles', exact: true }).click();
-  await page.getByRole('button', { name: 'Create custom role', exact: true }).click();
-  const dialog = page.getByRole('dialog');
-  await dialog.getByRole('textbox', { name: 'Role name', exact: true }).fill('Lantern keeper');
-  await dialog
+  const blocks = page.locator('main section');
+  await expect(blocks.nth(0).getByRole('heading', { level: 2 })).toHaveText('Wolves');
+  await expect(blocks.nth(1).getByRole('heading', { level: 2 })).toHaveText('Village');
+  await expect(blocks.nth(0).getByRole('button', { name: 'Add wolf roles' })).toBeVisible();
+  await page.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add wolf roles', exact: true });
+  // Only that faction's roles are listed.
+  await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeVisible();
+  await expect(picker.getByRole('button', { name: 'Add Seer', exact: true })).toHaveCount(0);
+  await picker.getByRole('button', { name: 'Add Wolf', exact: true }).click();
+  await expect(picker).toContainText('Every seat has a role.');
+  // A full table cannot take more, but copies can still be taken off, one per tap.
+  await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeDisabled();
+  const minus = picker.getByRole('button', { name: 'Remove one Wolf', exact: true });
+  await minus.click();
+  await expect(picker).toContainText('5 of 6 roles assigned');
+  await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeEnabled();
+  await minus.click();
+  await minus.click();
+  // At none the role is out, and its "−" goes.
+  await expect(picker).toContainText('3 of 6 roles assigned');
+  await expect(minus).toHaveCount(0);
+});
+
+test('the list of roles can be searched, ignoring accents', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=vi&capture=1');
+  await page.getByRole('button', { name: 'Thêm vai phe Dân', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Thêm vai phe Dân', exact: true });
+  const search = picker.getByRole('searchbox', { name: 'Tìm vai trò', exact: true });
+  await expect(picker.getByRole('button', { name: /^Thêm / })).toHaveCount(7);
+  await search.fill('tien');
+  await expect(picker.getByRole('button', { name: /^Thêm / })).toHaveCount(1);
+  await expect(picker.getByRole('button', { name: 'Thêm Tiên tri', exact: true })).toBeVisible();
+  await search.fill('zzz');
+  await expect(picker.getByText('Không có vai trò nào khớp.')).toBeVisible();
+});
+
+test('a custom role is made from the list and shows up in it', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add wolf roles', exact: true });
+  await picker.getByRole('button', { name: 'Create custom role', exact: true }).click();
+  const creator = page.getByRole('dialog', { name: 'Create custom role', exact: true });
+  await creator.getByRole('textbox', { name: 'Role name', exact: true }).fill('Lantern keeper');
+  await creator
     .getByRole('textbox', { name: 'Role description', exact: true })
     .fill('A sample role for this room.');
-  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(dialog).toHaveAccessibleName('Add roles');
-  await dialog.getByRole('button', { name: 'Add Lantern keeper', exact: true }).click();
-  await dialog.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(creator.getByRole('combobox', { name: 'Faction' })).toHaveValue('werewolf');
+  await creator.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(creator).toHaveCount(0);
+  await picker.getByRole('button', { name: 'Add Lantern keeper', exact: true }).click();
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Edit Lantern keeper', exact: true }),
   ).toBeVisible();
@@ -287,6 +349,7 @@ test('screen actions keep 48px touch targets', async ({ page }) => {
     await page.goto(`/design?screen=${screen}&lang=en&capture=1`);
     await expect(page.locator('[data-design-screen]')).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
+    await settle(page);
     const undersized = await page.locator('button, select').evaluateAll((buttons) =>
       buttons.flatMap((button) => {
         const box = button.getBoundingClientRect();
@@ -436,20 +499,112 @@ test('focusing the sticky end-night button does not scroll the page', async ({ p
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
 
-test('role quantities stop at capacity and removed roles can be added from the library', async ({
+test('a selected card opens as a detailed card where the rule and the quantity are edited', async ({
   page,
 }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
-  await page.getByRole('button', { name: 'Remove one Seer', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Edit Seer', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Add roles', exact: true }).click();
-  const dialog = page.getByRole('dialog');
-  await dialog.getByRole('button', { name: 'Add Seer', exact: true }).click();
-  await dialog.getByRole('button', { name: 'Add Villager', exact: true }).click();
-  await expect(dialog.getByRole('button', { name: 'Add Wolf', exact: true })).toBeDisabled();
-  await dialog.getByRole('button', { name: 'Done', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  const card = page.getByRole('dialog', { name: 'Seer', exact: true });
+  // The rule reads as text, with a hint, until it is tapped.
+  await expect(card.getByText('Tap to edit rule.')).toBeVisible();
+  await expect(card.getByRole('textbox')).toHaveCount(0);
+  await card
+    .getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    })
+    .click();
+  const rule = card.getByRole('textbox', { name: 'Role description', exact: true });
+  await expect(rule).toBeFocused();
+  await expect(rule).toHaveValue('Each night, choose one player to learn whether they are a Wolf.');
+  // One copy, and a free seat: it can go either way.
+  await expect(card.getByRole('button', { name: 'Remove one Seer', exact: true })).toBeEnabled();
+  await card.getByRole('button', { name: 'Add Seer', exact: true }).click();
+  await expect(card.getByText('2', { exact: true })).toBeVisible();
+  // Now the table is full.
+  await expect(card.getByRole('button', { name: 'Add Seer', exact: true })).toBeDisabled();
+  await expect(card.getByRole('button', { name: 'Remove one Seer', exact: true })).toBeEnabled();
+  // The stepper took focus, so the rule is text again: tap it to edit.
+  await card
+    .getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    })
+    .click();
+  await rule.fill('Looks at one player each night.');
+  await page.mouse.click(5, 5);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Review rules', exact: true })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Add Seer', exact: true })).toBeDisabled();
+  // The changes were kept.
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  await expect(
+    page
+      .getByRole('dialog', { name: 'Seer', exact: true })
+      .getByRole('button', { name: 'Looks at one player each night.', exact: true }),
+  ).toBeVisible();
+});
+
+test('a card cannot be left without a rule', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  const card = page.getByRole('dialog', { name: 'Seer', exact: true });
+  await card
+    .getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    })
+    .click();
+  const rule = card.getByRole('textbox', { name: 'Role description', exact: true });
+  await rule.fill('');
+  // Leaving the box puts the rule back and shows it as text again.
+  await card.getByRole('heading', { name: 'Seer' }).click();
+  await expect(card.getByRole('textbox')).toHaveCount(0);
+  await expect(
+    card.getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    }),
+  ).toBeVisible();
+  // Closing while it is empty puts it back too.
+  await card
+    .getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    })
+    .click();
+  await rule.fill('');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Seer', exact: true }).getByRole('button', {
+      name: 'Each night, choose one player to learn whether they are a Wolf.',
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test('the "−" on a card in the list sits over its corner and has a 48px touch area', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  const cross = picker.getByRole('button', { name: 'Remove one Seer', exact: true });
+  await expect(cross).toBeVisible();
+  await settle(page);
+  const card = await picker.getByRole('button', { name: 'Add Seer', exact: true }).boundingBox();
+  const box = await cross.boundingBox();
+  const dot = await cross.locator('.decrease-dot').boundingBox();
+  if (!card || !box || !dot) throw new Error('no boxes');
+  expect(box.width).toBeGreaterThanOrEqual(47.9);
+  expect(box.height).toBeGreaterThanOrEqual(47.9);
+  // The ink circle's middle is on the card's top right corner.
+  expect(Math.abs(dot.x + dot.width / 2 - (card.x + card.width))).toBeLessThan(3);
+  expect(Math.abs(dot.y + dot.height / 2 - card.y)).toBeLessThan(3);
+  // The cards on the page itself have no "−".
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(page.getByRole('button', { name: /^Remove one / })).toHaveCount(0);
 });
 
 test('the village shows players as lettered squares, five to a row, with your own highlighted', async ({
@@ -587,7 +742,7 @@ test('an enlarged card animates out before it is removed', async ({ page }) => {
   await page.goto('/design?screen=player-lobby&lang=en&capture=1');
   await page.getByRole('button', { name: 'Look closer at Seer', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Seer', exact: true });
-  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'zoom-in');
+  await expect(dialog).toHaveCSS('animation-name', 'zoom-in');
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveAttribute('data-closing', 'true');
   await expect(dialog).toHaveCount(0);
@@ -758,9 +913,9 @@ test('an enlarged role card closes with Escape and animates in, but not with red
     .getByRole('button', { name: 'Look closer at Wolf, 2 in this game', exact: true })
     .click();
   const dialog = page.getByRole('dialog', { name: 'Wolf', exact: true });
-  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'zoom-in');
+  await expect(dialog).toHaveCSS('animation-name', 'zoom-in');
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(dialog.locator('.detailed-card')).toHaveCSS('animation-name', 'none');
+  await expect(dialog).toHaveCSS('animation-name', 'none');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
@@ -897,3 +1052,247 @@ test('the players section is the same height with few or many players, and the t
   expect(many.peek).toBeLessThan(20);
   expect(many.coveredByFooter).toBe(false);
 });
+
+test('a sheet slides in, closes with a tap on the background, and holds still with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await expect(picker).toHaveCSS('animation-name', 'sheet-in');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(picker).toHaveCSS('animation-name', 'none');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  // A tap above the sheet, on the dimmed page, closes it; a tap inside it does not.
+  await picker.getByRole('heading', { name: 'Add village roles' }).click();
+  await expect(picker).toBeVisible();
+  await page.mouse.click(5, 5);
+  await expect(picker).toHaveAttribute('data-closing', 'true');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Add village roles', exact: true })).toBeFocused();
+});
+
+test('the Done button of a sheet plays the closing animation too', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(picker).toHaveAttribute('data-closing', 'true');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+
+test('a card taken out of the game shrinks away before it leaves the page', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await picker.getByRole('button', { name: 'Remove one Seer', exact: true }).click();
+  // Still on the page, shrinking.
+  const leaving = page.locator('main li.card-out');
+  await expect(leaving).toHaveCount(1);
+  await expect(leaving).toHaveCSS('animation-name', 'card-out');
+  await page.clock.runFor(400);
+  await expect(leaving).toHaveCount(0);
+  await expect(page.getByRole('status').first()).toHaveText('4 of 6 roles assigned');
+});
+
+test('putting a card back while it shrinks keeps it', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await picker.getByRole('button', { name: 'Remove one Seer', exact: true }).click();
+  await picker.getByRole('button', { name: 'Add Seer', exact: true }).click();
+  await page.clock.runFor(400);
+  await expect(page.locator('main li.card-out')).toHaveCount(0);
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await page.clock.runFor(400);
+  await expect(page.getByRole('button', { name: 'Edit Seer', exact: true })).toBeVisible();
+});
+
+test('nothing on the setup page jumps when something appears or changes', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  const footer = page.locator('footer');
+  const height = (locator: Locator) =>
+    locator.evaluate((el) => Math.round(el.getBoundingClientRect().height));
+  const top = (locator: Locator) =>
+    locator.evaluate((el) => Math.round(el.getBoundingClientRect().top));
+  const footerBefore = await height(footer);
+
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await settle(page);
+  // Only the sheet's body scrolls: one scrolling box, not one inside another.
+  expect(
+    await picker.evaluate(
+      (el) =>
+        [el, ...el.querySelectorAll('*')].filter((node) =>
+          /(auto|scroll)/.test(getComputedStyle(node).overflowY),
+        ).length,
+    ),
+  ).toBe(1);
+  const sheetTop = await top(picker);
+  const name = picker.locator('[aria-label="Add Hunter"] .thumbnail-name');
+  const nameTop = await top(name);
+  // The "−" appearing does not move the card's name, and the sheet stays where it is.
+  await picker.getByRole('button', { name: 'Add Hunter', exact: true }).click();
+  await expect(
+    picker.getByRole('button', { name: 'Remove one Hunter', exact: true }),
+  ).toBeVisible();
+  await settle(page);
+  expect(await top(name)).toBe(nameTop);
+  expect(await top(picker)).toBe(sheetTop);
+  // A search that empties the list does not shrink the sheet.
+  await picker.getByRole('searchbox').fill('zzz');
+  await settle(page);
+  expect(await top(picker)).toBe(sheetTop);
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+
+  // Every seat filled: the footer keeps its height.
+  expect(await height(footer)).toBe(footerBefore);
+
+  // Starting to edit the rule does not resize the card's art.
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  const card = page.getByRole('dialog', { name: 'Seer', exact: true });
+  await settle(page);
+  const art = card.locator('.detailed-card img');
+  const artBefore = await height(art);
+  await card.getByRole('button', { name: /^Each night/ }).click();
+  await expect(card.getByRole('textbox', { name: 'Role description' })).toBeFocused();
+  expect(await height(art)).toBe(artBefore);
+});
+
+test('buttons fade between enabled and disabled, and not with reduced motion', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  const ready = page.getByRole('button', { name: 'Review rules', exact: true });
+  await expect(ready).toHaveCSS('transition-property', /opacity/);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(ready).not.toHaveCSS('transition-property', /opacity/);
+});
+
+test('everything that scrolls uses the app scrollbar, and the carousel shows none', async ({
+  page,
+}) => {
+  const border = 'rgb(143, 137, 127)';
+  await page.goto('/design?screen=setup&state=many&lang=en&capture=1');
+  for (const target of [page.locator('html'), page.locator('textarea, input').first()]) {
+    if ((await target.count()) === 0) continue;
+    await expect(target).toHaveCSS('scrollbar-width', 'thin');
+    await expect(target).toHaveCSS('scrollbar-color', `${border} rgba(0, 0, 0, 0)`);
+  }
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  await expect(page.locator('dialog .scroll-area')).toHaveCSS('scrollbar-width', 'thin');
+  await page.goto('/design?screen=player-lobby&state=many&lang=en&capture=1');
+  await expect(page.locator('main .scroll-area')).toHaveCSS('scrollbar-width', 'thin');
+  await expect(page.locator('.deck')).toHaveCSS('scrollbar-width', 'none');
+});
+
+test('an open card keeps the page scrollbar and closes as one piece with its stepper', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=setup&state=many&lang=en&capture=1');
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+  await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
+  const card = page.getByRole('dialog', { name: 'Seer', exact: true });
+  // The page behind keeps its scrollbar.
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+  // The card and the stepper sit in the one dialog, which zooms in and out.
+  await expect(card).toHaveCSS('animation-name', 'zoom-in');
+  await page.keyboard.press('Escape');
+  await expect(card).toHaveCSS('animation-name', 'zoom-out');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+});
+
+test('the add sheet fits its cards up to three quarters of the screen, and never scrolls sideways', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  // Wolves: two cards, a short sheet.
+  await page.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
+  const wolves = page.getByRole('dialog', { name: 'Add wolf roles', exact: true });
+  await settle(page);
+  const short = await wolves.evaluate((el) => el.getBoundingClientRect().height);
+  expect(short).toBeLessThan(844 * 0.6);
+  await wolves.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  // Village: seven cards, as tall as allowed.
+  await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const village = page.getByRole('dialog', { name: 'Add village roles', exact: true });
+  await settle(page);
+  const tall = await village.evaluate((el) => el.getBoundingClientRect().height);
+  expect(tall).toBeLessThanOrEqual(Math.ceil(844 * 0.75));
+  expect(tall).toBeGreaterThan(short);
+  // Three chosen cards in one row put a "−" at the right edge: still no sideways scroll.
+  await village.getByRole('button', { name: 'Remove one Seer', exact: true }).waitFor();
+  const body = village.locator('.scroll-area');
+  expect(await body.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await expect(body).toHaveCSS('overflow-x', 'hidden');
+  // Searching does not shrink it.
+  await village.getByRole('searchbox').fill('zzz');
+  await settle(page);
+  expect(Math.round(await village.evaluate((el) => el.getBoundingClientRect().height))).toBe(
+    Math.round(tall),
+  );
+});
+
+/** Makes the page behave as if a 15px desktop scrollbar took up room (headless and phones have none). */
+async function fakeScrollbar(page: Page) {
+  // The app measures the real scrollbar (0 here) and would put it back, so this one wins.
+  await page.addStyleTag({ content: ':root { --scrollbar: 15px !important; }' });
+  await page.evaluate(() => {
+    document.body.style.width = 'calc(100vw - 15px)';
+  });
+}
+
+test('the page keeps its content width when its scrollbar appears', async ({ page }) => {
+  await page.goto('/design?screen=setup&state=many&lang=en&capture=1');
+  const section = page.locator('main section').first();
+  await expect(section).toBeVisible();
+  const width = () => section.evaluate((el) => el.getBoundingClientRect().width);
+  const before = await width();
+  await fakeScrollbar(page);
+  expect(Math.abs((await width()) - before)).toBeLessThan(1);
+  // The right padding gave up those 15px, and the left padding stayed.
+  const padding = await page
+    .locator('main')
+    .evaluate((el) => [getComputedStyle(el).paddingLeft, getComputedStyle(el).paddingRight]);
+  expect(padding).toEqual(['20px', '5px']);
+});
+
+for (const screen of screens) {
+  test(`${screen} never pushes anything past the right edge, with or without a scrollbar`, async ({
+    page,
+  }) => {
+    await page.goto(`/design?screen=${screen}&lang=vi&capture=1`);
+    await expect(page.locator('[data-design-screen]')).toBeVisible();
+    const pastEdge = () =>
+      page.evaluate(() => {
+        const edge = document.body.getBoundingClientRect().right;
+        // Something past the edge only matters when nothing clips it first: a carousel card that
+        // peeks out inside its own scrolling row is fine.
+        const clipped = (node: Element) => {
+          for (let parent = node.parentElement; parent && parent !== document.body;) {
+            if (
+              getComputedStyle(parent).overflowX !== 'visible' &&
+              parent.getBoundingClientRect().right <= edge + 0.5
+            ) {
+              return true;
+            }
+            parent = parent.parentElement;
+          }
+          return false;
+        };
+        return [...document.querySelectorAll('body *')]
+          .filter((node) => {
+            const box = node.getBoundingClientRect();
+            return box.width > 0 && box.right > edge + 0.5 && !clipped(node);
+          })
+          .map((node) => `${node.tagName.toLowerCase()}.${node.className.slice(0, 40)}`);
+      });
+    expect(await pastEdge()).toEqual([]);
+    await fakeScrollbar(page);
+    expect(await pastEdge()).toEqual([]);
+  });
+}

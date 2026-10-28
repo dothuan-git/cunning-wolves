@@ -165,7 +165,7 @@ function PreviewScene({
     case 'setup':
       return (
         <SetupScreen
-          roles={exampleRoles}
+          roles={manyRoles}
           initialSlots={
             state === 'empty'
               ? [null, null, null, null, null, null]

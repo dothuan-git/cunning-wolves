@@ -1,4 +1,5 @@
 import type { Locale, PoolRole } from '@werewolf/shared';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RoleArtwork } from './RoleArtwork';
 
@@ -23,16 +24,19 @@ const LOOK = {
  * The layout shared by every role card: the name running down the top right in its faction color,
  * the art, and (detailed only) the rule centered. It fills a positioned, clipped card frame.
  * A thumbnail card has no rule and no heading, because it sits inside a button. `count` adds how
- * many of this role are in the game, top left.
+ * many of this role are in the game, top left. `rule` replaces the rule text on the detailed card,
+ * for a text box that edits it.
  */
 export function RoleFace({
   role,
   variant = 'detailed',
   count,
+  rule,
 }: {
   role: PoolRole;
   variant?: keyof typeof LOOK;
   count?: number;
+  rule?: ReactNode;
 }) {
   const { t, i18n } = useTranslation();
   const locale: Locale = i18n.language === 'vi' ? 'vi' : 'en';
@@ -47,7 +51,8 @@ export function RoleFace({
       </Name>
       {count !== undefined && (
         <span
-          className={`absolute z-10 rounded-full bg-ink font-display text-caption font-semibold text-field ${look.chip}`}
+          key={count}
+          className={`count-pop absolute z-10 rounded-full bg-ink font-display text-caption font-semibold text-field ${look.chip}`}
         >
           <span aria-hidden="true">×{count}</span>
           <span className="sr-only">{t('rules.copies', { count })}</span>
@@ -56,7 +61,8 @@ export function RoleFace({
       <div className={`min-h-0 flex-1 ${look.art}`}>
         <RoleArtwork file={role.image} />
       </div>
-      {!thumbnail && <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>}
+      {!thumbnail &&
+        (rule ?? <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>)}
     </div>
   );
 }
