@@ -183,6 +183,19 @@ function PreviewScene({
               examplePlayers.filter((player) => player.role.id === role.id).length ||
               (role.team === 'werewolf' ? 1 : 2),
           }))}
+          master={
+            state === 'master'
+              ? {
+                  reconnecting: false,
+                  onBack: () => {
+                    onNavigate('setup');
+                  },
+                  onStart: () => {
+                    onNavigate('narrator');
+                  },
+                }
+              : undefined
+          }
         />
       );
     case 'my-card': {

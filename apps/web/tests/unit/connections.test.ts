@@ -1,4 +1,4 @@
-import type { RoomSetup, RoomSummary, RoomView } from '@werewolf/shared';
+import type { RoomRole, RoomSetup, RoomSummary, RoomView } from '@werewolf/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LobbyConnection } from '../../src/realtime/LobbyConnection';
 import { parseLobbyMessage, parseServerMessage } from '../../src/realtime/parse';
@@ -13,7 +13,19 @@ const VIEW: RoomView = {
   room: ROOM,
   players: [{ id: 'aaaa', name: 'Minh', connected: true }],
   seat: 'joined',
+  roles: [],
+  card: null,
 };
+const BAKER: RoomRole = {
+  id: 'custom-0',
+  name: { vi: 'Baker', en: 'Baker' },
+  rule: { vi: 'Bakes.', en: 'Bakes.' },
+  team: 'village',
+  defaultWakeOrder: null,
+  image: '',
+  custom: true,
+};
+const DEALT: RoomView = { ...VIEW, roles: [{ role: BAKER, count: 2 }], card: BAKER };
 const SETUP: RoomSetup = {
   picks: ['werewolf', 'custom-0'],
   ruleEdits: { werewolf: 'House rule' },
@@ -21,7 +33,14 @@ const SETUP: RoomSetup = {
   wakeOrder: ['werewolf'],
   settings: { timerSeconds: 60, soundOn: true },
 };
-const MASTER = { kind: 'master', you: 'm', room: ROOM, players: [], setup: SETUP } as const;
+const MASTER = {
+  kind: 'master',
+  you: 'm',
+  room: ROOM,
+  players: [],
+  setup: SETUP,
+  assignments: [{ playerId: 'aaaa', roleId: 'custom-0' }],
+} as const;
 const SUMMARY: RoomSummary = {
   id: 'mill',
   name: 'The mill',
@@ -99,6 +118,8 @@ describe('parseServerMessage', () => {
   it('accepts views and errors', () => {
     const state = { type: 'state', view: VIEW };
     expect(parseServerMessage(JSON.stringify(state))).toEqual(state);
+    const dealt = { type: 'state', view: DEALT };
+    expect(parseServerMessage(JSON.stringify(dealt))).toEqual(dealt);
     const master = { type: 'state', view: MASTER };
     expect(parseServerMessage(JSON.stringify(master))).toEqual(master);
     const error = { type: 'error', code: 'room-closed' };
@@ -114,6 +135,22 @@ describe('parseServerMessage', () => {
     ['a bad player', { type: 'state', view: { ...VIEW, players: [{ id: 1 }] } }],
     ['an unknown status', { type: 'state', view: { ...VIEW, room: { ...ROOM, status: 'x' } } }],
     ['a master view without setup', { type: 'state', view: { ...MASTER, setup: undefined } }],
+    [
+      'a master view without assignments',
+      { type: 'state', view: { ...MASTER, assignments: undefined } },
+    ],
+    ['a player view without roles', { type: 'state', view: { ...VIEW, roles: undefined } }],
+    [
+      'a card without a team',
+      { type: 'state', view: { ...DEALT, card: { ...BAKER, team: undefined } } },
+    ],
+    [
+      'a role with a name in one language',
+      {
+        type: 'state',
+        view: { ...DEALT, roles: [{ role: { ...BAKER, name: { vi: 'Baker' } }, count: 1 }] },
+      },
+    ],
     [
       'a custom role of another team',
       {

@@ -25,6 +25,30 @@ async function joinFromHome(page: Page, roomName: string, name: string) {
   await page.getByRole('button', { name: 'Enter the village' }).click();
 }
 
+/** Every room message this phone receives, parsed. */
+function roomMessages(page: Page): unknown[] {
+  const messages: unknown[] = [];
+  page.on('websocket', (socket) => {
+    if (!socket.url().includes('/api/rooms/')) return;
+    socket.on('framereceived', ({ payload }) => {
+      if (typeof payload !== 'string' || payload === 'pong') return;
+      messages.push(JSON.parse(payload));
+    });
+  });
+  return messages;
+}
+
+/** The card ids in a player's messages, so a test can check they only ever got their own. */
+function cardIds(messages: unknown[]): Set<string> {
+  const ids = new Set<string>();
+  for (const message of messages) {
+    const text = JSON.stringify(message);
+    const match = /"card":\{"id":"([^"]+)"/.exec(text);
+    if (match?.[1]) ids.add(match[1]);
+  }
+  return ids;
+}
+
 test('a group gathers in a room', async ({ browser }) => {
   const roomName = `Mill ${String(Date.now()).slice(-6)}`;
   const master = await phone(browser);
@@ -148,6 +172,77 @@ test('the master builds a card set the room keeps, and players never see it', as
   const text = await minh.content();
   expect(text).not.toContain('Lantern keeper');
   expect(text).not.toContain('House rule.');
+});
+
+test('the master shows the rules, then deals each player only their own card', async ({
+  browser,
+}) => {
+  const roomName = `Well ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  const lan = await phone(browser);
+  const minhMessages = roomMessages(minh);
+  const lanMessages = roomMessages(lan);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await joinFromHome(lan, roomName, 'Lan');
+  await expect(master.getByRole('button', { name: 'Players (2)' })).toBeVisible();
+
+  for (const [team, role] of [
+    ['village', 'Seer'],
+    ['wolf', 'Werewolf'],
+  ] as const) {
+    await master.getByRole('button', { name: `Add ${team} roles`, exact: true }).click();
+    const picker = master.getByRole('dialog', { name: `Add ${team} roles` });
+    await picker.getByRole('button', { name: `Add ${role}`, exact: true }).click();
+    await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  }
+  const review = master.getByRole('button', { name: 'Review rules', exact: true });
+  await review.click();
+
+  // Everyone reads the rules; nobody has a card yet.
+  await expect(master.getByRole('button', { name: 'Start game' })).toBeVisible();
+  for (const player of [minh, lan]) {
+    await expect(player.getByRole('heading', { name: 'Tonight’s roles' })).toBeVisible();
+    await expect(player.getByRole('button', { name: 'I’ve read the rules' })).toBeVisible();
+  }
+
+  // Back to setup, and the players go back to the village.
+  await master.getByRole('button', { name: 'Edit roles' }).click();
+  await expect(review).toBeVisible();
+  await expect(minh.getByText('You’re in the room')).toBeVisible();
+  await review.click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+
+  // Each player gets one card, and the two cards differ.
+  const names: string[] = [];
+  for (const player of [minh, lan]) {
+    const flip = player.getByRole('button', { name: 'Flip your card' });
+    await flip.click();
+    await expect(flip).toHaveAttribute('aria-pressed', 'true');
+    const face = player.locator('.flip-front');
+    await expect(face).toContainText(/Seer|Werewolf/);
+    names.push((await face.textContent()) ?? '');
+  }
+  const [minhRole, lanRole] = names.map((text) => (text.includes('Seer') ? 'seer' : 'werewolf'));
+  expect(minhRole).not.toBe(lanRole);
+
+  // The narrator sees who holds what.
+  await expect(master.getByRole('heading', { name: 'Narrator' })).toBeVisible();
+  await expect(master.getByText('Minh', { exact: true })).toBeVisible();
+  await expect(master.getByText('Lan', { exact: true })).toBeVisible();
+
+  // A refresh shows the back of the same card.
+  await minh.reload();
+  const flip = minh.getByRole('button', { name: 'Flip your card' });
+  await expect(flip).toHaveAttribute('aria-pressed', 'false');
+
+  // Each phone only ever received its own card, and never the deal.
+  expect([...cardIds(minhMessages)]).toEqual([minhRole]);
+  expect([...cardIds(lanMessages)]).toEqual([lanRole]);
+  for (const message of [...minhMessages, ...lanMessages]) {
+    expect(JSON.stringify(message)).not.toContain('assignments');
+  }
 });
 
 test('an unknown room says it has closed', async ({ page }) => {
