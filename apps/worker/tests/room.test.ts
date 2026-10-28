@@ -131,6 +131,13 @@ describe('Room', () => {
     expect((await socket.closed).code).toBe(1008);
   });
 
+  it('closes a socket that sends two hellos back to back', async () => {
+    const roomId = newRoomId();
+    const socket = await connect(roomId, TOKEN_A);
+    socket.ws.send(JSON.stringify({ type: 'hello', token: TOKEN_B }));
+    expect((await socket.closed).code).toBe(1008);
+  });
+
   it('never sends a device token to any phone', async () => {
     const roomId = newRoomId();
     const a = await connect(roomId, TOKEN_A);
@@ -158,6 +165,8 @@ describe('parseClientMessage', () => {
     ['null', 'null'],
     ['unknown type', JSON.stringify({ type: 'kick', token: TOKEN_A })],
     ['missing token', JSON.stringify({ type: 'hello' })],
+    ['too long', JSON.stringify({ type: 'hello', token: TOKEN_A, pad: 'x'.repeat(300) })],
+    ['not a uuid', JSON.stringify({ type: 'hello', token: 'aaaaaaaaaaaaaaaaaaaa' })],
     ['short token', JSON.stringify({ type: 'hello', token: 'abc' })],
     ['token with spaces', JSON.stringify({ type: 'hello', token: `${TOKEN_A} x` })],
   ])('rejects %s', (_label, raw) => {

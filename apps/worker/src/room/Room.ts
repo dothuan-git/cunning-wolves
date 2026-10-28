@@ -47,13 +47,16 @@ export class Room extends DurableObject<Env> {
     const message = parseClientMessage(raw);
     // hello is the only message so far, and a socket says it once.
     if (!message || readDeviceId(ws) !== null) {
-      console.warn('Room: closing socket after a bad message');
-      send(ws, { type: 'error', code: 'bad-message' });
-      ws.close(CLOSE_POLICY, 'bad message');
+      this.rejectSocket(ws);
       return;
     }
 
     const deviceId = await deviceIdFromToken(message.token);
+    // Two hellos sent back to back both pass the check above; the second must not win.
+    if (readDeviceId(ws) !== null) {
+      this.rejectSocket(ws);
+      return;
+    }
     // A refresh can open the new socket before the old one closes; keep only the newest.
     for (const other of this.connectedSockets()) {
       if (other !== ws && readDeviceId(other) === deviceId) {
@@ -71,6 +74,17 @@ export class Room extends DurableObject<Env> {
   override webSocketError(ws: WebSocket, error: unknown): void {
     console.error('Room: socket error', error);
     this.broadcast(ws);
+  }
+
+  private rejectSocket(ws: WebSocket): void {
+    console.warn('Room: closing socket after a bad message');
+    try {
+      send(ws, { type: 'error', code: 'bad-message' });
+    } catch (error) {
+      // The socket is already closing; it still gets closed below.
+      console.warn('Room: could not send the error', error);
+    }
+    ws.close(CLOSE_POLICY, 'bad message');
   }
 
   /** Open sockets that have said hello, optionally leaving one out (it is closing). */
