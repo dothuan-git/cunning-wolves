@@ -43,7 +43,8 @@
     "noteWolves2": "Chose Linh.",
     "frame": "Phone size {{width}} × {{height}}",
     "many": "Many players",
-    "master": "Narrator"
+    "master": "Narrator",
+    "player": "Player"
   },
   "screens": {
     "home": "Cunning Wolves",

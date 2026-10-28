@@ -1,11 +1,15 @@
 import {
+  gameJournal,
   gameRoles,
   ROLE_POOL,
   roomRoles,
   wakingOrder,
+  type Assignment,
   type GameState,
   type MasterView,
+  type PlayerInfo,
   type PlayerView,
+  type RoomRole,
   type ServerErrorCode,
 } from '@werewolf/shared';
 import { useMemo, useState } from 'react';
@@ -21,6 +25,7 @@ import { NarratorScreen } from '../narrator/NarratorScreen';
 import { PlayerLobbyScreen } from '../player-lobby/PlayerLobbyScreen';
 import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
+import { SummaryScreen } from '../summary/SummaryScreen';
 import type { RoleGroupItem } from '../types';
 
 function goHome() {
@@ -70,6 +75,18 @@ export function RoomScreen({ roomId }: { roomId: string }) {
             onBack: () => send({ type: 'backToSetup' }),
             onStart: () => send({ type: 'startGame' }),
           }}
+        />
+      );
+    }
+    if (view.room.status === 'finished') {
+      return (
+        <SummaryRoom
+          roomName={view.room.name}
+          players={view.players}
+          roles={roomRoles(setup)}
+          assignments={view.assignments}
+          game={view.game ?? FIRST_NIGHT}
+          onPlayAgain={() => send({ type: 'playAgain' })}
         />
       );
     }
@@ -144,6 +161,40 @@ function NarratorRoom({
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
       onSettings={(settings) => send({ type: 'setSettings', settings })}
+      onFinish={() => send({ type: 'finishGame' })}
+    />
+  );
+}
+
+/** The game summary, for the narrator and every player alike. */
+function SummaryRoom({
+  roomName,
+  players,
+  roles,
+  assignments,
+  game,
+  onPlayAgain,
+}: {
+  roomName: string;
+  players: readonly PlayerInfo[];
+  roles: readonly RoomRole[];
+  assignments: readonly Assignment[];
+  game: GameState;
+  onPlayAgain?: () => void;
+}) {
+  const revealed = players.flatMap((player) => {
+    const roleId = assignments.find((assignment) => assignment.playerId === player.id)?.roleId;
+    const role = roles.find((known) => known.id === roleId);
+    return role ? [{ id: player.id, name: player.name, role }] : [];
+  });
+  return (
+    <SummaryScreen
+      roomName={roomName}
+      players={revealed}
+      journal={gameJournal(game, players)}
+      nights={game.phase.number}
+      onHome={goHome}
+      onPlayAgain={onPlayAgain}
     />
   );
 }
@@ -162,6 +213,18 @@ function PlayerRoom({
   const { t } = useTranslation();
   const [notSent, setNotSent] = useState(false);
   const [rejoining, setRejoining] = useState(false);
+
+  if (view.seat === 'joined' && view.reveal) {
+    return (
+      <SummaryRoom
+        roomName={view.room.name}
+        players={view.players}
+        roles={view.roles.map(({ role }) => role)}
+        assignments={view.reveal.assignments}
+        game={view.reveal.game}
+      />
+    );
+  }
 
   if (view.seat === 'joined' && view.card) {
     return <MyCardScreen role={view.card} />;

@@ -303,9 +303,13 @@ function PreviewScene({
                   },
                 ]
           }
-          onPlayAgain={() => {
-            onNavigate('setup');
-          }}
+          onPlayAgain={
+            state === 'player'
+              ? undefined
+              : () => {
+                  onNavigate('setup');
+                }
+          }
         />
       );
     case 'components':

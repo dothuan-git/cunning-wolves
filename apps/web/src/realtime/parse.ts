@@ -6,6 +6,7 @@ import type {
   LobbyMessage,
   Phase,
   PlayerInfo,
+  Reveal,
   RoomInfo,
   RoomRole,
   RoomSetup,
@@ -184,6 +185,13 @@ function gameState(value: unknown): GameState | null {
   return { phase: current, deaths, notes };
 }
 
+function reveal(value: unknown): Reveal | null {
+  if (!isObject(value)) return null;
+  const assignments = list(value.assignments, assignment);
+  const game = gameState(value.game);
+  return assignments && game ? { assignments, game } : null;
+}
+
 function roomView(value: unknown): RoomView | null {
   if (!isObject(value) || typeof value.you !== 'string') return null;
   const room = roomInfo(value.room);
@@ -200,8 +208,15 @@ function roomView(value: unknown): RoomView | null {
   const seat = oneOf(SEATS, value.seat);
   const roles = list(value.roles, gameRole);
   const card = value.card === null ? null : roomRole(value.card);
-  if (value.kind === 'player' && seat && roles && (value.card === null || card)) {
-    return { kind: 'player', you: value.you, room, players, seat, roles, card };
+  const revealed = value.reveal === null ? null : reveal(value.reveal);
+  if (
+    value.kind === 'player' &&
+    seat &&
+    roles &&
+    (value.card === null || card) &&
+    (value.reveal === null || revealed)
+  ) {
+    return { kind: 'player', you: value.you, room, players, seat, roles, card, reveal: revealed };
   }
   return null;
 }
