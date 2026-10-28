@@ -28,7 +28,6 @@ const screens = [
   'home',
   'name-entry',
   'summary',
-  'master-lobby',
   'setup',
   'narrator',
   'player-lobby',
@@ -169,6 +168,17 @@ test('the card shows its back, flips on a tap, and removes the role when hidden'
   await expect(rule).toHaveCount(0);
 });
 
+test('the card is dealt in from above when the page opens, but not with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'deal-in');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-duration', '0.45s');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
+});
+
 test('the card can be flipped from the keyboard', async ({ page }) => {
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
   const seer = page.getByRole('heading', { name: 'Seer', exact: true });
@@ -241,16 +251,28 @@ test('the wake order title keeps a gap above its tiles', async ({ page }) => {
   expect(tile.y - (title.y + title.height)).toBeGreaterThanOrEqual(16);
 });
 
-test('all seats must be filled before reviewing the rules', async ({ page }) => {
+test('roles are chosen freely, but the rules open only with one role per player', async ({
+  page,
+}) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
   const ready = page.getByRole('button', { name: 'Review rules', exact: true });
+  const line = page.locator('footer').getByRole('status');
+  // Five roles for six players.
+  await expect(line).toHaveText('Choose 1 more role.');
   await expect(ready).toBeDisabled();
   await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
   const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
-  await picker.getByRole('button', { name: 'Add Villager', exact: true }).click();
-  await expect(picker).toContainText('Every seat has a role.');
+  const villager = picker.getByRole('button', { name: 'Add Villager', exact: true });
+  await villager.click();
+  await expect(picker).toContainText('Every player has a role.');
+  // More roles than players can be chosen: the narrator may expect more to join.
+  await villager.click();
+  await villager.click();
+  await expect(villager).toBeEnabled();
+  await expect(picker).toContainText('2 roles too many.');
   await picker.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(ready).toBeEnabled();
+  await expect(line).toHaveText('2 roles too many.');
+  await expect(ready).toBeDisabled();
   // Taking the last copy off in the detailed card takes the role out of the game.
   await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
   await page
@@ -258,14 +280,53 @@ test('all seats must be filled before reviewing the rules', async ({ page }) => 
     .getByRole('button', { name: 'Remove one Seer', exact: true })
     .click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await expect(ready).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Edit Seer', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('status').first()).toHaveText('5 of 6 roles assigned');
+  await expect(line).toHaveText('1 role too many.');
+  await page.getByRole('button', { name: 'Edit Witch', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: 'Witch', exact: true })
+    .getByRole('button', { name: 'Remove one Witch', exact: true })
+    .click();
+  await expect(line).toHaveText('Every player has a role.');
+  await expect(ready).toBeEnabled();
+});
+
+test('the room panel lists the players, removes one, and closes the room', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  const room = page.getByRole('region', { name: 'Room', exact: true });
+  await expect(room.getByRole('heading', { level: 2 })).toHaveText('The old mill');
+  await expect(room.getByRole('status')).toHaveText('Open');
+  await room.getByRole('button', { name: 'Close room', exact: true }).click();
+  await expect(room.getByRole('status')).toHaveText('Closed');
+  await room.getByRole('button', { name: 'Reopen room', exact: true }).click();
+  await expect(room.getByRole('status')).toHaveText('Open');
+  // Six players and five roles; removing a player matches them.
+  await room.getByRole('button', { name: 'Players (6)', exact: true }).click();
+  const sheet = page.getByRole('dialog', { name: 'Players (6)', exact: true });
+  await sheet.getByRole('button', { name: 'Remove Mai', exact: true }).click();
+  const confirm = page.getByRole('dialog', { name: 'Remove player?', exact: true });
+  await expect(confirm).toContainText('Mai will leave the room.');
+  await confirm.getByRole('button', { name: 'Remove', exact: true }).click();
+  await expect(confirm).toHaveCount(0);
+  const after = page.getByRole('dialog', { name: 'Players (5)', exact: true });
+  await expect(after.getByText('Mai', { exact: true })).toHaveCount(0);
+  await after.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Review rules', exact: true })).toBeEnabled();
+});
+
+test('with no players yet, setup says it is waiting for them', async ({ page }) => {
+  await page.goto('/design?screen=setup&state=empty&lang=en&capture=1');
+  await expect(page.locator('footer').getByRole('status')).toHaveText(
+    'Waiting for players to join.',
+  );
+  await expect(page.getByRole('button', { name: 'Review rules', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Players (0)', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('No one has joined yet.');
 });
 
 test('each faction has a grey card that opens its own list of roles to add', async ({ page }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
-  const blocks = page.locator('main section');
+  const blocks = page.locator('main section[aria-labelledby^="faction-"]');
   await expect(blocks.nth(0).getByRole('heading', { level: 2 })).toHaveText('Wolves');
   await expect(blocks.nth(1).getByRole('heading', { level: 2 })).toHaveText('Village');
   await expect(blocks.nth(0).getByRole('button', { name: 'Add wolf roles' })).toBeVisible();
@@ -275,17 +336,15 @@ test('each faction has a grey card that opens its own list of roles to add', asy
   await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeVisible();
   await expect(picker.getByRole('button', { name: 'Add Seer', exact: true })).toHaveCount(0);
   await picker.getByRole('button', { name: 'Add Wolf', exact: true }).click();
-  await expect(picker).toContainText('Every seat has a role.');
-  // A full table cannot take more, but copies can still be taken off, one per tap.
-  await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeDisabled();
+  await expect(picker).toContainText('Every player has a role.');
+  // Copies come off one per tap.
   const minus = picker.getByRole('button', { name: 'Remove one Wolf', exact: true });
   await minus.click();
-  await expect(picker).toContainText('5 of 6 roles assigned');
-  await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeEnabled();
+  await expect(picker).toContainText('Choose 1 more role.');
   await minus.click();
   await minus.click();
   // At none the role is out, and its "−" goes.
-  await expect(picker).toContainText('3 of 6 roles assigned');
+  await expect(picker).toContainText('Choose 3 more roles.');
   await expect(minus).toHaveCount(0);
 });
 
@@ -330,9 +389,7 @@ test('name entry validates whitespace and accepts Vietnamese accents', async ({ 
   await expect(page.getByRole('alert')).toHaveText('Enter a name with 1–24 characters.');
   await page.getByRole('textbox', { name: 'Your name', exact: true }).fill('Hà Nguyễn');
   await page.getByRole('button', { name: 'Enter the village', exact: true }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Gather the village', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Prepare the roles', exact: true })).toBeVisible();
 });
 
 test('long card text and player names remain within the phone width', async ({ page }) => {
@@ -637,12 +694,12 @@ test('a selected card opens as a detailed card where the rule and the quantity a
   const rule = card.getByRole('textbox', { name: 'Role description', exact: true });
   await expect(rule).toBeFocused();
   await expect(rule).toHaveValue('Each night, choose one player to learn whether they are a Wolf.');
-  // One copy, and a free seat: it can go either way.
+  // One copy: it can go either way.
   await expect(card.getByRole('button', { name: 'Remove one Seer', exact: true })).toBeEnabled();
   await card.getByRole('button', { name: 'Add Seer', exact: true }).click();
   await expect(card.getByText('2', { exact: true })).toBeVisible();
-  // Now the table is full.
-  await expect(card.getByRole('button', { name: 'Add Seer', exact: true })).toBeDisabled();
+  // There is no limit on copies.
+  await expect(card.getByRole('button', { name: 'Add Seer', exact: true })).toBeEnabled();
   await expect(card.getByRole('button', { name: 'Remove one Seer', exact: true })).toBeEnabled();
   // The stepper took focus, so the rule is text again: tap it to edit.
   await card
@@ -786,6 +843,22 @@ test('the village page has no sideways page scroll in Vietnamese with many playe
   await page.goto('/design?screen=player-lobby&lang=vi&capture=1');
   const width = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(width).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
+});
+
+test('a room on the home page has a blinking dot: green when open, red when in play', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=home&lang=en&capture=1');
+  const dotOf = (label: string) =>
+    page.locator('li', { hasText: label }).locator('span[aria-hidden="true"]');
+  const open = dotOf('Open').first();
+  const playing = dotOf('In play').first();
+  await expect(open).toHaveCSS('background-color', 'rgb(42, 143, 85)');
+  await expect(open).toHaveCSS('animation-name', 'blink');
+  await expect(playing).toHaveCSS('background-color', 'rgb(163, 50, 31)');
+  await expect(playing).toHaveCSS('animation-name', 'blink');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(open).toHaveCSS('animation-name', 'none');
 });
 
 test('the live dot in the village is green and blinks, and holds still with reduced motion', async ({
@@ -1213,7 +1286,7 @@ test('a card taken out of the game shrinks away before it leaves the page', asyn
   await expect(leaving).toHaveCSS('animation-name', 'card-out');
   await page.clock.runFor(400);
   await expect(leaving).toHaveCount(0);
-  await expect(page.getByRole('status').first()).toHaveText('4 of 6 roles assigned');
+  await expect(page.locator('footer').getByRole('status')).toHaveText('Choose 2 more roles.');
 });
 
 test('putting a card back while it shrinks keeps it', async ({ page }) => {
@@ -1269,7 +1342,7 @@ test('nothing on the setup page jumps when something appears or changes', async 
   await picker.getByRole('button', { name: 'Done', exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
 
-  // Every seat filled: the footer keeps its height.
+  // The roles now match the players: the footer keeps its height.
   expect(await height(footer)).toBe(footerBefore);
 
   // Starting to edit the rule does not resize the card's art.

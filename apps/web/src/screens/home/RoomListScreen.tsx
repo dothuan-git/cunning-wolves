@@ -70,6 +70,7 @@ export function RoomListScreen({
           <ul className="panel divide-y divide-line">
             {rooms.map((room) => {
               const joinable = room.isOpen && room.status === 'lobby';
+              const open = room.isOpen && room.status !== 'playing';
               return (
                 <li key={room.id} className="px-4">
                   <button
@@ -88,12 +89,17 @@ export function RoomListScreen({
                         {room.name}
                       </span>
                       <span
-                        className={`shrink-0 text-caption ${joinable ? 'font-medium text-ink' : 'text-muted'}`}
+                        className={`inline-flex shrink-0 items-center gap-1.5 text-caption ${joinable ? 'font-medium text-ink' : 'text-muted'}`}
                       >
+                        {/* Green while others can join; red when closed or in play. The label says the same. */}
+                        <span
+                          aria-hidden="true"
+                          className={`live-dot size-2 rounded-full ${open ? 'bg-live' : 'bg-danger'}`}
+                        />
                         {t(
                           room.status === 'playing'
                             ? 'rooms.playing'
-                            : room.isOpen
+                            : open
                               ? 'rooms.open'
                               : 'rooms.closed',
                         )}

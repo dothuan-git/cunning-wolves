@@ -30,7 +30,7 @@ export function RoleCard({
     };
   }, [revealed]);
   return (
-    <div className="flip-card">
+    <div className="flip-card deal-in">
       <div className="role-card" data-revealed={revealed}>
         <div className="flip-face border border-field-border shadow-card">
           <img src={cardBack} alt="" className="size-full object-cover" />

@@ -41,7 +41,7 @@ Kick and re-open work until Start game; after that the roster and settings are l
 
 ## Screens
 
-Nine screens: three shared, three for the room master, three for players.
+Eight screens: three shared, two for the room master, three for players.
 
 **Shared**
 
@@ -51,9 +51,8 @@ Nine screens: three shared, three for the room master, three for players.
 
 **Room master**
 
-1. **Master lobby** — live player list with a kick button per player; Close room / Re-open room toggle.
-2. **Setup** — one selected-role list with quantity controls. Add roles opens the role library and custom-role entry in a bottom sheet. Tap a role name to edit its rule for this room. Settings (timer, sound, language) live in the header menu. Counts fill the underlying slots; Ready is enabled only when every slot is filled.
-3. **Narrator page** — one list for the whole game, alternating Night 1 → Morning 1 → Night 2 → …:
+1. **Setup** — the master's lobby too: Create room goes straight here, and players join while the roles are chosen. A room panel at the top shows the room name, an Open/Closed chip, a Players button (a sheet with the live list and a kick button per player) and a Close room / Re-open room toggle. Below it, one selected-role list with quantity controls. Add roles opens the role library and custom-role entry in a bottom sheet. Tap a role name to edit its rule for this room. Settings (timer, sound, language) live in the header menu. Any number of roles can be chosen; Review rules is enabled only when the roles equal the players who have joined, and pressing it closes the room.
+2. **Narrator page** — one list for the whole game, alternating Night 1 → Morning 1 → Night 2 → …:
    - Roles listed in wake order (drag to reorder), each with its holders underneath. Roles that never wake come last.
    - Mark a player dead, or undo it, at night or in the morning. Dead players stay visible but grayed out.
    - Each player shows a status control and, underneath, their history: earlier notes as text (`Night 1: …`, tap to edit) and deaths. At night, each player who was alive when the night started gets a note field right in the list. Mornings only record deaths.
@@ -76,8 +75,8 @@ The role pool is static data shipped with the app; everything else lives inside 
 | Room              | id, name, status, phase, masterDeviceId, createdAt, lastActiveAt | status: lobby, setup, reveal, playing, finished                  |
 | Player            | deviceId, name, joinedAt, kicked                                 | deviceId comes from the device token                             |
 | RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                   | A copy of a pool role (edits stay in this room) or a custom role |
-| Slot              | index, roomRoleId?                                               | One per player; filled in setup                                  |
-| Assignment        | deviceId, roomRoleId, flipped                                    | Created at Start game by shuffling slots                         |
+| Pick              | index, roomRoleId                                                | One per chosen role copy; must equal the players to move on      |
+| Assignment        | deviceId, roomRoleId, flipped                                    | Created at Start game by shuffling picks                         |
 | Phase             | kind (night, morning), number                                    | Current phase while playing: Night 1, Morning 1, Night 2, …      |
 | Night             | number, playerComments {deviceId: text}                          | One per night; notes editable later                              |
 | Death             | deviceId, phase                                                  | At most one per player; removed when undone                      |
@@ -127,8 +126,8 @@ Device identity, sockets, real rooms, state-machine actions, and privacy enforce
 After Phase 0, six phases, each ending in something playable on real phones.
 
 1. **Foundation** — project scaffold, Cloudflare deploy, i18n wiring, device token, WebSocket connection with auto-reconnect. _Done when:_ two phones connect to a test room and survive a refresh.
-2. **Rooms and lobby** — home room list, create/join with name, master lobby, kick, close/re-open, room expiry. _Done when:_ a full group can gather in a room.
-3. **Setup** — role pool data (vi + en), card slots, fill/empty, per-room rule edits, custom roles, settings. _Done when:_ the master can build a valid card set for any player count.
+2. **Rooms and lobby** — home room list, create/join with name, kick and close/re-open from setup, room expiry. _Done when:_ a full group can gather in a room.
+3. **Setup** — role pool data (vi + en), free role picks, roles = players gate, per-room rule edits, custom roles, settings. _Done when:_ the master can build a valid card set for any player count.
 4. **Reveal and deal** — rules review screen, Start game shuffle, card flip, flipped indicator for the master. _Done when:_ every player sees only their own card.
 5. **Narrator page** — night and morning phases, wake order, mark/unmark, gray-out, per-night notes with tap-to-edit, timer and sound. _Done when:_ a full game can be run start to finish.
 6. **Finish and polish** — summary screen, Play again, phone UI polish, playtest with a real group. _Done when:_ the group plays two games back to back without help.
