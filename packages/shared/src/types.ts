@@ -39,6 +39,22 @@ export interface CustomRole extends CustomRoleInput {
   id: string;
 }
 
+/** Night 1 → Morning 1 → Night 2 → … */
+export interface Phase {
+  kind: 'night' | 'morning';
+  number: number;
+}
+
+/** What the narrator has marked during the game. */
+export interface GameState {
+  /** The phase being played now */
+  phase: Phase;
+  /** Player id → the phase they were marked dead in */
+  deaths: Record<string, Phase>;
+  /** Night number → player id → note */
+  notes: Record<number, Record<string, string>>;
+}
+
 export interface RoomSettings {
   /** Narrator's timer length; 0 = no timer */
   timerSeconds: number;
