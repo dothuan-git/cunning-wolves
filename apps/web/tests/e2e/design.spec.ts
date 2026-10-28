@@ -845,6 +845,22 @@ test('the village page has no sideways page scroll in Vietnamese with many playe
   expect(width).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
 });
 
+test('a room on the home page has a blinking dot: green when open, red when in play', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=home&lang=en&capture=1');
+  const dotOf = (label: string) =>
+    page.locator('li', { hasText: label }).locator('span[aria-hidden="true"]');
+  const open = dotOf('Open').first();
+  const playing = dotOf('In play').first();
+  await expect(open).toHaveCSS('background-color', 'rgb(42, 143, 85)');
+  await expect(open).toHaveCSS('animation-name', 'blink');
+  await expect(playing).toHaveCSS('background-color', 'rgb(163, 50, 31)');
+  await expect(playing).toHaveCSS('animation-name', 'blink');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(open).toHaveCSS('animation-name', 'none');
+});
+
 test('the live dot in the village is green and blinks, and holds still with reduced motion', async ({
   page,
 }) => {

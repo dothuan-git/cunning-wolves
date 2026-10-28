@@ -6,19 +6,19 @@ The idea: a 16th-century werewolf broadside printed from wood. Black ink on putt
 
 ## Palette
 
-| Token                        | Value                 | Use                                                       |
-| ---------------------------- | --------------------- | --------------------------------------------------------- |
-| `paper`                      | `#dedad3`             | Page ground                                               |
-| `surface`                    | `#e9e7e3`             | Panels: one tone step above the page, no border or shadow |
-| `field`                      | `#f5f4f2`             | Inputs, secondary buttons, sheets, text on ink            |
-| `ink` / `muted`              | `#0a0a0a` / `#5c5852` | Text; `ink` is also the primary button fill               |
-| `line`                       | `#cfcac1`             | Row rules inside a panel, the tab rail, the Dead pill     |
-| `field-border`               | `#8f897f`             | Input and secondary button outlines                       |
-| `village` / `village-wash`   | `#2a4170` / `#dfe3ec` | Village roles (lapis from the card back), focus ring      |
-| `werewolf` / `werewolf-wash` | `#8a1f24` / `#efdcda` | Wolf roles (madder from the wolf seal)                    |
-| `danger`                     | `#a3321f`             | Destructive actions only                                  |
+| Token                        | Value                 | Use                                                               |
+| ---------------------------- | --------------------- | ----------------------------------------------------------------- |
+| `paper`                      | `#dedad3`             | Page ground                                                       |
+| `surface`                    | `#e9e7e3`             | Panels: one tone step above the page, no border or shadow         |
+| `field`                      | `#f5f4f2`             | Inputs, secondary buttons, sheets, text on ink                    |
+| `ink` / `muted`              | `#0a0a0a` / `#5c5852` | Text; `ink` is also the primary button fill                       |
+| `line`                       | `#cfcac1`             | Row rules inside a panel, the tab rail, the Dead pill             |
+| `field-border`               | `#8f897f`             | Input and secondary button outlines                               |
+| `village` / `village-wash`   | `#2a4170` / `#dfe3ec` | Village roles (lapis from the card back), focus ring              |
+| `werewolf` / `werewolf-wash` | `#8a1f24` / `#efdcda` | Wolf roles (madder from the wolf seal)                            |
+| `danger`                     | `#a3321f`             | Destructive actions, and the red dot for a closed or in-play room |
 
-Faction color is the only hue, apart from `live` green for a live status dot. Status, phases and actions are ink and paper. Alive is an outlined pill with a green blinking dot, and a death is marked with ✝, a struck-through name and the `line` pill. Meaning never relies on color alone.
+Faction color is the only hue, apart from `live` green for a live status dot (and `danger` red for the same dot on a closed or in-play room on home). Status, phases and actions are ink and paper. Alive is an outlined pill with a green blinking dot, and a death is marked with ✝, a struck-through name and the `line` pill. Meaning never relies on color alone.
 
 ## Type
 
