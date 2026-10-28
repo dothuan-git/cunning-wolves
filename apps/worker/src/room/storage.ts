@@ -3,7 +3,7 @@ import type { Player, RoomState } from './machine';
 
 const STATUSES: readonly RoomStatus[] = ['lobby', 'reveal', 'playing', 'finished'];
 
-export function ensureSchema(sql: SqlStorage): void {
+function ensureSchema(sql: SqlStorage): void {
   sql.exec(`CREATE TABLE IF NOT EXISTS room (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -36,6 +36,10 @@ function integer(row: Record<string, SqlStorageValue>, column: string): number {
 
 /** The saved room, or null if this room was never created (or has expired). */
 export function loadRoom(sql: SqlStorage): RoomState | null {
+  const [table] = sql
+    .exec("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'room'")
+    .toArray();
+  if (!table) return null;
   const [row] = sql.exec('SELECT * FROM room LIMIT 1').toArray();
   if (!row) return null;
   const status = text(row, 'status');
@@ -67,6 +71,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
 export function saveRoom(storage: DurableObjectStorage, state: RoomState): void {
   storage.transactionSync(() => {
     const { sql } = storage;
+    ensureSchema(sql);
     sql.exec('DELETE FROM room');
     sql.exec(
       'INSERT INTO room VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -90,4 +95,9 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       );
     }
   });
+}
+
+/** Removes the room and its players for good, along with its alarm. */
+export async function deleteRoom(storage: DurableObjectStorage): Promise<void> {
+  await storage.deleteAll();
 }

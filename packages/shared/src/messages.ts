@@ -1,8 +1,8 @@
 import type { RoomSummary } from './api';
 import type { RoomStatus } from './types';
 
-/** Room ids in `/api/rooms/:id/ws`. */
-export const ROOM_ID_PATTERN = /^[a-z0-9-]{1,40}$/;
+/** Room ids, as the create route makes them: in `/room/:id` and `/api/rooms/:id/ws`. */
+export const ROOM_ID_PATTERN = /^[a-z0-9]{8}$/;
 
 /** Plain-text keep-alive. Rooms and the lobby answer without waking from hibernation. */
 export const PING = 'ping';

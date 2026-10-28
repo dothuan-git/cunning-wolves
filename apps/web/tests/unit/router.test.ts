@@ -14,12 +14,15 @@ describe('parseRoute', () => {
     expect(parseRoute(path)).toEqual(route);
   });
 
-  it.each(['/room/Bad%20Id', '/room/', '/room/a/b', '/nope'])('sends %s home', (path) => {
-    expect(parseRoute(path)).toEqual({ name: 'home' });
-  });
+  it.each(['/room/Bad%20Id', '/room/', '/room/a/b', '/room/short', '/nope'])(
+    'sends %s home',
+    (path) => {
+      expect(parseRoute(path)).toEqual({ name: 'home' });
+    },
+  );
 
   it('builds paths that parse back', () => {
-    expect(parseRoute(paths.room('mill'))).toEqual({ name: 'room', id: 'mill' });
+    expect(parseRoute(paths.room('mill0000'))).toEqual({ name: 'room', id: 'mill0000' });
     expect(parseRoute(paths.create)).toEqual({ name: 'create' });
   });
 });

@@ -101,6 +101,13 @@ describe('kick', () => {
 
   it('refuses an unknown or already removed player', () => {
     expect(refusal(room(), MASTER, { type: 'kick', playerId: 'nobody' })).toBe('not-allowed');
+    const state = run(
+      room(),
+      ['a', { type: 'join', name: 'Minh' }],
+      [MASTER, { type: 'kick', playerId: 'a' }],
+    );
+    expect(refusal(state, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
+    expect(refusal(state, 'a', { type: 'leave' })).toBe('not-allowed');
   });
 
   it('lets a removed player join again while the room is open', () => {
@@ -135,6 +142,20 @@ describe('setOpen', () => {
   it('is for the master only', () => {
     expect(refusal(room(), 'a', { type: 'setOpen', open: false })).toBe('not-master');
   });
+});
+
+describe('locks after the lobby', () => {
+  it.each(['reveal', 'playing', 'finished'] as const)(
+    'refuses every lobby action in %s',
+    (status) => {
+      const seated = run(room(), ['a', { type: 'join', name: 'Minh' }]);
+      const locked: RoomState = { ...seated, status };
+      expect(refusal(locked, 'b', { type: 'join', name: 'Lan' })).toBe('not-allowed');
+      expect(refusal(locked, 'a', { type: 'leave' })).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
+      expect(refusal(locked, MASTER, { type: 'setOpen', open: false })).toBe('not-allowed');
+    },
+  );
 });
 
 describe('views', () => {

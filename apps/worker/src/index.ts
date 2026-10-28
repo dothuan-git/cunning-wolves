@@ -40,21 +40,53 @@ function parseCreateRoom(data: unknown): CreateRoomRequest | null {
   return { token, name: cleanedName, roomName: cleanedRoomName };
 }
 
+/** The body as text, or null once it passes `maxBytes`; a large body is never read in full. */
+async function readCapped(request: Request, maxBytes: number): Promise<string | null> {
+  const declared = Number(request.headers.get('Content-Length'));
+  if (declared > maxBytes || !request.body) return declared > maxBytes ? null : '';
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const result: ReadableStreamReadResult<unknown> = await reader.read();
+    if (result.done) break;
+    const value = result.value;
+    if (!(value instanceof Uint8Array)) {
+      await reader.cancel();
+      return null;
+    }
+    size += value.byteLength;
+    if (size > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 async function createRoom(request: Request, env: Env): Promise<Response> {
-  const body = await request.text();
+  const body = await readCapped(request, MAX_BODY_LENGTH);
+  if (body === null) return new Response('Create-room request too large', { status: 413 });
   let data: unknown;
   try {
-    data = body.length <= MAX_BODY_LENGTH ? JSON.parse(body) : null;
+    data = JSON.parse(body);
   } catch {
     data = null;
   }
   const input = parseCreateRoom(data);
   if (!input) return new Response('Bad create-room request', { status: 400 });
 
-  const masterId = await deviceIdFromToken(input.token);
   // A clash among 36^8 ids is very unlikely; try a few before giving up.
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const id = newRoomId();
+    const masterId = await deviceIdFromToken(input.token, id);
     const created = await env.ROOM.getByName(id).create({
       id,
       name: input.roomName,

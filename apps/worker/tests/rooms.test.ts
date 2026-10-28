@@ -74,7 +74,9 @@ async function join(roomId: string, token: string, name: string): Promise<TestSo
 
 describe('routes', () => {
   it('rejects a socket request without an upgrade', async () => {
-    expect((await exports.default.fetch('http://localhost/api/rooms/mill/ws')).status).toBe(426);
+    expect((await exports.default.fetch('http://localhost/api/rooms/mill0000/ws')).status).toBe(
+      426,
+    );
     expect((await exports.default.fetch('http://localhost/api/lobby/ws')).status).toBe(426);
   });
 
@@ -94,8 +96,19 @@ describe('routes', () => {
     ['a bad token', { token: 'abc', name: 'Thuận', roomName: 'The mill' }],
     ['an empty name', { token: TOKENS.master, name: '  ', roomName: 'The mill' }],
     ['a long room name', { token: TOKENS.master, name: 'Thuận', roomName: 'x'.repeat(33) }],
+    ['an invisible name', { token: TOKENS.master, name: '​', roomName: 'The mill' }],
   ])('refuses to create a room with %s', async (_label, body) => {
     expect((await createRoom(body)).status).toBe(400);
+  });
+
+  it('refuses a body over 1 KB without reading it all', async () => {
+    const body = {
+      token: TOKENS.master,
+      name: 'Thuận',
+      roomName: 'The mill',
+      pad: 'x'.repeat(2000),
+    };
+    expect((await createRoom(body)).status).toBe(413);
   });
 });
 
@@ -107,15 +120,31 @@ describe('Room', () => {
     const { view } = await master.next(masterView());
     expect(view).toEqual({
       kind: 'master',
-      you: await deviceIdFromToken(TOKENS.master),
+      you: await deviceIdFromToken(TOKENS.master, roomId),
       room: { id: roomId, name: 'The mill', status: 'lobby', open: true },
       players: [],
     });
   });
 
   it('closes a socket to a room that was never created', async () => {
-    const socket = await enter('nowhere', TOKENS.minh);
+    const socket = await enter('nowhere0', TOKENS.minh);
     expect((await socket.closed).code).toBe(CLOSE_ROOM_GONE);
+    // Knocking on an unused id leaves nothing stored behind.
+    await runInDurableObject(env.ROOM.getByName('nowhere0'), (_instance, state) => {
+      expect(
+        state.storage.sql.exec("SELECT name FROM sqlite_master WHERE type = 'table'").toArray(),
+      ).toEqual([]);
+    });
+  });
+
+  it('shows the master when a player drops off', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    await master.next(masterView((view) => view.players[0]?.connected === true));
+    minh.ws.close(1000, 'bye');
+    const { view } = await master.next(masterView((v) => v.players[0]?.connected === false));
+    expect(view.players.map((player) => player.name)).toEqual(['Minh']);
   });
 
   it('seats players and shows them to everyone', async () => {
@@ -157,7 +186,7 @@ describe('Room', () => {
     const roomId = await newRoom();
     const master = await enter(roomId, TOKENS.master);
     const minh = await join(roomId, TOKENS.minh, 'Minh');
-    const minhId = await deviceIdFromToken(TOKENS.minh);
+    const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
 
     master.send({ type: 'kick', playerId: minhId });
     await minh.next(playerView((view) => view.seat === 'removed' && view.players.length === 0));
@@ -211,7 +240,7 @@ describe('Room', () => {
     const master = await enter(roomId, TOKENS.master);
     const minh = await join(roomId, TOKENS.minh, 'Minh');
     await master.next(masterView((view) => view.players.length === 1));
-    const masterId = await deviceIdFromToken(TOKENS.master);
+    const masterId = await deviceIdFromToken(TOKENS.master, roomId);
     for (const text of [...master.received, ...minh.received]) {
       for (const token of Object.values(TOKENS)) expect(text).not.toContain(token);
     }
@@ -255,7 +284,8 @@ describe('expiry', () => {
 
     await runInDurableObject(stub, async (_instance, state) => {
       state.storage.sql.exec('UPDATE room SET last_active_at = ?', Date.now() - ROOM_EXPIRY_MS);
-      await state.storage.setAlarm(Date.now());
+      // Not "now": an alarm due now can fire on its own before the test runs it.
+      await state.storage.setAlarm(Date.now() + 60_000);
     });
     expect(await runDurableObjectAlarm(stub)).toBe(true);
     expect((await master.closed).code).toBe(CLOSE_ROOM_GONE);
@@ -285,6 +315,8 @@ describe('parseClientMessage', () => {
     ['unknown type', JSON.stringify({ type: 'deal' })],
     ['too long', JSON.stringify({ type: 'join', name: 'x'.repeat(300) })],
     ['a token that is not a UUID', JSON.stringify({ type: 'hello', token: 'a'.repeat(36) })],
+    ['a short token', JSON.stringify({ type: 'hello', token: 'abc' })],
+    ['a token with spaces', JSON.stringify({ type: 'hello', token: `${TOKENS.minh} x` })],
     ['a join without a name', JSON.stringify({ type: 'join' })],
     ['setOpen with a string', JSON.stringify({ type: 'setOpen', open: 'no' })],
   ])('rejects %s', (_label, raw) => {
@@ -293,10 +325,11 @@ describe('parseClientMessage', () => {
 });
 
 describe('deviceIdFromToken', () => {
-  it('is stable, 16 hex chars, and differs per token', async () => {
-    const id = await deviceIdFromToken(TOKENS.minh);
+  it('is stable, 16 hex chars, and differs per token and per room', async () => {
+    const id = await deviceIdFromToken(TOKENS.minh, 'room0001');
     expect(id).toMatch(/^[0-9a-f]{16}$/);
-    expect(await deviceIdFromToken(TOKENS.minh)).toBe(id);
-    expect(await deviceIdFromToken(TOKENS.lan)).not.toBe(id);
+    expect(await deviceIdFromToken(TOKENS.minh, 'room0001')).toBe(id);
+    expect(await deviceIdFromToken(TOKENS.lan, 'room0001')).not.toBe(id);
+    expect(await deviceIdFromToken(TOKENS.minh, 'room0002')).not.toBe(id);
   });
 });

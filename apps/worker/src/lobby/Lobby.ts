@@ -3,6 +3,8 @@ import { DurableObject } from 'cloudflare:workers';
 
 /** The single Lobby instance's name. */
 export const LOBBY_NAME = 'lobby';
+/** The home list shows at most this many rooms, newest first, so a flood can't grow it forever. */
+const MAX_LISTED = 100;
 
 const STATUSES: readonly RoomStatus[] = ['lobby', 'reveal', 'playing', 'finished'];
 
@@ -66,7 +68,7 @@ export class Lobby extends DurableObject<Env> {
   /** Newest first, so a room just created is at the top. */
   rooms(): RoomSummary[] {
     return this.ctx.storage.sql
-      .exec('SELECT * FROM rooms ORDER BY created_at DESC, id')
+      .exec('SELECT * FROM rooms ORDER BY created_at DESC, id LIMIT ?', MAX_LISTED)
       .toArray()
       .map(toSummary)
       .filter((room) => room !== null);

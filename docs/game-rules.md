@@ -73,8 +73,8 @@ _No pool roles yet. The `add-role` skill adds each role here._
 
 ## Connections and lifetime
 
-- Every WebSocket connects with the device token, sent only in its first message. The room knows the phone by a device id derived from the token; other phones never see the token. After a refresh, tab switch or screen lock, the client reconnects with backoff and receives the full state for its view again.
+- Every WebSocket connects with the device token, sent only in its first message. The room knows the phone by a device id derived from the token and the room id, so the same phone has a different id in each room; other phones never see the token. After a refresh, tab switch or screen lock, the client reconnects with backoff and receives the full state for its view again.
 - **One connection per phone:** if the same phone connects again (a refresh, or a second tab), the room closes its older connection. A second tab takes over the seat, and the first stops reconnecting. See decision 0016.
 - **Lost narrator device:** no recovery; the master creates a new room.
-- **Kicked player:** their seat is removed for that room; they can rejoin once the master re-opens it.
+- **Kicked player:** their seat is removed for that room; they can join again whenever the room is open (at once if it never closed).
 - **Room expiry:** a room with no activity for 6 hours is deleted and removed from the room list.

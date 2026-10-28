@@ -11,10 +11,12 @@ import { LOBBY_NAME } from '../lobby/Lobby';
 import { deviceIdFromToken } from './deviceId';
 import { apply, createRoom, type RoomState } from './machine';
 import { parseClientMessage } from './messages';
-import { ensureSchema, loadRoom, saveRoom } from './storage';
+import { deleteRoom, loadRoom, saveRoom } from './storage';
 import { buildSummary, buildView } from './view';
 
 const CLOSE_POLICY = 1008;
+/** How soon an expired room tries again to leave the home list, if the lobby didn't answer. */
+const LOBBY_RETRY_MS = 60 * 1000;
 /** A room with no message or connection for this long is deleted. */
 export const ROOM_EXPIRY_MS = 6 * 60 * 60 * 1000;
 
@@ -41,12 +43,14 @@ function send(ws: WebSocket, message: ServerMessage): void {
  */
 export class Room extends DurableObject<Env> {
   private state: RoomState | null;
+  /** Lobby updates go out one at a time, so an older one can never land after a newer one. */
+  private publishing: Promise<void> = Promise.resolve();
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     // Keep-alives are answered by the runtime without waking the room.
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG));
-    ensureSchema(ctx.storage.sql);
+    // A socket to an id nobody created must not leave storage behind, so tables come with create().
     this.state = loadRoom(ctx.storage.sql);
   }
 
@@ -83,14 +87,14 @@ export class Room extends DurableObject<Env> {
         this.rejectSocket(ws);
         return;
       }
-      const newId = await deviceIdFromToken(message.token);
+      if (!this.state) {
+        ws.close(CLOSE_ROOM_GONE, 'room gone');
+        return;
+      }
+      const newId = await deviceIdFromToken(message.token, this.state.id);
       // Two hellos sent back to back both pass the check above; the second must not win.
       if (readDeviceId(ws) !== null) {
         this.rejectSocket(ws);
-        return;
-      }
-      if (!this.state) {
-        ws.close(CLOSE_ROOM_GONE, 'room gone');
         return;
       }
       // A refresh can open the new socket before the old one closes; keep only the newest.
@@ -139,15 +143,17 @@ export class Room extends DurableObject<Env> {
       return;
     }
     const { id } = this.state;
-    this.state = null;
-    for (const ws of this.ctx.getWebSockets()) ws.close(CLOSE_ROOM_GONE, 'room expired');
-    await this.ctx.storage.deleteAll();
-    ensureSchema(this.ctx.storage.sql);
+    // Leave the home list first: once storage is gone, nothing would remember to try again.
     try {
       await this.env.LOBBY.getByName(LOBBY_NAME).remove(id);
     } catch (error) {
-      console.error('Room: could not remove the expired room from the lobby', id, error);
+      console.error('Room: could not remove the expired room from the lobby; retrying', id, error);
+      await this.ctx.storage.setAlarm(Date.now() + LOBBY_RETRY_MS);
+      return;
     }
+    this.state = null;
+    for (const ws of this.ctx.getWebSockets()) ws.close(CLOSE_ROOM_GONE, 'room expired');
+    await deleteRoom(this.ctx.storage);
   }
 
   /** Saves the state with the time of this activity, and moves the expiry alarm out. */
@@ -158,14 +164,21 @@ export class Room extends DurableObject<Env> {
     await this.ctx.storage.setAlarm(this.state.lastActiveAt + ROOM_EXPIRY_MS);
   }
 
-  /** Updates this room's row on the home list. The room works without it, so errors are logged. */
-  private async publish(): Promise<void> {
-    if (!this.state) return;
-    try {
-      await this.env.LOBBY.getByName(LOBBY_NAME).upsert(buildSummary(this.state));
-    } catch (error) {
-      console.error('Room: could not update the lobby', this.state.id, error);
-    }
+  /**
+   * Updates this room's row on the home list. Queued, and each update sends the state as it is when
+   * its turn comes, so the list ends on the latest. The room works without it, so errors are logged.
+   */
+  private publish(): Promise<void> {
+    this.publishing = this.publishing.then(async () => {
+      const state = this.state;
+      if (!state) return;
+      try {
+        await this.env.LOBBY.getByName(LOBBY_NAME).upsert(buildSummary(state));
+      } catch (error) {
+        console.error('Room: could not update the lobby', state.id, error);
+      }
+    });
+    return this.publishing;
   }
 
   private sendError(ws: WebSocket, code: ServerErrorCode): void {

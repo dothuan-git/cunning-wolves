@@ -6,6 +6,11 @@ describe('cleanName', () => {
     expect(cleanName('  Minh   Phương \n')).toBe('Minh Phương');
   });
 
+  it('drops invisible and control characters', () => {
+    expect(cleanName('Mi\u200bnh\u202e')).toBe('Minh');
+    expect(cleanName('\u200b\u200b')).toBe('');
+  });
+
   it('composes accents so the same name is stored the same way', () => {
     expect(cleanName('Phương'.normalize('NFD'))).toBe('Phương'.normalize('NFC'));
   });
@@ -27,6 +32,10 @@ describe('nameKey', () => {
     expect(nameKey('Đức')).toBe(nameKey('duc'));
     expect(nameKey('Sói')).toBe('soi');
     expect(nameKey('MINH  phương')).toBe(nameKey('minh phuong'));
+  });
+
+  it('sees through invisible characters', () => {
+    expect(nameKey('Mi\u200bnh')).toBe(nameKey('Minh'));
   });
 
   it('keeps different names apart', () => {

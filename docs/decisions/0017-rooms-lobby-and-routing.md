@@ -32,6 +32,10 @@ Thuan chose:
   - A hello to a room that doesn't exist also gets 4004, and the client shows "This room has closed" and stops reconnecting.
 - **Client sockets:** `ReconnectingSocket` holds the backoff, heartbeat and wake logic from 0016, unchanged. `RoomConnection` (hello, views, actions, the last refusal) and `LobbyConnection` (the list) are thin layers on it.
 - **Routing:** `apps/web/src/router.ts`, about 50 lines on the History API. Routes are `/` home, `/new` create, `/room/<id>` the room (master → Setup; player → name entry, then The village), and `/design` in dev. Unknown paths show home. No dependency.
+- **Room ids:** `ROOM_ID_PATTERN` is now exactly the 8 characters the create route makes. A socket to an id nobody created gets 4004 and leaves no storage behind, because the tables are made only by `create()`.
+- **Device ids per room:** the device id is now SHA-256 of `roomId:token` (it was the token alone in 0016). A phone keeps its id within a room, but its ids in two rooms can't be matched, and a master's id in one room says nothing about them in another.
+- **Lobby updates in order:** a Room queues its `upsert` calls and each sends the state as it is when its turn comes. Two quick changes can't reach the list out of order.
+- **Limits:** a create body over 1 KB is refused (413) without being read in full. The list sends at most the 100 newest rooms. Names drop control and invisible characters (zero-width spaces, direction overrides) before they are stored or compared.
 - **Names:** `cleanName` and `nameKey` live in `packages/shared`. `nameKey` drops case, accents and đ, and is the same key Setup's role search uses. The last name used is remembered in `localStorage`.
 
 ## Why
@@ -43,5 +47,6 @@ Thuan chose:
 ## Consequences
 
 - The role pool is still empty, so Setup and the village carousel show no roles until Phase 3 adds them. Setup's role picks are still local to the screen, and **Review rules** only closes the room for now.
-- If a Room's `remove` call to the Lobby fails at expiry, its row stays on the list; joining it then shows "This room has closed". A sweep in the Lobby can come later if this shows up.
+- At expiry a Room removes itself from the list before it deletes its storage. If the Lobby doesn't answer, it tries again a minute later, so a row never outlives its room.
+- `POST /api/rooms` has no rate limit yet. The 100-room cap keeps the list bounded, but a Cloudflare rate-limiting rule on that path is worth adding before a public launch.
 - The temporary `/test/<room>` page from 0016 is gone.
