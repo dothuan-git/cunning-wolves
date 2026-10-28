@@ -16,6 +16,8 @@
   --color-village-wash: #dfe3ec;
   --color-werewolf: #8a1f24;
   --color-werewolf-wash: #efdcda;
+  /* "You are here and connected": the live dot and the glow around your own tile. */
+  --color-live: #2a8f55;
   --color-danger: #a3321f;
 
   --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
@@ -47,10 +49,14 @@
 
   --radius-control: 2px;
   --radius-card: 2px;
+  /* Player tiles: a little softer than panels. */
+  --radius-tile: 0.625rem;
   /* The role card is a playing card: round corners, and the only round surface in the app. */
   --radius-playing: 1.5rem;
   /* The role card rests on the table like a real card: a small, soft shadow. */
   --shadow-card: 0 1px 2px rgb(10 10 10 / 12%), 0 6px 14px rgb(10 10 10 / 10%);
+  /* Your own tile glows: a thin ring and a wide halo, used for nothing else. */
+  --shadow-glow: 0 0 0 2px rgb(42 143 85 / 70%), 0 0 11px 2px rgb(42 143 85 / 55%);
   /* Sheets, dialogs and the Undo bar float and cast a larger shadow. */
   --shadow-float: 0 8px 24px rgb(10 10 10 / 18%);
 }

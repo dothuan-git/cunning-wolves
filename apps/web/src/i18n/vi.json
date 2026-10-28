@@ -42,7 +42,8 @@
     "noteWitch": "Dùng bình cứu Hà.",
     "noteSeer2": "Soi Hà: không phải Sói.",
     "noteWolves2": "Chọn cắn Linh.",
-    "frame": "Khung điện thoại {{width}} × {{height}}"
+    "frame": "Khung điện thoại {{width}} × {{height}}",
+    "many": "Nhiều người chơi"
   },
   "screens": {
     "home": "Cunning Wolves",
@@ -85,14 +86,14 @@
     "dead": "Đã chết",
     "markDead": "Đánh dấu {{name}} đã chết",
     "restore": "Khôi phục {{name}}",
-    "you": "Bạn",
     "narrator": "Quản trò",
     "remove": "Mời {{name}} ra khỏi phòng",
     "note": "Ghi chú cho {{name}}",
     "notePlaceholder": "Thêm ghi chú…",
     "statusFor": "Trạng thái của {{name}}",
     "markedDead": "Đã đánh dấu {{name}} chết",
-    "markedAlive": "{{name}} sống lại"
+    "markedAlive": "{{name}} sống lại",
+    "nameYou": "{{name}} (bạn)"
   },
   "card": {
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
@@ -139,7 +140,11 @@
     "removedHint": "Bạn có thể tham gia lại khi phòng còn mở.",
     "removeTitle": "Mời người chơi ra?",
     "removeBody": "{{name}} sẽ rời phòng. Họ có thể vào lại khi phòng còn mở.",
-    "noPlayers": "Chưa có ai vào phòng. Người chơi sẽ hiện ở đây khi tham gia."
+    "noPlayers": "Chưa có ai vào phòng. Người chơi sẽ hiện ở đây khi tham gia.",
+    "cardsHeading": "Các lá bài vai trò",
+    "cardsHint": "Vuốt để xem. Chạm vào một lá để xem rõ hơn.",
+    "lookCloser": "Xem rõ lá {{role}}",
+    "tapForName": "Chạm vào ô để xem tên đầy đủ."
   },
   "setup": {
     "intro": "Mỗi người một vai trong câu chuyện.",

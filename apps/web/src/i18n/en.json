@@ -42,7 +42,8 @@
     "noteWitch": "Saved Hà with the healing potion.",
     "noteSeer2": "Checked Hà: not a Wolf.",
     "noteWolves2": "Chose Linh.",
-    "frame": "Phone size {{width}} × {{height}}"
+    "frame": "Phone size {{width}} × {{height}}",
+    "many": "Many players"
   },
   "screens": {
     "home": "Cunning Wolves",
@@ -85,14 +86,14 @@
     "dead": "Dead",
     "markDead": "Mark {{name}} dead",
     "restore": "Restore {{name}}",
-    "you": "You",
     "narrator": "Narrator",
     "remove": "Remove {{name}}",
     "note": "Note for {{name}}",
     "notePlaceholder": "Add an observation…",
     "statusFor": "Status for {{name}}",
     "markedDead": "{{name}} marked dead",
-    "markedAlive": "{{name}} is alive again"
+    "markedAlive": "{{name}} is alive again",
+    "nameYou": "{{name}} (you)"
   },
   "card": {
     "artPlaceholder": "Placeholder role illustration",
@@ -139,7 +140,11 @@
     "removedHint": "You can join again while the room is open.",
     "removeTitle": "Remove player?",
     "removeBody": "{{name}} will leave the room. They can rejoin while it is open.",
-    "noPlayers": "No one has joined yet. Players appear here as they join."
+    "noPlayers": "No one has joined yet. Players appear here as they join.",
+    "cardsHeading": "The role cards",
+    "cardsHint": "Swipe to look at them. Tap one to see it up close.",
+    "lookCloser": "Look closer at {{role}}",
+    "tapForName": "Tap a tile for the full name."
   },
   "setup": {
     "intro": "Give every player a place in the story.",

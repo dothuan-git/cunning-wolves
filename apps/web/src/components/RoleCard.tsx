@@ -1,8 +1,8 @@
-import type { Locale, PoolRole } from '@werewolf/shared';
+import type { PoolRole } from '@werewolf/shared';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import cardBack from '../assets/art/card-back.webp';
-import { RoleArtwork } from './RoleArtwork';
+import { RoleFace } from './RoleFace';
 
 const FLIP_MS = 250;
 
@@ -16,8 +16,7 @@ export function RoleCard({
   revealed: boolean;
   onToggle: () => void;
 }) {
-  const { t, i18n } = useTranslation();
-  const locale: Locale = i18n.language === 'vi' ? 'vi' : 'en';
+  const { t } = useTranslation();
   // The role is in the page only while it shows or turns away, so a hidden card can't be read.
   const [faceMounted, setFaceMounted] = useState(revealed);
   if (revealed && !faceMounted) setFaceMounted(true);
@@ -41,19 +40,7 @@ export function RoleCard({
           aria-hidden={!revealed}
           inert={!revealed}
         >
-          {faceMounted && (
-            <div className="flex h-full flex-col p-5">
-              <h2
-                className={`role-title absolute top-5 right-5 z-10 font-display text-title font-semibold ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
-              >
-                {role.name[locale]}
-              </h2>
-              <div className="min-h-0 flex-1">
-                <RoleArtwork file={role.image} />
-              </div>
-              <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>
-            </div>
-          )}
+          {faceMounted && <RoleFace role={role} />}
         </div>
       </div>
       <button

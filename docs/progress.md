@@ -27,6 +27,8 @@
   - Every flow from 0012 is kept.
   - See decision 0013 and `docs/design/direction.md`.
 
+- **The village page** (2026-10-28): players are lettered squares at the bottom, five to a row, with the player's own highlighted. A looping row of the role cards sits above them; it moves on by itself, and tapping a card enlarges it (tap the background to close). The page is one screen high and only the players section scrolls. Tapping a tile shows the full name. See decision 0015.
+
 - **Role card page** (2026-10-28): the page is one screen high with no scroll, and the card is round. The back shows by default; tapping flips it to the role (name vertical top right, rule centered; a bordered card with a soft shadow, no faction logo) and tapping again hides it. The reveal button is gone. See decision 0014.
 
 ## Next

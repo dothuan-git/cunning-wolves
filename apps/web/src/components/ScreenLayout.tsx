@@ -72,7 +72,7 @@ export function ScreenLayout({
         </header>
       )}
       <div
-        className={`flex min-w-0 flex-1 flex-col ${fixed ? 'screen-footer min-h-0 gap-3' : compact ? 'gap-3 pb-4' : 'gap-4 pb-6'}`}
+        className={`flex min-w-0 flex-1 flex-col ${fixed ? `min-h-0 gap-3 ${footer ? '' : 'screen-footer'}` : compact ? 'gap-3 pb-4' : 'gap-4 pb-6'}`}
       >
         {children}
       </div>

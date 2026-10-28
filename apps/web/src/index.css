@@ -21,6 +21,88 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* A slow status blink; it signals the connection is live and stops with reduced motion. */
+  .live-dot {
+    animation: blink 1.6s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  /* Press feedback: the control sinks a little under the finger. */
+  .press {
+    transition-property:
+      transform, color, background-color, border-color, box-shadow, outline-color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  .press:active {
+    transform: scale(0.95);
+  }
+
+  .press-card:active {
+    transform: scale(0.97);
+  }
+
+  /* The picked player's name slides in. */
+  .name-pop {
+    animation: name-pop 180ms ease-out;
+  }
+
+  @keyframes name-pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .zoom-dialog[open] .zoom-card {
+    animation: zoom-in 220ms ease-out;
+  }
+
+  .zoom-dialog::backdrop {
+    animation: fade-in 200ms ease-out;
+  }
+
+  /* Closing runs the opening backwards, a little faster, before the dialog is removed. */
+  .zoom-dialog[data-closing='true'] .zoom-card {
+    animation: zoom-out 160ms ease-in forwards;
+  }
+
+  .zoom-dialog[data-closing='true']::backdrop {
+    animation: fade-out 160ms ease-in forwards;
+  }
+
+  @keyframes zoom-out {
+    to {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes zoom-in {
+    from {
+      opacity: 0;
+      transform: scale(0.88);
+    }
+  }
+
   .role-card {
     transition: transform 250ms ease-in-out;
   }
@@ -96,6 +178,27 @@
 
   .flip-front {
     transform: rotateY(180deg);
+  }
+
+  /* Role previews in a sideways row: each card snaps to the middle, and the next one peeks in.
+     The cards are as tall as the row allows (up to 24rem), always 2:3. */
+  .deck {
+    container-type: size;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .deck-card {
+    flex: none;
+    height: min(100cqh, 24rem);
+    width: calc(min(100cqh, 24rem) * 2 / 3);
+    scroll-snap-align: center;
+  }
+
+  /* An enlarged card: as wide as fits, never taller than 78% of the screen. */
+  .zoom-card {
+    width: min(88vw, 24rem, calc(78dvh * 2 / 3));
+    aspect-ratio: 2 / 3;
   }
 
   /* The role name runs down the card's top right edge. */

@@ -451,3 +451,248 @@ test('role quantities stop at capacity and removed roles can be added from the l
   await expect(page.getByRole('button', { name: 'Review rules', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Add Seer', exact: true })).toBeDisabled();
 });
+
+test('the village shows players as lettered squares, five to a row, with your own highlighted', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const squares = page.locator('main ul.grid-cols-5 > li');
+  await expect(squares).toHaveCount(6);
+  await expect(squares).toHaveText(['LLinh (you)', 'MMinh', 'AAn', 'HHà', 'HHuy', 'MMai']);
+  const boxes = await squares.evaluateAll((items) =>
+    items.map((item) => {
+      const box = item.getBoundingClientRect();
+      return {
+        top: Math.round(box.top),
+        width: Math.round(box.width),
+        height: Math.round(box.height),
+      };
+    }),
+  );
+  expect(new Set(boxes.slice(0, 5).map((box) => box.top)).size).toBe(1);
+  expect(boxes[5]?.top ?? 0).toBeGreaterThan(boxes[0]?.top ?? 0);
+  expect(boxes.every((box) => box.width === box.height)).toBe(true);
+  await expect(squares.nth(0)).toHaveAttribute('aria-current', 'true');
+  await expect(page.locator('main ul.grid-cols-5 > li[aria-current]')).toHaveCount(1);
+});
+
+test('a role card in the village carousel opens enlarged and closes again', async ({ page }) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const card = page.getByRole('button', { name: 'Look closer at Seer', exact: true });
+  const dialog = page.getByRole('dialog', { name: 'Seer', exact: true });
+  await expect(dialog).toHaveCount(0);
+  await card.click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: 'Seer', exact: true })).toBeVisible();
+  await expect(dialog.getByText('Each night, choose one player', { exact: false })).toBeVisible();
+  // The enlarged card sits in the middle of the phone.
+  const box = await dialog.locator('.zoom-card').boundingBox();
+  const viewport = page.viewportSize();
+  expect(box).not.toBeNull();
+  expect(viewport).not.toBeNull();
+  expect(Math.abs((box?.x ?? 0) + (box?.width ?? 0) / 2 - (viewport?.width ?? 0) / 2)).toBeLessThan(
+    2,
+  );
+  // Tapping the card itself keeps it open; only the background and Escape close it.
+  await dialog.locator('.zoom-card').click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Close', { exact: true })).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(card).toBeFocused();
+  await card.click();
+  await page.mouse.click(5, 5);
+  await expect(dialog).toHaveCount(0);
+});
+
+test('the village page has no sideways page scroll in Vietnamese with many players', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=vi&capture=1');
+  const width = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(width).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
+});
+
+test('the live dot in the village is green and blinks, and holds still with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const dot = page.getByRole('status').locator('span').first();
+  await expect(dot).toHaveCSS('background-color', 'rgb(42, 143, 85)');
+  await expect(dot).toHaveCSS('animation-name', 'blink');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(dot).toHaveCSS('animation-name', 'none');
+});
+
+test('your own tile glows and the others do not', async ({ page }) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const tiles = page.locator('main ul.grid-cols-5 > li > button');
+  await expect(tiles.nth(0)).not.toHaveCSS('box-shadow', 'none');
+  await expect(tiles.nth(1)).toHaveCSS('box-shadow', 'none');
+});
+
+test('tapping a player tile shows their full name, and tapping again hides it', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&state=long&lang=en&capture=1');
+  const hint = page.getByText('Tap a tile for the full name.', { exact: true });
+  await expect(hint).toBeVisible();
+  const tiles = page.locator('main ul.grid-cols-5 > li > button');
+  await tiles.nth(1).click();
+  await expect(page.getByText('Minh', { exact: true }).first()).toBeVisible();
+  await expect(tiles.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  await expect(hint).toHaveCount(0);
+  // Your own tile reads as you, with the whole long name.
+  await tiles.nth(0).click();
+  await expect(
+    page.locator('[aria-live="polite"]').getByText('Nguyễn Hoàng Minh Phương (you)'),
+  ).toBeVisible();
+  await expect(tiles.nth(1)).toHaveAttribute('aria-pressed', 'false');
+  await tiles.nth(0).click();
+  await expect(hint).toBeVisible();
+});
+
+test('picking a tile never changes the height of the name row or moves the tiles', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&state=long&lang=en&capture=1');
+  const tiles = page.locator('main ul.grid-cols-5 > li > button');
+  const top = async () => Math.round((await tiles.first().boundingBox())?.y ?? 0);
+  const before = await top();
+  await tiles.nth(1).click();
+  expect(await top()).toBe(before);
+  await tiles.nth(0).click();
+  await expect(
+    page.locator('[aria-live="polite"]').getByText('Nguyễn Hoàng Minh Phương (you)'),
+  ).toBeVisible();
+  expect(await top()).toBe(before);
+  await tiles.nth(0).click();
+  expect(await top()).toBe(before);
+});
+
+test('the picked name slides in, a tile sinks when pressed, and both hold still with reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const tiles = page.locator('main ul.grid-cols-5 > li > button');
+  await tiles.nth(1).click();
+  await expect(page.locator('[aria-live="polite"]')).toHaveCSS('animation-name', 'name-pop');
+  await expect(tiles.nth(1)).toHaveCSS('transition-duration', '0.15s');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('[aria-live="polite"]')).toHaveCSS('animation-name', 'none');
+  await expect(tiles.nth(1)).toHaveCSS('transition-duration', '0s');
+});
+
+test('an enlarged card animates out before it is removed', async ({ page }) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Look closer at Seer', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Seer', exact: true });
+  await expect(dialog.locator('.zoom-card')).toHaveCSS('animation-name', 'zoom-in');
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveAttribute('data-closing', 'true');
+  await expect(dialog).toHaveCount(0);
+});
+
+test('with many players only the players section scrolls, and the page stays one screen high', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&state=many&lang=vi&capture=1');
+  const tiles = page.locator('main ul.grid-cols-5 > li');
+  await expect(tiles).toHaveCount(18);
+  const fit = await page.evaluate(() => {
+    const list = document.querySelector<HTMLElement>('main ul.grid-cols-5');
+    const deck = document.querySelector<HTMLElement>('.deck');
+    return {
+      pageHeight: document.documentElement.scrollHeight,
+      viewport: window.innerHeight,
+      listScrolls: list ? list.scrollHeight > list.clientHeight + 1 : false,
+      deckHeight: deck ? deck.clientHeight : 0,
+    };
+  });
+  expect(fit.pageHeight).toBeLessThanOrEqual(fit.viewport);
+  expect(fit.listScrolls).toBe(true);
+  // The cards keep a usable size.
+  expect(fit.deckHeight).toBeGreaterThan(150);
+  // The last tile can be reached and tapped.
+  const last = page.locator('main ul.grid-cols-5 > li > button').last();
+  await last.scrollIntoViewIfNeeded();
+  await expect(last).toBeInViewport();
+});
+
+test('the role carousel loops without end and wraps back to the middle when it rests', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const read = () => deck.evaluate((el) => ({ left: el.scrollLeft, width: el.scrollWidth }));
+  const start = await read();
+  // Far to the right, past a whole set of cards.
+  await deck.evaluate((el) => {
+    el.scrollLeft += el.scrollWidth / 5 + 40;
+  });
+  // After it rests, it is back within the middle set, showing the same cards.
+  await expect
+    .poll(async () => {
+      const now = await read();
+      return Math.abs(now.left - start.left) < now.width / 5;
+    })
+    .toBe(true);
+  // Only one set of cards is exposed to the keyboard and screen readers.
+  await expect(page.getByRole('button', { name: /^Look closer at/ })).toHaveCount(4);
+  // Swiping the other way loops too.
+  await deck.evaluate((el) => {
+    el.scrollLeft -= el.scrollWidth / 5 + 40;
+  });
+  await expect
+    .poll(async () => {
+      const now = await read();
+      return now.left > now.width / 5 && now.left < (now.width * 4) / 5;
+    })
+    .toBe(true);
+});
+
+test('the role carousel moves on by itself, and not with reduced motion or after a touch', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const left = () => deck.evaluate((el) => el.scrollLeft);
+  const start = await left();
+  await page.clock.runFor(4500);
+  await expect.poll(left).toBeGreaterThan(start + 20);
+  // A touch pauses it for a while. Let the smooth scroll finish first.
+  await page.waitForTimeout(900);
+  const touched = await left();
+  await deck.dispatchEvent('pointerdown');
+  await page.clock.runFor(4500);
+  await page.waitForTimeout(600);
+  expect(Math.abs((await left()) - touched)).toBeLessThan(4);
+});
+
+test('the role carousel picks up again soon after an enlarged card is closed', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const left = () => deck.evaluate((el) => el.scrollLeft);
+  await page.getByRole('button', { name: 'Look closer at Seer', exact: true }).click();
+  await page.clock.runFor(12000);
+  await page.mouse.click(5, 5);
+  await page.clock.runFor(300);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.waitForTimeout(300);
+  const closed = await left();
+  await page.clock.runFor(2000);
+  await expect.poll(left).toBeGreaterThan(closed + 20);
+});
+
+test('the role carousel stays still with reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.install();
+  await page.goto('/design?screen=player-lobby&lang=en&capture=1');
+  const deck = page.locator('.deck');
+  const start = await deck.evaluate((el) => el.scrollLeft);
+  await page.clock.runFor(9000);
+  await page.waitForTimeout(600);
+  expect(Math.abs((await deck.evaluate((el) => el.scrollLeft)) - start)).toBeLessThan(4);
+});

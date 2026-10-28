@@ -15,7 +15,7 @@ import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
 import type { Phase } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
-import { exampleGroups, examplePlayers, exampleRoles, seer } from './fixtures';
+import { exampleGroups, examplePlayers, exampleRoles, seer, villager } from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
 import type { PreviewState, ScreenId } from './screens';
 
@@ -66,12 +66,29 @@ function PreviewScene({
   });
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
+  // A full table: the sample players and twelve more.
+  const crowd = [
+    'Bảo',
+    'Châu',
+    'Dũng',
+    'Giang',
+    'Khoa',
+    'Lan',
+    'Nam',
+    'Oanh',
+    'Phúc',
+    'Quỳnh',
+    'Sơn',
+    'Trang',
+  ].map((name) => ({ id: `guest-${name}`, name }));
   const players =
     state === 'long'
       ? examplePlayers.map((player, index) =>
           index === 0 ? { ...player, name: 'Nguyễn Hoàng Minh Phương' } : player,
         )
-      : examplePlayers;
+      : state === 'many'
+        ? [...examplePlayers, ...crowd.map((guest) => ({ ...guest, role: villager }))]
+        : examplePlayers;
   switch (screen) {
     case 'home':
       return (
@@ -136,6 +153,8 @@ function PreviewScene({
         <PlayerLobbyScreen
           roomName={roomName}
           players={players.map(({ id, name }) => ({ id, name }))}
+          roles={exampleRoles}
+          selfId={players[0]?.id ?? ''}
           reconnecting={state === 'loading'}
           removed={state === 'removed'}
           onLeave={() => {
