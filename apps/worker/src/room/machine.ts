@@ -16,6 +16,7 @@ import {
   RULE_MAX,
   TIMER_MAX,
   type GameState,
+  type Phase,
   type RoomAction,
   type RoomSetup,
   type RoomStatus,
@@ -297,13 +298,27 @@ function applyGame(
     case 'toggleDeath': {
       const { playerId } = action;
       if (!Object.hasOwn(assignments, playerId)) return refuse('not-allowed');
-      if (Object.hasOwn(game.deaths, playerId)) {
+      const death = Object.hasOwn(game.deaths, playerId) ? game.deaths[playerId] : undefined;
+      if (death) {
+        // Bring back the players who died with this one, so one tap undoes the whole chain.
+        const revived = linkedChain(playerId, game, assignments, (id) => {
+          const other = Object.hasOwn(game.deaths, id) ? game.deaths[id] : undefined;
+          return other !== undefined && samePhase(other, death);
+        });
         const deaths = Object.fromEntries(
-          Object.entries(game.deaths).filter(([id]) => id !== playerId),
+          Object.entries(game.deaths).filter(([id]) => !revived.has(id)),
         );
         return { ok: true, game: { ...game, deaths } };
       }
-      return { ok: true, game: { ...game, deaths: { ...game.deaths, [playerId]: game.phase } } };
+      const dying = linkedChain(
+        playerId,
+        game,
+        assignments,
+        (id) => !Object.hasOwn(game.deaths, id),
+      );
+      const deaths = { ...game.deaths };
+      for (const id of dying) deaths[id] = game.phase;
+      return { ok: true, game: { ...game, deaths } };
     }
     case 'toggleMark': {
       const { playerId } = action;
@@ -346,6 +361,40 @@ function applyGame(
       return { ok: true, game: { ...game, notes } };
     }
   }
+}
+
+/**
+ * `playerId` and everyone whose death follows from theirs, among the players `counts` accepts: the
+ * other lovers, and the Dire Wolf when its companion dies (not the other way round). See
+ * decision 0024.
+ */
+function linkedChain(
+  playerId: string,
+  game: GameState,
+  assignments: Record<string, string>,
+  counts: (id: string) => boolean,
+): Set<string> {
+  const has = (id: string, markId: string) =>
+    Object.hasOwn(game.marks, id) && Object.hasOwn(game.marks[id] ?? {}, markId);
+  const players = Object.keys(assignments);
+  const chain = new Set([playerId]);
+  // A set iterates over the members added while it runs, so this walks the whole chain.
+  for (const id of chain) {
+    const next = [
+      ...(has(id, 'lover') ? players.filter((other) => has(other, 'lover')) : []),
+      ...(has(id, 'companion')
+        ? players.filter((other) => assignments[other] === 'dire-wolf')
+        : []),
+    ];
+    for (const other of next) {
+      if (!chain.has(other) && counts(other)) chain.add(other);
+    }
+  }
+  return chain;
+}
+
+function samePhase(a: Phase, b: Phase): boolean {
+  return a.kind === b.kind && a.number === b.number;
 }
 
 /** The marks with one taken off a player; a player left with none drops out. */

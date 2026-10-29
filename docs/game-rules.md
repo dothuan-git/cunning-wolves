@@ -87,9 +87,9 @@ The worker builds each viewer's state before sending it. A player's client never
 - Note fields are separate from status controls: editing a note never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See decisions `0007-per-player-night-comments.md`, `0010-single-list-night-and-morning.md` and `0012-medieval-light-redesign.md`.
 - **The room keeps all of it:** the phase, deaths and notes survive a refresh, and only the master's phone receives them. Ending a phase names the phase being ended, so a hold that arrives twice ends one phase, not two. See decision 0020.
 - A note is saved about a second after the narrator stops typing, and when its field is left. A note typed while reconnecting is sent once the connection is back. Notes are up to 1000 characters.
-- **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, and never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
+- **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, except that Lover and Dire Wolf's companion link deaths (below); it never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
 - **Timer:** the narrator starts, pauses and resets a countdown from the menu. Its length is the room's timer setting (0 hides it). It runs on the narrator's phone only, so a refresh resets it. With sound on, a short chime plays when it reaches zero.
-- The app records what the narrator marks. It never resolves abilities or decides winners.
+- The app records what the narrator marks. It never resolves abilities or decides winners, with one exception: a linked death (the other lover, a Dire Wolf whose companion dies) is marked together with the first (decision 0024).
 
 ## Marks
 
@@ -126,6 +126,8 @@ Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered w
 | Extra life used          | Elder, Colossus                                                                              | its holder         |
 | Can't vote               | Village Idiot, Vagabond                                                                      | its holder         |
 | Rusted                   | Knight with the Rusty Sword                                                                  | any player         |
+
+**Linked deaths.** Marking a player dead also marks dead, in the same phase, the other lovers, and the Dire Wolf when its companion dies (not the other way round), following chains. Marking that player alive again brings back those who died with them in that phase. See decision 0024.
 
 Only lasting effects have a mark. A power that lasts one night or day (the Bodyguard's protection, the Raven's two votes, the Old Hag's banishment, the Wolf Cub's double kill) has none: the narrator keeps it in the night's note.
 

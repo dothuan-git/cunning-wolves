@@ -591,6 +591,81 @@ describe('toggle death', () => {
   });
 });
 
+describe('linked deaths', () => {
+  /** Minh, Lan, Hoa and Tuan hold Cupid, Dire Wolf, Villager and Werewolf (in dealt order). */
+  function linked(): { state: RoomState; holder: (roleId: string) => string } {
+    let state = room();
+    for (const [id, name] of [
+      ['a', 'Minh'],
+      ['b', 'Lan'],
+      ['c', 'Hoa'],
+      ['d', 'Tuan'],
+    ] as const) {
+      state = run(state, [id, { type: 'join', name, pin: PIN }]);
+    }
+    for (const roleId of ['cupid', 'dire-wolf', 'villager', 'werewolf']) {
+      state = run(state, [MASTER, { type: 'addPick', roleId }]);
+    }
+    state = run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    const { assignments } = state;
+    const holder = (roleId: string) =>
+      Object.keys(assignments).find((id) => assignments[id] === roleId) ?? '';
+    return { state, holder };
+  }
+  const mark = (playerId: string, id: string) =>
+    ({ type: 'toggleMark', playerId, mark: id }) as const;
+  const die = (playerId: string) => ({ type: 'toggleDeath', playerId }) as const;
+
+  it('marks the other lover dead too, and one tap brings both back', () => {
+    const { state, holder } = linked();
+    const [x, y] = [holder('villager'), holder('werewolf')];
+    const lovers = run(state, [MASTER, mark(x, 'lover')], [MASTER, mark(y, 'lover')]);
+    const dead = run(lovers, [MASTER, die(x)]);
+    expect(dead.game?.deaths).toEqual({ [x]: NIGHT_1, [y]: NIGHT_1 });
+    expect(run(dead, [MASTER, die(y)]).game?.deaths).toEqual({});
+  });
+
+  it('kills the Dire Wolf with its companion, but not the companion with the Dire Wolf', () => {
+    const { state, holder } = linked();
+    const [wolf, friend] = [holder('dire-wolf'), holder('villager')];
+    const paired = run(state, [MASTER, mark(friend, 'companion')]);
+    expect(run(paired, [MASTER, die(friend)]).game?.deaths).toEqual({
+      [friend]: NIGHT_1,
+      [wolf]: NIGHT_1,
+    });
+    expect(run(paired, [MASTER, die(wolf)]).game?.deaths).toEqual({ [wolf]: NIGHT_1 });
+  });
+
+  it('follows a chain: a lover who is also the companion takes the Dire Wolf along', () => {
+    const { state, holder } = linked();
+    const [wolf, x, y] = [holder('dire-wolf'), holder('villager'), holder('werewolf')];
+    const marked = run(
+      state,
+      [MASTER, mark(x, 'lover')],
+      [MASTER, mark(y, 'lover')],
+      [MASTER, mark(y, 'companion')],
+    );
+    const dead = run(marked, [MASTER, die(x)]);
+    expect(dead.game?.deaths).toEqual({ [x]: NIGHT_1, [y]: NIGHT_1, [wolf]: NIGHT_1 });
+    expect(run(dead, [MASTER, die(x)]).game?.deaths).toEqual({});
+  });
+
+  it('leaves alone a linked player who died in an earlier phase', () => {
+    const { state, holder } = linked();
+    const [x, y] = [holder('villager'), holder('werewolf')];
+    const earlier = run(
+      state,
+      [MASTER, die(y)],
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, mark(x, 'lover')],
+      [MASTER, mark(y, 'lover')],
+      [MASTER, die(x)],
+    );
+    expect(earlier.game?.deaths).toEqual({ [y]: NIGHT_1, [x]: MORNING_1 });
+    expect(run(earlier, [MASTER, die(x)]).game?.deaths).toEqual({ [y]: NIGHT_1 });
+  });
+});
+
 describe('toggle mark', () => {
   /** Minh holds the witch, Lan the werewolf and Hoa the knight, at Night 1. */
   function marking(): RoomState {
