@@ -1273,6 +1273,20 @@ test('a sheet slides in, closes with a tap on the background, and holds still wi
   await expect(page.getByRole('button', { name: 'Add village roles', exact: true })).toBeFocused();
 });
 
+// Older Safari (every iPhone browser) sizes a flex item with a 0% basis from that 0 inside a
+// content-sized column, so a `flex-1` sheet body collapsed to nothing there. Chromium hides it.
+test('every sheet body is sized by its content, so it shows on iPhones', async ({ page }) => {
+  await page.goto('/design?screen=setup&lang=en&capture=1');
+  for (const opener of ['Add village roles', 'Players (6)', 'Menu']) {
+    await page.getByRole('button', { name: opener, exact: true }).click();
+    const body = page.getByRole('dialog').locator('.scroll-area');
+    await expect(body).toHaveCSS('flex-basis', 'auto');
+    expect((await body.boundingBox())?.height ?? 0).toBeGreaterThan(48);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  }
+});
+
 test('the Done button of a sheet plays the closing animation too', async ({ page }) => {
   await page.goto('/design?screen=setup&lang=en&capture=1');
   await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
