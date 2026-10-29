@@ -108,6 +108,9 @@
   - New role: the narrator can give a player another role (Doppelgänger, Thief, Drunk…); the player moves to that role's panel, the phone keeps the dealt card (decision 0025).
   - The Sheriff and Town Crier marks are gone: no pool role makes those titles, so the marks sheet only offers marks that a dealt role makes.
 
+- **Rule book** (branch `feat/rule-book`, 2026-10-29):
+  - A Rule book page at `/rules` lists every pool role by faction as thumbnail cards, with a search box (Vietnamese or English name, accents ignored); tapping a card opens its rule. Home opens it from a book icon beside the menu.
+
 ## Next
 
 1. **Roles that need more than a mark** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
