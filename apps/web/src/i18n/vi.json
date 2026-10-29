@@ -249,7 +249,11 @@
     "marksTitle": "Trạng thái · {{name}}",
     "markSince": "Từ {{phase}}",
     "markHeldBy": "Đang ở {{name}}",
-    "packExtras": "Cũng thức dậy cùng bầy sói"
+    "packExtras": "Cũng thức dậy cùng bầy sói",
+    "playsRole": "Đang là",
+    "dealtRole": "Bài gốc: {{role}}",
+    "rolesInGame": "Trong ván này",
+    "otherRoles": "Vai khác"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",
@@ -267,7 +271,9 @@
     "deadCount": "{{count}} đã chết",
     "diedIn": "Đã chết · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} người chơi",
-    "marked": "{{name}}: {{mark}}"
+    "marked": "{{name}}: {{mark}}",
+    "nowPlays": "{{name}} giờ là {{role}}",
+    "newRole": "Giờ là {{role}}"
   },
   "components": {
     "primary": "Thao tác chính",

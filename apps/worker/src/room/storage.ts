@@ -75,6 +75,13 @@ function ensureSchema(sql: SqlStorage): void {
     phase_number INTEGER NOT NULL,
     PRIMARY KEY (player_id, mark)
   )`);
+  // Roles a power gave players. A game saved before them has no rows, so it loads with none.
+  sql.exec(`CREATE TABLE IF NOT EXISTS new_roles (
+    player_id TEXT PRIMARY KEY,
+    role_id TEXT NOT NULL,
+    phase_kind TEXT NOT NULL,
+    phase_number INTEGER NOT NULL
+  )`);
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -124,7 +131,17 @@ function loadGame(sql: SqlStorage): GameState | null {
       ),
     ]),
   );
-  return { phase: phase(row), deaths, notes, marks };
+  // fromEntries, as for rule edits.
+  const newRoles: GameState['newRoles'] = Object.fromEntries(
+    sql
+      .exec('SELECT * FROM new_roles')
+      .toArray()
+      .map((changed) => [
+        text(changed, 'player_id'),
+        { role: text(changed, 'role_id'), phase: phase(changed) },
+      ]),
+  );
+  return { phase: phase(row), deaths, notes, marks, newRoles };
 }
 
 function loadSetup(sql: SqlStorage): RoomSetup {
@@ -213,7 +230,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     game:
       loadGame(sql) ??
       (knownStatus === 'playing'
-        ? { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {}, marks: {} }
+        ? { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {}, marks: {}, newRoles: {} }
         : null),
   };
 }
@@ -286,6 +303,7 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
     sql.exec('DELETE FROM deaths');
     sql.exec('DELETE FROM notes');
     sql.exec('DELETE FROM marks');
+    sql.exec('DELETE FROM new_roles');
     const { game } = state;
     if (game) {
       sql.exec('INSERT INTO game VALUES (?, ?)', game.phase.kind, game.phase.number);
@@ -307,6 +325,15 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
             marked.number,
           );
         }
+      }
+      for (const [playerId, changed] of Object.entries(game.newRoles)) {
+        sql.exec(
+          'INSERT INTO new_roles VALUES (?, ?, ?, ?)',
+          playerId,
+          changed.role,
+          changed.phase.kind,
+          changed.phase.number,
+        );
       }
     }
   });

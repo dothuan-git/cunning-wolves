@@ -1,4 +1,4 @@
-import type { LocalizedText } from '../types';
+import type { GameState, LocalizedText } from '../types';
 
 /**
  * Something the narrator records about a player besides death: a title, a power used up, an effect
@@ -243,6 +243,45 @@ export const MARKS: readonly MarkDef[] = [
     single: false,
   },
 ];
+
+/** Roles whose power gives a player another role; while one is dealt, the narrator can set it. */
+export const ROLE_CHANGERS: readonly string[] = [
+  'thief',
+  'doppelganger',
+  'devoted-servant',
+  'drunk',
+  'apprentice-seer',
+  'bailiff',
+  'angel',
+  'dream-wolf',
+];
+
+/** Whether the narrator can give players another role in a game where `dealt` are dealt. */
+export function offersNewRoles(dealt: readonly string[]): boolean {
+  return ROLE_CHANGERS.some((id) => dealt.includes(id));
+}
+
+/** The role a player plays now: the one a power gave them, else the one they were dealt. */
+export function currentRole(
+  playerId: string,
+  dealtRole: string,
+  newRoles: GameState['newRoles'],
+): string {
+  return Object.hasOwn(newRoles, playerId) ? (newRoles[playerId]?.role ?? dealtRole) : dealtRole;
+}
+
+/**
+ * The marks a player may carry with their dealt role and the role they play now, in MARKS order,
+ * in a game where `dealt` are every player's dealt roles.
+ */
+export function marksForPlayer(
+  dealtRole: string,
+  role: string,
+  dealt: readonly string[],
+): MarkDef[] {
+  const offered = new Set([...marksFor(dealtRole, dealt), ...marksFor(role, dealt)]);
+  return MARKS.filter((mark) => offered.has(mark));
+}
 
 /** The marks a player dealt `roleId` may carry, in a game where `dealt` are every player's roles. */
 export function marksFor(roleId: string, dealt: readonly string[]): MarkDef[] {

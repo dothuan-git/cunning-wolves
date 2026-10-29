@@ -62,7 +62,7 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
   };
 }
 
-/** Phases, deaths, notes and marks: for the master, and for seated players after Finish. */
+/** Phases, deaths, notes, marks and new roles: for the master, and for seated players after Finish. */
 function gameStateInfo(game: GameState): GameState {
   return {
     phase: { kind: game.phase.kind, number: game.phase.number },
@@ -84,6 +84,12 @@ function gameStateInfo(game: GameState): GameState {
             { kind: marked.kind, number: marked.number },
           ]),
         ),
+      ]),
+    ),
+    newRoles: Object.fromEntries(
+      Object.entries(game.newRoles).map(([id, changed]) => [
+        id,
+        { role: changed.role, phase: { kind: changed.phase.kind, number: changed.phase.number } },
       ]),
     ),
   };

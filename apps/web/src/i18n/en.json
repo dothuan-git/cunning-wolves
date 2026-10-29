@@ -249,7 +249,11 @@
     "marksTitle": "Marks · {{name}}",
     "markSince": "Since {{phase}}",
     "markHeldBy": "Now with {{name}}",
-    "packExtras": "Also wakes with the wolves"
+    "packExtras": "Also wakes with the wolves",
+    "playsRole": "Plays",
+    "dealtRole": "Dealt {{role}}",
+    "rolesInGame": "In this game",
+    "otherRoles": "Other roles"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",
@@ -267,7 +271,9 @@
     "deadCount": "{{count}} dead",
     "diedIn": "Died · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} players",
-    "marked": "{{name}}: {{mark}}"
+    "marked": "{{name}}: {{mark}}",
+    "nowPlays": "{{name}} now plays {{role}}",
+    "newRole": "Now {{role}}"
   },
   "components": {
     "primary": "Primary action",

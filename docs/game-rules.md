@@ -70,7 +70,7 @@ The worker builds each viewer's state before sending it. A player's client never
 | Role list + rules (from Review rules on)                                        | Yes         | Yes                 |
 | Role pool cards (browse only)                                                   | Yes         | Yes, any time       |
 | Who holds which role                                                            | Yes         | Own card only       |
-| Phases, deaths, notes, marks                                                    | Yes         | No                  |
+| Phases, deaths, notes, marks, new roles                                         | Yes         | No                  |
 | Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Seated players only |
 | Room PIN                                                                        | Yes         | No                  |
 
@@ -88,6 +88,7 @@ The worker builds each viewer's state before sending it. A player's client never
 - **The room keeps all of it:** the phase, deaths and notes survive a refresh, and only the master's phone receives them. Ending a phase names the phase being ended, so a hold that arrives twice ends one phase, not two. See decision 0020.
 - A note is saved about a second after the narrator stops typing, and when its field is left. A note typed while reconnecting is sent once the connection is back. Notes are up to 1000 characters.
 - **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, except that Lover and Dire Wolf's companion link deaths (below); it never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
+- **New role:** while a role that changes roles is dealt (Thief, Doppelgänger, Devoted Servant, Drunk, Apprentice Seer, Bailiff, Angel, Dream Wolf), the marks sheet has a **Plays** picker: this game's roles first, then the rest of the pool. The player then shows under the new role's panel with "Dealt …" under the name, may carry the marks of both roles, and a role nobody was dealt gets its own panel. The player's phone keeps the dealt card. Going back to the dealt role takes it off. The summary shows "Now …" beside the dealt card, and the change in the journal. See decision 0025.
 - **Timer:** the narrator starts, pauses and resets a countdown from the menu. Its length is the room's timer setting (0 hides it). It runs on the narrator's phone only, so a refresh resets it. With sound on, a short chime plays when it reaches zero.
 - The app records what the narrator marks. It never resolves abilities or decides winners, with one exception: a linked death (the other lover, a Dire Wolf whose companion dies) is marked together with the first (decision 0024).
 

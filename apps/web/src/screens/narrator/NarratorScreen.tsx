@@ -23,7 +23,7 @@ import { NoteField, TextField } from '../../components/TextField';
 import { FACTION_TEXT, FACTION_WASH } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
-import type { Phase, PlayerListItem, RoleGroupItem } from '../types';
+import type { GroupPlayerItem, Phase, RoleChoices, RoleGroupItem } from '../types';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
 import { MarksButton, MarksSheet } from './PlayerMarks';
@@ -36,11 +36,13 @@ export function NarratorScreen({
   deaths,
   marks,
   markOptions,
+  roleChoices,
   settings,
   reconnecting = false,
   onPlayerNote,
   onTogglePlayer,
   onToggleMark,
+  onSetRole,
   onEndPhase,
   onWakeOrder,
   onSettings,
@@ -59,6 +61,8 @@ export function NarratorScreen({
   marks: Readonly<Record<string, Readonly<Record<string, Phase>>>>;
   /** Player id → the marks that player may carry in this game, in display order. */
   markOptions: Readonly<Record<string, readonly MarkDef[]>>;
+  /** The roles a power can give a player; left out when no dealt role changes roles */
+  roleChoices?: RoleChoices;
   settings: RoomSettings;
   /** The room can't be told anything right now */
   reconnecting?: boolean;
@@ -66,6 +70,8 @@ export function NarratorScreen({
   onPlayerNote: SaveNote;
   onTogglePlayer: (playerId: string) => void;
   onToggleMark: (playerId: string, markId: string) => void;
+  /** The role a player plays now; null goes back to the dealt one */
+  onSetRole: (playerId: string, roleId: string | null) => void;
   onEndPhase: () => void;
   onWakeOrder: (order: string[]) => void;
   onSettings: (settings: RoomSettings) => void;
@@ -144,9 +150,11 @@ export function NarratorScreen({
   }
 
   const wakingGroups = groups.filter((group) => group.role.defaultWakeOrder !== null);
-  const tonightGroups = groups.filter((group) => wakesOnNight(group.role, phase.number));
+  // A role whose every player now plays another one has nobody left to wake.
+  const held = groups.filter((group) => group.players.length > 0);
+  const tonightGroups = held.filter((group) => wakesOnNight(group.role, phase.number));
   // Roles that don't wake tonight still need a place in the list so they can be marked.
-  const restingGroups = groups.filter((group) => !wakesOnNight(group.role, phase.number));
+  const restingGroups = held.filter((group) => !wakesOnNight(group.role, phase.number));
   const everyone = groups.flatMap((group) => group.players);
   const alive = everyone.filter((player) => !(player.id in deaths)).length;
   // The plain werewolves hold the pack (else the first wolf role woken tonight); players moved to
@@ -158,12 +166,17 @@ export function NarratorScreen({
   const marksOf = (playerId: string): Readonly<Record<string, Phase>> =>
     (Object.hasOwn(marks, playerId) ? marks[playerId] : undefined) ?? {};
   const isNight = phase.kind === 'night';
+  const markingGroup =
+    marking === null
+      ? undefined
+      : groups.find((group) => group.players.some((player) => player.id === marking));
+  const markingDealt = markingGroup?.players.find((player) => player.id === marking)?.dealt;
 
   function phaseLabel(value: Phase) {
     return t(value.kind === 'night' ? 'common.night' : 'common.morning', { number: value.number });
   }
 
-  function renderPlayer(player: PlayerListItem) {
+  function renderPlayer(player: GroupPlayerItem) {
     const death = deaths[player.id];
     const dead = death !== undefined;
     const playerNotes: Record<number, string> = {};
@@ -185,7 +198,12 @@ export function NarratorScreen({
     return (
       <li key={player.id} className="px-3.5 pb-1.5">
         <div className="flex min-h-12 items-center justify-between gap-2">
-          <PlayerChip name={player.name} dead={dead} large />
+          <PlayerChip
+            name={player.name}
+            dead={dead}
+            detail={player.dealt && t('narrator.dealtRole', { role: player.dealt.name[locale] })}
+            large
+          />
           <div className="flex shrink-0 items-center">
             {options.length > 0 && (
               <MarksButton
@@ -429,6 +447,18 @@ export function NarratorScreen({
         <MarksSheet
           name={everyone.find((player) => player.id === marking)?.name ?? ''}
           disabled={reconnecting}
+          role={
+            roleChoices && markingGroup
+              ? {
+                  ...roleChoices,
+                  current: markingGroup.role,
+                  dealt: markingDealt ?? markingGroup.role,
+                  onChange: (roleId) => {
+                    onSetRole(marking, roleId);
+                  },
+                }
+              : undefined
+          }
           options={(markOptions[marking] ?? []).map((mark) => {
             const own = marksOf(marking);
             const since = Object.hasOwn(own, mark.id) ? own[mark.id] : undefined;

@@ -1,8 +1,18 @@
-import type { MarkDef } from '@werewolf/shared';
+import type { MarkDef, PoolRole } from '@werewolf/shared';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/Icon';
 import { Modal, ModalDone } from '../../components/Modal';
 import { useLocale } from '../../i18n/useLocale';
+import type { RoleChoices } from '../types';
+
+/** The role picker at the top of the sheet, for games with a role that changes roles. */
+export interface RoleOption extends RoleChoices {
+  /** The role the player plays now */
+  current: PoolRole;
+  dealt: PoolRole;
+  /** null: back to the dealt role */
+  onChange: (roleId: string | null) => void;
+}
 
 /** Opens a player's marks; shows how many they carry. */
 export function MarksButton({
@@ -51,18 +61,21 @@ export interface MarkOption {
 export function MarksSheet({
   name,
   options,
+  role,
   disabled,
   onToggle,
   onClose,
 }: {
   name: string;
   options: readonly MarkOption[];
+  role?: RoleOption | undefined;
   disabled: boolean;
   onToggle: (markId: string) => void;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
+  const byName = (a: PoolRole, b: PoolRole) => a.name[locale].localeCompare(b.name[locale], locale);
   return (
     <Modal
       sheet
@@ -70,6 +83,40 @@ export function MarksSheet({
       footer={<ModalDone />}
       onClose={onClose}
     >
+      {role && (
+        <label className="grid gap-1 pb-3">
+          <span className="text-caption text-muted">{t('narrator.playsRole')}</span>
+          <select
+            className="min-h-12 rounded-control border border-field-border bg-field px-3 text-body"
+            value={role.current.id}
+            disabled={disabled}
+            onChange={(event) => {
+              const { value } = event.target;
+              role.onChange(value === role.dealt.id ? null : value);
+            }}
+          >
+            <optgroup label={t('narrator.rolesInGame')}>
+              {role.inGame.map((choice) => (
+                <option key={choice.id} value={choice.id}>
+                  {choice.name[locale]}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('narrator.otherRoles')}>
+              {[...role.others].sort(byName).map((choice) => (
+                <option key={choice.id} value={choice.id}>
+                  {choice.name[locale]}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+          {role.current.id !== role.dealt.id && (
+            <span className="text-caption text-muted">
+              {t('narrator.dealtRole', { role: role.dealt.name[locale] })}
+            </span>
+          )}
+        </label>
+      )}
       <ul className="grid pb-2">
         {options.map(({ mark, since, heldBy }) => (
           <li key={mark.id}>

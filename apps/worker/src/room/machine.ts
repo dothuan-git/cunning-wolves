@@ -4,14 +4,17 @@ import {
   cleanRule,
   CUSTOM_ROLES_MAX,
   DEFAULT_SETTINGS,
+  currentRole,
   isValidName,
-  marksFor,
+  marksForPlayer,
+  offersNewRoles,
   NAME_MAX,
   nameKey,
   nextPhase,
   NOTE_MAX,
   PICKS_MAX,
   ROLE_NAME_MAX,
+  ROLE_POOL,
   roomRoles,
   RULE_MAX,
   TIMER_MAX,
@@ -247,6 +250,7 @@ export function apply(
         deaths: {},
         notes: {},
         marks: {},
+        newRoles: {},
       };
       return { ok: true, state: { ...state, status: 'playing', assignments, game } };
     }
@@ -265,10 +269,13 @@ export function apply(
     case 'endPhase':
     case 'toggleDeath':
     case 'toggleMark':
+    case 'setRole':
     case 'setNote': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
-      const result = applyGame(state.game, state.assignments, action);
+      // A new role is any pool role (the Thief's extra cards are not dealt) or a picked custom one.
+      const roleIds = [...ROLE_POOL.map((role) => role.id), ...state.setup.picks];
+      const result = applyGame(state.game, state.assignments, roleIds, action);
       return result.ok ? { ok: true, state: { ...state, game: result.game } } : result;
     }
   }
@@ -276,7 +283,7 @@ export function apply(
 
 type GameAction = Extract<
   RoomAction,
-  { type: 'endPhase' | 'toggleDeath' | 'toggleMark' | 'setNote' }
+  { type: 'endPhase' | 'toggleDeath' | 'toggleMark' | 'setRole' | 'setNote' }
 >;
 type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErrorCode };
 
@@ -284,6 +291,7 @@ type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErro
 function applyGame(
   game: GameState,
   assignments: Record<string, string>,
+  roleIds: readonly string[],
   action: GameAction,
 ): GameResult {
   switch (action.type) {
@@ -324,9 +332,11 @@ function applyGame(
       const { playerId } = action;
       const roleId = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
       if (roleId === undefined) return refuse('not-allowed');
-      const mark = marksFor(roleId, Object.values(assignments)).find(
-        (offered) => offered.id === action.mark,
-      );
+      const mark = marksForPlayer(
+        roleId,
+        currentRole(playerId, roleId, game.newRoles),
+        Object.values(assignments),
+      ).find((offered) => offered.id === action.mark);
       if (!mark) return refuse('not-allowed');
       const own = Object.hasOwn(game.marks, playerId) ? game.marks[playerId] : undefined;
       if (own && Object.hasOwn(own, mark.id)) {
@@ -338,6 +348,22 @@ function applyGame(
         : game.marks;
       const marks = { ...others, [playerId]: { ...own, [mark.id]: game.phase } };
       return { ok: true, game: { ...game, marks } };
+    }
+    case 'setRole': {
+      const { playerId } = action;
+      const dealtRole = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
+      if (dealtRole === undefined || !offersNewRoles(Object.values(assignments))) {
+        return refuse('not-allowed');
+      }
+      const others = Object.fromEntries(
+        Object.entries(game.newRoles).filter(([id]) => id !== playerId),
+      );
+      if (action.roleId === null || action.roleId === dealtRole) {
+        return { ok: true, game: { ...game, newRoles: others } };
+      }
+      if (!roleIds.includes(action.roleId)) return refuse('not-allowed');
+      const newRoles = { ...others, [playerId]: { role: action.roleId, phase: game.phase } };
+      return { ok: true, game: { ...game, newRoles } };
     }
     case 'setNote': {
       const { night, playerId } = action;
@@ -383,7 +409,9 @@ function linkedChain(
     const next = [
       ...(has(id, 'lover') ? players.filter((other) => has(other, 'lover')) : []),
       ...(has(id, 'companion')
-        ? players.filter((other) => assignments[other] === 'dire-wolf')
+        ? players.filter(
+            (other) => currentRole(other, assignments[other] ?? '', game.newRoles) === 'dire-wolf',
+          )
         : []),
     ];
     for (const other of next) {

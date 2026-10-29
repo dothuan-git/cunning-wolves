@@ -148,6 +148,13 @@ export function SummaryScreen({
                                   image={player.role.image}
                                   dead={death !== undefined}
                                 />
+                                {player.newRole && (
+                                  <span
+                                    className={`mt-0.5 block text-caption font-medium ${FACTION_TEXT[player.newRole.team]}`}
+                                  >
+                                    {t('summary.newRole', { role: player.newRole.name[locale] })}
+                                  </span>
+                                )}
                               </span>
                             </li>
                           );
@@ -168,7 +175,7 @@ export function SummaryScreen({
               ) : (
                 // The whole story reads top to bottom; nights sit on ink so they stand apart from mornings.
                 <ol className="stagger grid gap-2.5">
-                  {journal.map(({ phase, notes, deaths, marks }) => {
+                  {journal.map(({ phase, notes, deaths, marks, newRoles }) => {
                     const night = phase.kind === 'night';
                     return (
                       <PhasePanel
@@ -228,6 +235,20 @@ export function SummaryScreen({
                               </li>
                             );
                           })}
+                          {newRoles.map((changed) => (
+                            <li
+                              key={`role-${changed.id}`}
+                              className="flex min-h-12 items-center px-3.5 py-2"
+                            >
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
+                                <Icon name="tag" className="size-3.5" />
+                                {t('summary.nowPlays', {
+                                  name: changed.name,
+                                  role: changed.role.name[locale],
+                                })}
+                              </span>
+                            </li>
+                          ))}
                         </ul>
                       </PhasePanel>
                     );

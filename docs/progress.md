@@ -102,10 +102,14 @@
   - Added from the most common version of their rule: Alpha Wolf, Fruit Brute, Lone Wolf, Chupacabra, The Count, Hoodlum and the Amulet of Protection. Added with placeholder rules, because the printed text is not online: the 2026 anniversary roles Puppeteer, Wise Monkey, Colossus and Mighty Wolf-Mother (replace them with the box text). Not added: Teenage Werewolf (no source at all), and the Sheriff and Town Crier, which are marks.
   - Nine roles added: Cupid, Wild Child, Wolf-hound, Cursed Wolf-Father, White Werewolf, Pied Piper, Angel, Prejudiced Manipulator and Villager-Villager (branch `feat/roles-third-faction`), with their marks. A player marked Cursed, Turned wolf or Chose the wolves also shows in the wolves' panel, so the narrator wakes them with the pack. Wake orders now run 10 to 500.
   - See decision 0023.
+- **Role effects on the narrator page** (branch `feat/role-effects`, 2026-10-29):
+  - Marks for the lasting effects of the remaining roles: joining the wolves (Alpha Wolf, Cursed) or the cult, the Dire Wolf's companion, the Doppelgänger's model, the Hoodlum's targets, a delayed death, the Priest's blessing, the amulet, a burned house, the Captain, the Prince revealed, and "Power used" for once-per-game roles. One-night effects (Bodyguard, Raven, Old Hag…) stay in notes. The Lone Wolf shows in the wolves' pack.
+  - Linked deaths: marking a lover dead marks the other lovers too, and a Dire Wolf dies with its companion; one tap undoes the chain (decision 0024).
+  - New role: the narrator can give a player another role (Doppelgänger, Thief, Drunk…); the player moves to that role's panel, the phone keeps the dealt card (decision 0025).
 
 ## Next
 
-1. **Roles that need more than a mark** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal, the Devoted Servant swaps a role, the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
+1. **Roles that need more than a mark** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
 2. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
 3. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
 

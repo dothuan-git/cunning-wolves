@@ -63,6 +63,14 @@ export interface GameState {
   notes: Record<number, Record<string, string>>;
   /** Player id → mark id (see MARKS) → the phase it was marked in */
   marks: Record<string, Record<string, Phase>>;
+  /** Player id → the role they play now instead of their dealt one, and since when */
+  newRoles: Record<string, NewRole>;
+}
+
+/** A role a power gave a player (Doppelgänger, Thief…): the narrator sets it, the phone keeps the dealt card. */
+export interface NewRole {
+  role: string;
+  phase: Phase;
 }
 
 export interface RoomSettings {
