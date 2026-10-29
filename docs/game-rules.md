@@ -50,7 +50,7 @@ While players gather, the master builds the card set on **Setup**. The room keep
 - **Factions:** Village, Wolves, and a third faction for roles that win on their own (`solo`). Setup, the rules review and the summary list them in that order, wolves first.
 - **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night (every night). A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
 - **Wake order:** the master can reorder the waking roles in the game; roles not reordered follow their default order.
-- **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default) sound cues (off by default) and player marks (off by default; see Marks under the narrator page). Language is per phone, not a room setting.
+- **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default), sound cues (off by default) and player marks (off by default; see Marks under the narrator page). Language is per phone, not a room setting.
 - All of this is master-only and locked once the room leaves `lobby`, except the wake order, timer, sound and player marks, which the narrator can still change while reviewing the rules and while playing.
 
 ## Dealing
