@@ -213,6 +213,18 @@ export function apply(
       const game: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} };
       return { ok: true, state: { ...state, status: 'playing', assignments, game } };
     }
+    case 'finishGame': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'playing') return refuse('not-allowed');
+      // The deal and the marks stay for the summary.
+      return { ok: true, state: { ...state, status: 'finished' } };
+    }
+    case 'playAgain': {
+      if (!isMaster) return refuse('not-master');
+      if (state.status !== 'finished') return refuse('not-allowed');
+      // Same seats and card set; the room stays as closed as it was.
+      return { ok: true, state: { ...state, status: 'lobby', assignments: {}, game: null } };
+    }
     case 'endPhase':
     case 'toggleDeath':
     case 'setNote': {

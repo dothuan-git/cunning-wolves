@@ -304,6 +304,75 @@ test('the room keeps what the narrator marks, and no player sees it', async ({ b
   }
 });
 
+test('the narrator finishes, everyone sees the summary, and the room plays again', async ({
+  browser,
+}) => {
+  const roomName = `Hall ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  const lan = await phone(browser);
+  const minhMessages = roomMessages(minh);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await joinFromHome(lan, roomName, 'Lan');
+  await expect(master.getByRole('button', { name: 'Players (2)' })).toBeVisible();
+  for (const [team, role] of [
+    ['village', 'Seer'],
+    ['wolf', 'Werewolf'],
+  ] as const) {
+    await master.getByRole('button', { name: `Add ${team} roles`, exact: true }).click();
+    const picker = master.getByRole('dialog', { name: `Add ${team} roles` });
+    await picker.getByRole('button', { name: `Add ${role}`, exact: true }).click();
+    await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  }
+  const review = master.getByRole('button', { name: 'Review rules', exact: true });
+  await review.click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+  await master.getByRole('button', { name: 'Mark Minh dead' }).click();
+  await master.getByRole('textbox', { name: 'Note for Lan' }).fill('Saw the wolves.');
+  await master.getByRole('heading', { name: 'Night 1' }).click();
+  await expect(minh.getByRole('button', { name: 'Flip your card' })).toBeVisible();
+  // Until Finish, a player's phone has never seen the whole deal.
+  expect(minhMessages.some((message) => JSON.stringify(message).includes('"assignments"'))).toBe(
+    false,
+  );
+
+  const finish = master.getByRole('button', { name: 'Finish game', exact: true });
+  await finish.hover();
+  await master.mouse.down();
+  await master.waitForTimeout(1600);
+  await master.mouse.up();
+
+  // Everyone sees every role and the journal; only the narrator can play again.
+  for (const page of [master, minh, lan]) {
+    await expect(page.getByRole('heading', { name: 'Game record' })).toBeVisible();
+    await expect(page.getByText('Minh', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Lan', { exact: true }).first()).toBeVisible();
+    await page.getByRole('tab', { name: 'Night journal' }).click();
+    await expect(page.getByText('Saw the wolves.')).toBeVisible();
+  }
+  for (const player of [minh, lan]) {
+    await expect(player.getByRole('button', { name: 'Play again' })).toHaveCount(0);
+  }
+
+  // Play again: the same card set, players back in the village.
+  await master.getByRole('button', { name: 'Play again' }).click();
+  await expect(review).toBeEnabled();
+  await expect(master.getByRole('button', { name: 'Edit Seer', exact: true })).toBeVisible();
+  await expect(minh.getByText('You’re in the room')).toBeVisible();
+  await expect(lan.getByText('You’re in the room')).toBeVisible();
+
+  // A second game deals again from a clean night.
+  const dealtBefore = minhMessages.length;
+  await review.click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+  await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
+  await expect(master.getByRole('button', { name: 'Mark Minh dead' })).toBeVisible();
+  await expect(minh.getByRole('button', { name: 'Flip your card' })).toBeVisible();
+  const secondGame = minhMessages.slice(dealtBefore).map((message) => JSON.stringify(message));
+  expect(secondGame.some((text) => text.includes('Saw the wolves.'))).toBe(false);
+});
+
 test('an unknown room says it has closed', async ({ page }) => {
   await page.goto('/room/zzzzzzzz');
   await expect(page.getByRole('alert')).toContainText('This room has closed');

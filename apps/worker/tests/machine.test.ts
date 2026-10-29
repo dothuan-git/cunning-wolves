@@ -538,6 +538,55 @@ describe('narrator tools in play', () => {
   });
 });
 
+describe('finish and play again', () => {
+  it('finishes the game and keeps the deal and marks for the summary', () => {
+    const marked = run(playing(), [MASTER, { type: 'toggleDeath', playerId: 'a' }]);
+    const finished = run(marked, [MASTER, { type: 'finishGame' }]);
+    expect(finished.status).toBe('finished');
+    expect(finished.assignments).toEqual(marked.assignments);
+    expect(finished.game).toEqual(marked.game);
+  });
+
+  it('locks the game once finished', () => {
+    const finished = run(playing(), [MASTER, { type: 'finishGame' }]);
+    expect(refusal(finished, MASTER, { type: 'endPhase', phase: NIGHT_1 })).toBe('not-allowed');
+    expect(refusal(finished, MASTER, { type: 'toggleDeath', playerId: 'a' })).toBe('not-allowed');
+    expect(refusal(finished, MASTER, { type: 'finishGame' })).toBe('not-allowed');
+    expect(refusal(finished, MASTER, { type: 'startGame' })).toBe('not-allowed');
+  });
+
+  it('goes back to Setup with the same players and card set, closed, and deals again', () => {
+    const finished = run(
+      playing(),
+      [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
+      [MASTER, { type: 'finishGame' }],
+    );
+    const again = run(finished, [MASTER, { type: 'playAgain' }]);
+    expect(again.status).toBe('lobby');
+    expect(again.open).toBe(false);
+    expect(again.players).toEqual(finished.players);
+    expect(again.setup).toEqual(finished.setup);
+    expect(again.assignments).toEqual({});
+    expect(again.game).toBeNull();
+    // Nothing from the old game reaches a phone in the next lobby.
+    const view = buildPlayerView(again, new Set(['a']), 'a');
+    expect(view.card).toBeNull();
+    expect(view.reveal).toBeNull();
+    expect(view.roles).toEqual([]);
+    const second = run(again, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    expect(second.game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {} });
+    expect(Object.keys(second.assignments).sort()).toEqual(['a', 'b']);
+  });
+
+  it('refuses outside their state, and from anyone but the master', () => {
+    expect(refusal(ready(), MASTER, { type: 'finishGame' })).toBe('not-allowed');
+    expect(refusal(playing(), 'a', { type: 'finishGame' })).toBe('not-master');
+    expect(refusal(playing(), MASTER, { type: 'playAgain' })).toBe('not-allowed');
+    const finished = run(playing(), [MASTER, { type: 'finishGame' }]);
+    expect(refusal(finished, 'a', { type: 'playAgain' })).toBe('not-master');
+  });
+});
+
 describe('views', () => {
   const state = run(
     room(),
@@ -603,6 +652,7 @@ describe('views', () => {
     ]);
     expect(view.roles[0]?.role.rule).toEqual({ vi: 'House rule', en: 'House rule' });
     expect(view.card).toBeNull();
+    expect(view.reveal).toBeNull();
     expect(buildPlayerView(reviewed, connected, 'c').roles).toEqual([]);
     expect(buildPlayerView(ready(), connected, 'a').roles).toEqual([]);
   });
@@ -625,7 +675,10 @@ describe('views', () => {
         'seat',
         'roles',
         'card',
+        'reveal',
       ]);
+      // Nobody else's role until the game is finished.
+      expect(view.reveal).toBeNull();
     }
     expect(buildPlayerView(playing, connected, 'c').card).toBeNull();
     expect(buildMasterView(playing, connected).assignments).toEqual([
@@ -650,6 +703,34 @@ describe('views', () => {
       expect(view).not.toHaveProperty('game');
       expect(JSON.stringify(view)).not.toContain('Secret note');
     }
+  });
+
+  it('shows seated players every role and the marks once finished, and nobody else', () => {
+    const finished = run(
+      playing(),
+      [MASTER, { type: 'toggleDeath', playerId: 'b' }],
+      [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
+      [MASTER, { type: 'finishGame' }],
+    );
+    const reveal = {
+      assignments: [
+        { playerId: 'a', roleId: 'seer' },
+        { playerId: 'b', roleId: 'werewolf' },
+      ],
+      game: { phase: NIGHT_1, deaths: { b: NIGHT_1 }, notes: { 1: { a: 'Saw.' } } },
+    };
+    expect(buildPlayerView(finished, connected, 'a').reveal).toEqual(reveal);
+    expect(buildPlayerView(finished, connected, 'b').reveal).toEqual(reveal);
+    expect(buildPlayerView(finished, connected, 'c').reveal).toBeNull();
+    const kicked = run(
+      ready(),
+      [MASTER, { type: 'kick', playerId: 'b' }],
+      [MASTER, { type: 'removePick', roleId: 'werewolf' }],
+      [MASTER, { type: 'review' }],
+      [MASTER, { type: 'startGame' }],
+      [MASTER, { type: 'finishGame' }],
+    );
+    expect(buildPlayerView(kicked, connected, 'b').reveal).toBeNull();
   });
 
   it('gives a kicked phone no rules and no card', () => {

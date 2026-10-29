@@ -43,7 +43,8 @@
     "noteWolves2": "Chọn cắn Linh.",
     "frame": "Khung điện thoại {{width}} × {{height}}",
     "many": "Nhiều người chơi",
-    "master": "Quản trò"
+    "master": "Quản trò",
+    "player": "Người chơi"
   },
   "screens": {
     "home": "Cunning Wolves",

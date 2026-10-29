@@ -49,7 +49,11 @@ export type ClientMessage =
   /** Marks a player dead in the current phase, or undoes it */
   | { type: 'toggleDeath'; playerId: string }
   /** Empty text removes the note */
-  | { type: 'setNote'; night: number; playerId: string; text: string };
+  | { type: 'setNote'; night: number; playerId: string; text: string }
+  /** Ends the game and shows everyone the summary */
+  | { type: 'finishGame' }
+  /** Back to Setup with the same players and card set */
+  | { type: 'playAgain' };
 
 export type RoomAction = Exclude<ClientMessage, { type: 'hello' }>;
 
@@ -105,6 +109,14 @@ export interface PlayerView {
   roles: GameRole[];
   /** This player's own role, once the game starts; never anyone else's */
   card: RoomRole | null;
+  /** Every player's role and the narrator's marks: only once the game is finished */
+  reveal: Reveal | null;
+}
+
+/** What everyone sees after Finish game. */
+export interface Reveal {
+  assignments: Assignment[];
+  game: GameState;
 }
 
 export type RoomView = MasterView | PlayerView;

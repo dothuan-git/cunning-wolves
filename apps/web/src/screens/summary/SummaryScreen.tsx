@@ -28,7 +28,8 @@ export function SummaryScreen({
   nights: number;
   roomName: string;
   initialTab?: 'roles' | 'notes';
-  onPlayAgain: () => void;
+  /** The narrator's button; players only get Home */
+  onPlayAgain?: () => void;
   onHome: () => void;
 }) {
   const { t } = useTranslation();
@@ -45,12 +46,18 @@ export function SummaryScreen({
     <ScreenLayout
       title={t('screens.summary')}
       footer={
-        <div className="grid grid-cols-2 gap-2">
+        onPlayAgain ? (
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="secondary" onClick={onHome}>
+              {t('common.home')}
+            </Button>
+            <Button onClick={onPlayAgain}>{t('summary.playAgain')}</Button>
+          </div>
+        ) : (
           <Button variant="secondary" onClick={onHome}>
             {t('common.home')}
           </Button>
-          <Button onClick={onPlayAgain}>{t('summary.playAgain')}</Button>
-        </div>
+        )
       }
     >
       <section className="panel p-4">

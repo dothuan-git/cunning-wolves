@@ -15,6 +15,7 @@ const VIEW: RoomView = {
   seat: 'joined',
   roles: [],
   card: null,
+  reveal: null,
 };
 const BAKER: RoomRole = {
   id: 'custom-0',
@@ -123,6 +124,17 @@ describe('parseServerMessage', () => {
   it('accepts views and errors', () => {
     const state = { type: 'state', view: VIEW };
     expect(parseServerMessage(JSON.stringify(state))).toEqual(state);
+    const finished = {
+      type: 'state',
+      view: {
+        ...DEALT,
+        reveal: {
+          assignments: [{ playerId: 'aaaa', roleId: 'custom-0' }],
+          game: { phase: { kind: 'night', number: 1 }, deaths: {}, notes: { 1: { aaaa: 'Saw.' } } },
+        },
+      },
+    };
+    expect(parseServerMessage(JSON.stringify(finished))).toEqual(finished);
     const dealt = { type: 'state', view: DEALT };
     expect(parseServerMessage(JSON.stringify(dealt))).toEqual(dealt);
     const master = { type: 'state', view: MASTER };
@@ -159,6 +171,8 @@ describe('parseServerMessage', () => {
       'a note that is not text',
       { type: 'state', view: { ...MASTER, game: { ...MASTER.game, notes: { 1: { aaaa: 2 } } } } },
     ],
+    ['a player view without a reveal', { type: 'state', view: { ...VIEW, reveal: undefined } }],
+    ['a reveal without a game', { type: 'state', view: { ...VIEW, reveal: { assignments: [] } } }],
     ['a player view without roles', { type: 'state', view: { ...VIEW, roles: undefined } }],
     [
       'a card without a team',

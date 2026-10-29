@@ -79,19 +79,23 @@
   - While reconnecting, the narrator's controls are disabled and the footer says so.
   - See decision 0020.
 
+- **Phase 6 finish and Play again** (branch `feat/phase-6-finish`, 2026-10-28):
+  - The narrator holds **Finish game**. Everyone seated then sees the existing summary: every role, and the night journal with notes and deaths.
+  - Only the narrator gets **Play again**. It returns to Setup with the same players and card set. Deaths, notes and the deal are cleared, and the room stays closed.
+  - A player's phone receives the whole deal only after Finish.
+  - See decision 0021.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
-2. **Phase 6 (finish and polish):**
-   - Finish game, the summary screen with every role and the night-and-morning log, and Play again.
-   - Phone UI polish and a playtest with a real group.
+2. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
 
 ## Known issues
 
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
-- Every screen but the summary runs on real rooms. The narrator page has no Finish game control until Phase 6, and the summary still runs on sample data. The development gallery uses synthetic data and is excluded from production JavaScript.
+- Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
 - Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).
