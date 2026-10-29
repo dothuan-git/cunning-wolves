@@ -194,7 +194,6 @@
     "timer": "Night timer (seconds)",
     "sound": "Sound cues",
     "marks": "Player marks",
-    "marksHint": "Tag players with marks and record a new role.",
     "soundHint": "A chime when the night timer reaches zero.",
     "ready": "Review rules",
     "needRoles": "Fill every seat to continue.",

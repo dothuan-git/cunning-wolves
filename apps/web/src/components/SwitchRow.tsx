@@ -2,14 +2,14 @@ import { useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
 /**
- * A setting that is on or off: its name and a line on what it does, with a square switch on the
+ * A setting that is on or off: its name and an optional line on what it does, with a square switch on the
  * right. It is a real checkbox, so it keeps its label and keyboard behaviour.
  */
 export function SwitchRow({
   label,
   hint,
   ...props
-}: { label: string; hint: string } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
+}: { label: string; hint?: string } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
   const id = useId();
   return (
     <label
@@ -20,9 +20,11 @@ export function SwitchRow({
         <span id={`${id}-label`} className="block text-control font-medium">
           {label}
         </span>
-        <span id={`${id}-hint`} className="block text-caption text-muted">
-          {hint}
-        </span>
+        {hint && (
+          <span id={`${id}-hint`} className="block text-caption text-muted">
+            {hint}
+          </span>
+        )}
       </span>
       <span className="relative h-7 w-12 shrink-0">
         {/* The real checkbox covers the track, so it takes the tap and shows focus on it. */}
@@ -31,7 +33,7 @@ export function SwitchRow({
           id={id}
           type="checkbox"
           aria-labelledby={`${id}-label`}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={hint ? `${id}-hint` : undefined}
           className="peer absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
         />
         <span

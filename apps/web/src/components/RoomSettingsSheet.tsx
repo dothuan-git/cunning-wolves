@@ -74,7 +74,6 @@ export function RoomSettingsSheet({
           />
           <SwitchRow
             label={t('setup.marks')}
-            hint={t('setup.marksHint')}
             checked={settings.marksOn}
             onChange={(event) => {
               onSettings({ ...settings, marksOn: event.target.checked });

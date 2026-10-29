@@ -574,7 +574,6 @@ export function NarratorScreen({
               />
               <SwitchRow
                 label={t('setup.marks')}
-                hint={t('setup.marksHint')}
                 checked={settings.marksOn}
                 disabled={reconnecting}
                 onChange={(event) => {
