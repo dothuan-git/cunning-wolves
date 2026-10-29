@@ -60,3 +60,31 @@ test('rule book factions fold away and back', async ({ page }) => {
   await wolves.click();
   await expect(card).toBeVisible();
 });
+
+test('rule book search stays above the cards while scrolling', async ({ page }) => {
+  await page.goto('/rules');
+  await expect(page.getByRole('searchbox')).toBeVisible();
+  const covered: string[] = [];
+  for (const y of [300, 700, 1100, 1500]) {
+    await page.evaluate((top) => {
+      window.scrollTo(0, top);
+    }, y);
+    await page.waitForTimeout(100);
+    // Hit-test the whole bar: a card's name is only a few pixels wide.
+    const hits = await page.evaluate(() => {
+      const bar = document.querySelector('input[type="search"]')?.parentElement;
+      if (!bar) return ['no bar'];
+      const box = bar.getBoundingClientRect();
+      const found: string[] = [];
+      for (let x = box.left + 2; x < box.right; x += 4) {
+        for (let y = box.top + 2; y < box.bottom; y += 4) {
+          const top = document.elementFromPoint(x, y);
+          if (!top || !bar.contains(top)) found.push(String(top?.className));
+        }
+      }
+      return found;
+    });
+    covered.push(...hits);
+  }
+  expect(covered).toEqual([]);
+});

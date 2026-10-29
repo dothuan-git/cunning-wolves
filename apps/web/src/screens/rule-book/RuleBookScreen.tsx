@@ -40,8 +40,8 @@ export function RuleBookScreen({
         </Button>
       }
     >
-      {/* Stays in reach while the list scrolls under it. */}
-      <div className="sticky top-0 z-10 -mt-3 grid gap-2 bg-paper pt-3 pb-1">
+      {/* Stays in reach while the list scrolls under it, above the cards' names (z-10). */}
+      <div className="sticky top-0 z-30 -mt-3 grid gap-2 bg-paper pt-3 pb-1">
         <label htmlFor={searchId} className="sr-only">
           {t('ruleBook.search')}
         </label>
