@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LOCALES, MARKS, marksFor, ROLE_POOL, wakesWithWolves } from '../src';
+import { LOCALES, MARKS, marksFor, ROLE_CHANGERS, ROLE_POOL, wakesWithWolves } from '../src';
 
 const ids = (list: readonly { id: string }[]) => list.map((mark) => mark.id);
 
@@ -18,6 +18,11 @@ describe('MARKS', () => {
       for (const roleId of mark.from) expect(pool.has(roleId), `${mark.id}: ${roleId}`).toBe(true);
       if (mark.holdersOnly) expect(mark.from.length, mark.id).toBeGreaterThan(0);
     }
+  });
+
+  it('names only pool roles as roles that change roles', () => {
+    const pool = new Set(ids(ROLE_POOL));
+    for (const roleId of ROLE_CHANGERS) expect(pool.has(roleId), roleId).toBe(true);
   });
 });
 

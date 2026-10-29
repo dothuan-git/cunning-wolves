@@ -719,6 +719,35 @@ describe('set role', () => {
     expect(witch.game?.marks).toEqual({ [copier]: { 'heal-used': NIGHT_1 } });
   });
 
+  it("takes off a new role's mark after going back to the dealt role", () => {
+    const { state, holder } = changing();
+    const copier = holder('doppelganger');
+    const mark = { type: 'toggleMark', playerId: copier, mark: 'heal-used' } as const;
+    const back = run(
+      state,
+      [MASTER, setRole(copier, 'witch')],
+      [MASTER, mark],
+      [MASTER, setRole(copier, null)],
+    );
+    expect(back.game?.marks).toEqual({ [copier]: { 'heal-used': NIGHT_1 } });
+    expect(run(back, [MASTER, mark]).game?.marks).toEqual({});
+    expect(refusal(run(back, [MASTER, mark]), MASTER, mark)).toBe('not-allowed');
+  });
+
+  it('offers the marks a new role brings, as a dealt one would', () => {
+    const { state, holder } = changing();
+    const [copier, seer] = [holder('doppelganger'), holder('seer')];
+    const companion = { type: 'toggleMark', playerId: seer, mark: 'companion' } as const;
+    expect(refusal(state, MASTER, companion)).toBe('not-allowed');
+    const dead = run(
+      state,
+      [MASTER, setRole(copier, 'dire-wolf')],
+      [MASTER, companion],
+      [MASTER, { type: 'toggleDeath', playerId: seer }],
+    );
+    expect(dead.game?.deaths).toEqual({ [seer]: NIGHT_1, [copier]: NIGHT_1 });
+  });
+
   it('counts a player who now plays the Dire Wolf when its companion dies', () => {
     const { state, holder } = changing(['dire-wolf', 'doppelganger', 'seer']);
     const [wolf, copier, friend] = ['dire-wolf', 'doppelganger', 'seer'].map(holder);

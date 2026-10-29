@@ -412,6 +412,7 @@ describe('Room', () => {
       sql.exec('DELETE FROM deaths');
       sql.exec('DELETE FROM notes');
       sql.exec('DROP TABLE marks');
+      sql.exec('DROP TABLE new_roles');
       const older = loadRoom(sql);
       expect(older?.game).toEqual({
         phase: { kind: 'night', number: 1 },
@@ -437,6 +438,9 @@ describe('Room', () => {
       const marks = Object.entries(loaded?.marks ?? {});
       expect(marks.map(([id, own]) => [id, Object.keys(own).sort()])).toEqual([
         ['__proto__', ['heal-used', 'sheriff']],
+      ]);
+      expect(Object.entries(loaded?.newRoles ?? {})).toEqual([
+        ['__proto__', { role: 'seer', phase: death }],
       ]);
       expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
     });

@@ -94,7 +94,7 @@ The worker builds each viewer's state before sending it. A player's client never
 
 ## Marks
 
-Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles. Marking a player with a single mark moves it from whoever had it.
+Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles or now playing one. A role a power gave someone offers its marks like a dealt one, and a carried mark can always be taken off. Marking a player with a single mark moves it from whoever had it.
 
 | Mark                     | Offered by                                                                                   | Carried by         |
 | ------------------------ | -------------------------------------------------------------------------------------------- | ------------------ |

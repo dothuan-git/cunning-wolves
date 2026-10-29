@@ -221,15 +221,27 @@ function NarratorRoom({
       }),
     }));
   }, [setup, assignments, players, newRoles]);
+  const { marks } = game;
   const markOptions = useMemo(() => {
-    const dealt = assignments.map(({ roleId }) => roleId);
+    // The roles a power gave players offer their marks too, as the room allows.
+    const inPlay = [
+      ...assignments.map(({ roleId }) => roleId),
+      ...Object.values(newRoles).map(({ role }) => role),
+    ];
     return Object.fromEntries(
-      assignments.map(({ playerId, roleId }) => [
-        playerId,
-        marksForPlayer(roleId, currentRole(playerId, roleId, newRoles), dealt),
-      ]),
+      assignments.map(({ playerId, roleId }) => {
+        const offered = marksForPlayer(roleId, currentRole(playerId, roleId, newRoles), inPlay);
+        const own = Object.hasOwn(marks, playerId) ? marks[playerId] : undefined;
+        // A mark the player carries stays in the sheet so it can come off after a role change.
+        return [
+          playerId,
+          MARKS.filter(
+            (mark) => offered.includes(mark) || (own !== undefined && Object.hasOwn(own, mark.id)),
+          ),
+        ];
+      }),
     );
-  }, [assignments, newRoles]);
+  }, [assignments, newRoles, marks]);
   const roleChoices = useMemo<RoleChoices | undefined>(() => {
     if (!offersNewRoles(assignments.map(({ roleId }) => roleId))) return undefined;
     const inGame = gameRoles(setup).map(({ role }) => role);

@@ -324,24 +324,31 @@ function applyGame(
         assignments,
         (id) => !Object.hasOwn(game.deaths, id),
       );
-      const deaths = { ...game.deaths };
-      for (const id of dying) deaths[id] = game.phase;
+      // fromEntries, so an id like `__proto__` stays an own key.
+      const deaths = {
+        ...game.deaths,
+        ...Object.fromEntries([...dying].map((id) => [id, game.phase])),
+      };
       return { ok: true, game: { ...game, deaths } };
     }
     case 'toggleMark': {
       const { playerId } = action;
       const roleId = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
       if (roleId === undefined) return refuse('not-allowed');
+      const own = Object.hasOwn(game.marks, playerId) ? game.marks[playerId] : undefined;
+      // A carried mark can always come off, even once a new role no longer offers it.
+      if (own && Object.hasOwn(own, action.mark)) {
+        return {
+          ok: true,
+          game: { ...game, marks: withoutMark(game.marks, playerId, action.mark) },
+        };
+      }
       const mark = marksForPlayer(
         roleId,
         currentRole(playerId, roleId, game.newRoles),
-        Object.values(assignments),
+        rolesInPlay(assignments, game.newRoles),
       ).find((offered) => offered.id === action.mark);
       if (!mark) return refuse('not-allowed');
-      const own = Object.hasOwn(game.marks, playerId) ? game.marks[playerId] : undefined;
-      if (own && Object.hasOwn(own, mark.id)) {
-        return { ok: true, game: { ...game, marks: withoutMark(game.marks, playerId, mark.id) } };
-      }
       // A single mark moves: whoever had it loses it.
       const others = mark.single
         ? Object.keys(game.marks).reduce((marks, id) => withoutMark(marks, id, mark.id), game.marks)
@@ -419,6 +426,14 @@ function linkedChain(
     }
   }
   return chain;
+}
+
+/** Every dealt role and every role a power gave someone: the roles whose marks this game offers. */
+function rolesInPlay(
+  assignments: Record<string, string>,
+  newRoles: GameState['newRoles'],
+): string[] {
+  return [...Object.values(assignments), ...Object.values(newRoles).map(({ role }) => role)];
 }
 
 function samePhase(a: Phase, b: Phase): boolean {
