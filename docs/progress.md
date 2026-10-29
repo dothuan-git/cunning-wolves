@@ -94,7 +94,7 @@
 
 - **Player marks, third faction, wake nights** (branch `feat/player-marks`, 2026-10-29):
   - The narrator can mark players with things to remember: Sheriff in every game, and the used powers of the Judge, Fox, Big Bad Wolf, Witch, Elder and Village Idiot, and the Knight's rust. A tag button beside the status pill opens the marks; they show as chips, survive a refresh, and appear in the summary.
-  - A third faction (`solo`) for roles that win alone, in weld ochre; custom roles can join it.
+  - A third faction (`solo`) for roles that win alone, in purple with its own emblem; custom roles can join it.
   - Roles can wake on Night 1 only or on even nights; the Stuttering Judge now rests after Night 1.
   - Third-faction and team-changing roles are back in scope; card-swapping roles stay out.
   - The pool now holds 86 roles. 42 are from The Werewolves of Millers Hollow (base game, New Moon, Characters, The Village), 33 from Ultimate Werewolf and 11 more that had been skipped for lack of a sourced rule. The first 27 have marks where the narrator needs to remember something; the other 59 are a card and a rule only, and the app does not run their power.
@@ -116,6 +116,5 @@
 - Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
 - Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
-- Missing art: the third faction's emblem (`faction-solo.webp`); the hooded fallback figure stands in.
 - Missing card art: thief, cupid, stuttering-judge, doppelganger, hoodlum, mason, the-count, two-sisters, three-brothers, wild-child, wolf-hound, actor, old-hag, spellcaster, puppeteer, fox, paranormal-investigator, wise-monkey, beholder, aura-seer, bodyguard, priest, wolf-man, wolf-cub, fruit-brute, dire-wolf, lone-wolf, minion, dream-wolf, big-bad-wolf, cursed-wolf-father, alpha-wolf, mighty-wolf-mother, white-werewolf, sorceress, bogeyman, chupacabra, baker, pyromaniac, vampire, cult-leader, magician, gypsy, pied-piper, raven, troublemaker, insomniac, amulet-of-protection, angel, apprentice-seer, bailiff, barber, bartender, bear-tamer, bonesetter, colossus, confessor, cursed, devoted-servant, diseased, drunk, elder, farmer, ghost, hunter, knight, little-girl, lord, lycan, martyr, mayor, old-man, pacifist, prejudiced-manipulator, prince, scapegoat, schoolmistress, tanner, tough-guy, vagabond, village-idiot, villager-villager.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

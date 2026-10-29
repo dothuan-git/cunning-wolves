@@ -6,18 +6,18 @@ The idea: a 16th-century werewolf broadside printed from wood. Black ink on putt
 
 ## Palette
 
-| Token                        | Value                 | Use                                                               |
-| ---------------------------- | --------------------- | ----------------------------------------------------------------- |
-| `paper`                      | `#dedad3`             | Page ground                                                       |
-| `surface`                    | `#e9e7e3`             | Panels: one tone step above the page, no border or shadow         |
-| `field`                      | `#f5f4f2`             | Inputs, secondary buttons, sheets, text on ink                    |
-| `ink` / `muted`              | `#0a0a0a` / `#5c5852` | Text; `ink` is also the primary button fill                       |
-| `line`                       | `#cfcac1`             | Row rules inside a panel, the tab rail, the Dead pill             |
-| `field-border`               | `#8f897f`             | Input and secondary button outlines                               |
-| `village` / `village-wash`   | `#2a4170` / `#dfe3ec` | Village roles (lapis from the card back), focus ring              |
-| `werewolf` / `werewolf-wash` | `#8a1f24` / `#efdcda` | Wolf roles (madder from the wolf seal)                            |
-| `solo` / `solo-wash`         | `#6f5310` / `#ece3cc` | Third-faction roles that win alone (weld ochre)                   |
-| `danger`                     | `#a3321f`             | Destructive actions, and the red dot for a closed or in-play room |
+| Token                        | Value                 | Use                                                                   |
+| ---------------------------- | --------------------- | --------------------------------------------------------------------- |
+| `paper`                      | `#dedad3`             | Page ground                                                           |
+| `surface`                    | `#e9e7e3`             | Panels: one tone step above the page, no border or shadow             |
+| `field`                      | `#f5f4f2`             | Inputs, secondary buttons, sheets, text on ink                        |
+| `ink` / `muted`              | `#0a0a0a` / `#5c5852` | Text; `ink` is also the primary button fill                           |
+| `line`                       | `#cfcac1`             | Row rules inside a panel, the tab rail, the Dead pill                 |
+| `field-border`               | `#8f897f`             | Input and secondary button outlines                                   |
+| `village` / `village-wash`   | `#2a4170` / `#dfe3ec` | Village roles (lapis from the card back), focus ring                  |
+| `werewolf` / `werewolf-wash` | `#8a1f24` / `#efdcda` | Wolf roles (madder from the wolf seal)                                |
+| `solo` / `solo-wash`         | `#5b2f7a` / `#ebe2f0` | Third-faction roles that win alone (purple, from the emblem's ribbon) |
+| `danger`                     | `#a3321f`             | Destructive actions, and the red dot for a closed or in-play room     |
 
 Faction color is the only hue, apart from `live` green for a live status dot (and `danger` red for the same dot on a closed or in-play room on home). Status, phases and actions are ink and paper. Alive is an outlined pill with a green blinking dot, and a death is marked with ✝, a struck-through name and the `line` pill. Meaning never relies on color alone.
 
@@ -48,7 +48,7 @@ Editable text stays at 16px so phones do not zoom in on focus.
 
 - **Buttons:** primary is a flat ink fill with a `field` label; secondary is `field` with a `field-border` outline; quiet is text only. All are square (2px).
 - **`RoleBanner`:** the role's art as a 40px head-and-shoulders thumbnail (`.art-bust`) and its name in the faction color.
-- **`FactionLabel` / `FactionEmblem`:** the faction's own emblem (the cottage for the village, the wolf's head for the wolves, and for now the hooded fallback figure for the third faction) beside its name in the rules review. The summary's Roles tab lists each faction under its emblem, wolves first.
+- **`FactionLabel` / `FactionEmblem`:** the faction's own emblem (the cottage for the village, the wolf's head for the wolves, and the half-masked hood for the third faction) beside its name in the rules review. The summary's Roles tab lists each faction under its emblem, wolves first.
 - **`PlayerStatusControl`:** a one-tap pill. "● Alive" is outlined with a green blinking dot (`live-dot`, still with reduced motion); "✝ Dead" is filled with `line`. Tapping again undoes it; there is no Undo bar.
 - **Marks:** left of the status pill, a quiet 48px tag button (`MarksButton`), `muted` when empty and ink with the count beside it when the player carries marks. It opens a sheet (`MarksSheet`) with one checkbox row per mark the player may carry, the phase it was marked in ("Since Night 1") or, for a single mark held by someone else, "Now with <name>" under it. Carried marks show as `MarkChips` under the name: caption pills in `field`, one tone step above the panel. The summary repeats the chips under each player and lists marks in the journal as `field` pills with the tag icon, beside the `line` death pills.
 - **Narrator:** the phase and the alive count, then one panel per role in wake order (the order is changed in the menu: "Wake order" shows each waking role as a tile in its faction wash with its name, cut short with "…" when it does not fit, four to a row and read left to right, top to bottom; a tile is dragged to a new place while the others slide out of its way, or moved with the arrow keys, with the new position announced). No wake guide. Each panel opens with a band in its faction wash holding the `RoleBanner`; when every player of the role is dead, the band turns `line` grey (a step darker than the page, so it never matches the background) and the name and art go grey (`RoleBanner dead`); under it, one row per player with `line` rules between them. The player's name leads the row at `text-role` in `font-display`, with the status pill on the right; under it the night labels sit small and `muted` close beside the notes in compact rows, so the names stand out. The note being written is a boxed field (`NoteField appearance="box"`) that grows with its text. Motion (all ≤ 250 ms, off with reduced motion): buttons and saved notes sink on press; the status pill pops when a player changes status (not when the list first appears); the phase title and alive count slide in when they change; new note rows, the open note box and the death row slide in.
