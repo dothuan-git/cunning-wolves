@@ -5,6 +5,7 @@ import {
   CUSTOM_ROLES_MAX,
   DEFAULT_SETTINGS,
   isValidName,
+  marksFor,
   NAME_MAX,
   nameKey,
   nextPhase,
@@ -240,7 +241,12 @@ export function apply(
         if (card === undefined) throw new Error('startGame: fewer cards than players');
         assignments[player.id] = card;
       });
-      const game: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} };
+      const game: GameState = {
+        phase: { kind: 'night', number: 1 },
+        deaths: {},
+        notes: {},
+        marks: {},
+      };
       return { ok: true, state: { ...state, status: 'playing', assignments, game } };
     }
     case 'finishGame': {
@@ -257,6 +263,7 @@ export function apply(
     }
     case 'endPhase':
     case 'toggleDeath':
+    case 'toggleMark':
     case 'setNote': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
@@ -266,7 +273,10 @@ export function apply(
   }
 }
 
-type GameAction = Extract<RoomAction, { type: 'endPhase' | 'toggleDeath' | 'setNote' }>;
+type GameAction = Extract<
+  RoomAction,
+  { type: 'endPhase' | 'toggleDeath' | 'toggleMark' | 'setNote' }
+>;
 type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErrorCode };
 
 /** The narrator's marks while playing. Who may make them is checked by `apply`. */
@@ -295,6 +305,25 @@ function applyGame(
       }
       return { ok: true, game: { ...game, deaths: { ...game.deaths, [playerId]: game.phase } } };
     }
+    case 'toggleMark': {
+      const { playerId } = action;
+      const roleId = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
+      if (roleId === undefined) return refuse('not-allowed');
+      const mark = marksFor(roleId, Object.values(assignments)).find(
+        (offered) => offered.id === action.mark,
+      );
+      if (!mark) return refuse('not-allowed');
+      const own = Object.hasOwn(game.marks, playerId) ? game.marks[playerId] : undefined;
+      if (own && Object.hasOwn(own, mark.id)) {
+        return { ok: true, game: { ...game, marks: withoutMark(game.marks, playerId, mark.id) } };
+      }
+      // A single mark moves: whoever had it loses it.
+      const others = mark.single
+        ? Object.keys(game.marks).reduce((marks, id) => withoutMark(marks, id, mark.id), game.marks)
+        : game.marks;
+      const marks = { ...others, [playerId]: { ...own, [mark.id]: game.phase } };
+      return { ok: true, game: { ...game, marks } };
+    }
     case 'setNote': {
       const { night, playerId } = action;
       if (!Object.hasOwn(assignments, playerId)) return refuse('not-allowed');
@@ -317,6 +346,21 @@ function applyGame(
       return { ok: true, game: { ...game, notes } };
     }
   }
+}
+
+/** The marks with one taken off a player; a player left with none drops out. */
+function withoutMark(
+  marks: GameState['marks'],
+  playerId: string,
+  markId: string,
+): GameState['marks'] {
+  return Object.fromEntries(
+    Object.entries(marks).flatMap(([id, own]) => {
+      if (id !== playerId) return [[id, own]];
+      const kept = Object.fromEntries(Object.entries(own).filter(([mark]) => mark !== markId));
+      return Object.keys(kept).length > 0 ? [[id, kept]] : [];
+    }),
+  );
 }
 
 type SetupAction = Extract<

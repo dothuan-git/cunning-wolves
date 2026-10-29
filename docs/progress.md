@@ -92,10 +92,18 @@
   - The narrator can delete the room at any time with a press and hold.
   - See decision 0022.
 
+- **Player marks, third faction, wake nights** (branch `feat/player-marks`, 2026-10-29):
+  - The narrator can mark players with things to remember: Sheriff in every game, and the used powers of the Judge, Fox, Big Bad Wolf, Witch, Elder and Village Idiot, and the Knight's rust. A tag button beside the status pill opens the marks; they show as chips, survive a refresh, and appear in the summary.
+  - A third faction (`solo`) for roles that win alone, in weld ochre; custom roles can join it.
+  - Roles can wake on Night 1 only or on even nights; the Stuttering Judge now rests after Night 1.
+  - Third-faction and team-changing roles are back in scope; card-swapping roles stay out.
+  - See decision 0023.
+
 ## Next
 
-1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
-2. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
+1. **More roles on marks** (decision 0023): Accursed Wolf-Father, Wild Child and Wolf-hound (marks that move a player to the wolves), then Cupid (a link between two lovers), White Wolf, Angel, Pied Piper, Abominable Sectarian and Villager-Villager. Later: Thief, Actor and Devoted Servant.
+2. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
+3. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
 
 ## Known issues
 
@@ -104,5 +112,6 @@
 - Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
 - Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript. The development gallery uses synthetic data and is excluded from production JavaScript.
 - The seer, villager and wolf have card art; other roles show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
+- Missing art: the third faction's emblem (`faction-solo.webp`); the hooded fallback figure stands in.
 - Missing card art: stuttering-judge, two-sisters, three-brothers, fox, bodyguard, big-bad-wolf, witch, raven, bear-tamer, elder, hunter, knight, little-girl, scapegoat, village-idiot.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

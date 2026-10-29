@@ -23,6 +23,7 @@ const BAKER: RoomRole = {
   rule: { vi: 'Bakes.', en: 'Bakes.' },
   team: 'village',
   defaultWakeOrder: null,
+  wakeNights: 'every',
   image: '',
   custom: true,
 };
@@ -46,6 +47,7 @@ const MASTER = {
     phase: { kind: 'morning', number: 2 },
     deaths: { aaaa: { kind: 'night', number: 2 } },
     notes: { 1: { aaaa: 'Saw the baker.' } },
+    marks: { aaaa: { sheriff: { kind: 'morning', number: 1 } } },
   },
 } as const;
 const SUMMARY: RoomSummary = {
@@ -131,7 +133,12 @@ describe('parseServerMessage', () => {
         ...DEALT,
         reveal: {
           assignments: [{ playerId: 'aaaa', roleId: 'custom-0' }],
-          game: { phase: { kind: 'night', number: 1 }, deaths: {}, notes: { 1: { aaaa: 'Saw.' } } },
+          game: {
+            phase: { kind: 'night', number: 1 },
+            deaths: {},
+            notes: { 1: { aaaa: 'Saw.' } },
+            marks: {},
+          },
         },
       },
     };
@@ -177,6 +184,21 @@ describe('parseServerMessage', () => {
     [
       'a note that is not text',
       { type: 'state', view: { ...MASTER, game: { ...MASTER.game, notes: { 1: { aaaa: 2 } } } } },
+    ],
+    [
+      'a game without marks',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, marks: undefined } } },
+    ],
+    [
+      'a mark in an unknown phase',
+      {
+        type: 'state',
+        view: { ...MASTER, game: { ...MASTER.game, marks: { aaaa: { sheriff: 'dusk' } } } },
+      },
+    ],
+    [
+      'a card that wakes on unknown nights',
+      { type: 'state', view: { ...DEALT, card: { ...BAKER, wakeNights: 'odd' } } },
     ],
     ['a player view without a reveal', { type: 'state', view: { ...VIEW, reveal: undefined } }],
     ['a reveal without a game', { type: 'state', view: { ...VIEW, reveal: { assignments: [] } } }],

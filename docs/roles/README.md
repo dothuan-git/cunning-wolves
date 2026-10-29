@@ -8,8 +8,9 @@ One file per pool role: `docs/roles/<id>.md`. Add roles with the `add-role` skil
 # <English name> / <Vietnamese name>
 
 - **id:** `<id>`
-- **Team:** village | werewolf
-- **Wakes at night:** no | yes, after `<role id>` and before `<role id>`
+- **Team:** village | werewolf | solo
+- **Wakes at night:** no | yes, after `<role id>` and before `<role id>`; every night | Night 1 only | even nights
+- **Marks:** none | `<mark id>` (what it records), …
 - **Card art:** `apps/web/src/assets/cards/<id>.webp` (or "missing")
 
 ## Rule (vi)

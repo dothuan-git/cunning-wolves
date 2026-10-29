@@ -47,7 +47,8 @@ While players gather, the master builds the card set on **Setup**. The room keep
 
 - **Roles:** any number of copies of any pool or custom role, up to 40 in all. Roles are chosen freely; **Review rules** is enabled only when the roles equal the joined players (more than zero).
 - **Rule edits:** tapping a chosen role's rule edits it for this room only. The edited rule is one text, shown to every player whatever their language. An emptied rule keeps the rule it had.
-- **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night. A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
+- **Factions:** Village, Wolves, and a third faction for roles that win on their own (`solo`). Setup, the rules review and the summary list them in that order, wolves first.
+- **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night (every night). A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
 - **Wake order:** the master can reorder the waking roles in the game; roles not reordered follow their default order.
 - **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default) and sound cues (off by default). Language is per phone, not a room setting.
 - All of this is master-only and locked once the room leaves `lobby`, except the wake order, timer and sound, which the narrator can still change while playing.
@@ -69,7 +70,7 @@ The worker builds each viewer's state before sending it. A player's client never
 | Role list + rules (from Review rules on)                                        | Yes         | Yes                 |
 | Role pool cards (browse only)                                                   | Yes         | Yes, any time       |
 | Who holds which role                                                            | Yes         | Own card only       |
-| Phases, deaths, notes                                                           | Yes         | No                  |
+| Phases, deaths, notes, marks                                                    | Yes         | No                  |
 | Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Seated players only |
 | Room PIN                                                                        | Yes         | No                  |
 
@@ -86,12 +87,28 @@ The worker builds each viewer's state before sending it. A player's client never
 - Note fields are separate from status controls: editing a note never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See decisions `0007-per-player-night-comments.md`, `0010-single-list-night-and-morning.md` and `0012-medieval-light-redesign.md`.
 - **The room keeps all of it:** the phase, deaths and notes survive a refresh, and only the master's phone receives them. Ending a phase names the phase being ended, so a hold that arrives twice ends one phase, not two. See decision 0020.
 - A note is saved about a second after the narrator stops typing, and when its field is left. A note typed while reconnecting is sent once the connection is back. Notes are up to 1000 characters.
+- **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, and never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
 - **Timer:** the narrator starts, pauses and resets a countdown from the menu. Its length is the room's timer setting (0 hides it). It runs on the narrator's phone only, so a refresh resets it. With sound on, a short chime plays when it reaches zero.
 - The app records what the narrator marks. It never resolves abilities or decides winners.
 
+## Marks
+
+Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles. Marking a player with a single mark moves it from whoever had it.
+
+| Mark             | Offered by                  | Carried by         |
+| ---------------- | --------------------------- | ------------------ |
+| Sheriff          | every game                  | one player at once |
+| Second vote used | Stuttering Judge            | its holder         |
+| Power lost       | Fox, Big Bad Wolf           | its holder         |
+| Heal potion used | Witch                       | its holder         |
+| Kill potion used | Witch                       | its holder         |
+| Extra life used  | Elder                       | its holder         |
+| Can't vote       | Village Idiot               | its holder         |
+| Rusted           | Knight with the Rusty Sword | any player         |
+
 ## Wake order
 
-Each pool role has a `defaultWakeOrder` (`null` = never wakes); the room copy can be reordered by the narrator.
+Each pool role has a `defaultWakeOrder` (`null` = never wakes); the room copy can be reordered by the narrator. Each also has `wakeNights`: every night, Night 1 only, or even nights (2, 4, …). On a night a role doesn't wake, the narrator page lists it with the roles that never wake.
 
 The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.md`.
 

@@ -1,4 +1,4 @@
-import type { PoolRole, Team } from '@werewolf/shared';
+import type { PoolRole } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -6,9 +6,8 @@ import { DetailedCard } from '../../components/DetailedCard';
 import { FactionSection } from '../../components/FactionSection';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
+import { FACTION_ORDER } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
-
-const TEAMS: readonly Team[] = ['werewolf', 'village'];
 
 export function RulesReviewScreen({
   roles,
@@ -22,7 +21,7 @@ export function RulesReviewScreen({
   const locale = useLocale();
   const [read, setRead] = useState(false);
   const [viewing, setViewing] = useState<{ role: PoolRole; count: number } | null>(null);
-  const groups = TEAMS.map((team) => ({
+  const groups = FACTION_ORDER.map((team) => ({
     team,
     cards: roles.filter(({ role }) => role.team === team),
   })).filter(({ cards }) => cards.length > 0);

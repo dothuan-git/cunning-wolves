@@ -1,16 +1,15 @@
 import {
   DEFAULT_SETTINGS,
+  TEAMS,
   type CustomRole,
   type GameState,
   type Phase,
   type RoomSetup,
   type RoomStatus,
-  type Team,
 } from '@werewolf/shared';
 import type { Player, RoomState } from './machine';
 
 const STATUSES: readonly RoomStatus[] = ['lobby', 'reveal', 'playing', 'finished'];
-const TEAMS: readonly Team[] = ['village', 'werewolf'];
 
 function ensureSchema(sql: SqlStorage): void {
   sql.exec(`CREATE TABLE IF NOT EXISTS room (
@@ -68,6 +67,14 @@ function ensureSchema(sql: SqlStorage): void {
   )`);
   // The join PIN. A room saved before PINs has no row, and joins without one.
   sql.exec('CREATE TABLE IF NOT EXISTS room_pin (pin TEXT NOT NULL)');
+  // Player marks. A game saved before marks has no rows, so it loads with none.
+  sql.exec(`CREATE TABLE IF NOT EXISTS marks (
+    player_id TEXT NOT NULL,
+    mark TEXT NOT NULL,
+    phase_kind TEXT NOT NULL,
+    phase_number INTEGER NOT NULL,
+    PRIMARY KEY (player_id, mark)
+  )`);
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -104,7 +111,20 @@ function loadGame(sql: SqlStorage): GameState | null {
     const night = integer(note, 'night');
     notes[night] = { ...notes[night], [text(note, 'player_id')]: text(note, 'text') };
   }
-  return { phase: phase(row), deaths, notes };
+  const markRows = sql.exec('SELECT * FROM marks').toArray();
+  const marked = [...new Set(markRows.map((mark) => text(mark, 'player_id')))];
+  // fromEntries, as for rule edits.
+  const marks: Record<string, Record<string, Phase>> = Object.fromEntries(
+    marked.map((playerId) => [
+      playerId,
+      Object.fromEntries(
+        markRows
+          .filter((mark) => text(mark, 'player_id') === playerId)
+          .map((mark) => [text(mark, 'mark'), phase(mark)]),
+      ),
+    ]),
+  );
+  return { phase: phase(row), deaths, notes, marks };
 }
 
 function loadSetup(sql: SqlStorage): RoomSetup {
@@ -193,7 +213,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     game:
       loadGame(sql) ??
       (knownStatus === 'playing'
-        ? { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} }
+        ? { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {}, marks: {} }
         : null),
   };
 }
@@ -265,6 +285,7 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
     sql.exec('DELETE FROM game');
     sql.exec('DELETE FROM deaths');
     sql.exec('DELETE FROM notes');
+    sql.exec('DELETE FROM marks');
     const { game } = state;
     if (game) {
       sql.exec('INSERT INTO game VALUES (?, ?)', game.phase.kind, game.phase.number);
@@ -274,6 +295,17 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       for (const [night, byPlayer] of Object.entries(game.notes)) {
         for (const [playerId, note] of Object.entries(byPlayer)) {
           sql.exec('INSERT INTO notes VALUES (?, ?, ?)', Number(night), playerId, note);
+        }
+      }
+      for (const [playerId, own] of Object.entries(game.marks)) {
+        for (const [mark, marked] of Object.entries(own)) {
+          sql.exec(
+            'INSERT INTO marks VALUES (?, ?, ?, ?)',
+            playerId,
+            mark,
+            marked.kind,
+            marked.number,
+          );
         }
       }
     }

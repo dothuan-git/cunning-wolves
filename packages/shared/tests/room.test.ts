@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { cleanRule, gameRoles, ROLE_POOL, roomRoles, wakingOrder, type CustomRole } from '../src';
+import {
+  cleanRule,
+  gameRoles,
+  ROLE_POOL,
+  roomRoles,
+  wakesOnNight,
+  wakingOrder,
+  type CustomRole,
+} from '../src';
 
 const wolfHelper: CustomRole = {
   id: 'custom-0',
@@ -67,6 +75,21 @@ describe('wakingOrder', () => {
       'fox',
       'werewolf',
     ]);
+  });
+});
+
+describe('wakesOnNight', () => {
+  const nights = (role: Parameters<typeof wakesOnNight>[0]) =>
+    [1, 2, 3, 4].filter((night) => wakesOnNight(role, night));
+
+  it('follows the role: every night, Night 1 only, or even nights', () => {
+    expect(nights({ defaultWakeOrder: 50, wakeNights: 'every' })).toEqual([1, 2, 3, 4]);
+    expect(nights({ defaultWakeOrder: 10, wakeNights: 'first' })).toEqual([1]);
+    expect(nights({ defaultWakeOrder: 90, wakeNights: 'even' })).toEqual([2, 4]);
+  });
+
+  it('never wakes a role that never wakes', () => {
+    expect(nights({ defaultWakeOrder: null, wakeNights: 'every' })).toEqual([]);
   });
 });
 

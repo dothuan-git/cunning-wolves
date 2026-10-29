@@ -1,6 +1,8 @@
 import {
   gameJournal,
   gameRoles,
+  MARKS,
+  marksFor,
   ROLE_POOL,
   roomRoles,
   wakingOrder,
@@ -160,9 +162,14 @@ export function RoomScreen({ roomId }: { roomId: string }) {
   return <PlayerRoom view={view} error={error} reconnecting={status !== 'connected'} send={send} />;
 }
 
-const FIRST_NIGHT: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} };
+const FIRST_NIGHT: GameState = {
+  phase: { kind: 'night', number: 1 },
+  deaths: {},
+  notes: {},
+  marks: {},
+};
 
-/** The narrator page: the room keeps the deal, phases, deaths and notes. */
+/** The narrator page: the room keeps the deal, phases, deaths, notes and marks. */
 function NarratorRoom({
   view,
   reconnecting,
@@ -191,16 +198,25 @@ function NarratorRoom({
         .map(({ id, name }) => ({ id, name })),
     }));
   }, [setup, assignments, players]);
+  const markOptions = useMemo(() => {
+    const dealt = assignments.map(({ roleId }) => roleId);
+    return Object.fromEntries(
+      assignments.map(({ playerId, roleId }) => [playerId, marksFor(roleId, dealt)]),
+    );
+  }, [assignments]);
   return (
     <NarratorScreen
       groups={groups}
       phase={game.phase}
       notes={game.notes}
       deaths={game.deaths}
+      marks={game.marks}
+      markOptions={markOptions}
       settings={setup.settings}
       reconnecting={reconnecting}
       onPlayerNote={(night, playerId, text) => send({ type: 'setNote', night, playerId, text })}
       onTogglePlayer={(playerId) => send({ type: 'toggleDeath', playerId })}
+      onToggleMark={(playerId, mark) => send({ type: 'toggleMark', playerId, mark })}
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
       onSettings={(settings) => send({ type: 'setSettings', settings })}
@@ -234,7 +250,9 @@ function SummaryRoom({
   const revealed = players.flatMap((player) => {
     const roleId = assignments.find((assignment) => assignment.playerId === player.id)?.roleId;
     const role = roles.find((known) => known.id === roleId);
-    return role ? [{ id: player.id, name: player.name, role }] : [];
+    const own = Object.hasOwn(game.marks, player.id) ? game.marks[player.id] : undefined;
+    const marks = MARKS.filter((mark) => own !== undefined && Object.hasOwn(own, mark.id));
+    return role ? [{ id: player.id, name: player.name, role, marks }] : [];
   });
   return (
     <SummaryScreen

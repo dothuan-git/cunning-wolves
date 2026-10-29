@@ -78,7 +78,8 @@
   },
   "faction": {
     "village": "Phe Dân",
-    "werewolf": "Phe Sói"
+    "werewolf": "Phe Sói",
+    "solo": "Phe thứ ba"
   },
   "player": {
     "alive": "Còn sống",
@@ -90,7 +91,8 @@
     "note": "Ghi chú cho {{name}}",
     "notePlaceholder": "Thêm ghi chú…",
     "statusFor": "Trạng thái của {{name}}",
-    "nameYou": "{{name}} (bạn)"
+    "nameYou": "{{name}} (bạn)",
+    "marks": "Trạng thái của {{name}} ({{number}})"
   },
   "card": {
     "tapToEdit": "Chạm để sửa luật.",
@@ -208,7 +210,8 @@
     "tooMany_one": "Thừa {{count}} vai trò.",
     "tooMany_other": "Thừa {{count}} vai trò.",
     "wakes": "Thức dậy vào ban đêm",
-    "reconnecting": "Đang kết nối lại… chưa thể lưu thay đổi."
+    "reconnecting": "Đang kết nối lại… chưa thể lưu thay đổi.",
+    "addSolo": "Thêm vai phe thứ ba"
   },
   "rules": {
     "intro": "Mọi người cùng đọc luật. Vai của bạn được giữ bí mật đến khi bắt đầu.",
@@ -241,7 +244,10 @@
     "holdEndMorning": "Giữ để kết thúc sáng",
     "wakeTile": "{{role}}, thứ {{position}}/{{total}}",
     "wakeHint": "Kéo, hoặc dùng phím mũi tên, để đổi thứ tự.",
-    "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}"
+    "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}",
+    "marksTitle": "Trạng thái · {{name}}",
+    "markSince": "Từ {{phase}}",
+    "markHeldBy": "Đang ở {{name}}"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",
@@ -258,7 +264,8 @@
     "died": "{{name}} đã chết",
     "deadCount": "{{count}} đã chết",
     "diedIn": "Đã chết · {{phase}}",
-    "aliveOfTotal": "{{alive}}/{{total}} người chơi"
+    "aliveOfTotal": "{{alive}}/{{total}} người chơi",
+    "marked": "{{name}}: {{mark}}"
   },
   "components": {
     "primary": "Thao tác chính",

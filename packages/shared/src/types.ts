@@ -3,7 +3,13 @@ export type Locale = (typeof LOCALES)[number];
 
 export type LocalizedText = Record<Locale, string>;
 
-export type Team = 'village' | 'werewolf';
+/** `solo`: a role that wins on its own, against both the village and the wolves. */
+export const TEAMS = ['village', 'werewolf', 'solo'] as const;
+export type Team = (typeof TEAMS)[number];
+
+/** Which nights a waking role wakes: every night, Night 1 only, or Nights 2, 4, 6… */
+export const WAKE_NIGHTS = ['every', 'first', 'even'] as const;
+export type WakeNights = (typeof WAKE_NIGHTS)[number];
 
 /** `lobby` covers gathering players and choosing roles; they happen at the same time. */
 export type RoomStatus = 'lobby' | 'reveal' | 'playing' | 'finished';
@@ -17,6 +23,8 @@ export interface PoolRole {
   team: Team;
   /** null for roles that never wake at night */
   defaultWakeOrder: number | null;
+  /** Ignored for roles that never wake */
+  wakeNights: WakeNights;
   /** file name in apps/web/src/assets/cards/ */
   image: string;
 }
@@ -53,6 +61,8 @@ export interface GameState {
   deaths: Record<string, Phase>;
   /** Night number → player id → note */
   notes: Record<number, Record<string, string>>;
+  /** Player id → mark id (see MARKS) → the phase it was marked in */
+  marks: Record<string, Record<string, Phase>>;
 }
 
 export interface RoomSettings {

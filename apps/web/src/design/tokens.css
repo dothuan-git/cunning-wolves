@@ -16,6 +16,9 @@
   --color-village-wash: #dfe3ec;
   --color-werewolf: #8a1f24;
   --color-werewolf-wash: #efdcda;
+  /* Roles that win alone: weld ochre, the third hand-colour of old broadsides. */
+  --color-solo: #6f5310;
+  --color-solo-wash: #ece3cc;
   /* "You are here and connected": the live dot and the glow around your own tile. */
   --color-live: #2a8f55;
   --color-danger: #a3321f;

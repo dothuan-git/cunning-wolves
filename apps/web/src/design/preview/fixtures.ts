@@ -1,4 +1,4 @@
-import type { PoolRole } from '@werewolf/shared';
+import { MARKS, type PoolRole } from '@werewolf/shared';
 import type { RevealedPlayerItem, RoleGroupItem } from '../../screens/types';
 
 const exampleRule = {
@@ -11,6 +11,7 @@ export const seer: PoolRole = {
   name: { vi: 'Tiên tri', en: 'Seer' },
   team: 'village',
   defaultWakeOrder: 10,
+  wakeNights: 'every',
   rule: {
     vi: 'Mỗi đêm, chọn một người để biết họ có phải là Sói hay không.',
     en: 'Each night, choose one player to learn whether they are a Wolf.',
@@ -23,6 +24,7 @@ export const wolf: PoolRole = {
   rule: exampleRule,
   team: 'werewolf',
   defaultWakeOrder: 20,
+  wakeNights: 'every',
   image: 'werewolf.webp',
 };
 export const witch: PoolRole = {
@@ -31,6 +33,7 @@ export const witch: PoolRole = {
   rule: exampleRule,
   team: 'village',
   defaultWakeOrder: 30,
+  wakeNights: 'every',
   image: 'witch.webp',
 };
 export const villager: PoolRole = {
@@ -39,6 +42,7 @@ export const villager: PoolRole = {
   rule: exampleRule,
   team: 'village',
   defaultWakeOrder: null,
+  wakeNights: 'every',
   image: 'villager.webp',
 };
 
@@ -52,6 +56,7 @@ export const manyRoles: readonly PoolRole[] = [
     rule: exampleRule,
     team: 'village',
     defaultWakeOrder: 40,
+    wakeNights: 'every',
     image: 'hunter.webp',
   },
   {
@@ -60,6 +65,7 @@ export const manyRoles: readonly PoolRole[] = [
     rule: exampleRule,
     team: 'village',
     defaultWakeOrder: 5,
+    wakeNights: 'every',
     image: 'cupid.webp',
   },
   {
@@ -68,6 +74,7 @@ export const manyRoles: readonly PoolRole[] = [
     rule: exampleRule,
     team: 'village',
     defaultWakeOrder: 8,
+    wakeNights: 'every',
     image: 'guard.webp',
   },
   {
@@ -76,6 +83,7 @@ export const manyRoles: readonly PoolRole[] = [
     rule: exampleRule,
     team: 'werewolf',
     defaultWakeOrder: 22,
+    wakeNights: 'every',
     image: 'alpha.webp',
   },
   {
@@ -84,20 +92,30 @@ export const manyRoles: readonly PoolRole[] = [
     rule: exampleRule,
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'fool.webp',
   },
 ];
 
 // Synthetic design fixtures only. The production ROLE_POOL remains untouched.
 export const exampleRoles = [seer, wolf, witch, villager];
+const marks = (...ids: string[]) => MARKS.filter((mark) => ids.includes(mark.id));
 export const examplePlayers: readonly RevealedPlayerItem[] = [
-  { id: 'linh', name: 'Linh', role: seer },
-  { id: 'minh', name: 'Minh', role: wolf },
-  { id: 'an', name: 'An', role: wolf },
-  { id: 'ha', name: 'Hà', role: witch },
-  { id: 'huy', name: 'Huy', role: villager },
-  { id: 'mai', name: 'Mai', role: villager },
+  { id: 'linh', name: 'Linh', role: seer, marks: marks('sheriff') },
+  { id: 'minh', name: 'Minh', role: wolf, marks: [] },
+  { id: 'an', name: 'An', role: wolf, marks: [] },
+  { id: 'ha', name: 'Hà', role: witch, marks: marks('heal-used') },
+  { id: 'huy', name: 'Huy', role: villager, marks: [] },
+  { id: 'mai', name: 'Mai', role: villager, marks: [] },
 ];
+/** Example marks while playing: Linh was made sheriff, and Hà has used her heal. */
+export const exampleMarks: Record<
+  string,
+  Record<string, { kind: 'night' | 'morning'; number: number }>
+> = {
+  linh: { sheriff: { kind: 'morning', number: 1 } },
+  ha: { 'heal-used': { kind: 'night', number: 1 } },
+};
 // Every role, so players whose role never wakes can still be marked dead.
 export const exampleGroups: readonly RoleGroupItem[] = exampleRoles.map((role) => ({
   role,

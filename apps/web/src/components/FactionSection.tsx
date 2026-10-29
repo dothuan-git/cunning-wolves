@@ -1,6 +1,7 @@
 import type { Team } from '@werewolf/shared';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FACTION_TEXT, FACTION_WASH } from '../design/faction';
 import { FactionEmblem } from './FactionEmblem';
 
 /**
@@ -21,12 +22,12 @@ export function FactionSection({
   return (
     <section
       aria-labelledby={`faction-${team}`}
-      className={`grid gap-3 rounded-card p-3 ${team === 'werewolf' ? 'bg-werewolf-wash' : 'bg-village-wash'}`}
+      className={`grid gap-3 rounded-card p-3 ${FACTION_WASH[team]}`}
     >
       <div className="flex items-center justify-between gap-3">
         <h2
           id={`faction-${team}`}
-          className={`flex min-w-0 items-center gap-2 font-display text-role font-semibold ${team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+          className={`flex min-w-0 items-center gap-2 font-display text-role font-semibold ${FACTION_TEXT[team]}`}
         >
           <FactionEmblem team={team} className="size-8" />
           {t(`faction.${team}`)}
