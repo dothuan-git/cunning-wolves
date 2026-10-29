@@ -182,6 +182,19 @@ test('tapping an earlier note edits it without changing the player status', asyn
   await expect(page.getByRole('status')).toHaveText('6 players alive');
 });
 
+test('tapping a role name on the narrator page opens its detailed card', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  const dialog = page.getByRole('dialog', { name: 'Seer', exact: true });
+  await page
+    .getByRole('heading', { name: 'Seer', exact: true })
+    .getByRole('button', { name: 'Seer', exact: true })
+    .click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Each night, choose one player', { exact: false })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+});
+
 test('the card shows its back, flips on a tap, and removes the role when hidden', async ({
   page,
 }) => {
