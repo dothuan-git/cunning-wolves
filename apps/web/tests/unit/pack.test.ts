@@ -31,7 +31,7 @@ describe('packExtras', () => {
     const extras = packExtras(groups, {
       h: { 'chose-wolves': NIGHT_1 },
       c: { cursed: NIGHT_1 },
-      v: { sheriff: NIGHT_1 },
+      v: { lover: NIGHT_1 },
     });
     expect(extras.map(({ player, role: own }) => [player.id, own.id])).toEqual([
       ['ww', 'white-werewolf'],

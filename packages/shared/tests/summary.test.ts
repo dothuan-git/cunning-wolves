@@ -76,7 +76,7 @@ describe('gameJournal', () => {
       deaths: {},
       notes: {},
       marks: {
-        b: { 'heal-used': { kind: 'night', number: 2 }, sheriff: { kind: 'morning', number: 1 } },
+        b: { 'heal-used': { kind: 'night', number: 2 }, lover: { kind: 'morning', number: 1 } },
         a: { 'kill-used': { kind: 'night', number: 2 } },
       },
       newRoles: {},
@@ -86,7 +86,7 @@ describe('gameJournal', () => {
         phase: { kind: 'morning', number: 1 },
         notes: [],
         deaths: [],
-        marks: [{ id: 'b', name: 'Lan', mark: 'sheriff' }],
+        marks: [{ id: 'b', name: 'Lan', mark: 'lover' }],
         newRoles: [],
       },
       {

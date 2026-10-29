@@ -371,15 +371,15 @@ describe('Room', () => {
     const lan = await join(roomId, TOKENS.lan, 'Lan');
     const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
     const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
-    master.send({ type: 'addPick', roleId: 'seer' });
+    master.send({ type: 'addPick', roleId: 'cupid' });
     master.send({ type: 'addPick', roleId: 'werewolf' });
     master.send({ type: 'review' });
     master.send({ type: 'startGame' });
     master.send({ type: 'toggleDeath', playerId: lanId });
     master.send({ type: 'setNote', night: 1, playerId: minhId, text: 'Secret note' });
-    master.send({ type: 'toggleMark', playerId: minhId, mark: 'sheriff' });
+    master.send({ type: 'toggleMark', playerId: minhId, mark: 'lover' });
     master.send({ type: 'endPhase', phase: { kind: 'night', number: 1 } });
-    master.send({ type: 'setWakeOrder', order: ['werewolf', 'seer'] });
+    master.send({ type: 'setWakeOrder', order: ['werewolf', 'cupid'] });
     await master.next(masterView((view) => view.setup.wakeOrder[0] === 'werewolf'));
 
     const again = await enter(roomId, TOKENS.master);
@@ -388,13 +388,13 @@ describe('Room', () => {
       phase: { kind: 'morning', number: 1 },
       deaths: { [lanId]: { kind: 'night', number: 1 } },
       notes: { 1: { [minhId]: 'Secret note' } },
-      marks: { [minhId]: { sheriff: { kind: 'night', number: 1 } } },
+      marks: { [minhId]: { lover: { kind: 'night', number: 1 } } },
       newRoles: {},
     });
     for (const text of [...minh.received, ...lan.received]) {
       expect(text).not.toContain('Secret note');
       expect(text).not.toContain('"game"');
-      expect(text).not.toContain('sheriff');
+      expect(text).not.toContain('"lover"');
     }
   });
 
@@ -428,7 +428,7 @@ describe('Room', () => {
         phase: { kind: 'morning', number: 2 },
         deaths: Object.fromEntries([['__proto__', death]]),
         notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
-        marks: Object.fromEntries([['__proto__', { sheriff: death, 'heal-used': death }]]),
+        marks: Object.fromEntries([['__proto__', { lover: death, 'heal-used': death }]]),
         newRoles: Object.fromEntries([['__proto__', { role: 'seer', phase: death }]]),
       };
       saveRoom(state.storage, { ...older, game });
@@ -437,7 +437,7 @@ describe('Room', () => {
       expect(Object.keys(loaded?.notes[1] ?? {})).toEqual(['__proto__']);
       const marks = Object.entries(loaded?.marks ?? {});
       expect(marks.map(([id, own]) => [id, Object.keys(own).sort()])).toEqual([
-        ['__proto__', ['heal-used', 'sheriff']],
+        ['__proto__', ['heal-used', 'lover']],
       ]);
       expect(Object.entries(loaded?.newRoles ?? {})).toEqual([
         ['__proto__', { role: 'seer', phase: death }],
@@ -655,7 +655,7 @@ describe('parseClientMessage', () => {
     [{ type: 'handOver', playerId: 'abc' }],
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
-    [{ type: 'toggleMark', playerId: 'abc', mark: 'sheriff' }],
+    [{ type: 'toggleMark', playerId: 'abc', mark: 'lover' }],
     [{ type: 'setRole', playerId: 'abc', roleId: 'seer' }],
     [{ type: 'setRole', playerId: 'abc', roleId: null }],
     [

@@ -141,12 +141,12 @@ test('the marks sheet switches marks, moves a single mark, and leaves the status
   await expect(sheet.getByRole('checkbox', { name: /Heal used/ })).toBeChecked();
   await expect(sheet).toContainText('Now with Linh');
   await sheet.getByRole('checkbox', { name: /Kill used/ }).check();
-  await sheet.getByRole('checkbox', { name: /Sheriff/ }).check();
+  await sheet.getByRole('checkbox', { name: /Blessed/ }).check();
   await closeSheet(page);
   await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();
   // Only the witch's holder is offered her potions.
   await page.getByRole('button', { name: 'Marks for Minh (0)', exact: true }).click();
-  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(2);
+  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(1);
   await closeSheet(page);
   await expect(page.getByRole('status')).toHaveText('6 players alive');
 });
@@ -265,7 +265,7 @@ test('the wake order title keeps a gap above its tiles', async ({ page }) => {
   await page.getByRole('button', { name: 'Menu', exact: true }).click();
   await settle(page);
   const title = await page.getByRole('heading', { name: 'Wake order', level: 3 }).boundingBox();
-  const tile = await page.getByRole('button', { name: 'Seer, 1 of 3', exact: true }).boundingBox();
+  const tile = await page.getByRole('button', { name: 'Seer, 1 of 4', exact: true }).boundingBox();
   if (!title || !tile) throw new Error('wake order is not rendered');
   expect(tile.y - (title.y + title.height)).toBeGreaterThanOrEqual(16);
 });
@@ -453,8 +453,8 @@ test('narrator tools can reorder roles without mixing their player notes', async
   const menu = page.getByRole('button', { name: 'Menu', exact: true });
   await menu.click();
   await settle(page);
-  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 3', exact: true });
-  const seer = page.getByRole('button', { name: 'Seer, 1 of 3', exact: true });
+  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 4', exact: true });
+  const seer = page.getByRole('button', { name: 'Seer, 1 of 4', exact: true });
   const from = await wolf.boundingBox();
   const to = await seer.boundingBox();
   if (!from || !to) throw new Error('wake tiles are not rendered');
@@ -462,7 +462,7 @@ test('narrator tools can reorder roles without mixing their player notes', async
   await page.mouse.down();
   await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 8 });
   await page.mouse.up();
-  await expect(page.getByRole('button', { name: 'Wolf, 1 of 3', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Wolf, 1 of 4', exact: true })).toBeVisible();
   await closeSheet(page);
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(menu).toBeFocused();
@@ -475,19 +475,19 @@ test('narrator tools can reorder roles without mixing their player notes', async
 test('wake order tiles sit four to a row and move with the arrow keys', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: 'Menu', exact: true }).click();
-  const seer = page.getByRole('button', { name: 'Seer, 1 of 3', exact: true });
-  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 3', exact: true });
+  const seer = page.getByRole('button', { name: 'Seer, 1 of 4', exact: true });
+  const wolf = page.getByRole('button', { name: 'Wolf, 2 of 4', exact: true });
   const [seerBox, wolfBox] = await Promise.all([seer.boundingBox(), wolf.boundingBox()]);
   if (!seerBox || !wolfBox) throw new Error('wake tiles are not rendered');
   expect(Math.round(wolfBox.y)).toBe(Math.round(seerBox.y));
   expect(wolfBox.x).toBeGreaterThan(seerBox.x);
   await seer.focus();
   await page.keyboard.press('ArrowRight');
-  const moved = page.getByRole('button', { name: 'Seer, 2 of 3', exact: true });
+  const moved = page.getByRole('button', { name: 'Seer, 2 of 4', exact: true });
   await expect(moved).toBeFocused();
-  await expect(page.getByText('Seer is now 2 of 3', { exact: true })).toBeAttached();
+  await expect(page.getByText('Seer is now 2 of 4', { exact: true })).toBeAttached();
   await page.keyboard.press('ArrowLeft');
-  await expect(page.getByRole('button', { name: 'Seer, 1 of 3', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Seer, 1 of 4', exact: true })).toBeFocused();
 });
 
 test('removed players see a clear return action', async ({ page }) => {
@@ -1023,7 +1023,7 @@ test('the role carousel loops without end and wraps back to the middle when it r
     })
     .toBe(true);
   // Only one set of cards is exposed to the keyboard and screen readers.
-  await expect(page.getByRole('button', { name: /^Look closer at/ })).toHaveCount(4);
+  await expect(page.getByRole('button', { name: /^Look closer at/ })).toHaveCount(5);
   // Swiping the other way loops too.
   await deck.evaluate((el) => {
     el.scrollLeft -= el.scrollWidth / 5 + 40;
@@ -1099,7 +1099,7 @@ test('tonight’s roles lists the cards three to a row, one block per faction', 
   expect(tops[3]).toBeGreaterThan(tops[0] ?? 0);
   // Each card says how many of it are in the game.
   await expect(
-    page.getByRole('button', { name: 'Look closer at Villager, 2 in this game', exact: true }),
+    page.getByRole('button', { name: 'Look closer at Wolf, 2 in this game', exact: true }),
   ).toBeVisible();
 });
 
