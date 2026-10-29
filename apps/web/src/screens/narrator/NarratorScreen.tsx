@@ -21,6 +21,8 @@ import { ScreenLayout } from '../../components/ScreenLayout';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { NoteField, TextField } from '../../components/TextField';
 import { FACTION_TEXT, FACTION_WASH } from '../../design/faction';
+import { useFlip } from '../../design/useFlip';
+import { useLeaving } from '../../design/useLeaving';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
 import type { GroupPlayerItem, Phase, RoleChoices, RoleGroupItem } from '../types';
@@ -28,6 +30,9 @@ import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
 import { MarksButton, MarksSheet } from './PlayerMarks';
 import { playerTimeline } from './phase';
+
+// As long as the `row-out` animation in index.css.
+const ROW_LEAVE_MS = 160;
 
 export function NarratorScreen({
   groups,
@@ -171,6 +176,23 @@ export function NarratorScreen({
       ? undefined
       : groups.find((group) => group.players.some((player) => player.id === marking));
   const markingDealt = markingGroup?.players.find((player) => player.id === marking)?.dealt;
+  // A death just undone keeps its row a moment, so it slides out instead of vanishing.
+  const shownDeaths = useLeaving(
+    Object.entries(deaths).map(([id, at]) => ({ id, at })),
+    (death) => death.id,
+    ROW_LEAVE_MS,
+  );
+  // Panels slide to their new places when the wake order or a player's role changes.
+  const panels = useRef<HTMLDivElement>(null);
+  useFlip(
+    panels,
+    [
+      ...[...tonightGroups, ...restingGroups].map(
+        (group) => `${group.role.id}:${group.players.map((player) => player.id).join(',')}`,
+      ),
+      `pack:${pack.map(({ player }) => player.id).join(',')}`,
+    ].join('|'),
+  );
 
   function phaseLabel(value: Phase) {
     return t(value.kind === 'night' ? 'common.night' : 'common.morning', { number: value.number });
@@ -193,10 +215,14 @@ export function NarratorScreen({
       current: phase,
       editingNight: editing?.playerId === player.id ? editing.night : undefined,
     });
+    const undone = dead
+      ? undefined
+      : shownDeaths.find((shown) => shown.leaving && shown.key === player.id)?.item.at;
+    if (undone) entries.push({ type: 'death', phase: undone });
     // Phase labels stay small and grey so the player's name leads the row.
     const labelClass = 'min-w-11 shrink-0 text-caption whitespace-nowrap text-muted';
     return (
-      <li key={player.id} className="px-3.5 pb-1.5">
+      <li key={player.id} data-flip={`player:${player.id}`} className="px-3.5 pb-1.5">
         <div className="flex min-h-12 items-center justify-between gap-2">
           <PlayerChip
             name={player.name}
@@ -225,11 +251,7 @@ export function NarratorScreen({
             />
           </div>
         </div>
-        {carried.length > 0 && (
-          <div className="pb-1.5">
-            <MarkChips labels={carried.map((mark) => mark.label[locale])} />
-          </div>
-        )}
+        <MarkChips marks={carried} fold className="pb-1.5" />
         {entries.length > 0 && (
           // The top padding keeps the first note's overlap off the status pill above it.
           <ol aria-label={t('narrator.history', { name: player.name })} className="pt-1">
@@ -238,7 +260,8 @@ export function NarratorScreen({
                 return (
                   <li
                     key="death"
-                    className="name-pop flex min-h-8 items-center gap-3 text-body text-muted"
+                    aria-hidden={!dead || undefined}
+                    className={`${dead ? 'name-pop' : 'row-out'} flex min-h-8 items-center gap-3 text-body text-muted`}
                   >
                     <span className={labelClass}>{phaseLabel(entry.phase)}</span>
                     <span className="inline-flex items-center gap-1.5">
@@ -354,7 +377,7 @@ export function NarratorScreen({
       footer={
         <>
           {reconnecting && (
-            <p role="status" className="text-center text-caption text-muted">
+            <p role="status" className="name-pop text-center text-caption text-muted">
               {t('setup.reconnecting')}
             </p>
           )}
@@ -398,7 +421,7 @@ export function NarratorScreen({
           {t('narrator.alive', { count: alive })}
         </p>
       </section>
-      <div className="grid min-w-0 gap-2.5">
+      <div ref={panels} className="grid min-w-0 gap-2.5">
         {[...tonightGroups, ...restingGroups].map((group) => {
           // A role whose players are all dead goes grey: band, name and art.
           const out = group.players.length > 0 && group.players.every((p) => p.id in deaths);
@@ -406,6 +429,7 @@ export function NarratorScreen({
           return (
             <section
               key={group.role.id}
+              data-flip={`role:${group.role.id}`}
               className="panel min-w-0 overflow-hidden"
               aria-label={group.role.name[locale]}
             >
@@ -421,6 +445,7 @@ export function NarratorScreen({
               {group === packGroup && pack.length > 0 && (
                 <section
                   aria-label={t('narrator.packExtras')}
+                  data-flip="pack"
                   className="border-t border-line px-3.5 py-2"
                 >
                   <h4 className="text-caption text-muted">{t('narrator.packExtras')}</h4>
@@ -428,6 +453,7 @@ export function NarratorScreen({
                     {pack.map(({ player, role }) => (
                       <li
                         key={player.id}
+                        data-flip={`pack:${player.id}`}
                         className="flex min-h-10 flex-wrap items-baseline gap-x-2 py-1"
                       >
                         <PlayerChip name={player.name} dead={player.id in deaths} large />

@@ -144,6 +144,21 @@ test('the marks sheet switches marks, moves a single mark, and leaves the status
   await sheet.getByRole('checkbox', { name: /Blessed/ }).check();
   await closeSheet(page);
   await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();
+  // Each chip wears its mark's ink, and an unticked mark's chip leaves.
+  const chip = (label: string) =>
+    page.getByRole('listitem').filter({ hasText: new RegExp(`^${label}$`) });
+  await expect(chip('Heal used')).toHaveClass(/bg-mark-moss-wash/);
+  await expect(chip('Kill used')).toHaveClass(/bg-mark-rose-wash/);
+  await page.getByRole('button', { name: 'Marks for Hà (3)', exact: true }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('checkbox', { name: /Kill used/ })
+    .uncheck();
+  await closeSheet(page);
+  await expect(chip('Kill used')).toHaveCount(0);
+  // It leaves the page too, once it has shrunk away.
+  await expect(page.getByText('Kill used', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Marks for Hà (2)', exact: true })).toBeVisible();
   // Only the witch's holder is offered her potions.
   await page.getByRole('button', { name: 'Marks for Minh (0)', exact: true }).click();
   await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(1);
