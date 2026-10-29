@@ -1,11 +1,15 @@
-import { CLOSE_REPLACED, CLOSE_ROOM_GONE, PING, PONG } from '@werewolf/shared';
+import { CLOSE_REPLACED, CLOSE_ROOM_DELETED, CLOSE_ROOM_GONE, PING, PONG } from '@werewolf/shared';
 import { reconnectDelay } from './backoff';
 
 const PING_INTERVAL_MS = 25_000;
 const PONG_TIMEOUT_MS = 10_000;
 
-/** `replaced`: the same phone connected elsewhere; `gone`: the room doesn't exist (any more). */
-export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'replaced' | 'gone';
+/**
+ * `replaced`: the same phone connected elsewhere; `gone`: the room doesn't exist (any more);
+ * `deleted`: the narrator deleted it.
+ */
+export type ConnectionStatus =
+  'connecting' | 'connected' | 'reconnecting' | 'replaced' | 'gone' | 'deleted';
 
 export interface SocketHandlers {
   open: () => void;
@@ -104,7 +108,7 @@ export class ReconnectingSocket {
    * Reconnects now if waiting, or checks that a connected socket is still alive.
    */
   wake(): void {
-    if (this.stopped || this.status === 'replaced' || this.status === 'gone') return;
+    if (this.stopped || this.isFinal()) return;
     if (this.reconnectTimer !== null) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -113,6 +117,11 @@ export class ReconnectingSocket {
     } else if (this.status === 'connected') {
       this.ping();
     }
+  }
+
+  /** The server closed this socket for good; nothing reconnects it. */
+  private isFinal(): boolean {
+    return this.status === 'replaced' || this.status === 'gone' || this.status === 'deleted';
   }
 
   private connect(): void {
@@ -136,6 +145,7 @@ export class ReconnectingSocket {
         this.clearTimers();
         if (code === CLOSE_REPLACED) this.setStatus('replaced');
         else if (code === CLOSE_ROOM_GONE) this.setStatus('gone');
+        else if (code === CLOSE_ROOM_DELETED) this.setStatus('deleted');
         else this.scheduleReconnect();
       },
     };

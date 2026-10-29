@@ -12,7 +12,7 @@ import { PlayerLobbyScreen } from '../../screens/player-lobby/PlayerLobbyScreen'
 import { RulesReviewScreen } from '../../screens/rules-review/RulesReviewScreen';
 import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
-import type { Phase, PlayerListItem } from '../../screens/types';
+import type { Phase, SeatedPlayerItem } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
 import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
@@ -117,6 +117,7 @@ function PreviewScene({
                   },
                 ]
           }
+          mine={new Set(['inn'])}
           status={listState === 'loading' ? 'loading' : listState === 'error' ? 'error' : 'ready'}
           onCreate={() => {
             onNavigate('name-entry');
@@ -163,7 +164,18 @@ function PreviewScene({
         <PreviewSetup
           key={state}
           roomName={roomName}
-          initialPlayers={state === 'empty' ? [] : players.map(({ id, name }) => ({ id, name }))}
+          // One player offline, so the sheet shows who can't be made narrator.
+          initialPlayers={
+            state === 'empty'
+              ? []
+              : players.map(({ id, name }, index) => ({ id, name, connected: index !== 2 }))
+          }
+          onHandOver={() => {
+            onNavigate('player-lobby');
+          }}
+          onDelete={() => {
+            onNavigate('home');
+          }}
           initialRoles={manyRoles}
           initialPicks={
             state === 'empty' ? [] : ['seer', 'werewolf', 'werewolf', 'witch', 'villager']
@@ -263,6 +275,9 @@ function PreviewScene({
           onFinish={() => {
             onNavigate('summary');
           }}
+          onDelete={() => {
+            onNavigate('home');
+          }}
         />
       );
     case 'summary':
@@ -271,6 +286,9 @@ function PreviewScene({
           roomName={roomName}
           initialTab={state === 'notes' || state === 'empty' ? 'notes' : 'roles'}
           onHome={() => {
+            onNavigate('home');
+          }}
+          onDelete={() => {
             onNavigate('home');
           }}
           players={players}
@@ -461,12 +479,16 @@ function PreviewSetup({
   initialRoles,
   initialPicks,
   onReady,
+  onHandOver,
+  onDelete,
 }: {
   roomName: string;
-  initialPlayers: readonly PlayerListItem[];
+  initialPlayers: readonly SeatedPlayerItem[];
   initialRoles: readonly PoolRole[];
   initialPicks: readonly string[];
   onReady: (wakeOrder: string[]) => void;
+  onHandOver: () => void;
+  onDelete: () => void;
 }) {
   const [players, setPlayers] = useState(initialPlayers);
   const [open, setOpen] = useState(true);
@@ -477,6 +499,7 @@ function PreviewSetup({
   return (
     <SetupScreen
       roomName={roomName}
+      pin="4821"
       players={players}
       open={open}
       onToggleOpen={() => {
@@ -485,6 +508,8 @@ function PreviewSetup({
       onRemove={(id) => {
         setPlayers((current) => current.filter((player) => player.id !== id));
       }}
+      onHandOver={onHandOver}
+      onDelete={onDelete}
       roles={roles}
       picks={picks}
       wakeOrder={wakeOrder}

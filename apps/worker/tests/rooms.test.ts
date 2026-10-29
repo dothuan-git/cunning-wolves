@@ -1,5 +1,6 @@
 import {
   CLOSE_REPLACED,
+  CLOSE_ROOM_DELETED,
   CLOSE_ROOM_GONE,
   type CreateRoomResponse,
   type GameState,
@@ -16,9 +17,9 @@ import { describe, expect, it } from 'vitest';
 import { LOBBY_NAME } from '../src/lobby/Lobby';
 import { deviceIdFromToken } from '../src/room/deviceId';
 import { parseClientMessage } from '../src/room/messages';
-import { ROOM_EXPIRY_MS } from '../src/room/Room';
+import { PIN_TRIES_MAX, ROOM_EXPIRY_MS } from '../src/room/Room';
 import { loadRoom, saveRoom } from '../src/room/storage';
-import { createRoom, openSocket, TOKENS, type TestSocket } from './sockets';
+import { createRoom, openSocket, PIN, TOKENS, type TestSocket } from './sockets';
 
 function isServerMessage(message: unknown): message is ServerMessage {
   return typeof message === 'object' && message !== null && 'type' in message;
@@ -70,7 +71,7 @@ async function enter(roomId: string, token: string): Promise<TestSocket> {
 async function join(roomId: string, token: string, name: string): Promise<TestSocket> {
   const socket = await enter(roomId, token);
   await socket.next(playerView((view) => view.seat === 'none'));
-  socket.send({ type: 'join', name });
+  socket.send({ type: 'join', name, pin: PIN });
   await socket.next(playerView((view) => view.seat === 'joined'));
   return socket;
 }
@@ -96,10 +97,21 @@ describe('routes', () => {
 
   it.each([
     ['not JSON', 'nope'],
-    ['a bad token', { token: 'abc', name: 'Thuận', roomName: 'The mill' }],
-    ['an empty name', { token: TOKENS.master, name: '  ', roomName: 'The mill' }],
-    ['a long room name', { token: TOKENS.master, name: 'Thuận', roomName: 'x'.repeat(33) }],
-    ['an invisible name', { token: TOKENS.master, name: '​', roomName: 'The mill' }],
+    ['a bad token', { token: 'abc', name: 'Thuận', roomName: 'The mill', pin: PIN }],
+    ['an empty name', { token: TOKENS.master, name: '  ', roomName: 'The mill', pin: PIN }],
+    [
+      'a long room name',
+      { token: TOKENS.master, name: 'Thuận', roomName: 'x'.repeat(33), pin: PIN },
+    ],
+    ['an invisible name', { token: TOKENS.master, name: '​', roomName: 'The mill', pin: PIN }],
+    ['no PIN', { token: TOKENS.master, name: 'Thuận', roomName: 'The mill' }],
+    ['a 3-digit PIN', { token: TOKENS.master, name: 'Thuận', roomName: 'The mill', pin: '123' }],
+    ['a 5-digit PIN', { token: TOKENS.master, name: 'Thuận', roomName: 'The mill', pin: '12345' }],
+    [
+      'a PIN with letters',
+      { token: TOKENS.master, name: 'Thuận', roomName: 'The mill', pin: '12a4' },
+    ],
+    ['a PIN as a number', { token: TOKENS.master, name: 'Thuận', roomName: 'The mill', pin: 1234 }],
   ])('refuses to create a room with %s', async (_label, body) => {
     expect((await createRoom(body)).status).toBe(400);
   });
@@ -133,6 +145,7 @@ describe('Room', () => {
         wakeOrder: [],
         settings: { timerSeconds: 120, soundOn: false },
       },
+      pin: PIN,
       assignments: [],
       game: null,
     });
@@ -180,7 +193,7 @@ describe('Room', () => {
     await join(roomId, TOKENS.minh, 'Đức');
     const lan = await enter(roomId, TOKENS.lan);
     await lan.next(playerView());
-    lan.send({ type: 'join', name: 'duc' });
+    lan.send({ type: 'join', name: 'duc', pin: PIN });
     await lan.next(error('name-taken'));
   });
 
@@ -205,12 +218,12 @@ describe('Room', () => {
     master.send({ type: 'setOpen', open: false });
     await minh.next(playerView((view) => !view.room.open));
 
-    minh.send({ type: 'join', name: 'Minh' });
+    minh.send({ type: 'join', name: 'Minh', pin: PIN });
     await minh.next(error('room-closed'));
 
     master.send({ type: 'setOpen', open: true });
     await minh.next(playerView((view) => view.room.open));
-    minh.send({ type: 'join', name: 'Minh' });
+    minh.send({ type: 'join', name: 'Minh', pin: PIN });
     await minh.next(playerView((view) => view.seat === 'joined'));
     await master.next(masterView((view) => view.players.length === 1));
   });
@@ -298,6 +311,8 @@ describe('Room', () => {
       });
       expect(loaded?.assignments).toEqual({});
       expect(loaded?.game).toBeNull();
+      // Saved before PINs: anyone can join it.
+      expect(loaded?.pin).toBeNull();
     });
   });
 
@@ -421,7 +436,7 @@ describe('Room', () => {
   it('closes a socket that acts before saying hello', async () => {
     const roomId = await newRoom();
     const socket = await openSocket(`/api/rooms/${roomId}/ws`);
-    socket.send({ type: 'join', name: 'Minh' });
+    socket.send({ type: 'join', name: 'Minh', pin: PIN });
     await socket.next(error('bad-message'));
     expect((await socket.closed).code).toBe(1008);
   });
@@ -443,6 +458,103 @@ describe('Room', () => {
       for (const token of Object.values(TOKENS)) expect(text).not.toContain(token);
     }
     for (const text of minh.received) expect(text).not.toContain(masterId);
+  });
+});
+
+describe('join PIN', () => {
+  it('refuses a wrong PIN and seats the right one', async () => {
+    const roomId = await newRoom();
+    const minh = await enter(roomId, TOKENS.minh);
+    await minh.next(playerView((view) => view.seat === 'none'));
+    minh.send({ type: 'join', name: 'Minh', pin: '0000' });
+    await minh.next(error('pin-wrong'));
+    minh.send({ type: 'join', name: 'Minh', pin: PIN });
+    await minh.next(playerView((view) => view.seat === 'joined'));
+  });
+
+  it('locks joining after too many wrong PINs, even with the right one', async () => {
+    const roomId = await newRoom();
+    const guesser = await enter(roomId, TOKENS.lan);
+    await guesser.next(playerView());
+    for (let attempt = 0; attempt < PIN_TRIES_MAX; attempt += 1) {
+      guesser.send({ type: 'join', name: 'Lan', pin: String(attempt).padStart(4, '0') });
+      await guesser.next(error('pin-wrong'));
+    }
+    const minh = await enter(roomId, TOKENS.minh);
+    await minh.next(playerView());
+    minh.send({ type: 'join', name: 'Minh', pin: PIN });
+    await minh.next(error('pin-locked'));
+  });
+
+  it('keeps the lockout in storage, so a room that sleeps still remembers it', async () => {
+    const roomId = await newRoom();
+    const guesser = await enter(roomId, TOKENS.lan);
+    await guesser.next(playerView());
+    for (let attempt = 0; attempt < PIN_TRIES_MAX; attempt += 1) {
+      guesser.send({ type: 'join', name: 'Lan', pin: String(attempt).padStart(4, '0') });
+      await guesser.next(error('pin-wrong'));
+    }
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      const saved = state.storage.kv.get('pinGuard');
+      expect(saved).toMatchObject({ wrong: [] });
+      expect((saved as { lockedUntil: number }).lockedUntil).toBeGreaterThan(Date.now());
+    });
+  });
+});
+
+describe('hand over', () => {
+  it('swaps the narrator and the player, and shows the new narrator on the list', async () => {
+    const lobby = await openSocket('/api/lobby/ws');
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    await master.next(masterView((view) => view.players.length === 1));
+    master.send({ type: 'addPick', roleId: 'seer' });
+    await master.next(masterView((view) => view.setup.picks.length === 1));
+
+    master.send({ type: 'handOver', playerId: await deviceIdFromToken(TOKENS.minh, roomId) });
+    const { view: now } = await minh.next(masterView());
+    expect(now.setup.picks).toEqual(['seer']);
+    expect(now.pin).toBe(PIN);
+    expect(now.players.map((player) => player.name)).toEqual(['Thuận']);
+    const { view: old } = await master.next(playerView((view) => view.seat === 'joined'));
+    expect(old).not.toHaveProperty('setup');
+    expect(old).not.toHaveProperty('pin');
+    const row = (message: LobbyMessage) => message.rooms.find((room) => room.id === roomId);
+    await lobby.next(lobbyWhere((message) => row(message)?.master === 'Minh'));
+  });
+
+  it('refuses a player who is offline', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    minh.ws.close(1000, 'bye');
+    await master.next(masterView((view) => view.players[0]?.connected === false));
+    master.send({ type: 'handOver', playerId: await deviceIdFromToken(TOKENS.minh, roomId) });
+    await master.next(error('player-offline'));
+  });
+});
+
+describe('delete', () => {
+  it('closes every socket, drops the room from the list and forgets it', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    await master.next(masterView((view) => view.players.length === 1));
+    master.send({ type: 'deleteRoom' });
+    expect((await master.closed).code).toBe(CLOSE_ROOM_DELETED);
+    expect((await minh.closed).code).toBe(CLOSE_ROOM_DELETED);
+    const rooms = await env.LOBBY.getByName(LOBBY_NAME).rooms();
+    expect(rooms.some((room) => room.id === roomId)).toBe(false);
+    const late = await enter(roomId, TOKENS.master);
+    expect((await late.closed).code).toBe(CLOSE_ROOM_GONE);
+  });
+
+  it('refuses a player', async () => {
+    const roomId = await newRoom();
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    minh.send({ type: 'deleteRoom' });
+    await minh.next(error('not-master'));
   });
 });
 
@@ -498,7 +610,7 @@ describe('expiry', () => {
 describe('parseClientMessage', () => {
   it.each([
     [{ type: 'hello', token: TOKENS.minh }],
-    [{ type: 'join', name: 'Minh' }],
+    [{ type: 'join', name: 'Minh', pin: PIN }],
     [{ type: 'leave' }],
     [{ type: 'kick', playerId: 'abc' }],
     [{ type: 'setOpen', open: false }],
@@ -518,6 +630,8 @@ describe('parseClientMessage', () => {
     [{ type: 'startGame' }],
     [{ type: 'finishGame' }],
     [{ type: 'playAgain' }],
+    [{ type: 'deleteRoom' }],
+    [{ type: 'handOver', playerId: 'abc' }],
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
     [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
@@ -530,11 +644,14 @@ describe('parseClientMessage', () => {
     ['not JSON', '{'],
     ['null', 'null'],
     ['unknown type', JSON.stringify({ type: 'deal' })],
-    ['too long', JSON.stringify({ type: 'join', name: 'x'.repeat(5000) })],
+    ['too long', JSON.stringify({ type: 'join', name: 'x'.repeat(5000), pin: PIN })],
     ['a token that is not a UUID', JSON.stringify({ type: 'hello', token: 'a'.repeat(36) })],
     ['a short token', JSON.stringify({ type: 'hello', token: 'abc' })],
     ['a token with spaces', JSON.stringify({ type: 'hello', token: `${TOKENS.minh} x` })],
     ['a join without a name', JSON.stringify({ type: 'join' })],
+    ['a join without a PIN', JSON.stringify({ type: 'join', name: 'Minh' })],
+    ['a PIN as a number', JSON.stringify({ type: 'join', name: 'Minh', pin: 1234 })],
+    ['a hand-over without a player', JSON.stringify({ type: 'handOver' })],
     ['setOpen with a string', JSON.stringify({ type: 'setOpen', open: 'no' })],
     ['a pick without a role', JSON.stringify({ type: 'addPick' })],
     ['a rule that is not text', JSON.stringify({ type: 'editRule', roleId: 'seer', rule: 1 })],

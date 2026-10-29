@@ -113,7 +113,8 @@
     "emptyBody": "Tạo phòng và mời mọi người quanh bàn cùng tham gia.",
     "loading": "Đang tìm phòng…",
     "errorTitle": "Chưa kết nối được với làng",
-    "errorBody": "Kiểm tra kết nối rồi thử lại."
+    "errorBody": "Kiểm tra kết nối rồi thử lại.",
+    "mine": "Phòng của bạn"
   },
   "nameEntry": {
     "intro": "Chọn tên mà mọi người quanh bàn biết đến.",
@@ -132,7 +133,13 @@
     "taken": "Tên này đã có người dùng trong phòng. Hãy chọn tên khác.",
     "closed": "Quản trò đã đóng phòng, không nhận thêm người chơi.",
     "createFailed": "Chưa mở được phòng. Kiểm tra kết nối rồi thử lại.",
-    "notConnected": "Đang kết nối tới phòng. Thử lại sau giây lát."
+    "notConnected": "Đang kết nối tới phòng. Thử lại sau giây lát.",
+    "pinLabel": "Mã PIN phòng",
+    "pinCreateHint": "4 chữ số. Người chơi nhập mã này để vào phòng.",
+    "pinJoinHint": "Hỏi quản trò mã PIN gồm 4 chữ số.",
+    "pinError": "Nhập đủ 4 chữ số.",
+    "pinWrong": "Mã PIN chưa đúng. Hỏi lại quản trò nhé.",
+    "pinLocked": "Nhập sai quá nhiều lần. Thử lại sau một phút."
   },
   "lobby": {
     "room": "Phòng",
@@ -159,7 +166,14 @@
     "openChip": "Đang mở",
     "closedChip": "Đã đóng",
     "playersButton": "Người chơi ({{count}})",
-    "joinAgain": "Vào lại phòng"
+    "joinAgain": "Vào lại phòng",
+    "pin": "PIN {{pin}}",
+    "handOver": "Giao quyền quản trò cho {{name}}",
+    "handOverTitle": "Giao phòng cho người khác?",
+    "handOverBody": "{{name}} sẽ làm quản trò. Bạn ở lại phòng với tư cách người chơi.",
+    "handOverConfirm": "Giao phòng",
+    "offlineHint": "Chỉ người chơi đang trực tuyến mới làm quản trò được.",
+    "playerOffline": "Người chơi đó vừa mất kết nối. Thử lại khi họ quay lại."
   },
   "setup": {
     "intro": "Mỗi người một vai trong câu chuyện.",
@@ -283,6 +297,10 @@
     "goneBody": "Phòng đã bỏ trống sáu tiếng, hoặc chưa từng tồn tại.",
     "replacedTitle": "Đang mở ở thẻ khác",
     "replacedBody": "Điện thoại này đang ở trong phòng từ một thẻ khác. Tải lại trang này để dùng thẻ này.",
-    "home": "Về danh sách phòng"
+    "home": "Về danh sách phòng",
+    "delete": "Giữ để xoá phòng",
+    "deleteFailed": "Chưa xoá được phòng. Thử lại nhé.",
+    "deletedTitle": "Quản trò đã xoá phòng này",
+    "deletedBody": "Ván chơi đã kết thúc. Hãy vào phòng khác hoặc tự tạo phòng."
   }
 }

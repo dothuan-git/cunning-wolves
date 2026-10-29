@@ -1,4 +1,4 @@
-import { CLOSE_REPLACED, CLOSE_ROOM_GONE, PING, PONG } from '@werewolf/shared';
+import { CLOSE_REPLACED, CLOSE_ROOM_DELETED, CLOSE_ROOM_GONE, PING, PONG } from '@werewolf/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ReconnectingSocket,
@@ -77,6 +77,7 @@ describe('ReconnectingSocket', () => {
   it.each([
     [CLOSE_REPLACED, 'replaced'],
     [CLOSE_ROOM_GONE, 'gone'],
+    [CLOSE_ROOM_DELETED, 'deleted'],
   ] as const)('stops for good on close code %i', (code, expected) => {
     const { socket, sockets, latest, accept, status } = setup();
     socket.start();

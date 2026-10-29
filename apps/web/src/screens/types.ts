@@ -7,6 +7,10 @@ export interface PlayerListItem {
   id: string;
   name: string;
 }
+/** A seated player on Setup, where the narrator can only hand over to someone online. */
+export interface SeatedPlayerItem extends PlayerListItem {
+  connected: boolean;
+}
 export interface RevealedPlayerItem extends PlayerListItem {
   role: PoolRole;
 }

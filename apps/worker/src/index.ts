@@ -2,6 +2,7 @@ import {
   cleanName,
   isValidName,
   NAME_MAX,
+  PIN_PATTERN,
   ROOM_ID_PATTERN,
   ROOM_NAME_MAX,
   type CreateRoomRequest,
@@ -28,16 +29,19 @@ function newRoomId(): string {
 /** Narrows a create-room body, cleaning both names; null if anything is off. */
 function parseCreateRoom(data: unknown): CreateRoomRequest | null {
   if (typeof data !== 'object' || data === null) return null;
-  if (!('token' in data) || !('name' in data) || !('roomName' in data)) return null;
-  const { token, name, roomName } = data;
+  if (!('token' in data) || !('name' in data) || !('roomName' in data) || !('pin' in data)) {
+    return null;
+  }
+  const { token, name, roomName, pin } = data;
   if (typeof token !== 'string' || !TOKEN_PATTERN.test(token)) return null;
+  if (typeof pin !== 'string' || !PIN_PATTERN.test(pin)) return null;
   if (typeof name !== 'string' || typeof roomName !== 'string') return null;
   const cleanedName = cleanName(name);
   const cleanedRoomName = cleanName(roomName);
   if (!isValidName(cleanedName, NAME_MAX) || !isValidName(cleanedRoomName, ROOM_NAME_MAX)) {
     return null;
   }
-  return { token, name: cleanedName, roomName: cleanedRoomName };
+  return { token, name: cleanedName, roomName: cleanedRoomName, pin };
 }
 
 /** The body as text, or null once it passes `maxBytes`; a large body is never read in full. */
@@ -92,6 +96,7 @@ async function createRoom(request: Request, env: Env): Promise<Response> {
       name: input.roomName,
       masterId,
       masterName: input.name,
+      pin: input.pin,
     });
     if (created) return Response.json({ id } satisfies CreateRoomResponse, { status: 201 });
   }

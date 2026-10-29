@@ -1,5 +1,6 @@
 import {
   CLOSE_REPLACED,
+  CLOSE_ROOM_DELETED,
   CLOSE_ROOM_GONE,
   PING,
   PONG,
@@ -20,6 +21,10 @@ const CLOSE_POLICY = 1008;
 const LOBBY_RETRY_MS = 60 * 1000;
 /** A room with no message or connection for this long is deleted. */
 export const ROOM_EXPIRY_MS = 6 * 60 * 60 * 1000;
+/** This many wrong PINs within the window locks joining for the window. */
+export const PIN_TRIES_MAX = 10;
+export const PIN_WINDOW_MS = 60 * 1000;
+const PIN_GUARD_KEY = 'pinGuard';
 
 /** Saved on each socket so it survives hibernation. */
 interface Attachment {
@@ -56,7 +61,13 @@ export class Room extends DurableObject<Env> {
   }
 
   /** Called once by the create route. False if this id is already taken. */
-  async create(input: { id: string; name: string; masterId: string; masterName: string }) {
+  async create(input: {
+    id: string;
+    name: string;
+    masterId: string;
+    masterName: string;
+    pin: string;
+  }) {
     if (this.state) return false;
     this.state = createRoom({ ...input, now: Date.now() });
     saveRoom(this.ctx.storage, this.state);
@@ -114,9 +125,25 @@ export class Room extends DurableObject<Env> {
       this.rejectSocket(ws);
       return;
     }
-    const result = apply(this.state, deviceId, message, Date.now(), cryptoRandom);
+    const now = Date.now();
+    if (message.type === 'join' && now < this.readPinGuard().lockedUntil) {
+      this.sendError(ws, 'pin-locked');
+      return;
+    }
+    const result = apply(this.state, deviceId, message, now, cryptoRandom);
     if (!result.ok) {
+      if (result.error === 'pin-wrong') this.countWrongPin(now);
       this.sendError(ws, result.error);
+      return;
+    }
+    if (!('state' in result)) {
+      if (!(await this.destroy(CLOSE_ROOM_DELETED, 'room deleted')))
+        this.sendError(ws, 'try-again');
+      return;
+    }
+    // Online is about sockets, not room state, so it is checked here once the rules allow it.
+    if (message.type === 'handOver' && !this.isOnline(message.playerId)) {
+      this.sendError(ws, 'player-offline');
       return;
     }
     this.state = result.state;
@@ -143,18 +170,58 @@ export class Room extends DurableObject<Env> {
       await this.ctx.storage.setAlarm(expiresAt);
       return;
     }
-    const { id } = this.state;
-    // Leave the home list first: once storage is gone, nothing would remember to try again.
-    try {
-      await this.env.LOBBY.getByName(LOBBY_NAME).remove(id);
-    } catch (error) {
-      console.error('Room: could not remove the expired room from the lobby; retrying', id, error);
+    if (!(await this.destroy(CLOSE_ROOM_GONE, 'room expired'))) {
       await this.ctx.storage.setAlarm(Date.now() + LOBBY_RETRY_MS);
-      return;
+    }
+  }
+
+  /**
+   * Removes the room for good and tells every phone why. False, with nothing changed, if the
+   * lobby didn't answer: the room leaves the home list first, because once storage is gone
+   * nothing would remember to try again.
+   */
+  private async destroy(code: number, reason: string): Promise<boolean> {
+    const state = this.state;
+    if (!state) return true;
+    // An update still on its way to the lobby would put the row back after the removal.
+    await this.publishing;
+    try {
+      await this.env.LOBBY.getByName(LOBBY_NAME).remove(state.id);
+    } catch (error) {
+      console.error('Room: could not remove the room from the lobby', state.id, reason, error);
+      return false;
     }
     this.state = null;
-    for (const ws of this.ctx.getWebSockets()) ws.close(CLOSE_ROOM_GONE, 'room expired');
+    for (const ws of this.ctx.getWebSockets()) ws.close(code, reason);
     await deleteRoom(this.ctx.storage);
+    return true;
+  }
+
+  /**
+   * Recent wrong PINs and when joining opens again. Kept in storage, because an idle room
+   * hibernates and memory would forget: a guesser could then reset the count by waiting.
+   */
+  private readPinGuard(): { wrong: number[]; lockedUntil: number } {
+    const saved: unknown = this.ctx.storage.kv.get(PIN_GUARD_KEY);
+    if (typeof saved !== 'object' || saved === null) return { wrong: [], lockedUntil: 0 };
+    const wrong = 'wrong' in saved && Array.isArray(saved.wrong) ? saved.wrong : [];
+    const lockedUntil =
+      'lockedUntil' in saved && typeof saved.lockedUntil === 'number' ? saved.lockedUntil : 0;
+    return { wrong: wrong.filter((time): time is number => typeof time === 'number'), lockedUntil };
+  }
+
+  private countWrongPin(now: number): void {
+    const guard = this.readPinGuard();
+    const wrong = [...guard.wrong.filter((time) => now - time < PIN_WINDOW_MS), now];
+    const locked = wrong.length >= PIN_TRIES_MAX;
+    this.ctx.storage.kv.put(PIN_GUARD_KEY, {
+      wrong: locked ? [] : wrong,
+      lockedUntil: locked ? now + PIN_WINDOW_MS : guard.lockedUntil,
+    });
+  }
+
+  private isOnline(deviceId: string): boolean {
+    return this.connectedSockets().some((ws) => readDeviceId(ws) === deviceId);
   }
 
   /** Saves the state with the time of this activity, and moves the expiry alarm out. */

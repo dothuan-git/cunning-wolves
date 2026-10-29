@@ -1,5 +1,7 @@
 export const NAME_MAX = 24;
 export const ROOM_NAME_MAX = 32;
+/** The room's join PIN: exactly four digits. */
+export const PIN_PATTERN = /^\d{4}$/;
 
 /**
  * Trims, joins runs of spaces, drops invisible and control characters (zero-width spaces,

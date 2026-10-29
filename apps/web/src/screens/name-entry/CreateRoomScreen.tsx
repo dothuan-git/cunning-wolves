@@ -2,6 +2,7 @@ import type { CreateRoomRequest, CreateRoomResponse } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getDeviceToken } from '../../realtime/deviceToken';
+import { rememberRoom } from '../../realtime/myRooms';
 import { navigate, paths } from '../../router';
 import { NameEntryScreen } from './NameEntryScreen';
 import { readSavedName, saveName } from './savedName';
@@ -18,12 +19,12 @@ export function CreateRoomScreen() {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  async function create(name: string, roomName: string) {
+  async function create(name: string, roomName: string, pin: string) {
     saveName(name);
     setBusy(true);
     setFailed(false);
     try {
-      const body: CreateRoomRequest = { token: getDeviceToken(), name, roomName };
+      const body: CreateRoomRequest = { token: getDeviceToken(), name, roomName, pin };
       const response = await fetch('/api/rooms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,6 +33,7 @@ export function CreateRoomScreen() {
       if (!response.ok) throw new Error(`HTTP ${String(response.status)}`);
       const data: unknown = await response.json();
       if (!isCreateRoomResponse(data)) throw new Error('Unexpected create-room response');
+      rememberRoom(data.id);
       // Replace, so Back from setup goes home rather than to this form.
       navigate(paths.room(data.id), { replace: true });
     } catch (error) {
@@ -47,8 +49,8 @@ export function CreateRoomScreen() {
       initialName={readSavedName()}
       busy={busy}
       formError={failed ? t('nameEntry.createFailed') : undefined}
-      onContinue={(name, roomName) => {
-        void create(name, roomName);
+      onContinue={(name, roomName, pin) => {
+        void create(name, roomName, pin);
       }}
       onBack={() => {
         navigate(paths.home);

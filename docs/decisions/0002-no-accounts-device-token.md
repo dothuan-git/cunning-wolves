@@ -23,4 +23,4 @@ Games happen in person, often with people who will play once. A sign-up step wou
 - The token works like a password for that seat: send it only in the connection handshake and never show it to other players.
 - Clearing site data or switching browsers creates a new identity.
 - A lost narrator device can't be recovered; the master creates a new room.
-- v1 has no room PINs: anyone who sees a room in the list can join, and the master can kick.
+- v1 had no room PINs: anyone who saw a room in the list could join. Rooms now have a join PIN; see decision 0022.

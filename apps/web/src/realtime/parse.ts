@@ -30,6 +30,10 @@ const ERROR_CODES: readonly ServerErrorCode[] = [
   'not-master',
   'not-allowed',
   'role-invalid',
+  'pin-wrong',
+  'pin-locked',
+  'player-offline',
+  'try-again',
 ];
 const TEAMS = ['village', 'werewolf'] as const;
 const SEATS = ['none', 'joined', 'removed'] as const;
@@ -201,8 +205,12 @@ function roomView(value: unknown): RoomView | null {
     const setup = roomSetup(value.setup);
     const assignments = list(value.assignments, assignment);
     const game = value.game === null ? null : gameState(value.game);
-    return setup && assignments && (value.game === null || game)
-      ? { kind: 'master', you: value.you, room, players, setup, assignments, game }
+    const pin = value.pin === null ? null : text(value.pin);
+    return setup &&
+      assignments &&
+      (value.game === null || game) &&
+      (value.pin === null || pin !== null)
+      ? { kind: 'master', you: value.you, room, players, setup, pin, assignments, game }
       : null;
   }
   const seat = oneOf(SEATS, value.seat);

@@ -85,6 +85,13 @@
   - A player's phone receives the whole deal only after Finish.
   - See decision 0021.
 
+- **Room PIN, getting back in, handover and delete** (branch `feat/room-pin-and-delete`, 2026-10-29):
+  - Creating a room needs a 4-digit PIN, and players type it to join. Only the master's phone receives it. Ten wrong tries lock joining for a minute.
+  - Home keeps rooms this phone created or sits in tappable ("Your room"), even when they are closed or in play.
+  - The narrator can hand the room to an online player in `lobby`. The old narrator takes a seat.
+  - The narrator can delete the room at any time with a press and hold.
+  - See decision 0022.
+
 ## Next
 
 1. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.

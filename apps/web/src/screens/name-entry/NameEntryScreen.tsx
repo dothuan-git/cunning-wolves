@@ -1,4 +1,4 @@
-import { cleanName, isValidName, NAME_MAX, ROOM_NAME_MAX } from '@werewolf/shared';
+import { cleanName, isValidName, NAME_MAX, PIN_PATTERN, ROOM_NAME_MAX } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -32,6 +32,7 @@ export function NameEntryScreen({
   roomName,
   initialName = '',
   nameError,
+  pinError,
   formError,
   busy = false,
   onContinue,
@@ -44,10 +45,12 @@ export function NameEntryScreen({
   initialName?: string;
   /** From the room, e.g. the name is taken */
   nameError?: string;
+  /** From the room, e.g. the PIN is wrong */
+  pinError?: string;
   /** From the room or the network, about the form as a whole */
   formError?: string;
   busy?: boolean;
-  onContinue: (name: string, roomName: string) => void;
+  onContinue: (name: string, roomName: string, pin: string) => void;
   onBack: () => void;
 }) {
   const { t } = useTranslation();
@@ -57,8 +60,12 @@ export function NameEntryScreen({
   const [typedRoom, setTypedRoom] = useState<string | null>(null);
   const [invalidName, setInvalidName] = useState(false);
   const [invalidRoom, setInvalidRoom] = useState(false);
-  // A server error belongs to what was sent; hide it once the name is edited.
+  // Never saved: the PIN belongs to this room only.
+  const [pin, setPin] = useState('');
+  const [invalidPin, setInvalidPin] = useState(false);
+  // A server error belongs to what was sent; hide it once that field is edited.
   const [editedSinceError, setEditedSinceError] = useState(false);
+  const [pinEditedSinceError, setPinEditedSinceError] = useState(false);
   const room = typedRoom ?? t(SUGGESTIONS[suggestion] ?? SUGGESTIONS[0]);
   const create = mode === 'create';
   const shownNameError = invalidName
@@ -66,6 +73,11 @@ export function NameEntryScreen({
     : editedSinceError
       ? undefined
       : nameError;
+  const shownPinError = invalidPin
+    ? t('nameEntry.pinError')
+    : pinEditedSinceError
+      ? undefined
+      : pinError;
 
   return (
     <ScreenLayout
@@ -95,11 +107,14 @@ export function NameEntryScreen({
           const cleanedRoom = cleanName(room);
           const nameOk = isValidName(cleanedName, NAME_MAX);
           const roomOk = !create || isValidName(cleanedRoom, ROOM_NAME_MAX);
+          const pinOk = PIN_PATTERN.test(pin);
           setInvalidName(!nameOk);
           setInvalidRoom(!roomOk);
-          if (!nameOk || !roomOk) return;
+          setInvalidPin(!pinOk);
+          if (!nameOk || !roomOk || !pinOk) return;
           setEditedSinceError(false);
-          onContinue(cleanedName, cleanedRoom);
+          setPinEditedSinceError(false);
+          onContinue(cleanedName, cleanedRoom, pin);
         }}
       >
         {create && (
@@ -145,6 +160,22 @@ export function NameEntryScreen({
             setName(event.target.value);
             setInvalidName(false);
             setEditedSinceError(true);
+          }}
+        />
+        <TextField
+          label={t('nameEntry.pinLabel')}
+          inputMode="numeric"
+          autoComplete="off"
+          maxLength={4}
+          className="tabular-nums"
+          hint={t(create ? 'nameEntry.pinCreateHint' : 'nameEntry.pinJoinHint')}
+          error={shownPinError}
+          value={pin}
+          onChange={(event) => {
+            // Digits only, so a pasted "12 34" or a stray letter can't make it wrong.
+            setPin(event.target.value.replace(/\D/g, '').slice(0, 4));
+            setInvalidPin(false);
+            setPinEditedSinceError(true);
           }}
         />
         {formError && (

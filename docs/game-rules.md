@@ -4,7 +4,7 @@ The spec the code follows, taken from `docs/plan.md`. Any change to game behavio
 
 ## People
 
-- **Room master (narrator):** the person who created the room. Only their actions change room state.
+- **Room master (narrator):** the person who created the room, or who it was handed to. Only their actions change room state.
 - **Player:** everyone who joins. Players only look at their own screens; they never change room state.
 - No accounts. Each device has a random token (see `docs/decisions/0002-no-accounts-device-token.md`); a person is identified by `deviceId` within a room.
 
@@ -29,14 +29,16 @@ Gathering players and choosing roles happen at the same time, so they are one st
 
 ## Rooms
 
-- **Creating:** the master names the room (1–32 characters; the field starts with a random suggestion in the phone's language, and a shuffle button offers another) and gives their own name. The room opens at once, and the master goes straight to **Setup**.
+- **Creating:** the master names the room (1–32 characters; the field starts with a random suggestion in the phone's language, and a shuffle button offers another) gives their own name, and chooses a 4-digit **PIN**. The room opens at once, and the master goes straight to **Setup**, which shows the PIN under the room name.
 - **The master is the narrator, not a player.** They have no seat and never appear in the player list.
-- **Joining:** a phone joins with a name of 1–24 characters while the room is in `lobby` and open. A name already in the room is refused, comparing without case or accents (Đức = duc); the master's name counts too. Names are remembered on the phone for next time.
+- **Joining:** a phone joins with a name of 1–24 characters and the room's PIN while the room is in `lobby` and open. A wrong PIN is refused. After 10 wrong PINs within a minute, the room refuses every join for a minute. A name already in the room is refused, comparing without case or accents (Đức = duc); the master's name counts too. Names are remembered on the phone for next time; the PIN is not. A room made before PINs joins without one.
 - **Reconnecting:** a phone that has a seat gets it back after a refresh or screen lock without joining again.
 - **Leaving:** a player in `lobby` can leave; their seat is removed.
-- **Kicking:** in `lobby`, the master can remove a player. That phone sees "You were removed" and can join again (with any free name) only while the room is open.
+- **Kicking:** in `lobby`, the master can remove a player. That phone sees "You were removed" and can join again (with any free name and the PIN) only while the room is open.
 - **Closing:** in `lobby`, the master can close the room to new players and re-open it. Players who have a seat keep it.
-- **Room list:** home shows every room live: name, master, player count, and Open / Closed / In play. Only an open room in `lobby` can be joined from it.
+- **Handing over:** in `lobby`, the master can make a seated player who is online the narrator, from the players sheet. That player's seat goes, and the old master takes a seat at the end of the list with their name. Everything else stays: PIN, open or closed, and card set.
+- **Deleting:** in any state, the master can press and hold **Delete room** (Setup and narrator menus, and the summary). The room leaves the list at once. Every other phone sees "The narrator deleted this room", and the master's phone goes home.
+- **Room list:** home shows every room live: name, master, player count, and Open / Closed / In play. An open room in `lobby` can be joined from it. A room this phone created or has a seat in is marked "Your room", and can always be tapped to go back in.
 - **Expiry:** a room with no message or connection for 6 hours is deleted, its phones are told it has closed, and it leaves the list.
 
 ## Setup (the card set)
@@ -69,6 +71,7 @@ The worker builds each viewer's state before sending it. A player's client never
 | Who holds which role                                                            | Yes         | Own card only       |
 | Phases, deaths, notes                                                           | Yes         | No                  |
 | Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Seated players only |
+| Room PIN                                                                        | Yes         | No                  |
 
 ## Nights and mornings
 
@@ -109,6 +112,6 @@ Never wake: Bear Tamer, Elder, Hunter, Knight with the Rusty Sword, Little Girl 
 
 - Every WebSocket connects with the device token, sent only in its first message. The room knows the phone by a device id derived from the token and the room id, so the same phone has a different id in each room; other phones never see the token. After a refresh, tab switch or screen lock, the client reconnects with backoff and receives the full state for its view again.
 - **One connection per phone:** if the same phone connects again (a refresh, or a second tab), the room closes its older connection. A second tab takes over the seat, and the first stops reconnecting. See decision 0016.
-- **Lost narrator device:** no recovery; the master creates a new room.
+- **Lost narrator device:** no recovery; the master creates a new room. To leave on purpose, hand the room over first.
 - **Kicked player:** their seat is removed for that room; they can join again whenever the room is open (at once if it never closed).
 - **Room expiry:** a room with no activity for 6 hours is deleted and removed from the room list.

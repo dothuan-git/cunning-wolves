@@ -2,6 +2,8 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
 
 test.use({ locale: 'en-US' });
 
+const PIN = '4821';
+
 /** A fresh phone: its own storage, so its own device token. */
 async function phone(browser: Browser): Promise<Page> {
   const context = await browser.newContext({ locale: 'en-US' });
@@ -13,6 +15,7 @@ async function createRoom(page: Page, roomName: string) {
   await page.getByRole('button', { name: 'Create a room' }).click();
   await page.getByRole('textbox', { name: 'Room name' }).fill(roomName);
   await page.getByLabel('Your name').fill('Thuận');
+  await page.getByLabel('Room PIN').fill(PIN);
   await page.getByRole('button', { name: 'Open the room' }).click();
   await expect(page).toHaveURL(/\/room\/[a-z0-9]{8}$/);
   await expect(page.getByRole('heading', { name: roomName })).toBeVisible();
@@ -22,6 +25,7 @@ async function joinFromHome(page: Page, roomName: string, name: string) {
   await page.goto('/');
   await page.getByRole('button', { name: `Join ${roomName}` }).click();
   await page.getByLabel('Your name').fill(name);
+  await page.getByLabel('Room PIN').fill(PIN);
   await page.getByRole('button', { name: 'Enter the village' }).click();
 }
 
@@ -69,6 +73,7 @@ test('a group gathers in a room', async ({ browser }) => {
   // The same name with other case and accents is taken.
   await row.click();
   await lan.getByLabel('Your name').fill('mính');
+  await lan.getByLabel('Room PIN').fill(PIN);
   await lan.getByRole('button', { name: 'Enter the village' }).click();
   await expect(lan.getByText('That name is taken in this room. Try another.')).toBeVisible();
   await lan.getByLabel('Your name').fill('Lan');
@@ -98,6 +103,7 @@ test('a group gathers in a room', async ({ browser }) => {
   await master.getByRole('button', { name: 'Reopen room' }).click();
   await minh.getByRole('button', { name: 'Join again' }).click();
   await minh.getByLabel('Your name').fill('Minh');
+  await minh.getByLabel('Room PIN').fill(PIN);
   await minh.getByRole('button', { name: 'Enter the village' }).click();
   await expect(minh.getByText('You’re in the room')).toBeVisible();
   await expect(master.getByRole('button', { name: 'Players (2)' })).toBeVisible();
@@ -371,6 +377,57 @@ test('the narrator finishes, everyone sees the summary, and the room plays again
   await expect(minh.getByRole('button', { name: 'Flip your card' })).toBeVisible();
   const secondGame = minhMessages.slice(dealtBefore).map((message) => JSON.stringify(message));
   expect(secondGame.some((text) => text.includes('Saw the wolves.'))).toBe(false);
+});
+
+test('a PIN guards the room; the narrator gets back in, hands over and deletes it', async ({
+  browser,
+}) => {
+  const roomName = `Barn ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  await createRoom(master, roomName);
+  await expect(master.getByText(`PIN ${PIN}`)).toBeVisible();
+
+  // A wrong PIN is refused; the right one seats Minh.
+  await minh.goto('/');
+  await minh.getByRole('button', { name: `Join ${roomName}` }).click();
+  await minh.getByLabel('Your name').fill('Minh');
+  await minh.getByLabel('Room PIN').fill('0000');
+  await minh.getByRole('button', { name: 'Enter the village' }).click();
+  await expect(minh.getByText('That PIN is wrong. Ask the narrator again.')).toBeVisible();
+  await minh.getByLabel('Room PIN').fill(PIN);
+  await minh.getByRole('button', { name: 'Enter the village' }).click();
+  await expect(minh.getByText('You’re in the room')).toBeVisible();
+
+  // Closed and left for home, the room is still the narrator's to open.
+  await master.getByRole('button', { name: 'Close room' }).click();
+  await master.goto('/');
+  const row = master.getByRole('button', { name: `Join ${roomName}` });
+  await expect(row).toContainText('Closed');
+  await expect(row).toContainText('Your room');
+  await row.click();
+  await expect(master.getByRole('button', { name: 'Reopen room' })).toBeVisible();
+
+  // The narrator hands the room to Minh and becomes a player.
+  await master.getByRole('button', { name: 'Players (1)' }).click();
+  await master.getByRole('button', { name: 'Make Minh narrator' }).click();
+  await master.getByRole('button', { name: 'Hand over', exact: true }).click();
+  await expect(master.getByText('You’re in the room')).toBeVisible();
+  await expect(minh.getByRole('button', { name: 'Players (1)' })).toBeVisible();
+  await expect(minh.getByText(`PIN ${PIN}`)).toBeVisible();
+
+  // Minh deletes it: Minh goes home, the other phone is told.
+  await minh.getByRole('button', { name: 'Menu' }).click();
+  const remove = minh.getByRole('button', { name: 'Hold to delete room' });
+  await remove.hover();
+  await minh.mouse.down();
+  await minh.waitForTimeout(1600);
+  await minh.mouse.up();
+  await expect(minh).toHaveURL(/\/$/);
+  await expect(
+    master.getByRole('heading', { name: 'The narrator deleted this room' }),
+  ).toBeVisible();
+  await expect(minh.getByRole('button', { name: `Join ${roomName}` })).toHaveCount(0);
 });
 
 test('an unknown room says it has closed', async ({ page }) => {
