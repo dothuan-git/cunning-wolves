@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Thức dậy cùng bầy sói, nhưng Tiên tri thấy là dân làng.
+Thức dậy cùng bầy sói, nhưng Tiên tri được báo là dân làng.
 
 ## Rule (en)
 
-You wake with the werewolves, but the Seer sees you as a villager.
+You wake with the werewolves, but the Seer is told you are a villager.
 
 ## Narrator notes
 

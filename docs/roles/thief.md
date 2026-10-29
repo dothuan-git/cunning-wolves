@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: xem hai lá thừa, có thể đổi lá của mình lấy một trong hai. Nếu cả hai là sói, bắt buộc lấy một.
+Đêm 1: quản trò cho biết hai vai thừa, có thể đổi vai của mình lấy một trong hai. Nếu cả hai là sói, bắt buộc lấy một.
 
 ## Rule (en)
 
-Night 1: look at two extra cards and you may swap your card for one of them. If both are werewolves, you must take one.
+Night 1: the narrator names two extra roles and you may swap your role for one of them. If both are werewolves, you must take one.
 
 ## Narrator notes
 

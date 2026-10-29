@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: biết ai là sói. Thắng cùng bầy sói; Tiên tri thấy là dân làng.
+Đêm 1: biết ai là sói. Thắng cùng bầy sói; Tiên tri được báo là dân làng.
 
 ## Rule (en)
 
-Night 1: you learn who the werewolves are. You win with them, and the Seer sees you as a villager.
+Night 1: you learn who the werewolves are. You win with them, and the Seer is told you are a villager.
 
 ## Narrator notes
 
