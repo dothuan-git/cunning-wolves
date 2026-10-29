@@ -2,7 +2,7 @@
 
 - **id:** `witch`
 - **Team:** village
-- **Wakes at night:** yes (90), after `big-bad-wolf` and before `raven`
+- **Wakes at night:** yes (440), after `cult-leader` and before `magician`
 - **Card art:** missing
 
 ## Rule (vi)

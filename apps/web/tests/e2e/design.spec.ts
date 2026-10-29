@@ -146,7 +146,7 @@ test('the marks sheet switches marks, moves a single mark, and leaves the status
   await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();
   // Only the witch's holder is offered her potions.
   await page.getByRole('button', { name: 'Marks for Minh (0)', exact: true }).click();
-  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(1);
+  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(2);
   await closeSheet(page);
   await expect(page.getByRole('status')).toHaveText('6 players alive');
 });
@@ -352,8 +352,12 @@ test('each faction has a grey card that opens its own list of roles to add', asy
   await expect(blocks.nth(0).getByRole('button', { name: 'Add wolf roles' })).toBeVisible();
   await page.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
   const picker = page.getByRole('dialog', { name: 'Add wolf roles', exact: true });
-  // Only that faction's roles are listed.
+  // Only that faction's roles are listed, and the sheet says how many there are.
   await expect(picker.getByRole('button', { name: 'Add Wolf', exact: true })).toBeVisible();
+  await expect(picker).toContainText('Roles: 2');
+  await picker.getByRole('searchbox').fill('alpha');
+  await expect(picker).toContainText('Roles: 1/2');
+  await picker.getByRole('searchbox').fill('');
   await expect(picker.getByRole('button', { name: 'Add Seer', exact: true })).toHaveCount(0);
   await picker.getByRole('button', { name: 'Add Wolf', exact: true }).click();
   await expect(picker).toContainText('Every player has a role.');

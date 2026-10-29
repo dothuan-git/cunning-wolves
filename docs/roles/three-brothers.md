@@ -2,7 +2,7 @@
 
 - **id:** `three-brothers`
 - **Team:** village
-- **Wakes at night:** yes (30), after `two-sisters` and before `fox`
+- **Wakes at night:** yes (90), after `two-sisters` and before `wild-child`
 - **Card art:** missing
 
 ## Rule (vi)

@@ -98,6 +98,14 @@ Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered w
 | Mark             | Offered by                  | Carried by         |
 | ---------------- | --------------------------- | ------------------ |
 | Sheriff          | every game                  | one player at once |
+| Town Crier       | every game                  | one player at once |
+| Lover            | Cupid                       | any player         |
+| Role model       | Wild Child                  | one player at once |
+| Turned wolf      | Wild Child                  | its holder         |
+| Chose the wolves | Wolf-hound                  | its holder         |
+| Cursed           | Cursed Wolf-Father          | one player at once |
+| Charmed          | Pied Piper                  | any player         |
+| Target group     | Prejudiced Manipulator      | any player         |
 | Second vote used | Stuttering Judge            | its holder         |
 | Power lost       | Fox, Big Bad Wolf           | its holder         |
 | Heal potion used | Witch                       | its holder         |
@@ -106,24 +114,66 @@ Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered w
 | Can't vote       | Village Idiot               | its holder         |
 | Rusted           | Knight with the Rusty Sword | any player         |
 
+**The wolves' pack.** Turned wolf, Chose the wolves and Cursed move a player to the wolves. Such a player, and the White Werewolf, also appear in the panel of the first wolf role woken that night, under "Also wakes with the wolves", with their own role beside the name. They keep their own panel and notes. The app never changes a player's role or team by itself.
+
 ## Wake order
 
 Each pool role has a `defaultWakeOrder` (`null` = never wakes); the room copy can be reordered by the narrator. Each also has `wakeNights`: every night, Night 1 only, or even nights (2, 4, …). On a night a role doesn't wake, the narrator page lists it with the roles that never wake.
 
 The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.md`.
 
-1. Stuttering Judge (`stuttering-judge`, 10): Night 1 only
-2. Two Sisters (`two-sisters`, 20)
-3. Three Brothers (`three-brothers`, 30)
-4. Fox (`fox`, 40)
-5. Seer (`seer`, 50)
-6. Bodyguard (`bodyguard`, 60)
-7. Werewolf (`werewolf`, 70)
-8. Big Bad Wolf (`big-bad-wolf`, 80)
-9. Witch (`witch`, 90)
-10. Raven (`raven`, 100)
+1. Thief (`thief`, 10): Night 1 only
+2. Cupid (`cupid`, 20): Night 1 only
+3. Stuttering Judge (`stuttering-judge`, 30): Night 1 only
+4. Doppelgänger (`doppelganger`, 40): Night 1 only
+5. Hoodlum (`hoodlum`, 50): Night 1 only
+6. Mason (`mason`, 60): Night 1 only
+7. The Count (`the-count`, 70): Night 1 only
+8. Two Sisters (`two-sisters`, 80)
+9. Three Brothers (`three-brothers`, 90)
+10. Wild Child (`wild-child`, 100): Night 1 only
+11. Wolf-hound (`wolf-hound`, 110): Night 1 only
+12. Actor (`actor`, 120)
+13. Old Hag (`old-hag`, 130)
+14. Spellcaster (`spellcaster`, 140)
+15. Puppeteer (`puppeteer`, 150)
+16. Fox (`fox`, 160)
+17. Paranormal Investigator (`paranormal-investigator`, 170)
+18. Wise Monkey (`wise-monkey`, 180)
+19. Seer (`seer`, 190)
+20. Beholder (`beholder`, 200): Night 1 only
+21. Aura Seer (`aura-seer`, 210)
+22. Bodyguard (`bodyguard`, 220)
+23. Priest (`priest`, 230)
+24. Werewolf (`werewolf`, 240)
+25. Wolf Man (`wolf-man`, 250)
+26. Wolf Cub (`wolf-cub`, 260)
+27. Fruit Brute (`fruit-brute`, 270)
+28. Dire Wolf (`dire-wolf`, 280)
+29. Lone Wolf (`lone-wolf`, 290)
+30. Minion (`minion`, 300): Night 1 only
+31. Dream Wolf (`dream-wolf`, 310)
+32. Big Bad Wolf (`big-bad-wolf`, 320)
+33. Cursed Wolf-Father (`cursed-wolf-father`, 330)
+34. Alpha Wolf (`alpha-wolf`, 340)
+35. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
+36. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
+37. Sorceress (`sorceress`, 370)
+38. Bogeyman (`bogeyman`, 380)
+39. Chupacabra (`chupacabra`, 390)
+40. Baker (`baker`, 400)
+41. Pyromaniac (`pyromaniac`, 410)
+42. Vampire (`vampire`, 420)
+43. Cult Leader (`cult-leader`, 430)
+44. Witch (`witch`, 440)
+45. Magician (`magician`, 450)
+46. Gypsy (`gypsy`, 460)
+47. Pied Piper (`pied-piper`, 470)
+48. Raven (`raven`, 480)
+49. Troublemaker (`troublemaker`, 490)
+50. Insomniac (`insomniac`, 500)
 
-Never wake: Bear Tamer, Elder, Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Scapegoat, Village Idiot, Villager.
+Never wake: Amulet of Protection (an item the narrator hands out), Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Bailiff, Barber, Bartender, Bear Tamer, Bonesetter, Colossus, Confessor, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Schoolmistress, Tanner, Tough Guy, Vagabond, Village Idiot, Villager, Villager-Villager.
 
 ## Connections and lifetime
 

@@ -293,7 +293,7 @@ describe('setup', () => {
   });
 
   it('refuses an unknown role, a role not picked, and more than the limit', () => {
-    expect(refusal(room(), MASTER, { type: 'addPick', roleId: 'vampire' })).toBe('role-invalid');
+    expect(refusal(room(), MASTER, { type: 'addPick', roleId: 'sheriff' })).toBe('role-invalid');
     expect(refusal(room(), MASTER, { type: 'addPick', roleId: 'constructor' })).toBe(
       'role-invalid',
     );

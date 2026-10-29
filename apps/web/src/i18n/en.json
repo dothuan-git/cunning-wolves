@@ -211,7 +211,8 @@
     "tooMany_other": "{{count}} roles too many.",
     "wakes": "Wakes at night",
     "reconnecting": "Reconnecting… changes can’t be saved yet.",
-    "addSolo": "Add third-faction roles"
+    "addSolo": "Add third-faction roles",
+    "rolesInPool": "Roles: {{shown}}"
   },
   "rules": {
     "intro": "Everyone can read the rules. Your role stays secret until the game starts.",
@@ -247,7 +248,8 @@
     "wakeMoved": "{{role}} is now {{position}} of {{total}}",
     "marksTitle": "Marks · {{name}}",
     "markSince": "Since {{phase}}",
-    "markHeldBy": "Now with {{name}}"
+    "markHeldBy": "Now with {{name}}",
+    "packExtras": "Also wakes with the wolves"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",

@@ -2,7 +2,7 @@
 
 - **id:** `seer`
 - **Team:** village
-- **Wakes at night:** yes (50), after `fox` and before `bodyguard`
+- **Wakes at night:** yes (190), after `wise-monkey` and before `beholder`
 - **Card art:** `apps/web/src/assets/cards/seer.webp`
 
 ## Rule (vi)

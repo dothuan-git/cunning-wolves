@@ -20,11 +20,12 @@ import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { NoteField, TextField } from '../../components/TextField';
-import { FACTION_WASH } from '../../design/faction';
+import { FACTION_TEXT, FACTION_WASH } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
 import type { Phase, PlayerListItem, RoleGroupItem } from '../types';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
+import { packExtras } from './pack';
 import { MarksButton, MarksSheet } from './PlayerMarks';
 import { playerTimeline } from './phase';
 
@@ -148,6 +149,12 @@ export function NarratorScreen({
   const restingGroups = groups.filter((group) => !wakesOnNight(group.role, phase.number));
   const everyone = groups.flatMap((group) => group.players);
   const alive = everyone.filter((player) => !(player.id in deaths)).length;
+  // The plain werewolves hold the pack (else the first wolf role woken tonight); players moved to
+  // it show under its own.
+  const packGroup =
+    tonightGroups.find((group) => group.role.id === 'werewolf') ??
+    tonightGroups.find((group) => group.role.team === 'werewolf');
+  const pack = packGroup ? packExtras(groups, marks) : [];
   const marksOf = (playerId: string): Readonly<Record<string, Phase>> =>
     (Object.hasOwn(marks, playerId) ? marks[playerId] : undefined) ?? {};
   const isNight = phase.kind === 'night';
@@ -393,6 +400,27 @@ export function NarratorScreen({
                 />
               </h3>
               <ul className="divide-y divide-line">{group.players.map(renderPlayer)}</ul>
+              {group === packGroup && pack.length > 0 && (
+                <section
+                  aria-label={t('narrator.packExtras')}
+                  className="border-t border-line px-3.5 py-2"
+                >
+                  <h4 className="text-caption text-muted">{t('narrator.packExtras')}</h4>
+                  <ul>
+                    {pack.map(({ player, role }) => (
+                      <li
+                        key={player.id}
+                        className="flex min-h-10 flex-wrap items-baseline gap-x-2 py-1"
+                      >
+                        <PlayerChip name={player.name} dead={player.id in deaths} large />
+                        <span className={`text-caption font-medium ${FACTION_TEXT[role.team]}`}>
+                          {role.name[locale]}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
             </section>
           );
         })}
