@@ -21,6 +21,9 @@ export function HomeScreen() {
       onJoin={(id) => {
         navigate(paths.room(id));
       }}
+      onRules={() => {
+        navigate(paths.rules);
+      }}
       onRetry={() => {
         // The connection already retries with backoff; a reload starts over at once.
         window.location.reload();

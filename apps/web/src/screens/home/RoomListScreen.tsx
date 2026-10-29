@@ -12,6 +12,7 @@ export function RoomListScreen({
   onCreate,
   onJoin,
   onRetry,
+  onRules,
 }: {
   rooms: readonly RoomListItem[];
   /** Rooms this phone created or has a seat in: always tappable, so it can get back in */
@@ -20,6 +21,7 @@ export function RoomListScreen({
   onCreate: () => void;
   onJoin: (id: string) => void;
   onRetry: () => void;
+  onRules: () => void;
 }) {
   const { t } = useTranslation();
   // The name is set on two lines with the village woodcut between them.
@@ -27,6 +29,11 @@ export function RoomListScreen({
   return (
     <ScreenLayout
       title={t('screens.home')}
+      headerTools={
+        <Button variant="quiet" size="icon" aria-label={t('ruleBook.open')} onClick={onRules}>
+          <Icon name="book" />
+        </Button>
+      }
       hero={
         <>
           <h1 className="grid font-display text-brand font-semibold">
