@@ -54,7 +54,8 @@
     "narrator": "Narrator",
     "playerLobby": "The village",
     "rulesReview": "Tonight’s roles",
-    "myCard": "Your role card"
+    "myCard": "Your role card",
+    "ruleBook": "Rule book"
   },
   "common": {
     "back": "Back",
@@ -318,5 +319,22 @@
     "deleteFailed": "Couldn’t delete the room. Try again.",
     "deletedTitle": "The narrator deleted this room",
     "deletedBody": "This game is over. Join another room or create your own."
+  },
+  "ruleBook": {
+    "open": "Rule book",
+    "search": "Search roles",
+    "count_one": "{{count}} role",
+    "count_other": "{{count}} roles",
+    "shown_one": "{{shown}} of {{count}} role",
+    "shown_other": "{{shown}} of {{count}} roles",
+    "noMatch": "No roles match your search.",
+    "lookCloser": "Read the rule for {{role}}",
+    "howTitle": "How to play",
+    "how": {
+      "narrator": "One person is the narrator and does not play. Everyone else gets a secret role on their phone: tap the card to look, tap again to hide it.",
+      "night": "Night: everyone closes their eyes. The narrator wakes the roles one by one; each does its action quietly, then goes back to sleep.",
+      "morning": "Morning: the narrator says who died. Everyone talks it over and votes one suspect out.",
+      "win": "Repeat until a side wins. The village wins when every wolf is out. The wolves win when they are as many as the villagers. A third faction role has its own way to win: read its card."
+    }
   }
 }

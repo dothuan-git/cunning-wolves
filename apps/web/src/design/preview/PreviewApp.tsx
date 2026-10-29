@@ -2,6 +2,7 @@ import {
   DEFAULT_SETTINGS,
   marksFor,
   nextPhase,
+  ROLE_POOL,
   wakingOrder,
   type PoolRole,
 } from '@werewolf/shared';
@@ -15,6 +16,7 @@ import { MyCardScreen } from '../../screens/my-card/MyCardScreen';
 import { NameEntryScreen } from '../../screens/name-entry/NameEntryScreen';
 import { NarratorScreen } from '../../screens/narrator/NarratorScreen';
 import { PlayerLobbyScreen } from '../../screens/player-lobby/PlayerLobbyScreen';
+import { RuleBookScreen } from '../../screens/rule-book/RuleBookScreen';
 import { RulesReviewScreen } from '../../screens/rules-review/RulesReviewScreen';
 import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
@@ -143,6 +145,9 @@ function PreviewScene({
           }}
           onRetry={() => {
             setListState('default');
+          }}
+          onRules={() => {
+            onNavigate('rule-book');
           }}
         />
       );
@@ -380,6 +385,15 @@ function PreviewScene({
                   onNavigate('setup');
                 }
           }
+        />
+      );
+    case 'rule-book':
+      return (
+        <RuleBookScreen
+          roles={ROLE_POOL}
+          onBack={() => {
+            onNavigate('home');
+          }}
         />
       );
     case 'components':

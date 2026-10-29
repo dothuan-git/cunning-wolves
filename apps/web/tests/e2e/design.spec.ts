@@ -33,6 +33,7 @@ const screens = [
   'player-lobby',
   'rules-review',
   'my-card',
+  'rule-book',
   'components',
 ];
 
