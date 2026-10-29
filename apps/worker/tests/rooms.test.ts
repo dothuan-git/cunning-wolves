@@ -377,6 +377,7 @@ describe('Room', () => {
     master.send({ type: 'startGame' });
     master.send({ type: 'toggleDeath', playerId: lanId });
     master.send({ type: 'setNote', night: 1, playerId: minhId, text: 'Secret note' });
+    master.send({ type: 'toggleMark', playerId: minhId, mark: 'sheriff' });
     master.send({ type: 'endPhase', phase: { kind: 'night', number: 1 } });
     master.send({ type: 'setWakeOrder', order: ['werewolf', 'seer'] });
     await master.next(masterView((view) => view.setup.wakeOrder[0] === 'werewolf'));
@@ -387,10 +388,12 @@ describe('Room', () => {
       phase: { kind: 'morning', number: 1 },
       deaths: { [lanId]: { kind: 'night', number: 1 } },
       notes: { 1: { [minhId]: 'Secret note' } },
+      marks: { [minhId]: { sheriff: { kind: 'night', number: 1 } } },
     });
     for (const text of [...minh.received, ...lan.received]) {
       expect(text).not.toContain('Secret note');
       expect(text).not.toContain('"game"');
+      expect(text).not.toContain('sheriff');
     }
   });
 
@@ -407,8 +410,14 @@ describe('Room', () => {
       sql.exec('DELETE FROM game');
       sql.exec('DELETE FROM deaths');
       sql.exec('DELETE FROM notes');
+      sql.exec('DROP TABLE marks');
       const older = loadRoom(sql);
-      expect(older?.game).toEqual({ phase: { kind: 'night', number: 1 }, deaths: {}, notes: {} });
+      expect(older?.game).toEqual({
+        phase: { kind: 'night', number: 1 },
+        deaths: {},
+        notes: {},
+        marks: {},
+      });
       if (!older) throw new Error('room did not load');
       // A player id that is also an object key survives saving and loading.
       const death: Phase = { kind: 'night', number: 2 };
@@ -416,11 +425,16 @@ describe('Room', () => {
         phase: { kind: 'morning', number: 2 },
         deaths: Object.fromEntries([['__proto__', death]]),
         notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
+        marks: Object.fromEntries([['__proto__', { sheriff: death, 'heal-used': death }]]),
       };
       saveRoom(state.storage, { ...older, game });
       const loaded = loadRoom(sql)?.game;
       expect(Object.keys(loaded?.deaths ?? {})).toEqual(['__proto__']);
       expect(Object.keys(loaded?.notes[1] ?? {})).toEqual(['__proto__']);
+      const marks = Object.entries(loaded?.marks ?? {});
+      expect(marks.map(([id, own]) => [id, Object.keys(own).sort()])).toEqual([
+        ['__proto__', ['heal-used', 'sheriff']],
+      ]);
       expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
     });
   });
@@ -634,6 +648,13 @@ describe('parseClientMessage', () => {
     [{ type: 'handOver', playerId: 'abc' }],
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
+    [{ type: 'toggleMark', playerId: 'abc', mark: 'sheriff' }],
+    [
+      {
+        type: 'addCustomRole',
+        role: { name: 'Hermit', rule: 'Wins alone.', team: 'solo', wakes: false },
+      },
+    ],
     [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
@@ -666,6 +687,7 @@ describe('parseClientMessage', () => {
       'a phase of another kind',
       JSON.stringify({ type: 'endPhase', phase: { kind: 'dusk', number: 1 } }),
     ],
+    ['a mark without a mark', JSON.stringify({ type: 'toggleMark', playerId: 'abc' })],
     ['a note without text', JSON.stringify({ type: 'setNote', night: 1, playerId: 'abc' })],
     [
       'a note for a night given as text',

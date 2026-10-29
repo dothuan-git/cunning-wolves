@@ -550,7 +550,7 @@ const NIGHT_2 = { kind: 'night', number: 2 } as const;
 
 describe('end phase', () => {
   it('starts at Night 1 and moves night, morning, night', () => {
-    expect(playing().game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {} });
+    expect(playing().game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {}, marks: {} });
     const state = run(
       playing(),
       [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
@@ -588,6 +588,62 @@ describe('toggle death', () => {
     );
     expect(refusal(ready(), MASTER, { type: 'toggleDeath', playerId: 'a' })).toBe('not-allowed');
     expect(refusal(playing(), 'a', { type: 'toggleDeath', playerId: 'b' })).toBe('not-master');
+  });
+});
+
+describe('toggle mark', () => {
+  /** Minh holds the witch, Lan the werewolf and Hoa the knight, at Night 1. */
+  function marking(): RoomState {
+    let state = room();
+    for (const [id, name] of [
+      ['a', 'Minh'],
+      ['b', 'Lan'],
+      ['c', 'Hoa'],
+    ] as const) {
+      state = run(state, [id, { type: 'join', name, pin: PIN }]);
+    }
+    for (const roleId of ['witch', 'werewolf', 'knight']) {
+      state = run(state, [MASTER, { type: 'addPick', roleId }]);
+    }
+    return run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+  }
+  const mark = (playerId: string, id: string) =>
+    ({ type: 'toggleMark', playerId, mark: id }) as const;
+
+  it('marks a player in the current phase, and a second tap takes it off', () => {
+    const morning = run(marking(), [MASTER, { type: 'endPhase', phase: NIGHT_1 }]);
+    const used = run(morning, [MASTER, mark('a', 'heal-used')], [MASTER, mark('a', 'kill-used')]);
+    expect(used.game?.marks).toEqual({ a: { 'heal-used': MORNING_1, 'kill-used': MORNING_1 } });
+    const undone = run(used, [MASTER, mark('a', 'heal-used')], [MASTER, mark('a', 'kill-used')]);
+    expect(undone.game?.marks).toEqual({});
+  });
+
+  it("gives a holder's mark only to that role's holder", () => {
+    expect(refusal(marking(), MASTER, mark('b', 'heal-used'))).toBe('not-allowed');
+  });
+
+  it("offers a role's mark for others only while that role is dealt", () => {
+    expect(run(marking(), [MASTER, mark('b', 'rusted')]).game?.marks).toEqual({
+      b: { rusted: NIGHT_1 },
+    });
+    expect(refusal(playing(), MASTER, mark('b', 'rusted'))).toBe('not-allowed');
+  });
+
+  it('moves a single mark to the newly marked player', () => {
+    const lan = run(marking(), [MASTER, mark('a', 'heal-used')], [MASTER, mark('b', 'sheriff')]);
+    const moved = run(lan, [MASTER, mark('a', 'sheriff')]);
+    expect(moved.game?.marks).toEqual({ a: { 'heal-used': NIGHT_1, sheriff: NIGHT_1 } });
+  });
+
+  it('refuses an unknown mark, a player without a card, before the game, and from a player', () => {
+    expect(refusal(marking(), MASTER, mark('a', 'cursed'))).toBe('not-allowed');
+    expect(refusal(marking(), MASTER, mark('a', '__proto__'))).toBe('not-allowed');
+    expect(refusal(marking(), MASTER, mark('z', 'sheriff'))).toBe('not-allowed');
+    expect(refusal(marking(), MASTER, mark('__proto__', 'sheriff'))).toBe('not-allowed');
+    expect(refusal(ready(), MASTER, mark('a', 'sheriff'))).toBe('not-allowed');
+    expect(refusal(marking(), 'a', mark('b', 'sheriff'))).toBe('not-master');
+    const finished = run(marking(), [MASTER, { type: 'finishGame' }]);
+    expect(refusal(finished, MASTER, mark('a', 'sheriff'))).toBe('not-allowed');
   });
 });
 
@@ -676,6 +732,7 @@ describe('finish and play again', () => {
     const finished = run(
       playing(),
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
       [MASTER, { type: 'finishGame' }],
     );
     const again = run(finished, [MASTER, { type: 'playAgain' }]);
@@ -691,7 +748,7 @@ describe('finish and play again', () => {
     expect(view.reveal).toBeNull();
     expect(view.roles).toEqual([]);
     const second = run(again, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
-    expect(second.game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {} });
+    expect(second.game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {}, marks: {} });
     expect(Object.keys(second.assignments).sort()).toEqual(['a', 'b']);
   });
 
@@ -816,16 +873,19 @@ describe('views', () => {
       playing(),
       [MASTER, { type: 'toggleDeath', playerId: 'b' }],
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Secret note' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
     );
     expect(buildMasterView(marked, connected).game).toEqual({
       phase: NIGHT_1,
       deaths: { b: NIGHT_1 },
       notes: { 1: { a: 'Secret note' } },
+      marks: { a: { sheriff: NIGHT_1 } },
     });
     for (const viewer of ['a', 'b', 'c']) {
       const view = buildPlayerView(marked, connected, viewer);
       expect(view).not.toHaveProperty('game');
       expect(JSON.stringify(view)).not.toContain('Secret note');
+      expect(JSON.stringify(view)).not.toContain('sheriff');
     }
   });
 
@@ -834,6 +894,7 @@ describe('views', () => {
       playing(),
       [MASTER, { type: 'toggleDeath', playerId: 'b' }],
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
       [MASTER, { type: 'finishGame' }],
     );
     const reveal = {
@@ -841,7 +902,12 @@ describe('views', () => {
         { playerId: 'a', roleId: 'seer' },
         { playerId: 'b', roleId: 'werewolf' },
       ],
-      game: { phase: NIGHT_1, deaths: { b: NIGHT_1 }, notes: { 1: { a: 'Saw.' } } },
+      game: {
+        phase: NIGHT_1,
+        deaths: { b: NIGHT_1 },
+        notes: { 1: { a: 'Saw.' } },
+        marks: { a: { sheriff: NIGHT_1 } },
+      },
     };
     expect(buildPlayerView(finished, connected, 'a').reveal).toEqual(reveal);
     expect(buildPlayerView(finished, connected, 'b').reveal).toEqual(reveal);

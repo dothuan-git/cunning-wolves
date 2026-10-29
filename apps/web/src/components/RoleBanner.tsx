@@ -1,4 +1,5 @@
 import type { Team } from '@werewolf/shared';
+import { FACTION_TEXT } from '../design/faction';
 import { RoleArtwork } from './RoleArtwork';
 
 /**
@@ -26,7 +27,7 @@ export function RoleBanner({
         </span>
       )}
       <span
-        className={`min-w-0 font-display text-role font-semibold break-words motion-safe:transition-colors ${dead ? 'text-muted' : team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+        className={`min-w-0 font-display text-role font-semibold break-words motion-safe:transition-colors ${dead ? 'text-muted' : FACTION_TEXT[team]}`}
       >
         {name}
       </span>

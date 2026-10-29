@@ -132,6 +132,25 @@ test('marking a player dead during the night keeps that night’s note as its on
   await expect(linh).toHaveValue('Bitten by the wolves');
 });
 
+test('the marks sheet switches marks, moves a single mark, and leaves the status alone', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Marks for Hà (1)', exact: true }).click();
+  const sheet = page.getByRole('dialog', { name: 'Marks · Hà', exact: true });
+  await expect(sheet.getByRole('checkbox', { name: /Heal potion used/ })).toBeChecked();
+  await expect(sheet).toContainText('Now with Linh');
+  await sheet.getByRole('checkbox', { name: /Kill potion used/ }).check();
+  await sheet.getByRole('checkbox', { name: /Sheriff/ }).check();
+  await closeSheet(page);
+  await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();
+  // Only the witch's holder is offered her potions.
+  await page.getByRole('button', { name: 'Marks for Minh (0)', exact: true }).click();
+  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(1);
+  await closeSheet(page);
+  await expect(page.getByRole('status')).toHaveText('6 players alive');
+});
+
 test('tapping an earlier note edits it without changing the player status', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: /^Edit Minh’s note for Night 1/ }).click();
@@ -329,6 +348,7 @@ test('each faction has a grey card that opens its own list of roles to add', asy
   const blocks = page.locator('main section[aria-labelledby^="faction-"]');
   await expect(blocks.nth(0).getByRole('heading', { level: 2 })).toHaveText('Wolves');
   await expect(blocks.nth(1).getByRole('heading', { level: 2 })).toHaveText('Village');
+  await expect(blocks.nth(2).getByRole('heading', { level: 2 })).toHaveText('Third faction');
   await expect(blocks.nth(0).getByRole('button', { name: 'Add wolf roles' })).toBeVisible();
   await page.getByRole('button', { name: 'Add wolf roles', exact: true }).click();
   const picker = page.getByRole('dialog', { name: 'Add wolf roles', exact: true });

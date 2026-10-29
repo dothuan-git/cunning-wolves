@@ -3,6 +3,7 @@ import {
   ROLE_NAME_MAX,
   RULE_MAX,
   TIMER_MAX,
+  TEAMS,
   wakingOrder,
   type CustomRoleInput,
   type PoolRole,
@@ -23,12 +24,16 @@ import { ScreenLayout } from '../../components/ScreenLayout';
 import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
+import { FACTION_ORDER } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import type { SeatedPlayerItem } from '../types';
 import { RoomPanel } from './RoomPanel';
 
-// Wolves first, like the summary and the rules review.
-const TEAMS: readonly Team[] = ['werewolf', 'village'];
+const ADD_LABEL = {
+  werewolf: 'setup.addWerewolf',
+  village: 'setup.addVillage',
+  solo: 'setup.addSolo',
+} as const satisfies Record<Team, string>;
 // A card taken out of the game shrinks away this long before it leaves the grid.
 const LEAVE_MS = 160;
 
@@ -257,7 +262,7 @@ export function SetupScreen({
         onRemove={onRemove}
         onHandOver={onHandOver}
       />
-      {TEAMS.map((faction) => {
+      {FACTION_ORDER.map((faction) => {
         const chosen = roles.filter(
           (role) => role.team === faction && (quantity(role.id) > 0 || leaving.has(role.id)),
         );
@@ -292,7 +297,7 @@ export function SetupScreen({
             })}
             <li className="aspect-2/3">
               <AddCard
-                label={t(faction === 'werewolf' ? 'setup.addWerewolf' : 'setup.addVillage')}
+                label={t(ADD_LABEL[faction])}
                 onClick={() => {
                   openPicker(faction);
                 }}
@@ -306,7 +311,7 @@ export function SetupScreen({
           sheet
           steady
           footer={<ModalDone />}
-          title={t(picking === 'werewolf' ? 'setup.addWerewolf' : 'setup.addVillage')}
+          title={t(ADD_LABEL[picking])}
           onClose={() => {
             setPicking(null);
           }}
@@ -481,11 +486,14 @@ export function SetupScreen({
                 className="min-h-12 rounded-control border border-field-border bg-field px-3 text-body"
                 value={team}
                 onChange={(event) => {
-                  setTeam(event.target.value === 'werewolf' ? 'werewolf' : 'village');
+                  setTeam(TEAMS.find((option) => option === event.target.value) ?? 'village');
                 }}
               >
-                <option value="village">{t('faction.village')}</option>
-                <option value="werewolf">{t('faction.werewolf')}</option>
+                {TEAMS.map((option) => (
+                  <option key={option} value={option}>
+                    {t(`faction.${option}`)}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="flex min-h-12 items-center gap-3 text-control">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LOCALES, ROLE_POOL } from '../src';
+import { LOCALES, ROLE_POOL, WAKE_NIGHTS } from '../src';
 
 describe('ROLE_POOL', () => {
   it('has unique kebab-case ids', () => {
@@ -22,6 +22,10 @@ describe('ROLE_POOL', () => {
       role.defaultWakeOrder === null ? [] : [role.defaultWakeOrder],
     );
     expect(new Set(orders).size).toBe(orders.length);
+  });
+
+  it('says which nights each role wakes', () => {
+    for (const role of ROLE_POOL) expect(WAKE_NIGHTS, role.id).toContain(role.wakeNights);
   });
 
   it('names card art after the role id', () => {

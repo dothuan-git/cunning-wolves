@@ -12,6 +12,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 10,
+    wakeNights: 'first',
     image: 'stuttering-judge.webp',
   },
   {
@@ -23,6 +24,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 20,
+    wakeNights: 'every',
     image: 'two-sisters.webp',
   },
   {
@@ -34,6 +36,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 30,
+    wakeNights: 'every',
     image: 'three-brothers.webp',
   },
   {
@@ -45,6 +48,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 40,
+    wakeNights: 'every',
     image: 'fox.webp',
   },
   {
@@ -56,6 +60,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 50,
+    wakeNights: 'every',
     image: 'seer.webp',
   },
   {
@@ -67,6 +72,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 60,
+    wakeNights: 'every',
     image: 'bodyguard.webp',
   },
   {
@@ -78,6 +84,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'werewolf',
     defaultWakeOrder: 70,
+    wakeNights: 'every',
     image: 'werewolf.webp',
   },
   {
@@ -89,6 +96,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'werewolf',
     defaultWakeOrder: 80,
+    wakeNights: 'every',
     image: 'big-bad-wolf.webp',
   },
   {
@@ -100,6 +108,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 90,
+    wakeNights: 'every',
     image: 'witch.webp',
   },
   {
@@ -111,6 +120,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: 100,
+    wakeNights: 'every',
     image: 'raven.webp',
   },
   {
@@ -122,6 +132,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'bear-tamer.webp',
   },
   {
@@ -133,6 +144,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'elder.webp',
   },
   {
@@ -144,6 +156,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'hunter.webp',
   },
   {
@@ -155,6 +168,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'knight.webp',
   },
   {
@@ -166,6 +180,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'little-girl.webp',
   },
   {
@@ -177,6 +192,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'scapegoat.webp',
   },
   {
@@ -188,6 +204,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'village-idiot.webp',
   },
   {
@@ -199,6 +216,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     },
     team: 'village',
     defaultWakeOrder: null,
+    wakeNights: 'every',
     image: 'villager.webp',
   },
 ];

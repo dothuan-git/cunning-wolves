@@ -1,4 +1,10 @@
-import type { ClientMessage, CustomRoleInput, Phase, RoomSettings } from '@werewolf/shared';
+import {
+  TEAMS,
+  type ClientMessage,
+  type CustomRoleInput,
+  type Phase,
+  type RoomSettings,
+} from '@werewolf/shared';
 
 // Exactly what crypto.randomUUID() makes on the client.
 export const TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -24,7 +30,8 @@ function parseCustomRole(value: unknown): CustomRoleInput | null {
   if (typeof name !== 'string' || typeof rule !== 'string' || typeof wakes !== 'boolean') {
     return null;
   }
-  return team === 'village' || team === 'werewolf' ? { name, rule, team, wakes } : null;
+  const known = TEAMS.find((option) => option === team);
+  return known ? { name, rule, team: known, wakes } : null;
 }
 
 function parseSettings(value: unknown): RoomSettings | null {
@@ -82,6 +89,13 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'toggleDeath': {
       const playerId = field(data, 'playerId');
       return typeof playerId === 'string' ? { type, playerId } : null;
+    }
+    case 'toggleMark': {
+      const playerId = field(data, 'playerId');
+      const mark = field(data, 'mark');
+      return typeof playerId === 'string' && typeof mark === 'string'
+        ? { type, playerId, mark }
+        : null;
     }
     case 'setOpen': {
       const open = field(data, 'open');

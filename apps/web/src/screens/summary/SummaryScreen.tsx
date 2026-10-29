@@ -1,18 +1,18 @@
-import type { Team } from '@werewolf/shared';
+import { MARKS } from '@werewolf/shared';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { FactionEmblem } from '../../components/FactionEmblem';
 import { Icon } from '../../components/Icon';
+import { MarkChips } from '../../components/MarkChips';
 import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { Tabs } from '../../components/Tabs';
+import { FACTION_ORDER, FACTION_TEXT, FACTION_WASH } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import type { JournalPhase, Phase, RevealedPlayerItem } from '../types';
 import { PhasePanel } from './PhasePanel';
-
-const TEAMS: readonly Team[] = ['werewolf', 'village'];
 
 export function SummaryScreen({
   players,
@@ -94,7 +94,7 @@ export function SummaryScreen({
               <div className="stagger grid gap-3">
                 <p className="text-caption text-muted">{t('summary.revealedNotice')}</p>
                 {/* The reveal answers "who were the wolves?" first, so each faction is its own list. */}
-                {TEAMS.map((team) => {
+                {FACTION_ORDER.map((team) => {
                   const members = players.filter((player) => player.role.team === team);
                   if (members.length === 0) return null;
                   return (
@@ -104,11 +104,11 @@ export function SummaryScreen({
                       className="panel min-w-0 overflow-hidden"
                     >
                       <div
-                        className={`flex items-center justify-between gap-3 px-3.5 py-2 ${team === 'werewolf' ? 'bg-werewolf-wash' : 'bg-village-wash'}`}
+                        className={`flex items-center justify-between gap-3 px-3.5 py-2 ${FACTION_WASH[team]}`}
                       >
                         <h3
                           id={`summary-${team}`}
-                          className={`flex min-w-0 items-center gap-2.5 font-display text-role font-semibold ${team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+                          className={`flex min-w-0 items-center gap-2.5 font-display text-role font-semibold ${FACTION_TEXT[team]}`}
                         >
                           <FactionEmblem team={team} className="size-10 shrink-0" />
                           {t(`faction.${team}`)}
@@ -128,12 +128,19 @@ export function SummaryScreen({
                               key={player.id}
                               className="flex min-h-16 items-center justify-between gap-3 px-3.5 py-2"
                             >
-                              <PlayerChip
-                                name={player.name}
-                                dead={death !== undefined}
-                                detail={death && t('summary.diedIn', { phase: phaseLabel(death) })}
-                                large
-                              />
+                              <div className="grid min-w-0 gap-1">
+                                <PlayerChip
+                                  name={player.name}
+                                  dead={death !== undefined}
+                                  detail={
+                                    death && t('summary.diedIn', { phase: phaseLabel(death) })
+                                  }
+                                  large
+                                />
+                                <MarkChips
+                                  labels={player.marks.map((mark) => mark.label[locale])}
+                                />
+                              </div>
                               <span className="min-w-0 shrink-0 text-right">
                                 <RoleBanner
                                   name={player.role.name[locale]}
@@ -161,7 +168,7 @@ export function SummaryScreen({
               ) : (
                 // The whole story reads top to bottom; nights sit on ink so they stand apart from mornings.
                 <ol className="stagger grid gap-2.5">
-                  {journal.map(({ phase, notes, deaths }) => {
+                  {journal.map(({ phase, notes, deaths, marks }) => {
                     const night = phase.kind === 'night';
                     return (
                       <PhasePanel
@@ -180,7 +187,7 @@ export function SummaryScreen({
                                   </span>
                                   {role && (
                                     <span
-                                      className={`text-caption font-medium ${role.team === 'werewolf' ? 'text-werewolf' : 'text-village'}`}
+                                      className={`text-caption font-medium ${FACTION_TEXT[role.team]}`}
                                     >
                                       {role.name[locale]}
                                     </span>
@@ -203,6 +210,24 @@ export function SummaryScreen({
                               </span>
                             </li>
                           ))}
+                          {marks.map((marked) => {
+                            const mark = MARKS.find((known) => known.id === marked.mark);
+                            if (!mark) return null;
+                            return (
+                              <li
+                                key={`mark-${marked.id}-${mark.id}`}
+                                className="flex min-h-12 items-center px-3.5 py-2"
+                              >
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
+                                  <Icon name="tag" className="size-3.5" />
+                                  {t('summary.marked', {
+                                    name: marked.name,
+                                    mark: mark.label[locale],
+                                  })}
+                                </span>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </PhasePanel>
                     );

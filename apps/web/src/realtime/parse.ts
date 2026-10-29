@@ -1,20 +1,22 @@
-import type {
-  Assignment,
-  CustomRole,
-  GameRole,
-  GameState,
-  LobbyMessage,
-  Phase,
-  PlayerInfo,
-  Reveal,
-  RoomInfo,
-  RoomRole,
-  RoomSetup,
-  RoomStatus,
-  RoomSummary,
-  RoomView,
-  ServerErrorCode,
-  ServerMessage,
+import {
+  TEAMS,
+  WAKE_NIGHTS,
+  type Assignment,
+  type CustomRole,
+  type GameRole,
+  type GameState,
+  type LobbyMessage,
+  type Phase,
+  type PlayerInfo,
+  type Reveal,
+  type RoomInfo,
+  type RoomRole,
+  type RoomSetup,
+  type RoomStatus,
+  type RoomSummary,
+  type RoomView,
+  type ServerErrorCode,
+  type ServerMessage,
 } from '@werewolf/shared';
 
 // The server is ours, but a stale tab can meet a newer server: check shapes, never trust them.
@@ -35,7 +37,6 @@ const ERROR_CODES: readonly ServerErrorCode[] = [
   'player-offline',
   'try-again',
 ];
-const TEAMS = ['village', 'werewolf'] as const;
 const SEATS = ['none', 'joined', 'removed'] as const;
 
 function isObject(value: unknown): value is Fields {
@@ -134,18 +135,20 @@ function roomRole(value: unknown): RoomRole | null {
   const name = localized(value.name);
   const rule = localized(value.rule);
   const team = oneOf(TEAMS, value.team);
+  const wakeNights = oneOf(WAKE_NIGHTS, value.wakeNights);
   if (
     typeof id !== 'string' ||
     !name ||
     !rule ||
     !team ||
+    !wakeNights ||
     !(defaultWakeOrder === null || typeof defaultWakeOrder === 'number') ||
     typeof image !== 'string' ||
     typeof custom !== 'boolean'
   ) {
     return null;
   }
-  return { id, name, rule, team, defaultWakeOrder, image, custom };
+  return { id, name, rule, team, defaultWakeOrder, wakeNights, image, custom };
 }
 
 function gameRole(value: unknown): GameRole | null {
@@ -167,7 +170,14 @@ function phase(value: unknown): Phase | null {
 }
 
 function gameState(value: unknown): GameState | null {
-  if (!isObject(value) || !isObject(value.deaths) || !isObject(value.notes)) return null;
+  if (
+    !isObject(value) ||
+    !isObject(value.deaths) ||
+    !isObject(value.notes) ||
+    !isObject(value.marks)
+  ) {
+    return null;
+  }
   const current = phase(value.phase);
   if (!current) return null;
   const deaths: Record<string, Phase> = {};
@@ -186,7 +196,18 @@ function gameState(value: unknown): GameState | null {
     }
     notes[Number(night)] = entries;
   }
-  return { phase: current, deaths, notes };
+  const marks: Record<string, Record<string, Phase>> = {};
+  for (const [playerId, own] of Object.entries(value.marks)) {
+    if (!isObject(own)) return null;
+    const entries: Record<string, Phase> = {};
+    for (const [mark, at] of Object.entries(own)) {
+      const marked = phase(at);
+      if (!marked) return null;
+      entries[mark] = marked;
+    }
+    marks[playerId] = entries;
+  }
+  return { phase: current, deaths, notes, marks };
 }
 
 function reveal(value: unknown): Reveal | null {

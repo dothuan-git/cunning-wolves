@@ -62,7 +62,7 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
   };
 }
 
-/** The narrator's marks, for the master only. */
+/** Phases, deaths, notes and marks: for the master, and for seated players after Finish. */
 function gameStateInfo(game: GameState): GameState {
   return {
     phase: { kind: game.phase.kind, number: game.phase.number },
@@ -75,6 +75,17 @@ function gameStateInfo(game: GameState): GameState {
     notes: Object.fromEntries(
       Object.entries(game.notes).map(([night, byPlayer]) => [night, { ...byPlayer }]),
     ),
+    marks: Object.fromEntries(
+      Object.entries(game.marks).map(([id, own]) => [
+        id,
+        Object.fromEntries(
+          Object.entries(own).map(([mark, marked]) => [
+            mark,
+            { kind: marked.kind, number: marked.number },
+          ]),
+        ),
+      ]),
+    ),
   };
 }
 
@@ -85,6 +96,7 @@ function roleInfo(role: RoomRole): RoomRole {
     rule: { vi: role.rule.vi, en: role.rule.en },
     team: role.team,
     defaultWakeOrder: role.defaultWakeOrder,
+    wakeNights: role.wakeNights,
     image: role.image,
     custom: role.custom,
   };

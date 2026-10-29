@@ -78,7 +78,8 @@
   },
   "faction": {
     "village": "Village",
-    "werewolf": "Wolves"
+    "werewolf": "Wolves",
+    "solo": "Third faction"
   },
   "player": {
     "alive": "Alive",
@@ -90,7 +91,8 @@
     "note": "Note for {{name}}",
     "notePlaceholder": "Add an observation…",
     "statusFor": "Status for {{name}}",
-    "nameYou": "{{name}} (you)"
+    "nameYou": "{{name}} (you)",
+    "marks": "Marks for {{name}} ({{number}})"
   },
   "card": {
     "tapToEdit": "Tap to edit rule.",
@@ -208,7 +210,8 @@
     "tooMany_one": "{{count}} role too many.",
     "tooMany_other": "{{count}} roles too many.",
     "wakes": "Wakes at night",
-    "reconnecting": "Reconnecting… changes can’t be saved yet."
+    "reconnecting": "Reconnecting… changes can’t be saved yet.",
+    "addSolo": "Add third-faction roles"
   },
   "rules": {
     "intro": "Everyone can read the rules. Your role stays secret until the game starts.",
@@ -241,7 +244,10 @@
     "holdEndMorning": "Hold to end morning",
     "wakeTile": "{{role}}, {{position}} of {{total}}",
     "wakeHint": "Drag, or use the arrow keys, to change the order.",
-    "wakeMoved": "{{role}} is now {{position}} of {{total}}"
+    "wakeMoved": "{{role}} is now {{position}} of {{total}}",
+    "marksTitle": "Marks · {{name}}",
+    "markSince": "Since {{phase}}",
+    "markHeldBy": "Now with {{name}}"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",
@@ -258,7 +264,8 @@
     "died": "{{name}} died",
     "deadCount": "{{count}} dead",
     "diedIn": "Died · {{phase}}",
-    "aliveOfTotal": "{{alive}}/{{total}} players"
+    "aliveOfTotal": "{{alive}}/{{total}} players",
+    "marked": "{{name}}: {{mark}}"
   },
   "components": {
     "primary": "Primary action",

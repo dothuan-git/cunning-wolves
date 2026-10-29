@@ -46,6 +46,7 @@ export function roomRoles(setup: Pick<RoomSetup, 'ruleEdits' | 'customRoles'>): 
     rule: ruleFor(role.id, { vi: role.rule, en: role.rule }),
     team: role.team,
     defaultWakeOrder: role.wakes ? CUSTOM_WAKE_START + index : null,
+    wakeNights: 'every' as const,
     image: '',
     custom: true,
   }));
@@ -68,6 +69,17 @@ export function wakingOrder<Role extends Pick<RoomRole, 'id' | 'defaultWakeOrder
   return roles
     .filter((role) => role.defaultWakeOrder !== null && picks.includes(role.id))
     .sort((a, b) => place(a) - place(b));
+}
+
+/** Whether a role is woken on this night. */
+export function wakesOnNight(
+  role: Pick<RoomRole, 'defaultWakeOrder' | 'wakeNights'>,
+  night: number,
+): boolean {
+  if (role.defaultWakeOrder === null) return false;
+  if (role.wakeNights === 'first') return night === 1;
+  if (role.wakeNights === 'even') return night % 2 === 0;
+  return true;
 }
 
 /** The picked roles with their copy counts, in room role order. */

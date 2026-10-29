@@ -2,6 +2,7 @@ import type { Locale, PoolRole } from '@werewolf/shared';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RoleArtwork } from './RoleArtwork';
+import { FACTION_TEXT } from '../design/faction';
 
 // A thumbnail card scales with its own width (see `.thumbnail-card` in index.css), so the same
 // face fits a row of three and a wide carousel card. The detailed card has fixed sizes.
@@ -43,7 +44,7 @@ export function RoleFace({
   const thumbnail = variant === 'thumbnail';
   const Name = thumbnail ? 'span' : 'h2';
   const look = LOOK[variant];
-  const team = role.team === 'werewolf' ? 'text-werewolf' : 'text-village';
+  const team = FACTION_TEXT[role.team];
   return (
     <div className={`flex h-full flex-col ${look.face}`}>
       <Name className={`role-title absolute z-10 font-display font-semibold ${look.name} ${team}`}>

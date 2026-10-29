@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, nextPhase, type PoolRole } from '@werewolf/shared';
+import { DEFAULT_SETTINGS, marksFor, nextPhase, type PoolRole } from '@werewolf/shared';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -14,7 +14,15 @@ import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
 import type { Phase, SeatedPlayerItem } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
-import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
+import {
+  exampleGroups,
+  exampleMarks,
+  examplePlayers,
+  exampleRoles,
+  manyRoles,
+  seer,
+  villager,
+} from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
 import type { PreviewState, ScreenId } from './screens';
 
@@ -63,6 +71,7 @@ function PreviewScene({
     if (state === 'morning') sample.linh = { kind: 'night', number: 2 };
     return sample;
   });
+  const [marks, setMarks] = useState(exampleMarks);
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
   const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
@@ -89,7 +98,7 @@ function PreviewScene({
           index === 0 ? { ...player, name: 'Nguyễn Hoàng Minh Phương' } : player,
         )
       : state === 'many'
-        ? [...examplePlayers, ...crowd.map((guest) => ({ ...guest, role: villager }))]
+        ? [...examplePlayers, ...crowd.map((guest) => ({ ...guest, role: villager, marks: [] }))]
         : examplePlayers;
   switch (screen) {
     case 'home':
@@ -252,6 +261,23 @@ function PreviewScene({
             ]),
           )}
           deaths={deaths}
+          marks={marks}
+          markOptions={Object.fromEntries(
+            examplePlayers.map((player) => [
+              player.id,
+              marksFor(
+                player.role.id,
+                examplePlayers.map((other) => other.role.id),
+              ),
+            ]),
+          )}
+          onToggleMark={(id, mark) => {
+            setMarks((current) => {
+              const own = current[id] ?? {};
+              const kept = Object.fromEntries(Object.entries(own).filter(([key]) => key !== mark));
+              return { ...current, [id]: mark in own ? kept : { ...own, [mark]: phase } };
+            });
+          }}
           settings={narratorSettings}
           onPlayerNote={(night, id, text) => {
             setNoteEdits((current) => ({
@@ -305,11 +331,13 @@ function PreviewScene({
                       { id: 'ha', name: 'Hà', text: t('preview.noteWitch') },
                     ],
                     deaths: [],
+                    marks: [{ id: 'ha', name: 'Hà', mark: 'heal-used' }],
                   },
                   {
                     phase: { kind: 'morning', number: 1 },
                     notes: [],
                     deaths: [{ id: 'huy', name: 'Huy' }],
+                    marks: [{ id: 'linh', name: 'Linh', mark: 'sheriff' }],
                   },
                   {
                     phase: { kind: 'night', number: 2 },
@@ -318,6 +346,7 @@ function PreviewScene({
                       { id: 'minh', name: 'Minh', text: t('preview.noteWolves2') },
                     ],
                     deaths: [{ id: 'linh', name: 'Linh' }],
+                    marks: [],
                   },
                 ]
           }
@@ -539,6 +568,7 @@ function PreviewSetup({
             rule: { vi: role.rule, en: role.rule },
             team: role.team,
             defaultWakeOrder: role.wakes ? 1000 + current.length : null,
+            wakeNights: 'every',
             image: '',
           },
         ]);

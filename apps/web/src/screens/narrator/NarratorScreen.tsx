@@ -1,10 +1,17 @@
-import { NOTE_MAX, TIMER_MAX, type RoomSettings } from '@werewolf/shared';
+import {
+  NOTE_MAX,
+  TIMER_MAX,
+  wakesOnNight,
+  type MarkDef,
+  type RoomSettings,
+} from '@werewolf/shared';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { HoldButton } from '../../components/HoldButton';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { MarkChips } from '../../components/MarkChips';
 import { PlayerStatusControl } from '../../components/PlayerStatusControl';
 import { Icon } from '../../components/Icon';
 import { Modal } from '../../components/Modal';
@@ -13,10 +20,12 @@ import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { NoteField, TextField } from '../../components/TextField';
+import { FACTION_WASH } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
 import type { Phase, PlayerListItem, RoleGroupItem } from '../types';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
+import { MarksButton, MarksSheet } from './PlayerMarks';
 import { playerTimeline } from './phase';
 
 export function NarratorScreen({
@@ -24,10 +33,13 @@ export function NarratorScreen({
   phase,
   notes,
   deaths,
+  marks,
+  markOptions,
   settings,
   reconnecting = false,
   onPlayerNote,
   onTogglePlayer,
+  onToggleMark,
   onEndPhase,
   onWakeOrder,
   onSettings,
@@ -42,12 +54,17 @@ export function NarratorScreen({
   notes: Readonly<Record<number, Readonly<Record<string, string>>>>;
   /** Player id → the phase the narrator marked them dead in. */
   deaths: Readonly<Record<string, Phase>>;
+  /** Player id → mark id → the phase it was marked in. */
+  marks: Readonly<Record<string, Readonly<Record<string, Phase>>>>;
+  /** Player id → the marks that player may carry in this game, in display order. */
+  markOptions: Readonly<Record<string, readonly MarkDef[]>>;
   settings: RoomSettings;
   /** The room can't be told anything right now */
   reconnecting?: boolean;
   /** Sends a note; returns false when it could not be sent, so it is tried again later */
   onPlayerNote: SaveNote;
   onTogglePlayer: (playerId: string) => void;
+  onToggleMark: (playerId: string, markId: string) => void;
   onEndPhase: () => void;
   onWakeOrder: (order: string[]) => void;
   onSettings: (settings: RoomSettings) => void;
@@ -62,6 +79,8 @@ export function NarratorScreen({
   const [showTools, setShowTools] = useState(false);
   const [timerDraft, setTimerDraft] = useState('');
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
+  // The player whose marks sheet is open.
+  const [marking, setMarking] = useState<string | null>(null);
 
   // The countdown lives on this phone; a new length from the room resets it.
   const length = settings.timerSeconds;
@@ -123,12 +142,14 @@ export function NarratorScreen({
     setShowTools(false);
   }
 
-  const orderedGroups = groups.filter((group) => group.role.defaultWakeOrder !== null);
-  // Roles that never wake still need a place in the list so they can be marked dead.
-  const restingGroups = groups.filter((group) => group.role.defaultWakeOrder === null);
-  const alive = groups
-    .flatMap((group) => group.players)
-    .filter((player) => !(player.id in deaths)).length;
+  const wakingGroups = groups.filter((group) => group.role.defaultWakeOrder !== null);
+  const tonightGroups = groups.filter((group) => wakesOnNight(group.role, phase.number));
+  // Roles that don't wake tonight still need a place in the list so they can be marked.
+  const restingGroups = groups.filter((group) => !wakesOnNight(group.role, phase.number));
+  const everyone = groups.flatMap((group) => group.players);
+  const alive = everyone.filter((player) => !(player.id in deaths)).length;
+  const marksOf = (playerId: string): Readonly<Record<string, Phase>> =>
+    (Object.hasOwn(marks, playerId) ? marks[playerId] : undefined) ?? {};
   const isNight = phase.kind === 'night';
 
   function phaseLabel(value: Phase) {
@@ -143,6 +164,9 @@ export function NarratorScreen({
       const text = noteText(night, player.id);
       if (text !== '') playerNotes[night] = text;
     }
+    const options = markOptions[player.id] ?? [];
+    const own = marksOf(player.id);
+    const carried = options.filter((mark) => Object.hasOwn(own, mark.id));
     const entries = playerTimeline({
       notes: playerNotes,
       death,
@@ -155,15 +179,32 @@ export function NarratorScreen({
       <li key={player.id} className="px-3.5 pb-1.5">
         <div className="flex min-h-12 items-center justify-between gap-2">
           <PlayerChip name={player.name} dead={dead} large />
-          <PlayerStatusControl
-            name={player.name}
-            dead={dead}
-            disabled={reconnecting}
-            onToggle={() => {
-              onTogglePlayer(player.id);
-            }}
-          />
+          <div className="flex shrink-0 items-center">
+            {options.length > 0 && (
+              <MarksButton
+                name={player.name}
+                count={carried.length}
+                disabled={reconnecting}
+                onOpen={() => {
+                  setMarking(player.id);
+                }}
+              />
+            )}
+            <PlayerStatusControl
+              name={player.name}
+              dead={dead}
+              disabled={reconnecting}
+              onToggle={() => {
+                onTogglePlayer(player.id);
+              }}
+            />
+          </div>
         </div>
+        {carried.length > 0 && (
+          <div className="pb-1.5">
+            <MarkChips labels={carried.map((mark) => mark.label[locale])} />
+          </div>
+        )}
         {entries.length > 0 && (
           // The top padding keeps the first note's overlap off the status pill above it.
           <ol aria-label={t('narrator.history', { name: player.name })} className="pt-1">
@@ -333,14 +374,10 @@ export function NarratorScreen({
         </p>
       </section>
       <div className="grid min-w-0 gap-2.5">
-        {[...orderedGroups, ...restingGroups].map((group) => {
+        {[...tonightGroups, ...restingGroups].map((group) => {
           // A role whose players are all dead goes grey: band, name and art.
           const out = group.players.length > 0 && group.players.every((p) => p.id in deaths);
-          const wash = out
-            ? 'bg-line'
-            : group.role.team === 'werewolf'
-              ? 'bg-werewolf-wash'
-              : 'bg-village-wash';
+          const wash = out ? 'bg-line' : FACTION_WASH[group.role.team];
           return (
             <section
               key={group.role.id}
@@ -360,6 +397,32 @@ export function NarratorScreen({
           );
         })}
       </div>
+      {marking !== null && (
+        <MarksSheet
+          name={everyone.find((player) => player.id === marking)?.name ?? ''}
+          disabled={reconnecting}
+          options={(markOptions[marking] ?? []).map((mark) => {
+            const own = marksOf(marking);
+            const since = Object.hasOwn(own, mark.id) ? own[mark.id] : undefined;
+            const holder = mark.single
+              ? everyone.find(
+                  (player) => player.id !== marking && Object.hasOwn(marksOf(player.id), mark.id),
+                )
+              : undefined;
+            return {
+              mark,
+              since: since && phaseLabel(since),
+              heldBy: holder?.name,
+            };
+          })}
+          onToggle={(markId) => {
+            onToggleMark(marking, markId);
+          }}
+          onClose={() => {
+            setMarking(null);
+          }}
+        />
+      )}
       {showTools && (
         <Modal sheet title={t('setup.settings')} onClose={closeTools}>
           <div className="grid gap-4 pb-4">
@@ -425,9 +488,9 @@ export function NarratorScreen({
               />
               {t('setup.sound')}
             </label>
-            {orderedGroups.length > 0 && (
+            {wakingGroups.length > 0 && (
               <WakeOrderSetting
-                roles={orderedGroups.map((group) => group.role)}
+                roles={wakingGroups.map((group) => group.role)}
                 onChange={(order) => {
                   onWakeOrder(order.map((role) => role.id));
                 }}

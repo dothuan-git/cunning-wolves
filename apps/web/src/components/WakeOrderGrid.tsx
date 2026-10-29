@@ -2,6 +2,7 @@ import type { Team } from '@werewolf/shared';
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FACTION_TEXT, FACTION_WASH } from '../design/faction';
 
 const COLUMNS = 4;
 // A press only becomes a drag after the finger moves this far, so a tap stays a tap.
@@ -198,10 +199,7 @@ export function WakeOrderGrid({
       <ol className="grid grid-cols-4 gap-2">
         {roles.map((role, index) => {
           const lifted = dragging === role.id;
-          const look =
-            role.team === 'werewolf'
-              ? 'bg-werewolf-wash text-werewolf'
-              : 'bg-village-wash text-village';
+          const look = `${FACTION_WASH[role.team]} ${FACTION_TEXT[role.team]}`;
           return (
             <li key={role.id} className="min-w-0">
               <button
