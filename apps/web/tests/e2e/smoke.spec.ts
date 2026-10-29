@@ -43,3 +43,20 @@ test('rule book opens from home, searches and shows a rule', async ({ page }) =>
   await page.getByRole('button', { name: 'Quay lại' }).click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test('rule book factions fold away and back', async ({ page }) => {
+  await page.goto('/rules');
+  const wolves = page.getByRole('button', { name: /^Phe Sói/ });
+  const card = page.getByRole('button', { name: 'Đọc luật của Ma sói', exact: true });
+  await expect(card).toBeVisible();
+  await wolves.click();
+  await expect(wolves).toHaveAttribute('aria-expanded', 'false');
+  await expect(card).toBeHidden();
+  // A search opens every faction again, so a match is never hidden.
+  await page.getByRole('searchbox').fill('ma soi');
+  await expect(wolves).toHaveAttribute('aria-expanded', 'true');
+  await expect(card).toBeVisible();
+  await wolves.click();
+  await wolves.click();
+  await expect(card).toBeVisible();
+});

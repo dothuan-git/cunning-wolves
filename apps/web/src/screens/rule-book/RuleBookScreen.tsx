@@ -1,4 +1,4 @@
-import type { PoolRole } from '@werewolf/shared';
+import type { PoolRole, Team } from '@werewolf/shared';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -23,6 +23,7 @@ export function RuleBookScreen({
   const locale = useLocale();
   const [search, setSearch] = useState('');
   const [viewing, setViewing] = useState<PoolRole | null>(null);
+  const [collapsed, setCollapsed] = useState<ReadonlySet<Team>>(new Set());
   const searchId = useId();
   const shown = filterRoles(roles, search);
   const groups = FACTION_ORDER.map((team) => ({
@@ -51,6 +52,8 @@ export function RuleBookScreen({
           value={search}
           onChange={(event) => {
             setSearch(event.target.value);
+            // A match must never hide inside a folded faction.
+            setCollapsed(new Set());
           }}
           className="min-h-12 w-full min-w-0 rounded-control border border-field-border bg-field px-3 py-2.5 font-sans text-body text-ink placeholder:text-muted"
         />
@@ -69,6 +72,12 @@ export function RuleBookScreen({
             team={team}
             count={cards.length}
             countText={t('ruleBook.count', { count: cards.length })}
+            collapsed={collapsed.has(team)}
+            onToggle={() => {
+              const next = new Set(collapsed);
+              if (!next.delete(team)) next.add(team);
+              setCollapsed(next);
+            }}
           >
             {cards.map((role) => (
               <li key={role.id} className="aspect-2/3">
