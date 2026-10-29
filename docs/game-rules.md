@@ -25,7 +25,7 @@ The way back: **Edit roles** (`reveal → lobby`) and **Play again** (`finished 
 
 Gathering players and choosing roles happen at the same time, so they are one status, `lobby` (decision 0017).
 
-**Locks:** kick, close/re-open, leaving and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; while the room is in `reveal` or later, the roster and card set are locked. **Edit roles** unlocks them again until **Start game**. While playing, the narrator can still change the wake order, the timer length and sound.
+**Locks:** kick, close/re-open, leaving and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; while the room is in `reveal` or later, the roster and card set are locked. **Edit roles** unlocks them again until **Start game**. While reviewing the rules and while playing, the narrator can still change the wake order, the timer length and sound.
 
 ## Rooms
 
@@ -51,7 +51,7 @@ While players gather, the master builds the card set on **Setup**. The room keep
 - **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night (every night). A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
 - **Wake order:** the master can reorder the waking roles in the game; roles not reordered follow their default order.
 - **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default) and sound cues (off by default). Language is per phone, not a room setting.
-- All of this is master-only and locked once the room leaves `lobby`, except the wake order, timer and sound, which the narrator can still change while playing.
+- All of this is master-only and locked once the room leaves `lobby`, except the wake order, timer and sound, which the narrator can still change while reviewing the rules and while playing.
 
 ## Dealing
 

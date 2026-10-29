@@ -106,6 +106,12 @@ export function RoomScreen({ roomId }: { roomId: string }) {
             reconnecting,
             onBack: () => send({ type: 'backToSetup' }),
             onStart: () => send({ type: 'startGame' }),
+            settings: setup.settings,
+            waking: wakingOrder(roomRoles(setup), setup.picks, setup.wakeOrder),
+            onSettings: (settings) => send({ type: 'setSettings', settings }),
+            onWakeOrder: (order) => send({ type: 'setWakeOrder', order }),
+            onDelete,
+            deleteFailed: masterError === 'try-again',
           }}
         />
       );

@@ -35,6 +35,14 @@
     @apply outline-2 outline-offset-4 outline-village;
   }
 
+  /* Tapping a text box or dropdown draws no ring (they always match :focus-visible); Tab brings
+     it back. design/pointer.ts sets and clears data-pointer. */
+  [data-pointer] input:not([type='checkbox']):focus-visible,
+  [data-pointer] select:focus-visible,
+  [data-pointer] textarea:focus-visible {
+    outline: none;
+  }
+
   ::selection {
     @apply bg-village text-field;
   }
