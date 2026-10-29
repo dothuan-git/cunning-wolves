@@ -66,7 +66,6 @@ export function RoomSettingsSheet({
         <div className="divide-y divide-line border-y border-line">
           <SwitchRow
             label={t('setup.sound')}
-            hint={t('setup.soundHint')}
             checked={settings.soundOn}
             onChange={(event) => {
               onSettings({ ...settings, soundOn: event.target.checked });

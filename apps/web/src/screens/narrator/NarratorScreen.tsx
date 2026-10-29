@@ -564,7 +564,6 @@ export function NarratorScreen({
             <div className="divide-y divide-line border-y border-line">
               <SwitchRow
                 label={t('setup.sound')}
-                hint={t('setup.soundHint')}
                 checked={settings.soundOn}
                 disabled={reconnecting}
                 onChange={(event) => {
