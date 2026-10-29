@@ -194,6 +194,8 @@
     "timer": "Thời gian ban đêm (giây)",
     "sound": "Âm thanh",
     "marks": "Trạng thái người chơi",
+    "marksHint": "Gắn trạng thái lên người chơi và ghi lại vai mới.",
+    "soundHint": "Phát chuông khi bộ đếm đêm về 0.",
     "ready": "Xem lại luật",
     "needRoles": "Xếp đủ vai để tiếp tục.",
     "roleRequired": "Nhập tên và mô tả vai.",

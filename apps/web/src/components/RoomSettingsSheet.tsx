@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { DeleteRoomButton } from './DeleteRoomButton';
 import { LanguageSwitch } from './LanguageSwitch';
 import { Modal } from './Modal';
+import { SwitchRow } from './SwitchRow';
 import { TextField } from './TextField';
 import { WakeOrderSetting } from './WakeOrderSetting';
 
@@ -62,28 +63,24 @@ export function RoomSettingsSheet({
             setTimer(event.target.value);
           }}
         />
-        <label className="flex min-h-12 items-center gap-3 text-control">
-          <input
-            className="size-5 accent-ink"
-            type="checkbox"
+        <div className="divide-y divide-line border-y border-line">
+          <SwitchRow
+            label={t('setup.sound')}
+            hint={t('setup.soundHint')}
             checked={settings.soundOn}
             onChange={(event) => {
               onSettings({ ...settings, soundOn: event.target.checked });
             }}
           />
-          {t('setup.sound')}
-        </label>
-        <label className="flex min-h-12 items-center gap-3 text-control">
-          <input
-            className="size-5 accent-ink"
-            type="checkbox"
+          <SwitchRow
+            label={t('setup.marks')}
+            hint={t('setup.marksHint')}
             checked={settings.marksOn}
             onChange={(event) => {
               onSettings({ ...settings, marksOn: event.target.checked });
             }}
           />
-          {t('setup.marks')}
-        </label>
+        </div>
         {waking.length > 0 && (
           <WakeOrderSetting
             roles={waking}
