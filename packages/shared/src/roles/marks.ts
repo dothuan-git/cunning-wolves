@@ -9,7 +9,7 @@ export interface MarkDef {
   id: string;
   /** Data like role names, not an i18n key */
   label: LocalizedText;
-  /** Pool role ids whose presence in the game offers the mark; empty: every game offers it */
+  /** Pool role ids whose presence in the game offers the mark; a mark no role makes is never offered */
   from: readonly string[];
   /** Only a player dealt one of `from` can carry it */
   holdersOnly: boolean;
@@ -24,20 +24,6 @@ export const PACK_ROLES: readonly string[] = ['white-werewolf', 'lone-wolf'];
 
 // Shown in this order wherever a player's marks are listed.
 export const MARKS: readonly MarkDef[] = [
-  {
-    id: 'sheriff',
-    label: { vi: 'Trưởng làng', en: 'Sheriff' },
-    from: [],
-    holdersOnly: false,
-    single: true,
-  },
-  {
-    id: 'town-crier',
-    label: { vi: 'Người rao tin', en: 'Town Crier' },
-    from: [],
-    holdersOnly: false,
-    single: true,
-  },
   {
     id: 'lover',
     label: { vi: 'Cặp đôi', en: 'Lover' },
@@ -278,9 +264,7 @@ export function marksForPlayer(
 /** The marks a player dealt `roleId` may carry, in a game where `dealt` are every player's roles. */
 export function marksFor(roleId: string, dealt: readonly string[]): MarkDef[] {
   return MARKS.filter((mark) =>
-    mark.holdersOnly
-      ? mark.from.includes(roleId)
-      : mark.from.length === 0 || mark.from.some((id) => dealt.includes(id)),
+    mark.holdersOnly ? mark.from.includes(roleId) : mark.from.some((id) => dealt.includes(id)),
   );
 }
 

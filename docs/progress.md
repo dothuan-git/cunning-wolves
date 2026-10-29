@@ -106,6 +106,7 @@
   - Marks for the lasting effects of the remaining roles: joining the wolves (Alpha Wolf, Cursed) or the cult, the Dire Wolf's companion, the Doppelgänger's model, the Hoodlum's targets, a delayed death, the Priest's blessing, the amulet, a burned house, the Captain, the Prince revealed, and "Power used" for once-per-game roles. One-night effects (Bodyguard, Raven, Old Hag…) stay in notes. The Lone Wolf shows in the wolves' pack.
   - Linked deaths: marking a lover dead marks the other lovers too, and a Dire Wolf dies with its companion; one tap undoes the chain (decision 0024).
   - New role: the narrator can give a player another role (Doppelgänger, Thief, Drunk…); the player moves to that role's panel, the phone keeps the dealt card (decision 0025).
+  - The Sheriff and Town Crier marks are gone: no pool role makes those titles, so the marks sheet only offers marks that a dealt role makes.
 
 ## Next
 

@@ -45,6 +45,15 @@ export const villager: PoolRole = {
   wakeNights: 'every',
   image: 'villager.webp',
 };
+export const priest: PoolRole = {
+  id: 'priest',
+  name: { vi: 'Linh mục', en: 'Priest' },
+  rule: exampleRule,
+  team: 'village',
+  defaultWakeOrder: 35,
+  wakeNights: 'every',
+  image: 'priest.webp',
+};
 
 // More roles than a small game, to see the rules review fill several rows. No art exists for
 // these yet, so they also show the fallback figure.
@@ -98,22 +107,22 @@ export const manyRoles: readonly PoolRole[] = [
 ];
 
 // Synthetic design fixtures only. The production ROLE_POOL remains untouched.
-export const exampleRoles = [seer, wolf, witch, villager];
+export const exampleRoles = [seer, wolf, witch, priest, villager];
 const marks = (...ids: string[]) => MARKS.filter((mark) => ids.includes(mark.id));
 export const examplePlayers: readonly RevealedPlayerItem[] = [
-  { id: 'linh', name: 'Linh', role: seer, marks: marks('sheriff') },
+  { id: 'linh', name: 'Linh', role: seer, marks: marks('blessed') },
   { id: 'minh', name: 'Minh', role: wolf, marks: [] },
   { id: 'an', name: 'An', role: wolf, marks: [] },
   { id: 'ha', name: 'Hà', role: witch, marks: marks('heal-used') },
   { id: 'huy', name: 'Huy', role: villager, marks: [] },
-  { id: 'mai', name: 'Mai', role: villager, marks: [] },
+  { id: 'mai', name: 'Mai', role: priest, marks: [] },
 ];
-/** Example marks while playing: Linh was made sheriff, and Hà has used her heal. */
+/** Example marks while playing: the Priest blessed Linh, and Hà has used her heal. */
 export const exampleMarks: Record<
   string,
   Record<string, { kind: 'night' | 'morning'; number: number }>
 > = {
-  linh: { sheriff: { kind: 'morning', number: 1 } },
+  linh: { blessed: { kind: 'morning', number: 1 } },
   ha: { 'heal-used': { kind: 'night', number: 1 } },
 };
 // Every role, so players whose role never wakes can still be marked dead.

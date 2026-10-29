@@ -544,6 +544,19 @@ function playing(): RoomState {
   return run(ready(), [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
 }
 
+/** Like `playing`, but Minh is the Witch, so the narrator has a mark to make. */
+function witchPlaying(): RoomState {
+  return run(
+    room(),
+    ['a', { type: 'join', name: 'Minh', pin: PIN }],
+    ['b', { type: 'join', name: 'Lan', pin: PIN }],
+    [MASTER, { type: 'addPick', roleId: 'witch' }],
+    [MASTER, { type: 'addPick', roleId: 'werewolf' }],
+    [MASTER, { type: 'review' }],
+    [MASTER, { type: 'startGame' }],
+  );
+}
+
 const NIGHT_1 = { kind: 'night', number: 1 } as const;
 const MORNING_1 = { kind: 'morning', number: 1 } as const;
 const NIGHT_2 = { kind: 'night', number: 2 } as const;
@@ -801,17 +814,18 @@ describe('set role', () => {
 });
 
 describe('toggle mark', () => {
-  /** Minh holds the witch, Lan the werewolf and Hoa the knight, at Night 1. */
+  /** Minh holds the witch, Lan the werewolf, Hoa the knight and Tú the priest, at Night 1. */
   function marking(): RoomState {
     let state = room();
     for (const [id, name] of [
       ['a', 'Minh'],
       ['b', 'Lan'],
       ['c', 'Hoa'],
+      ['d', 'Tú'],
     ] as const) {
       state = run(state, [id, { type: 'join', name, pin: PIN }]);
     }
-    for (const roleId of ['witch', 'werewolf', 'knight']) {
+    for (const roleId of ['witch', 'werewolf', 'knight', 'priest']) {
       state = run(state, [MASTER, { type: 'addPick', roleId }]);
     }
     return run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
@@ -839,20 +853,25 @@ describe('toggle mark', () => {
   });
 
   it('moves a single mark to the newly marked player', () => {
-    const lan = run(marking(), [MASTER, mark('a', 'heal-used')], [MASTER, mark('b', 'sheriff')]);
-    const moved = run(lan, [MASTER, mark('a', 'sheriff')]);
-    expect(moved.game?.marks).toEqual({ a: { 'heal-used': NIGHT_1, sheriff: NIGHT_1 } });
+    const lan = run(marking(), [MASTER, mark('a', 'heal-used')], [MASTER, mark('b', 'blessed')]);
+    const moved = run(lan, [MASTER, mark('a', 'blessed')]);
+    expect(moved.game?.marks).toEqual({ a: { 'heal-used': NIGHT_1, blessed: NIGHT_1 } });
+  });
+
+  it('offers no title that no dealt role makes', () => {
+    expect(refusal(marking(), MASTER, mark('a', 'sheriff'))).toBe('not-allowed');
+    expect(refusal(marking(), MASTER, mark('a', 'town-crier'))).toBe('not-allowed');
   });
 
   it('refuses an unknown mark, a player without a card, before the game, and from a player', () => {
     expect(refusal(marking(), MASTER, mark('a', 'cursed'))).toBe('not-allowed');
     expect(refusal(marking(), MASTER, mark('a', '__proto__'))).toBe('not-allowed');
-    expect(refusal(marking(), MASTER, mark('z', 'sheriff'))).toBe('not-allowed');
-    expect(refusal(marking(), MASTER, mark('__proto__', 'sheriff'))).toBe('not-allowed');
-    expect(refusal(ready(), MASTER, mark('a', 'sheriff'))).toBe('not-allowed');
-    expect(refusal(marking(), 'a', mark('b', 'sheriff'))).toBe('not-master');
+    expect(refusal(marking(), MASTER, mark('z', 'rusted'))).toBe('not-allowed');
+    expect(refusal(marking(), MASTER, mark('__proto__', 'rusted'))).toBe('not-allowed');
+    expect(refusal(ready(), MASTER, mark('a', 'rusted'))).toBe('not-allowed');
+    expect(refusal(marking(), 'a', mark('b', 'rusted'))).toBe('not-master');
     const finished = run(marking(), [MASTER, { type: 'finishGame' }]);
-    expect(refusal(finished, MASTER, mark('a', 'sheriff'))).toBe('not-allowed');
+    expect(refusal(finished, MASTER, mark('a', 'rusted'))).toBe('not-allowed');
   });
 });
 
@@ -952,9 +971,9 @@ describe('finish and play again', () => {
 
   it('goes back to Setup with the same players and card set, closed, and deals again', () => {
     const finished = run(
-      playing(),
+      witchPlaying(),
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
-      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'heal-used' }],
       [MASTER, { type: 'finishGame' }],
     );
     const again = run(finished, [MASTER, { type: 'playAgain' }]);
@@ -1092,44 +1111,44 @@ describe('views', () => {
 
   it('shows the narrator the marks, and no player any of them', () => {
     const marked = run(
-      playing(),
+      witchPlaying(),
       [MASTER, { type: 'toggleDeath', playerId: 'b' }],
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Secret note' }],
-      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'heal-used' }],
     );
     expect(buildMasterView(marked, connected).game).toEqual({
       phase: NIGHT_1,
       deaths: { b: NIGHT_1 },
       notes: { 1: { a: 'Secret note' } },
-      marks: { a: { sheriff: NIGHT_1 } },
+      marks: { a: { 'heal-used': NIGHT_1 } },
       newRoles: {},
     });
     for (const viewer of ['a', 'b', 'c']) {
       const view = buildPlayerView(marked, connected, viewer);
       expect(view).not.toHaveProperty('game');
       expect(JSON.stringify(view)).not.toContain('Secret note');
-      expect(JSON.stringify(view)).not.toContain('sheriff');
+      expect(JSON.stringify(view)).not.toContain('heal-used');
     }
   });
 
   it('shows seated players every role and the marks once finished, and nobody else', () => {
     const finished = run(
-      playing(),
+      witchPlaying(),
       [MASTER, { type: 'toggleDeath', playerId: 'b' }],
       [MASTER, { type: 'setNote', night: 1, playerId: 'a', text: 'Saw.' }],
-      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'sheriff' }],
+      [MASTER, { type: 'toggleMark', playerId: 'a', mark: 'heal-used' }],
       [MASTER, { type: 'finishGame' }],
     );
     const reveal = {
       assignments: [
-        { playerId: 'a', roleId: 'seer' },
+        { playerId: 'a', roleId: 'witch' },
         { playerId: 'b', roleId: 'werewolf' },
       ],
       game: {
         phase: NIGHT_1,
         deaths: { b: NIGHT_1 },
         notes: { 1: { a: 'Saw.' } },
-        marks: { a: { sheriff: NIGHT_1 } },
+        marks: { a: { 'heal-used': NIGHT_1 } },
         newRoles: {},
       },
     };

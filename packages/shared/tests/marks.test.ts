@@ -27,53 +27,31 @@ describe('MARKS', () => {
 });
 
 describe('marksFor', () => {
-  it('offers marks with no source role in every game', () => {
-    expect(ids(marksFor('villager', ['villager', 'werewolf']))).toEqual(['sheriff', 'town-crier']);
+  it('offers no mark in a game without a role that makes one', () => {
+    expect(ids(marksFor('villager', ['villager', 'werewolf']))).toEqual([]);
+    expect(MARKS.every((mark) => mark.from.length > 0)).toBe(true);
   });
 
   it("offers a holder's marks only to that holder", () => {
     const dealt = ['witch', 'villager', 'werewolf'];
-    expect(ids(marksFor('witch', dealt))).toEqual([
-      'sheriff',
-      'town-crier',
-      'heal-used',
-      'kill-used',
-    ]);
-    expect(ids(marksFor('villager', dealt))).toEqual(['sheriff', 'town-crier']);
+    expect(ids(marksFor('witch', dealt))).toEqual(['heal-used', 'kill-used']);
+    expect(ids(marksFor('villager', dealt))).toEqual([]);
   });
 
   it("offers a role's marks for others to anyone, while that role is dealt", () => {
-    expect(ids(marksFor('werewolf', ['knight', 'werewolf']))).toEqual([
-      'sheriff',
-      'town-crier',
-      'rusted',
-    ]);
-    expect(ids(marksFor('werewolf', ['werewolf']))).toEqual(['sheriff', 'town-crier']);
+    expect(ids(marksFor('werewolf', ['knight', 'werewolf']))).toEqual(['rusted']);
+    expect(ids(marksFor('werewolf', ['werewolf']))).toEqual([]);
   });
 
   it('offers the third-faction marks only while their role is dealt', () => {
     const dealt = ['cupid', 'cursed-wolf-father', 'pied-piper', 'wild-child', 'villager'];
-    expect(ids(marksFor('villager', dealt))).toEqual([
-      'sheriff',
-      'town-crier',
-      'lover',
-      'role-model',
-      'cursed',
-      'charmed',
-    ]);
+    expect(ids(marksFor('villager', dealt))).toEqual(['lover', 'role-model', 'cursed', 'charmed']);
     expect(ids(marksFor('villager', ['villager']))).not.toContain('lover');
   });
 
   it('offers the status marks of the remaining roles while their role is dealt', () => {
     const dealt = ['cult-leader', 'dire-wolf', 'vampire', 'priest', 'villager'];
-    expect(ids(marksFor('villager', dealt))).toEqual([
-      'sheriff',
-      'town-crier',
-      'in-cult',
-      'companion',
-      'doomed',
-      'blessed',
-    ]);
+    expect(ids(marksFor('villager', dealt))).toEqual(['in-cult', 'companion', 'doomed', 'blessed']);
     expect(ids(marksFor('priest', dealt))).toContain('power-used');
     expect(ids(marksFor('villager', dealt))).not.toContain('power-used');
   });
@@ -109,7 +87,7 @@ describe('wakesWithWolves', () => {
 
   it('is false for a mark that does not move anyone', () => {
     expect(wakesWithWolves('villager', [])).toBe(false);
-    expect(wakesWithWolves('villager', ['sheriff', 'lover', 'charmed'])).toBe(false);
+    expect(wakesWithWolves('villager', ['rusted', 'lover', 'charmed'])).toBe(false);
     expect(wakesWithWolves('wild-child', ['role-model'])).toBe(false);
   });
 });

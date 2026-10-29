@@ -357,7 +357,7 @@ function PreviewScene({
                     phase: { kind: 'morning', number: 1 },
                     notes: [],
                     deaths: [{ id: 'huy', name: 'Huy' }],
-                    marks: [{ id: 'linh', name: 'Linh', mark: 'sheriff' }],
+                    marks: [{ id: 'linh', name: 'Linh', mark: 'blessed' }],
                     newRoles: [],
                   },
                   {

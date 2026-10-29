@@ -47,7 +47,7 @@ const MASTER = {
     phase: { kind: 'morning', number: 2 },
     deaths: { aaaa: { kind: 'night', number: 2 } },
     notes: { 1: { aaaa: 'Saw the baker.' } },
-    marks: { aaaa: { sheriff: { kind: 'morning', number: 1 } } },
+    marks: { aaaa: { lover: { kind: 'morning', number: 1 } } },
     newRoles: { aaaa: { role: 'seer', phase: { kind: 'night', number: 2 } } },
   },
 } as const;
@@ -205,7 +205,7 @@ describe('parseServerMessage', () => {
       'a mark in an unknown phase',
       {
         type: 'state',
-        view: { ...MASTER, game: { ...MASTER.game, marks: { aaaa: { sheriff: 'dusk' } } } },
+        view: { ...MASTER, game: { ...MASTER.game, marks: { aaaa: { lover: 'dusk' } } } },
       },
     ],
     [

@@ -94,12 +94,10 @@ The worker builds each viewer's state before sending it. A player's client never
 
 ## Marks
 
-Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles or now playing one. A role a power gave someone offers its marks like a dealt one, and a carried mark can always be taken off. Marking a player with a single mark moves it from whoever had it.
+Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered only while one of its roles is dealt: there is no title (such as Sheriff) that every game offers. A holders-only mark can be carried only by a player dealt one of its roles or now playing one. A role a power gave someone offers its marks like a dealt one, and a carried mark can always be taken off. Marking a player with a single mark moves it from whoever had it.
 
 | Mark                  | Offered by                                                                                   | Carried by         |
 | --------------------- | -------------------------------------------------------------------------------------------- | ------------------ |
-| Sheriff               | every game                                                                                   | one player at once |
-| Town Crier            | every game                                                                                   | one player at once |
 | Lover                 | Cupid                                                                                        | any player         |
 | Role model            | Wild Child                                                                                   | one player at once |
 | Turned wolf           | Wild Child                                                                                   | its holder         |
