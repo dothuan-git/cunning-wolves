@@ -20,6 +20,8 @@ export const PONG = 'pong';
 export const CLOSE_REPLACED = 4000;
 /** Close code for a room that was never created, or has expired. */
 export const CLOSE_ROOM_GONE = 4004;
+/** Close code for a room the master deleted. */
+export const CLOSE_ROOM_DELETED = 4005;
 
 /**
  * Phone → room. `hello` must be the first message and is the only place the device token is sent.
@@ -27,9 +29,11 @@ export const CLOSE_ROOM_GONE = 4004;
  */
 export type ClientMessage =
   | { type: 'hello'; token: string }
-  | { type: 'join'; name: string }
+  | { type: 'join'; name: string; pin: string }
   | { type: 'leave' }
   | { type: 'kick'; playerId: string }
+  /** Makes a seated, online player the narrator; the master takes a seat */
+  | { type: 'handOver'; playerId: string }
   | { type: 'setOpen'; open: boolean }
   | { type: 'addPick'; roleId: string }
   /** Takes one copy of the role out of the game */
@@ -53,7 +57,9 @@ export type ClientMessage =
   /** Ends the game and shows everyone the summary */
   | { type: 'finishGame' }
   /** Back to Setup with the same players and card set */
-  | { type: 'playAgain' };
+  | { type: 'playAgain' }
+  /** Deletes the room for everyone, in any state */
+  | { type: 'deleteRoom' };
 
 export type RoomAction = Exclude<ClientMessage, { type: 'hello' }>;
 
@@ -80,6 +86,8 @@ export interface MasterView {
   room: RoomInfo;
   players: PlayerInfo[];
   setup: RoomSetup;
+  /** The join PIN, for the master to read out; null for a room made before PINs */
+  pin: string | null;
   /** Who holds which role; empty until the game starts */
   assignments: Assignment[];
   /** Phases, deaths and notes; null until the game starts */
@@ -128,7 +136,13 @@ export type ServerErrorCode =
   | 'room-closed'
   | 'not-master'
   | 'not-allowed'
-  | 'role-invalid';
+  | 'role-invalid'
+  | 'pin-wrong'
+  /** Too many wrong PINs for this room just now; try again in a minute */
+  | 'pin-locked'
+  | 'player-offline'
+  /** The room couldn't finish the action; nothing changed */
+  | 'try-again';
 
 /** Room → phone. */
 export type ServerMessage =

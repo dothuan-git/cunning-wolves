@@ -40,6 +40,7 @@ const MASTER = {
   room: ROOM,
   players: [],
   setup: SETUP,
+  pin: '4321',
   assignments: [{ playerId: 'aaaa', roleId: 'custom-0' }],
   game: {
     phase: { kind: 'morning', number: 2 },
@@ -84,14 +85,14 @@ describe('RoomConnection', () => {
   it('sends actions and keeps the refusal until the next one', () => {
     const { connection, latest } = setup();
     latest().receive({ type: 'state', view: VIEW });
-    expect(connection.send({ type: 'join', name: 'Minh' })).toBe(true);
-    expect(latest().sent.at(-1)).toBe(JSON.stringify({ type: 'join', name: 'Minh' }));
+    expect(connection.send({ type: 'join', name: 'Minh', pin: '4321' })).toBe(true);
+    expect(latest().sent.at(-1)).toBe(JSON.stringify({ type: 'join', name: 'Minh', pin: '4321' }));
 
     latest().receive({ type: 'error', code: 'name-taken' });
     expect(connection.getSnapshot().error).toBe('name-taken');
     latest().receive({ type: 'state', view: VIEW });
     expect(connection.getSnapshot().error).toBe('name-taken');
-    connection.send({ type: 'join', name: 'Lan' });
+    connection.send({ type: 'join', name: 'Lan', pin: '4321' });
     expect(connection.getSnapshot().error).toBeNull();
   });
 
@@ -139,8 +140,12 @@ describe('parseServerMessage', () => {
     expect(parseServerMessage(JSON.stringify(dealt))).toEqual(dealt);
     const master = { type: 'state', view: MASTER };
     expect(parseServerMessage(JSON.stringify(master))).toEqual(master);
-    const error = { type: 'error', code: 'room-closed' };
-    expect(parseServerMessage(JSON.stringify(error))).toEqual(error);
+    const old = { type: 'state', view: { ...MASTER, pin: null } };
+    expect(parseServerMessage(JSON.stringify(old))).toEqual(old);
+    for (const code of ['room-closed', 'pin-wrong', 'pin-locked', 'player-offline', 'try-again']) {
+      const error = { type: 'error', code };
+      expect(parseServerMessage(JSON.stringify(error))).toEqual(error);
+    }
   });
 
   it.each([
@@ -157,6 +162,8 @@ describe('parseServerMessage', () => {
       { type: 'state', view: { ...MASTER, assignments: undefined } },
     ],
     ['a master view without a game', { type: 'state', view: { ...MASTER, game: undefined } }],
+    ['a master view without a PIN', { type: 'state', view: { ...MASTER, pin: undefined } }],
+    ['a PIN as a number', { type: 'state', view: { ...MASTER, pin: 4321 } }],
     [
       'a death in an unknown phase',
       {

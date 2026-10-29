@@ -53,6 +53,7 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
     room: roomInfo(state),
     players: playerList(state, connected),
     setup: setupInfo(state.setup),
+    pin: state.pin,
     assignments: Object.entries(state.assignments).map(([playerId, roleId]) => ({
       playerId,
       roleId,

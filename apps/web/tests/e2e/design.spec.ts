@@ -384,10 +384,18 @@ test('a custom role is made from the list and shows up in it', async ({ page }) 
 
 test('name entry validates whitespace and accepts Vietnamese accents', async ({ page }) => {
   await page.goto('/design?screen=name-entry&lang=en&capture=1');
+  await page.getByRole('textbox', { name: 'Room PIN', exact: true }).fill('4821');
   await page.getByRole('textbox', { name: 'Your name', exact: true }).fill('   ');
   await page.getByRole('button', { name: 'Open the room', exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText('Enter a name with 1–24 characters.');
   await page.getByRole('textbox', { name: 'Your name', exact: true }).fill('Hà Nguyễn');
+  // The PIN keeps digits only, and needs all four.
+  const pin = page.getByRole('textbox', { name: 'Room PIN', exact: true });
+  await pin.fill('4a8');
+  await expect(pin).toHaveValue('48');
+  await page.getByRole('button', { name: 'Open the room', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Enter 4 digits.');
+  await pin.fill('4821');
   await page.getByRole('button', { name: 'Open the room', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Prepare the roles', exact: true })).toBeVisible();
 });

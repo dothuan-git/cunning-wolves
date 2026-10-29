@@ -113,7 +113,8 @@
     "emptyBody": "Create a room and invite everyone around the table.",
     "loading": "Looking for rooms…",
     "errorTitle": "The village is out of reach",
-    "errorBody": "Check your connection, then try again."
+    "errorBody": "Check your connection, then try again.",
+    "mine": "Your room"
   },
   "nameEntry": {
     "intro": "Choose the name everyone at the table knows.",
@@ -132,7 +133,13 @@
     "taken": "That name is taken in this room. Try another.",
     "closed": "The narrator has closed this room to new players.",
     "createFailed": "Couldn’t open the room. Check your connection, then try again.",
-    "notConnected": "Still reaching the room. Try again in a moment."
+    "notConnected": "Still reaching the room. Try again in a moment.",
+    "pinLabel": "Room PIN",
+    "pinCreateHint": "4 digits. Players type it to join.",
+    "pinJoinHint": "Ask the narrator for the 4-digit PIN.",
+    "pinError": "Enter 4 digits.",
+    "pinWrong": "That PIN is wrong. Ask the narrator again.",
+    "pinLocked": "Too many wrong PINs. Try again in a minute."
   },
   "lobby": {
     "room": "Room",
@@ -159,7 +166,14 @@
     "openChip": "Open",
     "closedChip": "Closed",
     "playersButton": "Players ({{count}})",
-    "joinAgain": "Join again"
+    "joinAgain": "Join again",
+    "pin": "PIN {{pin}}",
+    "handOver": "Make {{name}} narrator",
+    "handOverTitle": "Hand over the room?",
+    "handOverBody": "{{name}} becomes the narrator. You stay in the room as a player.",
+    "handOverConfirm": "Hand over",
+    "offlineHint": "Only a player who is online can become narrator.",
+    "playerOffline": "That player went offline. Try again when they are back."
   },
   "setup": {
     "intro": "Give every player a place in the story.",
@@ -283,6 +297,10 @@
     "goneBody": "It was left unused for six hours, or it never existed.",
     "replacedTitle": "Open in another tab",
     "replacedBody": "This phone is in the room from another tab. Refresh here to use this tab instead.",
-    "home": "Back to the rooms"
+    "home": "Back to the rooms",
+    "delete": "Hold to delete room",
+    "deleteFailed": "Couldn’t delete the room. Try again.",
+    "deletedTitle": "The narrator deleted this room",
+    "deletedBody": "This game is over. Join another room or create your own."
   }
 }

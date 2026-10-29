@@ -1,6 +1,7 @@
 import type { Team } from '@werewolf/shared';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
+import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { FactionEmblem } from '../../components/FactionEmblem';
 import { Icon } from '../../components/Icon';
 import { PlayerChip } from '../../components/PlayerChip';
@@ -21,6 +22,8 @@ export function SummaryScreen({
   initialTab = 'roles',
   onPlayAgain,
   onHome,
+  onDelete,
+  deleteFailed = false,
 }: {
   players: readonly RevealedPlayerItem[];
   /** Phases in order; phases with nothing recorded are left out. */
@@ -31,6 +34,9 @@ export function SummaryScreen({
   /** The narrator's button; players only get Home */
   onPlayAgain?: () => void;
   onHome: () => void;
+  /** The narrator's Delete room; left out for players */
+  onDelete?: () => void;
+  deleteFailed?: boolean;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -206,6 +212,7 @@ export function SummaryScreen({
           },
         ]}
       />
+      {onDelete && <DeleteRoomButton failed={deleteFailed} onDelete={onDelete} />}
     </ScreenLayout>
   );
 }

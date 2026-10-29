@@ -38,6 +38,8 @@ export interface RoomState {
   open: boolean;
   masterId: string;
   masterName: string;
+  /** The join PIN; null for a room saved before rooms had PINs, which joins without one */
+  pin: string | null;
   createdAt: number;
   lastActiveAt: number;
   /** In the order they joined */
@@ -49,7 +51,11 @@ export interface RoomState {
   game: GameState | null;
 }
 
-export type ApplyResult = { ok: true; state: RoomState } | { ok: false; error: ServerErrorCode };
+export type ApplyResult =
+  | { ok: true; state: RoomState }
+  /** The master deleted the room; the caller removes it for good */
+  | { ok: true; deleted: true }
+  | { ok: false; error: ServerErrorCode };
 
 type SetupResult = { ok: true; setup: RoomSetup } | { ok: false; error: ServerErrorCode };
 
@@ -63,6 +69,7 @@ export function createRoom(input: {
   name: string;
   masterId: string;
   masterName: string;
+  pin: string;
   now: number;
 }): RoomState {
   return {
@@ -72,6 +79,7 @@ export function createRoom(input: {
     open: true,
     masterId: input.masterId,
     masterName: input.masterName,
+    pin: input.pin,
     createdAt: input.now,
     lastActiveAt: input.now,
     players: [],
@@ -131,6 +139,7 @@ export function apply(
       if (isMaster || (own && !own.kicked) || state.status !== 'lobby')
         return refuse('not-allowed');
       if (!state.open) return refuse('room-closed');
+      if (state.pin !== null && action.pin !== state.pin) return refuse('pin-wrong');
       const name = cleanName(action.name);
       if (!isValidName(name, NAME_MAX)) return refuse('name-invalid');
       const key = nameKey(name);
@@ -168,6 +177,27 @@ export function apply(
           ),
         },
       };
+    }
+    case 'handOver': {
+      if (!isMaster) return refuse('not-master');
+      const target = state.players.find((player) => player.id === action.playerId);
+      if (!target || target.kicked || state.status !== 'lobby') return refuse('not-allowed');
+      // One swap: the player takes the narrator's place, and the narrator takes a seat at the end.
+      const others = state.players.filter((player) => player.id !== target.id);
+      const seat = { id: state.masterId, name: state.masterName, joinedAt: now, kicked: false };
+      return {
+        ok: true,
+        state: {
+          ...state,
+          masterId: target.id,
+          masterName: target.name,
+          players: [...others, seat],
+        },
+      };
+    }
+    case 'deleteRoom': {
+      if (!isMaster) return refuse('not-master');
+      return { ok: true, deleted: true };
     }
     case 'setOpen': {
       if (!isMaster) return refuse('not-master');

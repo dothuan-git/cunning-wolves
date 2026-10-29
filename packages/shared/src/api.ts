@@ -6,6 +6,8 @@ export interface CreateRoomRequest {
   /** The master's own name */
   name: string;
   roomName: string;
+  /** Four digits players type to join */
+  pin: string;
 }
 
 export interface CreateRoomResponse {

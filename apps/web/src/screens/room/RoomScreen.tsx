@@ -12,10 +12,11 @@ import {
   type RoomRole,
   type ServerErrorCode,
 } from '@werewolf/shared';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { ScreenLayout } from '../../components/ScreenLayout';
+import { forgetRoom, rememberRoom } from '../../realtime/myRooms';
 import { useRoomConnection } from '../../realtime/useRoomConnection';
 import { navigate, paths } from '../../router';
 import { NameEntryScreen } from '../name-entry/NameEntryScreen';
@@ -52,12 +53,34 @@ function Notice({ title, body, live }: { title: string; body: string; live?: boo
   );
 }
 
+type Send = ReturnType<typeof useRoomConnection>['send'];
+/** The refusals the narrator's screens explain; the rest only reach the console. */
+type MasterError = 'player-offline' | 'try-again' | null;
+
 /** One room, for whoever is looking: the master gets setup, everyone else joins and waits. */
 export function RoomScreen({ roomId }: { roomId: string }) {
   const { t } = useTranslation();
   const { status, view, error, send } = useRoomConnection(roomId);
+  const isMaster = view?.kind === 'master';
+  const seated = isMaster || (view?.kind === 'player' && view.seat === 'joined');
+  const removed = view?.kind === 'player' && view.seat === 'removed';
+  const ended = status === 'gone' || status === 'deleted';
+
+  // Home keeps rooms this phone belongs to tappable, even when closed or in play.
+  useEffect(() => {
+    if (ended || removed) forgetRoom(roomId);
+    else if (seated) rememberRoom(roomId);
+  }, [roomId, ended, removed, seated]);
+
+  // The narrator deleted it from this phone: straight home, nothing to explain.
+  useEffect(() => {
+    if (status === 'deleted' && isMaster) navigate(paths.home, { replace: true });
+  }, [status, isMaster]);
 
   if (status === 'gone') return <Notice title={t('room.goneTitle')} body={t('room.goneBody')} />;
+  if (status === 'deleted') {
+    return <Notice title={t('room.deletedTitle')} body={t('room.deletedBody')} />;
+  }
   if (status === 'replaced') {
     return <Notice title={t('room.replacedTitle')} body={t('room.replacedBody')} />;
   }
@@ -66,6 +89,11 @@ export function RoomScreen({ roomId }: { roomId: string }) {
   if (view.kind === 'master') {
     const { setup } = view;
     const reconnecting = status !== 'connected';
+    const masterError: MasterError =
+      error === 'player-offline' || error === 'try-again' ? error : null;
+    const onDelete = () => {
+      send({ type: 'deleteRoom' });
+    };
     if (view.room.status === 'reveal') {
       return (
         <RulesReviewScreen
@@ -87,19 +115,32 @@ export function RoomScreen({ roomId }: { roomId: string }) {
           assignments={view.assignments}
           game={view.game ?? FIRST_NIGHT}
           onPlayAgain={() => send({ type: 'playAgain' })}
+          onDelete={onDelete}
+          deleteFailed={masterError === 'try-again'}
         />
       );
     }
     if (view.room.status !== 'lobby') {
-      return <NarratorRoom view={view} reconnecting={reconnecting} send={send} />;
+      return (
+        <NarratorRoom
+          view={view}
+          reconnecting={reconnecting}
+          deleteFailed={masterError === 'try-again'}
+          send={send}
+        />
+      );
     }
     return (
       <SetupScreen
         roomName={view.room.name}
+        pin={view.pin}
         players={view.players}
         open={view.room.open}
+        roomError={masterError}
         onToggleOpen={() => send({ type: 'setOpen', open: !view.room.open })}
         onRemove={(playerId) => send({ type: 'kick', playerId })}
+        onHandOver={(playerId) => send({ type: 'handOver', playerId })}
+        onDelete={onDelete}
         roles={roomRoles(setup)}
         picks={setup.picks}
         wakeOrder={setup.wakeOrder}
@@ -125,11 +166,13 @@ const FIRST_NIGHT: GameState = { phase: { kind: 'night', number: 1 }, deaths: {}
 function NarratorRoom({
   view,
   reconnecting,
+  deleteFailed,
   send,
 }: {
   view: MasterView;
   reconnecting: boolean;
-  send: ReturnType<typeof useRoomConnection>['send'];
+  deleteFailed: boolean;
+  send: Send;
 }) {
   const { setup, assignments, players } = view;
   const game = view.game ?? FIRST_NIGHT;
@@ -162,6 +205,8 @@ function NarratorRoom({
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
       onSettings={(settings) => send({ type: 'setSettings', settings })}
       onFinish={() => send({ type: 'finishGame' })}
+      onDelete={() => send({ type: 'deleteRoom' })}
+      deleteFailed={deleteFailed}
     />
   );
 }
@@ -174,6 +219,8 @@ function SummaryRoom({
   assignments,
   game,
   onPlayAgain,
+  onDelete,
+  deleteFailed,
 }: {
   roomName: string;
   players: readonly PlayerInfo[];
@@ -181,6 +228,8 @@ function SummaryRoom({
   assignments: readonly Assignment[];
   game: GameState;
   onPlayAgain?: () => void;
+  onDelete?: () => void;
+  deleteFailed?: boolean;
 }) {
   const revealed = players.flatMap((player) => {
     const roleId = assignments.find((assignment) => assignment.playerId === player.id)?.roleId;
@@ -195,6 +244,8 @@ function SummaryRoom({
       nights={game.phase.number}
       onHome={goHome}
       onPlayAgain={onPlayAgain}
+      onDelete={onDelete}
+      deleteFailed={deleteFailed}
     />
   );
 }
@@ -208,7 +259,7 @@ function PlayerRoom({
   view: PlayerView;
   error: ServerErrorCode | null;
   reconnecting: boolean;
-  send: ReturnType<typeof useRoomConnection>['send'];
+  send: Send;
 }) {
   const { t } = useTranslation();
   const [notSent, setNotSent] = useState(false);
@@ -244,8 +295,8 @@ function PlayerRoom({
         reconnecting={reconnecting}
         onLeave={() => {
           // Leaving while reconnecting keeps the seat; the narrator can remove it.
-          if (!send({ type: 'leave' }))
-            console.warn('Left the room screen without leaving the seat');
+          if (send({ type: 'leave' })) forgetRoom(view.room.id);
+          else console.warn('Left the room screen without leaving the seat');
           goHome();
         }}
       />
@@ -284,6 +335,13 @@ function PlayerRoom({
             ? t('nameEntry.error')
             : undefined
       }
+      pinError={
+        error === 'pin-wrong'
+          ? t('nameEntry.pinWrong')
+          : error === 'pin-locked'
+            ? t('nameEntry.pinLocked')
+            : undefined
+      }
       formError={
         notSent
           ? t('nameEntry.notConnected')
@@ -291,9 +349,9 @@ function PlayerRoom({
             ? t('nameEntry.closed')
             : undefined
       }
-      onContinue={(name) => {
+      onContinue={(name, _roomName, pin) => {
         saveName(name);
-        setNotSent(!send({ type: 'join', name }));
+        setNotSent(!send({ type: 'join', name, pin }));
       }}
       onBack={goHome}
     />

@@ -60,8 +60,10 @@ export async function openSocket(path: string): Promise<TestSocket> {
   };
 }
 
+export const PIN = '4321';
+
 export async function createRoom(
-  body: unknown = { token: TOKENS.master, name: 'Thuận', roomName: 'The mill' },
+  body: unknown = { token: TOKENS.master, name: 'Thuận', roomName: 'The mill', pin: PIN },
 ): Promise<Response> {
   return exports.default.fetch('http://localhost/api/rooms', {
     method: 'POST',

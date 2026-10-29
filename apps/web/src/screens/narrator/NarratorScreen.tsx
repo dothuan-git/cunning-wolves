@@ -2,6 +2,7 @@ import { NOTE_MAX, TIMER_MAX, type RoomSettings } from '@werewolf/shared';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
+import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { HoldButton } from '../../components/HoldButton';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { PlayerStatusControl } from '../../components/PlayerStatusControl';
@@ -31,6 +32,8 @@ export function NarratorScreen({
   onWakeOrder,
   onSettings,
   onFinish,
+  onDelete,
+  deleteFailed = false,
 }: {
   /** Waking roles in wake order; roles that never wake may come anywhere */
   groups: readonly RoleGroupItem[];
@@ -50,6 +53,9 @@ export function NarratorScreen({
   onSettings: (settings: RoomSettings) => void;
   /** Leaves out the Finish game control when not given */
   onFinish?: () => void;
+  /** Leaves out Delete room when not given */
+  onDelete?: () => void;
+  deleteFailed?: boolean;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -426,6 +432,9 @@ export function NarratorScreen({
                   onWakeOrder(order.map((role) => role.id));
                 }}
               />
+            )}
+            {onDelete && (
+              <DeleteRoomButton disabled={reconnecting} failed={deleteFailed} onDelete={onDelete} />
             )}
           </div>
         </Modal>

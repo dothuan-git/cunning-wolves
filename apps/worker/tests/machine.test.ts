@@ -2,9 +2,10 @@ import { CUSTOM_ROLES_MAX, NOTE_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from
 import { describe, expect, it } from 'vitest';
 import { apply, createRoom, seatedPlayers, type Random, type RoomState } from '../src/room/machine';
 import { cryptoRandom } from '../src/room/random';
-import { buildMasterView, buildPlayerView, buildSummary } from '../src/room/view';
+import { buildMasterView, buildPlayerView, buildSummary, buildView } from '../src/room/view';
 
 const MASTER = 'master-id';
+const PIN = '4321';
 const NOW = 1_000;
 /** Leaves every card where it is: the deal follows the pick order. */
 const KEEP: Random = (below) => below - 1;
@@ -15,6 +16,7 @@ function room(): RoomState {
     name: 'The mill',
     masterId: MASTER,
     masterName: 'Thuận',
+    pin: PIN,
     now: 0,
   });
 }
@@ -24,6 +26,7 @@ function run(state: RoomState, ...steps: [actor: string, action: RoomAction][]):
   return steps.reduce((current, [actor, action]) => {
     const result = apply(current, actor, action, NOW, KEEP);
     if (!result.ok) throw new Error(`${action.type} by ${actor} refused: ${result.error}`);
+    if (!('state' in result)) throw new Error(`${action.type} by ${actor} deleted the room`);
     return result.state;
   }, state);
 }
@@ -35,44 +38,157 @@ function refusal(state: RoomState, actor: string, action: RoomAction) {
 
 describe('join', () => {
   it('seats a player with a cleaned name', () => {
-    const state = run(room(), ['a', { type: 'join', name: '  Minh   Anh ' }]);
+    const state = run(room(), ['a', { type: 'join', name: '  Minh   Anh ', pin: PIN }]);
     expect(seatedPlayers(state)).toEqual([
       { id: 'a', name: 'Minh Anh', joinedAt: NOW, kicked: false },
     ]);
   });
 
   it('refuses an empty or too long name', () => {
-    expect(refusal(room(), 'a', { type: 'join', name: '   ' })).toBe('name-invalid');
-    expect(refusal(room(), 'a', { type: 'join', name: 'x'.repeat(25) })).toBe('name-invalid');
+    expect(refusal(room(), 'a', { type: 'join', name: '   ', pin: PIN })).toBe('name-invalid');
+    expect(refusal(room(), 'a', { type: 'join', name: 'x'.repeat(25), pin: PIN })).toBe(
+      'name-invalid',
+    );
   });
 
   it('refuses a name already in the room, ignoring case and accents', () => {
-    const state = run(room(), ['a', { type: 'join', name: 'Đức' }]);
-    expect(refusal(state, 'b', { type: 'join', name: 'duc' })).toBe('name-taken');
-    expect(refusal(state, 'b', { type: 'join', name: 'THUAN' })).toBe('name-taken');
+    const state = run(room(), ['a', { type: 'join', name: 'Đức', pin: PIN }]);
+    expect(refusal(state, 'b', { type: 'join', name: 'duc', pin: PIN })).toBe('name-taken');
+    expect(refusal(state, 'b', { type: 'join', name: 'THUAN', pin: PIN })).toBe('name-taken');
   });
 
   it('refuses while the room is closed', () => {
     const state = run(room(), [MASTER, { type: 'setOpen', open: false }]);
-    expect(refusal(state, 'a', { type: 'join', name: 'Minh' })).toBe('room-closed');
+    expect(refusal(state, 'a', { type: 'join', name: 'Minh', pin: PIN })).toBe('room-closed');
   });
 
   it('refuses the master and a player who already has a seat', () => {
-    expect(refusal(room(), MASTER, { type: 'join', name: 'Minh' })).toBe('not-allowed');
-    const state = run(room(), ['a', { type: 'join', name: 'Minh' }]);
-    expect(refusal(state, 'a', { type: 'join', name: 'Lan' })).toBe('not-allowed');
+    expect(refusal(room(), MASTER, { type: 'join', name: 'Minh', pin: PIN })).toBe('not-allowed');
+    const state = run(room(), ['a', { type: 'join', name: 'Minh', pin: PIN }]);
+    expect(refusal(state, 'a', { type: 'join', name: 'Lan', pin: PIN })).toBe('not-allowed');
   });
 
   it('refuses once the game has moved past the lobby', () => {
-    expect(refusal({ ...room(), status: 'playing' }, 'a', { type: 'join', name: 'Minh' })).toBe(
-      'not-allowed',
+    expect(
+      refusal({ ...room(), status: 'playing' }, 'a', { type: 'join', name: 'Minh', pin: PIN }),
+    ).toBe('not-allowed');
+  });
+});
+
+describe('join PIN', () => {
+  it('refuses a wrong or missing PIN', () => {
+    expect(refusal(room(), 'a', { type: 'join', name: 'Minh', pin: '1234' })).toBe('pin-wrong');
+    expect(refusal(room(), 'a', { type: 'join', name: 'Minh', pin: '' })).toBe('pin-wrong');
+  });
+
+  it('checks the room is open before the PIN', () => {
+    const state = run(room(), [MASTER, { type: 'setOpen', open: false }]);
+    expect(refusal(state, 'a', { type: 'join', name: 'Minh', pin: '1234' })).toBe('room-closed');
+  });
+
+  it('asks a removed player for the PIN again', () => {
+    const state = run(
+      room(),
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
+      [MASTER, { type: 'kick', playerId: 'a' }],
     );
+    expect(refusal(state, 'a', { type: 'join', name: 'Minh', pin: '0000' })).toBe('pin-wrong');
+  });
+
+  it('lets anyone join a room saved before rooms had PINs', () => {
+    const old = { ...room(), pin: null };
+    expect(refusal(old, 'a', { type: 'join', name: 'Minh', pin: '' })).toBeNull();
+  });
+});
+
+describe('hand over', () => {
+  const lobby = () =>
+    run(
+      room(),
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
+      ['b', { type: 'join', name: 'Lan', pin: PIN }],
+    );
+
+  it('makes the player the narrator and seats the old narrator last', () => {
+    const state = run(lobby(), [MASTER, { type: 'handOver', playerId: 'a' }]);
+    expect(state.masterId).toBe('a');
+    expect(state.masterName).toBe('Minh');
+    expect(seatedPlayers(state)).toEqual([
+      { id: 'b', name: 'Lan', joinedAt: NOW, kicked: false },
+      { id: MASTER, name: 'Thuận', joinedAt: NOW, kicked: false },
+    ]);
+  });
+
+  it('keeps the card set, PIN and open state', () => {
+    const before = run(lobby(), [MASTER, { type: 'addPick', roleId: 'seer' }]);
+    const after = run(before, [MASTER, { type: 'handOver', playerId: 'a' }]);
+    expect(after.setup).toEqual(before.setup);
+    expect(after.pin).toBe(PIN);
+    expect(after.open).toBe(true);
+  });
+
+  it('gives the new narrator the master view, and the old one a seat without the card set', () => {
+    const state = run(
+      lobby(),
+      [MASTER, { type: 'addPick', roleId: 'seer' }],
+      [MASTER, { type: 'handOver', playerId: 'a' }],
+    );
+    expect(buildView(state, new Set(), 'a').kind).toBe('master');
+    const old = buildView(state, new Set(), MASTER);
+    expect(old).toMatchObject({ kind: 'player', seat: 'joined' });
+    expect(JSON.stringify(old)).not.toContain(PIN);
+    expect(old).not.toHaveProperty('setup');
+  });
+
+  it('lets only the new narrator act as master', () => {
+    const state = run(lobby(), [MASTER, { type: 'handOver', playerId: 'a' }]);
+    expect(refusal(state, MASTER, { type: 'setOpen', open: false })).toBe('not-master');
+    expect(refusal(state, 'a', { type: 'setOpen', open: false })).toBeNull();
+  });
+
+  it('is for the master only', () => {
+    expect(refusal(lobby(), 'b', { type: 'handOver', playerId: 'a' })).toBe('not-master');
+  });
+
+  it('refuses an unknown, removed or self target', () => {
+    const state = run(lobby(), [MASTER, { type: 'kick', playerId: 'b' }]);
+    expect(refusal(state, MASTER, { type: 'handOver', playerId: 'nobody' })).toBe('not-allowed');
+    expect(refusal(state, MASTER, { type: 'handOver', playerId: 'b' })).toBe('not-allowed');
+    expect(refusal(state, MASTER, { type: 'handOver', playerId: MASTER })).toBe('not-allowed');
+  });
+
+  it('refuses once the room has left the lobby', () => {
+    for (const status of ['reveal', 'playing', 'finished'] as const) {
+      expect(refusal({ ...lobby(), status }, MASTER, { type: 'handOver', playerId: 'a' })).toBe(
+        'not-allowed',
+      );
+    }
+  });
+});
+
+describe('delete room', () => {
+  it('is allowed for the master in every state', () => {
+    for (const status of ['lobby', 'reveal', 'playing', 'finished'] as const) {
+      expect(apply({ ...room(), status }, MASTER, { type: 'deleteRoom' }, NOW, KEEP)).toEqual({
+        ok: true,
+        deleted: true,
+      });
+    }
+  });
+
+  it('is for the master only', () => {
+    const state = run(room(), ['a', { type: 'join', name: 'Minh', pin: PIN }]);
+    expect(refusal(state, 'a', { type: 'deleteRoom' })).toBe('not-master');
   });
 });
 
 describe('leave', () => {
   it('removes the seat', () => {
-    const state = run(room(), ['a', { type: 'join', name: 'Minh' }], ['a', { type: 'leave' }]);
+    const state = run(
+      room(),
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
+      ['a', { type: 'leave' }],
+    );
     expect(state.players).toEqual([]);
   });
 
@@ -85,19 +201,19 @@ describe('kick', () => {
   it('marks the seat removed and frees the name', () => {
     const state = run(
       room(),
-      ['a', { type: 'join', name: 'Minh' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
       [MASTER, { type: 'kick', playerId: 'a' }],
     );
     expect(seatedPlayers(state)).toEqual([]);
     expect(state.players[0]?.kicked).toBe(true);
-    expect(refusal(state, 'b', { type: 'join', name: 'Minh' })).toBeNull();
+    expect(refusal(state, 'b', { type: 'join', name: 'Minh', pin: PIN })).toBeNull();
   });
 
   it('is for the master only', () => {
     const state = run(
       room(),
-      ['a', { type: 'join', name: 'Minh' }],
-      ['b', { type: 'join', name: 'Lan' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
+      ['b', { type: 'join', name: 'Lan', pin: PIN }],
     );
     expect(refusal(state, 'b', { type: 'kick', playerId: 'a' })).toBe('not-master');
   });
@@ -106,7 +222,7 @@ describe('kick', () => {
     expect(refusal(room(), MASTER, { type: 'kick', playerId: 'nobody' })).toBe('not-allowed');
     const state = run(
       room(),
-      ['a', { type: 'join', name: 'Minh' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
       [MASTER, { type: 'kick', playerId: 'a' }],
     );
     expect(refusal(state, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
@@ -116,15 +232,15 @@ describe('kick', () => {
   it('lets a removed player join again while the room is open', () => {
     const state = run(
       room(),
-      ['a', { type: 'join', name: 'Minh' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
       [MASTER, { type: 'kick', playerId: 'a' }],
       [MASTER, { type: 'setOpen', open: false }],
     );
-    expect(refusal(state, 'a', { type: 'join', name: 'Minh' })).toBe('room-closed');
+    expect(refusal(state, 'a', { type: 'join', name: 'Minh', pin: PIN })).toBe('room-closed');
     const reopened = run(
       state,
       [MASTER, { type: 'setOpen', open: true }],
-      ['a', { type: 'join', name: 'Minh' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
     );
     expect(seatedPlayers(reopened).map((player) => player.id)).toEqual(['a']);
   });
@@ -134,7 +250,7 @@ describe('setOpen', () => {
   it('closes and re-opens, keeping seats', () => {
     const closed = run(
       room(),
-      ['a', { type: 'join', name: 'Minh' }],
+      ['a', { type: 'join', name: 'Minh', pin: PIN }],
       [MASTER, { type: 'setOpen', open: false }],
     );
     expect(closed.open).toBe(false);
@@ -266,7 +382,7 @@ describe('setup', () => {
   });
 
   it('is for the master only', () => {
-    const seated = run(room(), ['a', { type: 'join', name: 'Minh' }]);
+    const seated = run(room(), ['a', { type: 'join', name: 'Minh', pin: PIN }]);
     const actions: RoomAction[] = [
       { type: 'addPick', roleId: 'seer' },
       { type: 'removePick', roleId: 'seer' },
@@ -286,9 +402,9 @@ describe('locks after the lobby', () => {
   it.each(['reveal', 'playing', 'finished'] as const)(
     'refuses every lobby action in %s',
     (status) => {
-      const seated = run(room(), ['a', { type: 'join', name: 'Minh' }]);
+      const seated = run(room(), ['a', { type: 'join', name: 'Minh', pin: PIN }]);
       const locked: RoomState = { ...seated, status };
-      expect(refusal(locked, 'b', { type: 'join', name: 'Lan' })).toBe('not-allowed');
+      expect(refusal(locked, 'b', { type: 'join', name: 'Lan', pin: PIN })).toBe('not-allowed');
       expect(refusal(locked, 'a', { type: 'leave' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'kick', playerId: 'a' })).toBe('not-allowed');
       expect(refusal(locked, MASTER, { type: 'setOpen', open: false })).toBe('not-allowed');
@@ -320,8 +436,8 @@ describe('locks after the lobby', () => {
 function ready(): RoomState {
   return run(
     room(),
-    ['a', { type: 'join', name: 'Minh' }],
-    ['b', { type: 'join', name: 'Lan' }],
+    ['a', { type: 'join', name: 'Minh', pin: PIN }],
+    ['b', { type: 'join', name: 'Lan', pin: PIN }],
     [MASTER, { type: 'addPick', roleId: 'seer' }],
     [MASTER, { type: 'addPick', roleId: 'werewolf' }],
   );
@@ -388,7 +504,7 @@ describe('start game', () => {
   it('deals what the shuffle says', () => {
     // Swaps the last card with the first: Minh gets the werewolf.
     const result = apply(reviewed(), MASTER, { type: 'startGame' }, NOW, () => 0);
-    expect(result.ok && result.state.assignments).toEqual({ a: 'werewolf', b: 'seer' });
+    expect('state' in result && result.state.assignments).toEqual({ a: 'werewolf', b: 'seer' });
   });
 
   it('deals every pick exactly once, for any shuffle', () => {
@@ -396,7 +512,7 @@ describe('start game', () => {
     const picks = ['seer', 'werewolf', 'werewolf', 'witch', 'villager', 'villager', 'hunter'];
     let state = room();
     names.forEach((name, index) => {
-      state = run(state, [`p${String(index)}`, { type: 'join', name }]);
+      state = run(state, [`p${String(index)}`, { type: 'join', name, pin: PIN }]);
     });
     for (const roleId of picks) state = run(state, [MASTER, { type: 'addPick', roleId }]);
     state = run(state, [MASTER, { type: 'review' }]);
@@ -407,6 +523,7 @@ describe('start game', () => {
     };
     const result = apply(state, MASTER, { type: 'startGame' }, NOW, lcg);
     if (!result.ok) throw new Error(result.error);
+    if (!('state' in result)) throw new Error('startGame deleted the room');
     expect(Object.keys(result.state.assignments).sort()).toEqual(
       names.map((_, index) => `p${String(index)}`),
     );
@@ -590,8 +707,8 @@ describe('finish and play again', () => {
 describe('views', () => {
   const state = run(
     room(),
-    ['a', { type: 'join', name: 'Minh' }],
-    ['b', { type: 'join', name: 'Lan' }],
+    ['a', { type: 'join', name: 'Minh', pin: PIN }],
+    ['b', { type: 'join', name: 'Lan', pin: PIN }],
     [MASTER, { type: 'kick', playerId: 'b' }],
   );
   const connected = new Set(['a']);
@@ -603,9 +720,16 @@ describe('views', () => {
       room: { id: 'mill', name: 'The mill', status: 'lobby', open: true },
       players: [{ id: 'a', name: 'Minh', connected: true }],
       setup: state.setup,
+      pin: PIN,
       assignments: [],
       game: null,
     });
+  });
+
+  it('never sends the PIN to a player', () => {
+    for (const viewer of ['a', 'b', 'c']) {
+      expect(JSON.stringify(buildPlayerView(state, connected, viewer))).not.toContain(PIN);
+    }
   });
 
   it('shows a player the same list and their own seat', () => {

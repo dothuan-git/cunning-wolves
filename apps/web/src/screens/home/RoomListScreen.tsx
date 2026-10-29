@@ -7,12 +7,15 @@ import type { RoomListItem } from '../types';
 
 export function RoomListScreen({
   rooms,
+  mine = new Set(),
   status = 'ready',
   onCreate,
   onJoin,
   onRetry,
 }: {
   rooms: readonly RoomListItem[];
+  /** Rooms this phone created or has a seat in: always tappable, so it can get back in */
+  mine?: ReadonlySet<string>;
   status?: 'ready' | 'loading' | 'error';
   onCreate: () => void;
   onJoin: (id: string) => void;
@@ -69,7 +72,8 @@ export function RoomListScreen({
           <h2 className="font-display text-role font-semibold">{t('rooms.heading')}</h2>
           <ul className="panel divide-y divide-line">
             {rooms.map((room) => {
-              const joinable = room.isOpen && room.status === 'lobby';
+              const yours = mine.has(room.id);
+              const joinable = yours || (room.isOpen && room.status === 'lobby');
               const open = room.isOpen && room.status !== 'playing';
               return (
                 <li key={room.id} className="px-4">
@@ -111,6 +115,12 @@ export function RoomListScreen({
                         {t('common.countPlayers', { count: room.count })}
                       </span>
                     </span>
+                    {yours && (
+                      <span className="inline-flex items-center gap-1.5 text-caption font-medium text-ink">
+                        <Icon name="person" className="size-3.5" />
+                        {t('rooms.mine')}
+                      </span>
+                    )}
                   </button>
                 </li>
               );

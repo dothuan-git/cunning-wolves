@@ -19,6 +19,8 @@ const paths = {
   book: 'M3 4h6l3 2 3-2h6v16h-6l-3 2-3-2H3V4Zm9 2v16',
   flag: 'M5 21V4m0 0h13l-3 4.5 3 4.5H5',
   shuffle: 'M16 4h4v4M4 20 20 4M20 16v4h-4M14 14l6 6M4 4l5 5',
+  trash: 'M4 7h16M10 11v6m4-6v6M9 7V4h6v3M6 7l1 13h10l1-13',
+  crown: 'M4 18h16M5 15 3 7l5 4 4-6 4 6 5-4-2 8H5Z',
 } as const;
 
 export type IconName = keyof typeof paths;

@@ -13,6 +13,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddCard } from '../../components/AddCard';
 import { Button } from '../../components/Button';
+import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { DetailedCard } from '../../components/DetailedCard';
 import { FactionSection } from '../../components/FactionSection';
 import { Icon } from '../../components/Icon';
@@ -23,7 +24,7 @@ import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { useLocale } from '../../i18n/useLocale';
-import type { PlayerListItem } from '../types';
+import type { SeatedPlayerItem } from '../types';
 import { RoomPanel } from './RoomPanel';
 
 // Wolves first, like the summary and the rules review.
@@ -33,10 +34,14 @@ const LEAVE_MS = 160;
 
 export function SetupScreen({
   roomName,
+  pin,
   players,
   open,
+  roomError = null,
   onToggleOpen,
   onRemove,
+  onHandOver,
+  onDelete,
   roles,
   picks,
   wakeOrder,
@@ -51,12 +56,19 @@ export function SetupScreen({
   onReady,
 }: {
   roomName: string;
+  /** The join PIN to read out; null for a room made before PINs */
+  pin: string | null;
   /** Players who have joined so far; more join while the roles are set up. */
-  players: readonly PlayerListItem[];
+  players: readonly SeatedPlayerItem[];
   /** Whether new players can still join */
   open: boolean;
+  /** The room's last refusal that this screen explains */
+  roomError?: 'player-offline' | 'try-again' | null;
   onToggleOpen: () => void;
   onRemove: (playerId: string) => void;
+  /** Makes an online player the narrator; this phone then joins as a player */
+  onHandOver: (playerId: string) => void;
+  onDelete: () => void;
   /** Every role the room can pick from, with this room's rules */
   roles: readonly PoolRole[];
   /** Ids of the roles in the game, one per copy. There can be more or fewer than players. */
@@ -237,10 +249,13 @@ export function SetupScreen({
     >
       <RoomPanel
         roomName={roomName}
+        pin={pin}
         players={players}
         open={open}
+        offlineError={roomError === 'player-offline'}
         onToggleOpen={onToggleOpen}
         onRemove={onRemove}
+        onHandOver={onHandOver}
       />
       {TEAMS.map((faction) => {
         const chosen = roles.filter(
@@ -412,6 +427,13 @@ export function SetupScreen({
                 }}
               />
             )}
+          </div>
+          <div className="pt-3 pb-4">
+            <DeleteRoomButton
+              disabled={reconnecting}
+              failed={roomError === 'try-again'}
+              onDelete={onDelete}
+            />
           </div>
         </Modal>
       )}

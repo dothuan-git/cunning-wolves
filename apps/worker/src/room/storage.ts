@@ -66,6 +66,8 @@ function ensureSchema(sql: SqlStorage): void {
     text TEXT NOT NULL,
     PRIMARY KEY (night, player_id)
   )`);
+  // The join PIN. A room saved before PINs has no row, and joins without one.
+  sql.exec('CREATE TABLE IF NOT EXISTS room_pin (pin TEXT NOT NULL)');
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -167,6 +169,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
       joinedAt: integer(player, 'joined_at'),
       kicked: integer(player, 'kicked') === 1,
     }));
+  const [pinRow] = sql.exec('SELECT pin FROM room_pin LIMIT 1').toArray();
   return {
     id: text(row, 'id'),
     name: text(row, 'name'),
@@ -174,6 +177,7 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     open: integer(row, 'open') === 1,
     masterId: text(row, 'master_id'),
     masterName: text(row, 'master_name'),
+    pin: pinRow ? text(pinRow, 'pin') : null,
     createdAt: integer(row, 'created_at'),
     lastActiveAt: integer(row, 'last_active_at'),
     players,
@@ -211,6 +215,8 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       state.createdAt,
       state.lastActiveAt,
     );
+    sql.exec('DELETE FROM room_pin');
+    if (state.pin !== null) sql.exec('INSERT INTO room_pin VALUES (?)', state.pin);
     sql.exec('DELETE FROM players');
     for (const player of state.players) {
       sql.exec(

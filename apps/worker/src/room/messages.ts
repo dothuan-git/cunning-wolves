@@ -66,7 +66,8 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     }
     case 'join': {
       const name = field(data, 'name');
-      return typeof name === 'string' ? { type, name } : null;
+      const pin = field(data, 'pin');
+      return typeof name === 'string' && typeof pin === 'string' ? { type, name, pin } : null;
     }
     case 'leave':
     case 'review':
@@ -74,8 +75,10 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'startGame':
     case 'finishGame':
     case 'playAgain':
+    case 'deleteRoom':
       return { type };
     case 'kick':
+    case 'handOver':
     case 'toggleDeath': {
       const playerId = field(data, 'playerId');
       return typeof playerId === 'string' ? { type, playerId } : null;
