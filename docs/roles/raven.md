@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, có thể chỉ vào một người. Hôm sau, người đó bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.
+Mỗi đêm có thể chỉ một người: hôm sau họ bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.
 
 ## Rule (en)
 

@@ -174,7 +174,8 @@ function gameState(value: unknown): GameState | null {
     !isObject(value) ||
     !isObject(value.deaths) ||
     !isObject(value.notes) ||
-    !isObject(value.marks)
+    !isObject(value.marks) ||
+    !isObject(value.newRoles)
   ) {
     return null;
   }
@@ -207,7 +208,14 @@ function gameState(value: unknown): GameState | null {
     }
     marks[playerId] = entries;
   }
-  return { phase: current, deaths, notes, marks };
+  const newRoles: GameState['newRoles'] = {};
+  for (const [playerId, changed] of Object.entries(value.newRoles)) {
+    if (!isObject(changed) || typeof changed.role !== 'string') return null;
+    const since = phase(changed.phase);
+    if (!since) return null;
+    newRoles[playerId] = { role: changed.role, phase: since };
+  }
+  return { phase: current, deaths, notes, marks, newRoles };
 }
 
 function reveal(value: unknown): Reveal | null {

@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, có thể chỉ vào một người: quản trò gật đầu nếu người đó hoặc một trong hai người ngồi cạnh là sói. Nếu không có sói, bạn mất năng lực.
+Mỗi đêm có thể chỉ một người: quản trò gật đầu nếu người đó hoặc một trong hai người ngồi cạnh là sói. Không có sói thì mất năng lực.
 
 ## Rule (en)
 

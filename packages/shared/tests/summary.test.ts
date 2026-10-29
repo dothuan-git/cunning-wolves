@@ -14,6 +14,7 @@ describe('gameJournal', () => {
       deaths: { c: { kind: 'morning', number: 1 }, a: { kind: 'night', number: 3 } },
       notes: { 1: { b: 'Saw Hoa.', a: 'Woke.' }, 3: { b: 'Last night.' } },
       marks: {},
+      newRoles: {},
     };
     expect(gameJournal(game, players)).toEqual([
       {
@@ -24,18 +25,21 @@ describe('gameJournal', () => {
         ],
         deaths: [],
         marks: [],
+        newRoles: [],
       },
       {
         phase: { kind: 'morning', number: 1 },
         notes: [],
         deaths: [{ id: 'c', name: 'Hoa' }],
         marks: [],
+        newRoles: [],
       },
       {
         phase: { kind: 'night', number: 3 },
         notes: [{ id: 'b', name: 'Lan', text: 'Last night.' }],
         deaths: [{ id: 'a', name: 'Minh' }],
         marks: [],
+        newRoles: [],
       },
     ]);
   });
@@ -46,6 +50,7 @@ describe('gameJournal', () => {
       deaths: { a: { kind: 'morning', number: 1 } },
       notes: {},
       marks: {},
+      newRoles: {},
     };
     expect(gameJournal(game, players).map(({ phase }) => phase)).toEqual([
       { kind: 'morning', number: 1 },
@@ -58,6 +63,7 @@ describe('gameJournal', () => {
       deaths: {},
       notes: {},
       marks: {},
+      newRoles: {},
     };
     expect(gameJournal(empty, players)).toEqual([]);
     const other: GameState = { ...empty, notes: { 1: { z: 'Gone.' } } };
@@ -73,6 +79,7 @@ describe('gameJournal', () => {
         b: { 'heal-used': { kind: 'night', number: 2 }, sheriff: { kind: 'morning', number: 1 } },
         a: { 'kill-used': { kind: 'night', number: 2 } },
       },
+      newRoles: {},
     };
     expect(gameJournal(game, players)).toEqual([
       {
@@ -80,6 +87,7 @@ describe('gameJournal', () => {
         notes: [],
         deaths: [],
         marks: [{ id: 'b', name: 'Lan', mark: 'sheriff' }],
+        newRoles: [],
       },
       {
         phase: { kind: 'night', number: 2 },
@@ -89,6 +97,26 @@ describe('gameJournal', () => {
           { id: 'a', name: 'Minh', mark: 'kill-used' },
           { id: 'b', name: 'Lan', mark: 'heal-used' },
         ],
+        newRoles: [],
+      },
+    ]);
+  });
+
+  it('lists a new role in the phase it was given', () => {
+    const game: GameState = {
+      phase: { kind: 'night', number: 2 },
+      deaths: {},
+      notes: {},
+      marks: {},
+      newRoles: { a: { role: 'seer', phase: { kind: 'morning', number: 1 } } },
+    };
+    expect(gameJournal(game, players)).toEqual([
+      {
+        phase: { kind: 'morning', number: 1 },
+        notes: [],
+        deaths: [],
+        marks: [],
+        newRoles: [{ id: 'a', name: 'Minh', role: 'seer' }],
       },
     ]);
   });

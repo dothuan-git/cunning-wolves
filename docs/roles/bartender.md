@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Sói không giết được bạn và dân làng không được bỏ phiếu chống bạn. Bạn bỏ phiếu trước. Nếu phiếu của bạn khiến ai đó bị loại, bạn mất sự bảo vệ này.
+Sói không giết được, dân làng không được bỏ phiếu chống. Bỏ phiếu trước. Nếu phiếu của mình khiến ai đó bị loại, mất sự bảo vệ này.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
+Thức dậy cùng bầy sói. Nếu là sói cuối cùng còn sống thì không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
 
 ## Rule (en)
 

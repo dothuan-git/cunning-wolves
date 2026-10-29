@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy. Bạn chỉ thắng khi cả nhóm còn lại bị loại. Bạn không có năng lực.
+Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy. Chỉ thắng khi cả nhóm còn lại bị loại. Không có năng lực.
 
 ## Rule (en)
 

@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái bạn nhiễm bệnh: nó chết vào đêm hôm sau.
+Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái nhiễm bệnh và chết đêm sau.
 
 ## Rule (en)
 

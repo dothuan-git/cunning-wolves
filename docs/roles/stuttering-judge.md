@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Đêm đầu tiên, thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, ra ký hiệu đó khi bỏ phiếu thì sẽ có thêm một lượt bỏ phiếu ngay sau đó.
+Đêm 1: thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, ra ký hiệu đó khi bỏ phiếu: làng bỏ phiếu lại ngay.
 
 ## Rule (en)
 

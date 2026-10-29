@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Không có năng lực. Trò chuyện, tìm ra sói và bỏ phiếu loại chúng.
+Không có năng lực. Trò chuyện, tìm sói và bỏ phiếu loại chúng.
 
 ## Rule (en)
 

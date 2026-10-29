@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, quản trò đọc bốn câu hỏi: chọn một câu và một người để hỏi. Hôm sau họ hỏi câu đó, và người chết đầu tiên trả lời có hoặc không.
+Mỗi đêm quản trò đọc bốn câu hỏi: chọn một câu và một người để hỏi. Hôm sau người đó đặt câu hỏi, người chết đầu tiên trả lời có hoặc không.
 
 ## Rule (en)
 

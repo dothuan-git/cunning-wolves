@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chọn một người: hôm sau họ không được nói và không được bỏ phiếu.
+Mỗi đêm chọn một người: hôm sau họ không được nói và không được bỏ phiếu.
 
 ## Rule (en)
 

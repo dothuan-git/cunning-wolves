@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một người không phải sói: họ trở thành ma sói.
+Thức dậy cùng bầy sói. Một lần trong ván, thức dậy một mình giết thêm một người.
 
 ## Rule (en)
 
-Once per game, choose a non-werewolf: they become a werewolf.
+You wake with the werewolves. Once per game, wake again alone and kill one more player.
 
 ## Narrator notes
 
-Wakes with the werewolves. The most common version across werewolf games; Ultimate Werewolf has no card by this name. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+Wakes with the werewolves every night, and once per game alone for a second kill. From an unofficial source (werewolv.es); check it against your copy. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.

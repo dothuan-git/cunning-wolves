@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thắng nếu bạn bị loại.
+Thắng nếu bị loại.
 
 ## Rule (en)
 

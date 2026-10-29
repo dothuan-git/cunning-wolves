@@ -6,13 +6,18 @@ export interface JournalPlayer {
   name: string;
 }
 
-/** One phase of the game log: its notes (nights only), the players who died, and marks made. */
+/**
+ * One phase of the game log: its notes (nights only), the players who died, marks made, and roles
+ * a power gave players.
+ */
 export interface JournalEntry {
   phase: Phase;
   notes: (JournalPlayer & { text: string })[];
   deaths: JournalPlayer[];
   /** Mark ids, in MARKS order for each player */
   marks: (JournalPlayer & { mark: string })[];
+  /** Role ids */
+  newRoles: (JournalPlayer & { role: string })[];
 }
 
 const samePhase = (a: Phase | undefined, kind: Phase['kind'], number: number) =>
@@ -50,8 +55,16 @@ export function gameJournal(game: GameState, players: readonly JournalPlayer[]):
           (mark) => Object.hasOwn(own, mark.id) && samePhase(own[mark.id], kind, number),
         ).map((mark) => ({ id: player.id, name: player.name, mark: mark.id }));
       });
-      if (notes.length > 0 || deaths.length > 0 || marks.length > 0)
-        entries.push({ phase: { kind, number }, notes, deaths, marks });
+      const newRoles = players.flatMap((player) => {
+        const changed = Object.hasOwn(game.newRoles, player.id)
+          ? game.newRoles[player.id]
+          : undefined;
+        return changed && samePhase(changed.phase, kind, number)
+          ? [{ id: player.id, name: player.name, role: changed.role }]
+          : [];
+      });
+      if (notes.length > 0 || deaths.length > 0 || marks.length > 0 || newRoles.length > 0)
+        entries.push({ phase: { kind, number }, notes, deaths, marks, newRoles });
     }
   }
   return entries;

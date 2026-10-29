@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: bạn biết ai là Tiên tri.
+Đêm 1: quản trò cho biết ai là Tiên tri.
 
 ## Rule (en)
 
-Night 1: you see who the Seer is.
+Night 1: the narrator tells you who the Seer is.
 
 ## Narrator notes
 

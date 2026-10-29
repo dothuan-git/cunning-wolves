@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, thức dậy cùng bầy sói và thống nhất giết một người. Ban ngày, giả làm dân làng.
+Mỗi đêm cùng bầy sói thống nhất giết một người. Ban ngày giả làm dân làng.
 
 ## Rule (en)
 

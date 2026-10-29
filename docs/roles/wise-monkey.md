@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: bạn biết vai của họ. Nếu đó là ma sói, bầy sói biết bạn là ai.
+Mỗi đêm chỉ một người: biết vai của họ. Nếu là sói, bầy sói biết mình là ai.
 
 ## Rule (en)
 

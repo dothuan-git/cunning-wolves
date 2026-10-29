@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm thức dậy cùng bầy sói. Cách một đêm, bạn thức dậy một mình và có thể giết một ma sói. Bạn chỉ thắng khi là người sống sót cuối cùng.
+Mỗi đêm thức dậy cùng bầy sói. Cách một đêm, thức dậy một mình và có thể giết một sói. Chỉ thắng khi là người sống sót cuối cùng.
 
 ## Rule (en)
 

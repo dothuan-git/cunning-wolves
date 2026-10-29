@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: bạn biết họ có phải Tiên tri không. Tiên tri thấy bạn là dân làng.
+Mỗi đêm chỉ một người: biết họ có phải Tiên tri không. Tiên tri được báo là dân làng.
 
 ## Rule (en)
 
-Each night, point at a player: you learn whether they are the Seer. The Seer sees you as a villager.
+Each night, point at a player: you learn whether they are the Seer. The Seer is told you are a villager.
 
 ## Narrator notes
 

@@ -278,6 +278,7 @@ function PreviewScene({
               return { ...current, [id]: mark in own ? kept : { ...own, [mark]: phase } };
             });
           }}
+          onSetRole={() => undefined}
           settings={narratorSettings}
           onPlayerNote={(night, id, text) => {
             setNoteEdits((current) => ({
@@ -332,12 +333,14 @@ function PreviewScene({
                     ],
                     deaths: [],
                     marks: [{ id: 'ha', name: 'Hà', mark: 'heal-used' }],
+                    newRoles: [],
                   },
                   {
                     phase: { kind: 'morning', number: 1 },
                     notes: [],
                     deaths: [{ id: 'huy', name: 'Huy' }],
                     marks: [{ id: 'linh', name: 'Linh', mark: 'sheriff' }],
+                    newRoles: [],
                   },
                   {
                     phase: { kind: 'night', number: 2 },
@@ -347,6 +350,7 @@ function PreviewScene({
                     ],
                     deaths: [{ id: 'linh', name: 'Linh' }],
                     marks: [],
+                    newRoles: [],
                   },
                 ]
           }

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một đêm: hôm sau làng loại hai người liên tiếp.
+Một lần trong ván, chọn một đêm: hôm sau làng loại hai người.
 
 ## Rule (en)
 

@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người chơi: quản trò cho bạn xem lá bài của người đó.
+Mỗi đêm chỉ một người: quản trò cho biết họ là sói hay dân làng.
 
 ## Rule (en)
 
-Each night, point at a player: the narrator shows you that player's card.
+Each night, point at a player: the narrator tells you whether they are a werewolf or a villager.

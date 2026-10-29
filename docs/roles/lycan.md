@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Bạn là dân làng, nhưng Tiên tri thấy bạn là ma sói.
+Là dân làng, nhưng Tiên tri được báo là sói.
 
 ## Rule (en)
 
-You are a villager, but the Seer sees you as a werewolf.
+You are a villager, but the Seer is told you are a werewolf.
 
 ## Narrator notes
 

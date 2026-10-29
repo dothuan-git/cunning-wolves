@@ -16,7 +16,7 @@ Ask the user for anything missing. Never invent rule text or translations.
 - what the narrator must remember about players because of it (a power used up, a title, an effect on someone): these become marks
 - card art: a file, or none yet
 
-A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`, and a mark that moves a player to the wolves has `joinsPack: true` (both in `marks.ts`). A role whose marks need a pointer from one player to another needs that mechanism first; see decision 0023.
+A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`, and a mark that moves a player to the wolves has `joinsPack: true` (both in `marks.ts`). A role whose marks need a pointer from one player to another needs that mechanism first; see decision 0023. A role whose power gives a player another role goes in `ROLE_CHANGERS` (`marks.ts`, decision 0025); a death that always follows another goes in `linkedChain` in the worker's `machine.ts` (decision 0024).
 
 ## 2. Role doc
 

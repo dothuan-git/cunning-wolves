@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Phiếu của bạn không bao giờ được dùng để loại người khác.
+Không bao giờ bỏ phiếu loại ai.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn không được bỏ phiếu. Mỗi ngày, bạn có thể cấm hai người bỏ phiếu.
+Không được bỏ phiếu. Mỗi ngày có thể cấm hai người bỏ phiếu.
 
 ## Rule (en)
 

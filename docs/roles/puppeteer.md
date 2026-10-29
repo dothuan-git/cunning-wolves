@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một người: hôm sau họ phải bỏ phiếu theo ý bạn.
+Một lần trong ván, chọn một người: hôm sau họ phải bỏ phiếu theo ý mình.
 
 ## Rule (en)
 

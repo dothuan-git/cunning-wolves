@@ -2,13 +2,13 @@
 
 - **id:** `hoodlum`
 - **Team:** solo
-- **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `mason`
+- **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `the-count`
 - **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)
 
-Đêm 1: chọn hai người. Bạn thắng nếu cả hai đã chết và bạn còn sống khi ván kết thúc.
+Đêm 1: chọn hai người. Thắng nếu cả hai chết và mình còn sống khi hết ván.
 
 ## Rule (en)
 

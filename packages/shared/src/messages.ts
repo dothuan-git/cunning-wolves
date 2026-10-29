@@ -54,6 +54,8 @@ export type ClientMessage =
   | { type: 'toggleDeath'; playerId: string }
   /** Puts a mark (see MARKS) on a player in the current phase, or takes it off */
   | { type: 'toggleMark'; playerId: string; mark: string }
+  /** The role a player plays now; null (or the dealt role) goes back to the dealt one */
+  | { type: 'setRole'; playerId: string; roleId: string | null }
   /** Empty text removes the note */
   | { type: 'setNote'; night: number; playerId: string; text: string }
   /** Ends the game and shows everyone the summary */

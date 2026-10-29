@@ -389,6 +389,7 @@ describe('Room', () => {
       deaths: { [lanId]: { kind: 'night', number: 1 } },
       notes: { 1: { [minhId]: 'Secret note' } },
       marks: { [minhId]: { sheriff: { kind: 'night', number: 1 } } },
+      newRoles: {},
     });
     for (const text of [...minh.received, ...lan.received]) {
       expect(text).not.toContain('Secret note');
@@ -411,12 +412,14 @@ describe('Room', () => {
       sql.exec('DELETE FROM deaths');
       sql.exec('DELETE FROM notes');
       sql.exec('DROP TABLE marks');
+      sql.exec('DROP TABLE new_roles');
       const older = loadRoom(sql);
       expect(older?.game).toEqual({
         phase: { kind: 'night', number: 1 },
         deaths: {},
         notes: {},
         marks: {},
+        newRoles: {},
       });
       if (!older) throw new Error('room did not load');
       // A player id that is also an object key survives saving and loading.
@@ -426,6 +429,7 @@ describe('Room', () => {
         deaths: Object.fromEntries([['__proto__', death]]),
         notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
         marks: Object.fromEntries([['__proto__', { sheriff: death, 'heal-used': death }]]),
+        newRoles: Object.fromEntries([['__proto__', { role: 'seer', phase: death }]]),
       };
       saveRoom(state.storage, { ...older, game });
       const loaded = loadRoom(sql)?.game;
@@ -434,6 +438,9 @@ describe('Room', () => {
       const marks = Object.entries(loaded?.marks ?? {});
       expect(marks.map(([id, own]) => [id, Object.keys(own).sort()])).toEqual([
         ['__proto__', ['heal-used', 'sheriff']],
+      ]);
+      expect(Object.entries(loaded?.newRoles ?? {})).toEqual([
+        ['__proto__', { role: 'seer', phase: death }],
       ]);
       expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
     });
@@ -649,6 +656,8 @@ describe('parseClientMessage', () => {
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
     [{ type: 'toggleMark', playerId: 'abc', mark: 'sheriff' }],
+    [{ type: 'setRole', playerId: 'abc', roleId: 'seer' }],
+    [{ type: 'setRole', playerId: 'abc', roleId: null }],
     [
       {
         type: 'addCustomRole',
@@ -688,6 +697,8 @@ describe('parseClientMessage', () => {
       JSON.stringify({ type: 'endPhase', phase: { kind: 'dusk', number: 1 } }),
     ],
     ['a mark without a mark', JSON.stringify({ type: 'toggleMark', playerId: 'abc' })],
+    ['a new role without a role', JSON.stringify({ type: 'setRole', playerId: 'abc' })],
+    ['a new role as a number', JSON.stringify({ type: 'setRole', playerId: 'abc', roleId: 3 })],
     ['a note without text', JSON.stringify({ type: 'setNote', night: 1, playerId: 'abc' })],
     [
       'a note for a night given as text',

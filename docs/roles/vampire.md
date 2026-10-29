@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chọn một nạn nhân: họ chết vào ngày hôm sau. Sói không giết được bạn. Bạn thắng khi chỉ còn ma cà rồng.
+Mỗi đêm chọn một nạn nhân: họ chết vào ngày hôm sau. Sói không giết được. Thắng khi chỉ còn ma cà rồng.
 
 ## Rule (en)
 

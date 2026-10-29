@@ -48,6 +48,7 @@ const MASTER = {
     deaths: { aaaa: { kind: 'night', number: 2 } },
     notes: { 1: { aaaa: 'Saw the baker.' } },
     marks: { aaaa: { sheriff: { kind: 'morning', number: 1 } } },
+    newRoles: { aaaa: { role: 'seer', phase: { kind: 'night', number: 2 } } },
   },
 } as const;
 const SUMMARY: RoomSummary = {
@@ -138,6 +139,7 @@ describe('parseServerMessage', () => {
             deaths: {},
             notes: { 1: { aaaa: 'Saw.' } },
             marks: {},
+            newRoles: {},
           },
         },
       },
@@ -188,6 +190,16 @@ describe('parseServerMessage', () => {
     [
       'a game without marks',
       { type: 'state', view: { ...MASTER, game: { ...MASTER.game, marks: undefined } } },
+    ],
+    [
+      'a new role without its role',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          game: { ...MASTER.game, newRoles: { aaaa: { phase: { kind: 'night', number: 1 } } } },
+        },
+      },
     ],
     [
       'a mark in an unknown phase',

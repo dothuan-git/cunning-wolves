@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, khi bầy sói đi ngủ, bạn thức dậy và có một phần tư cơ hội nhìn thấy một con sói.
+Mỗi đêm, khi bầy sói đi ngủ thì thức dậy, có một phần tư cơ hội nhìn thấy một con sói.
 
 ## Rule (en)
 

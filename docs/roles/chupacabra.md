@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: nếu là ma sói, họ chết. Khi hết ma sói, bạn giết một người bất kỳ mỗi đêm. Bạn thắng khi là người sống sót cuối cùng.
+Mỗi đêm chỉ một người: là sói thì chết. Hết sói, mỗi đêm giết một người bất kỳ. Thắng khi là người sống sót cuối cùng.
 
 ## Rule (en)
 

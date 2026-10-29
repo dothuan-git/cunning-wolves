@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói. Năng lực của những người khác không nhắm được vào bạn.
+Thức dậy cùng bầy sói. Năng lực của người khác không nhắm được vào mình.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Ngay sau khi làng kết án một người, bạn có thể chết thay họ.
+Ngay sau khi làng kết án một người, có thể chết thay họ.
 
 ## Rule (en)
 

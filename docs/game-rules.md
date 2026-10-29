@@ -70,7 +70,7 @@ The worker builds each viewer's state before sending it. A player's client never
 | Role list + rules (from Review rules on)                                        | Yes         | Yes                 |
 | Role pool cards (browse only)                                                   | Yes         | Yes, any time       |
 | Who holds which role                                                            | Yes         | Own card only       |
-| Phases, deaths, notes, marks                                                    | Yes         | No                  |
+| Phases, deaths, notes, marks, new roles                                         | Yes         | No                  |
 | Full reveal + log, the narrator's notes included (after Finish)                 | Yes         | Seated players only |
 | Room PIN                                                                        | Yes         | No                  |
 
@@ -87,34 +87,51 @@ The worker builds each viewer's state before sending it. A player's client never
 - Note fields are separate from status controls: editing a note never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See decisions `0007-per-player-night-comments.md`, `0010-single-list-night-and-morning.md` and `0012-medieval-light-redesign.md`.
 - **The room keeps all of it:** the phase, deaths and notes survive a refresh, and only the master's phone receives them. Ending a phase names the phase being ended, so a hold that arrives twice ends one phase, not two. See decision 0020.
 - A note is saved about a second after the narrator stops typing, and when its field is left. A note typed while reconnecting is sent once the connection is back. Notes are up to 1000 characters.
-- **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, and never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
+- **Marks:** beside the status pill, a tag button with a count opens a sheet of the marks this player may carry in this game (see below); each is switched on or off with one tap, recorded at the current phase, and shown as a chip under the player's name. A mark never changes anything by itself, except that Lover and Dire Wolf's companion link deaths (below); it never reaches the player's phone during play. Marks are kept like deaths, survive a refresh, and are cleared by Play again. The summary shows each player's marks on the Roles tab, and each mark in the journal phase it was made in. See decision 0023.
+- **New role:** while a role that changes roles is dealt (Thief, Doppelgänger, Devoted Servant, Drunk, Apprentice Seer, Bailiff, Angel, Dream Wolf), the marks sheet has a **Plays** picker: this game's roles first, then the rest of the pool. The player then shows under the new role's panel with "Dealt …" under the name, may carry the marks of both roles, and a role nobody was dealt gets its own panel. The player's phone keeps the dealt card. Going back to the dealt role takes it off. The summary shows "Now …" beside the dealt card, and the change in the journal. See decision 0025.
 - **Timer:** the narrator starts, pauses and resets a countdown from the menu. Its length is the room's timer setting (0 hides it). It runs on the narrator's phone only, so a refresh resets it. With sound on, a short chime plays when it reaches zero.
-- The app records what the narrator marks. It never resolves abilities or decides winners.
+- The app records what the narrator marks. It never resolves abilities or decides winners, with one exception: a linked death (the other lover, a Dire Wolf whose companion dies) is marked together with the first (decision 0024).
 
 ## Marks
 
-Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles. Marking a player with a single mark moves it from whoever had it.
+Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles or now playing one. A role a power gave someone offers its marks like a dealt one, and a carried mark can always be taken off. Marking a player with a single mark moves it from whoever had it.
 
-| Mark             | Offered by                  | Carried by         |
-| ---------------- | --------------------------- | ------------------ |
-| Sheriff          | every game                  | one player at once |
-| Town Crier       | every game                  | one player at once |
-| Lover            | Cupid                       | any player         |
-| Role model       | Wild Child                  | one player at once |
-| Turned wolf      | Wild Child                  | its holder         |
-| Chose the wolves | Wolf-hound                  | its holder         |
-| Cursed           | Cursed Wolf-Father          | one player at once |
-| Charmed          | Pied Piper                  | any player         |
-| Target group     | Prejudiced Manipulator      | any player         |
-| Second vote used | Stuttering Judge            | its holder         |
-| Power lost       | Fox, Big Bad Wolf           | its holder         |
-| Heal potion used | Witch                       | its holder         |
-| Kill potion used | Witch                       | its holder         |
-| Extra life used  | Elder                       | its holder         |
-| Can't vote       | Village Idiot               | its holder         |
-| Rusted           | Knight with the Rusty Sword | any player         |
+| Mark                  | Offered by                                                                                   | Carried by         |
+| --------------------- | -------------------------------------------------------------------------------------------- | ------------------ |
+| Sheriff               | every game                                                                                   | one player at once |
+| Town Crier            | every game                                                                                   | one player at once |
+| Lover                 | Cupid                                                                                        | any player         |
+| Role model            | Wild Child                                                                                   | one player at once |
+| Turned wolf           | Wild Child                                                                                   | its holder         |
+| Chose the wolves      | Wolf-hound                                                                                   | its holder         |
+| Cursed                | Cursed Wolf-Father                                                                           | one player at once |
+| Became a werewolf     | Cursed                                                                                       | its holder         |
+| Charmed               | Pied Piper                                                                                   | any player         |
+| In the cult           | Cult Leader                                                                                  | any player         |
+| Target group          | Prejudiced Manipulator                                                                       | any player         |
+| Dire Wolf's companion | Dire Wolf                                                                                    | one player at once |
+| Doppelgänger's model  | Doppelgänger                                                                                 | one player at once |
+| Hoodlum's target      | Hoodlum                                                                                      | any player         |
+| Dies soon             | Tough Guy, Vampire                                                                           | any player         |
+| Blessed               | Priest                                                                                       | one player at once |
+| Holds the amulet      | Amulet of Protection                                                                         | one player at once |
+| House burned          | Pyromaniac                                                                                   | any player         |
+| Captain               | Farmer                                                                                       | one holder at once |
+| Revealed              | Prince                                                                                       | its holder         |
+| Power used            | Puppeteer, Priest, Alpha Wolf, Pyromaniac, Troublemaker, Barber, Bonesetter, Confessor, Lord | its holder         |
+| Second vote used      | Stuttering Judge                                                                             | its holder         |
+| Power lost            | Fox, Big Bad Wolf, Bartender                                                                 | its holder         |
+| Heal used             | Witch, Magician                                                                              | its holder         |
+| Kill used             | Witch, Magician                                                                              | its holder         |
+| Extra life used       | Elder, Colossus                                                                              | its holder         |
+| Can't vote            | Village Idiot, Vagabond                                                                      | its holder         |
+| Rusted                | Knight with the Rusty Sword                                                                  | any player         |
 
-**The wolves' pack.** Turned wolf, Chose the wolves and Cursed move a player to the wolves. Such a player, and the White Werewolf, also appear in the panel of the first wolf role woken that night, under "Also wakes with the wolves", with their own role beside the name. They keep their own panel and notes. The app never changes a player's role or team by itself.
+**Linked deaths.** Marking a player dead also marks dead, in the same phase, the other lovers, and the Dire Wolf when its companion dies (not the other way round), following chains. Marking that player alive again brings back those who died with them in that phase. See decision 0024.
+
+Only lasting effects have a mark. A power that lasts one night or day (the Bodyguard's protection, the Raven's two votes, the Old Hag's banishment, the Wolf Cub's double kill) has none: the narrator keeps it in the night's note.
+
+**The wolves' pack.** Turned wolf, Chose the wolves, Cursed and Became a werewolf move a player to the wolves. Such a player, the White Werewolf and the Lone Wolf also appear in the panel of the first wolf role woken that night, under "Also wakes with the wolves", with their own role beside the name. They keep their own panel and notes. The app never changes a player's role or team by itself.
 
 ## Wake order
 
@@ -127,51 +144,50 @@ The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.
 3. Stuttering Judge (`stuttering-judge`, 30): Night 1 only
 4. Doppelgänger (`doppelganger`, 40): Night 1 only
 5. Hoodlum (`hoodlum`, 50): Night 1 only
-6. Mason (`mason`, 60): Night 1 only
-7. The Count (`the-count`, 70): Night 1 only
-8. Two Sisters (`two-sisters`, 80)
-9. Three Brothers (`three-brothers`, 90)
-10. Wild Child (`wild-child`, 100): Night 1 only
-11. Wolf-hound (`wolf-hound`, 110): Night 1 only
-12. Actor (`actor`, 120)
-13. Old Hag (`old-hag`, 130)
-14. Spellcaster (`spellcaster`, 140)
-15. Puppeteer (`puppeteer`, 150)
-16. Fox (`fox`, 160)
-17. Paranormal Investigator (`paranormal-investigator`, 170)
-18. Wise Monkey (`wise-monkey`, 180)
-19. Seer (`seer`, 190)
-20. Beholder (`beholder`, 200): Night 1 only
-21. Aura Seer (`aura-seer`, 210)
-22. Bodyguard (`bodyguard`, 220)
-23. Priest (`priest`, 230)
-24. Werewolf (`werewolf`, 240)
-25. Wolf Man (`wolf-man`, 250)
-26. Wolf Cub (`wolf-cub`, 260)
-27. Fruit Brute (`fruit-brute`, 270)
-28. Dire Wolf (`dire-wolf`, 280)
-29. Lone Wolf (`lone-wolf`, 290)
-30. Minion (`minion`, 300): Night 1 only
-31. Dream Wolf (`dream-wolf`, 310)
-32. Big Bad Wolf (`big-bad-wolf`, 320)
-33. Cursed Wolf-Father (`cursed-wolf-father`, 330)
-34. Alpha Wolf (`alpha-wolf`, 340)
-35. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
-36. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
-37. Sorceress (`sorceress`, 370)
-38. Bogeyman (`bogeyman`, 380)
-39. Chupacabra (`chupacabra`, 390)
-40. Baker (`baker`, 400)
-41. Pyromaniac (`pyromaniac`, 410)
-42. Vampire (`vampire`, 420)
-43. Cult Leader (`cult-leader`, 430)
-44. Witch (`witch`, 440)
-45. Magician (`magician`, 450)
-46. Gypsy (`gypsy`, 460)
-47. Pied Piper (`pied-piper`, 470)
-48. Raven (`raven`, 480)
-49. Troublemaker (`troublemaker`, 490)
-50. Insomniac (`insomniac`, 500)
+6. The Count (`the-count`, 70): Night 1 only
+7. Two Sisters (`two-sisters`, 80)
+8. Three Brothers (`three-brothers`, 90)
+9. Wild Child (`wild-child`, 100): Night 1 only
+10. Wolf-hound (`wolf-hound`, 110): Night 1 only
+11. Actor (`actor`, 120)
+12. Old Hag (`old-hag`, 130)
+13. Spellcaster (`spellcaster`, 140)
+14. Puppeteer (`puppeteer`, 150)
+15. Fox (`fox`, 160)
+16. Paranormal Investigator (`paranormal-investigator`, 170)
+17. Wise Monkey (`wise-monkey`, 180)
+18. Seer (`seer`, 190)
+19. Beholder (`beholder`, 200): Night 1 only
+20. Aura Seer (`aura-seer`, 210)
+21. Bodyguard (`bodyguard`, 220)
+22. Priest (`priest`, 230)
+23. Werewolf (`werewolf`, 240)
+24. Wolf Man (`wolf-man`, 250)
+25. Wolf Cub (`wolf-cub`, 260)
+26. Fruit Brute (`fruit-brute`, 270)
+27. Dire Wolf (`dire-wolf`, 280)
+28. Lone Wolf (`lone-wolf`, 290)
+29. Minion (`minion`, 300): Night 1 only
+30. Dream Wolf (`dream-wolf`, 310)
+31. Big Bad Wolf (`big-bad-wolf`, 320)
+32. Cursed Wolf-Father (`cursed-wolf-father`, 330)
+33. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
+34. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
+35. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
+36. Sorceress (`sorceress`, 370)
+37. Bogeyman (`bogeyman`, 380)
+38. Chupacabra (`chupacabra`, 390)
+39. Baker (`baker`, 400)
+40. Pyromaniac (`pyromaniac`, 410)
+41. Vampire (`vampire`, 420)
+42. Cult Leader (`cult-leader`, 430)
+43. Witch (`witch`, 440)
+44. Magician (`magician`, 450)
+45. Gypsy (`gypsy`, 460)
+46. Pied Piper (`pied-piper`, 470)
+47. Raven (`raven`, 480)
+48. Troublemaker (`troublemaker`, 490)
+49. Insomniac (`insomniac`, 500)
 
 Never wake: Amulet of Protection (an item the narrator hands out), Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Bailiff, Barber, Bartender, Bear Tamer, Bonesetter, Colossus, Confessor, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Schoolmistress, Tanner, Tough Guy, Vagabond, Village Idiot, Villager, Villager-Villager.
 

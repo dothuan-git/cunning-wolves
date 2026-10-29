@@ -2,13 +2,13 @@
 
 - **id:** `the-count`
 - **Team:** village
-- **Wakes at night:** yes (70, Night 1 only), after `mason` and before `two-sisters`
+- **Wakes at night:** yes (70, Night 1 only), after `hoodlum` and before `two-sisters`
 - **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)
 
-Đêm 1: bạn biết có bao nhiêu ma sói ở mỗi nửa làng.
+Đêm 1: biết mỗi nửa làng có bao nhiêu sói.
 
 ## Rule (en)
 

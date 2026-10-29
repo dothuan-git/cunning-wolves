@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào bạn.
+Không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào mình.
 
 ## Rule (en)
 

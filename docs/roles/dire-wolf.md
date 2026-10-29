@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một bạn đồng hành. Nếu họ chết, bạn chết. Nếu bạn chết, họ vẫn sống.
+Đêm 1: chọn một bạn đồng hành. Họ chết thì mình chết. Mình chết thì họ vẫn sống.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một người. Khi họ chết, bạn bí mật nhận vai của họ.
+Đêm 1: chọn một người. Khi họ chết, bí mật nhận vai của họ.
 
 ## Rule (en)
 

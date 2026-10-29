@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu sói tấn công bạn, bạn sống sót lần đầu, nhưng bầy sói biết bạn là ai.
+Nếu sói tấn công, sống sót lần đầu nhưng bầy sói biết mình là ai.
 
 ## Rule (en)
 

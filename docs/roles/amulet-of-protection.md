@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Ai giữ bùa thì không thể chết. Mỗi ngày phải chuyền bùa cho người khác, nếu không bùa bị phá hủy.
+Ai giữ bùa thì không thể chết. Mỗi ngày phải chuyền bùa cho người khác, không thì bùa bị phá.
 
 ## Rule (en)
 

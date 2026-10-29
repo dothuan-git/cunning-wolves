@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Thức dậy và giết người cùng bầy sói. Sau đó thức dậy một mình và giết thêm một người, chừng nào chưa có con sói nào chết.
+Cùng bầy sói giết một người, rồi thức dậy một mình giết thêm một người, chừng nào chưa có sói nào chết.
 
 ## Rule (en)
 
