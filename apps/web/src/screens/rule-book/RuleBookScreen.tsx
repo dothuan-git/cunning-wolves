@@ -10,6 +10,7 @@ import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { FACTION_ORDER } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import { filterRoles } from './filterRoles';
+import { HowToPlay } from './HowToPlay';
 
 /** Every role in the pool, by faction, to read outside a game. */
 export function RuleBookScreen({
@@ -40,6 +41,7 @@ export function RuleBookScreen({
         </Button>
       }
     >
+      <HowToPlay />
       {/* Stays in reach while the list scrolls under it, above the cards' names (z-10). */}
       <div className="sticky top-0 z-30 -mt-3 grid gap-2 bg-paper pt-3 pb-1">
         <label htmlFor={searchId} className="sr-only">

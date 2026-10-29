@@ -328,6 +328,13 @@
     "shown_one": "{{shown}}/{{count}} vai",
     "shown_other": "{{shown}}/{{count}} vai",
     "noMatch": "Không có vai trò nào khớp.",
-    "lookCloser": "Đọc luật của {{role}}"
+    "lookCloser": "Đọc luật của {{role}}",
+    "howTitle": "Cách chơi",
+    "how": {
+      "narrator": "Một người làm quản trò và không chơi. Mọi người còn lại nhận một vai bí mật trên điện thoại: chạm vào lá bài để xem, chạm lần nữa để úp lại.",
+      "night": "Đêm: mọi người nhắm mắt. Quản trò gọi từng vai dậy; vai đó lặng lẽ làm hành động của mình rồi ngủ lại.",
+      "morning": "Sáng: quản trò báo ai đã chết. Cả làng bàn bạc rồi bỏ phiếu loại một người bị nghi.",
+      "win": "Lặp lại đến khi một phe thắng. Phe Dân thắng khi hết sói. Phe Sói thắng khi số sói bằng số dân. Vai phe thứ ba có cách thắng riêng: xem trên lá bài."
+    }
   }
 }

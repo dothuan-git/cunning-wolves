@@ -88,3 +88,16 @@ test('rule book search stays above the cards while scrolling', async ({ page }) 
   }
   expect(covered).toEqual([]);
 });
+
+test('rule book has a how to play that opens and closes', async ({ page }) => {
+  await page.goto('/rules');
+  const toggle = page.getByRole('button', { name: 'Cách chơi' });
+  const step = page.getByText(/^Một người làm quản trò/);
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(step).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(step).toBeVisible();
+  await toggle.click();
+  await expect(step).toBeHidden();
+});

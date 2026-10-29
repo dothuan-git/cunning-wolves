@@ -328,6 +328,13 @@
     "shown_one": "{{shown}} of {{count}} role",
     "shown_other": "{{shown}} of {{count}} roles",
     "noMatch": "No roles match your search.",
-    "lookCloser": "Read the rule for {{role}}"
+    "lookCloser": "Read the rule for {{role}}",
+    "howTitle": "How to play",
+    "how": {
+      "narrator": "One person is the narrator and does not play. Everyone else gets a secret role on their phone: tap the card to look, tap again to hide it.",
+      "night": "Night: everyone closes their eyes. The narrator wakes the roles one by one; each does its action quietly, then goes back to sleep.",
+      "morning": "Morning: the narrator says who died. Everyone talks it over and votes one suspect out.",
+      "win": "Repeat until a side wins. The village wins when every wolf is out. The wolves win when they are as many as the villagers. A third faction role has its own way to win: read its card."
+    }
   }
 }
