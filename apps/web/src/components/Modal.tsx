@@ -107,8 +107,9 @@ export function Modal({
         </Button>
       </div>
       <CloseContext value={requestClose}>
-        {/* Side padding inside the scroll keeps focus rings and corner buttons from being clipped. */}
-        <ScrollArea className="-mx-5 min-h-0 flex-1 px-5">{children}</ScrollArea>
+        {/* Side padding inside the scroll keeps focus rings and corner buttons from being clipped.
+            flex-auto, not flex-1: older Safari sizes a 0% basis as 0 here and hides the body. */}
+        <ScrollArea className="-mx-5 min-h-0 flex-auto px-5">{children}</ScrollArea>
         {footer && <div className="shrink-0 pt-4">{footer}</div>}
       </CloseContext>
     </dialog>
