@@ -25,7 +25,7 @@ The way back: **Edit roles** (`reveal → lobby`) and **Play again** (`finished 
 
 Gathering players and choosing roles happen at the same time, so they are one status, `lobby` (decision 0017).
 
-**Locks:** kick, close/re-open, leaving and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; while the room is in `reveal` or later, the roster and card set are locked. **Edit roles** unlocks them again until **Start game**. While playing, the narrator can still change the wake order, the timer length and sound.
+**Locks:** kick, close/re-open, leaving and the card set (roles, rules, settings) work while the room is in `lobby`. **Review rules** closes the room; while the room is in `reveal` or later, the roster and card set are locked. **Edit roles** unlocks them again until **Start game**. While reviewing the rules and while playing, the narrator can still change the wake order, the timer length and sound.
 
 ## Rooms
 

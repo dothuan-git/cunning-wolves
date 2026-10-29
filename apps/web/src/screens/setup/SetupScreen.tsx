@@ -2,7 +2,6 @@ import {
   nameKey,
   ROLE_NAME_MAX,
   RULE_MAX,
-  TIMER_MAX,
   TEAMS,
   wakingOrder,
   type CustomRoleInput,
@@ -14,16 +13,14 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddCard } from '../../components/AddCard';
 import { Button } from '../../components/Button';
-import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { DetailedCard } from '../../components/DetailedCard';
 import { FactionSection } from '../../components/FactionSection';
 import { Icon } from '../../components/Icon';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { Modal, ModalDone } from '../../components/Modal';
+import { RoomSettingsSheet } from '../../components/RoomSettingsSheet';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
-import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { FACTION_ORDER } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import type { SeatedPlayerItem } from '../types';
@@ -113,8 +110,6 @@ export function SetupScreen({
   const [team, setTeam] = useState<Team>('village');
   const [wakes, setWakes] = useState(false);
   const [error, setError] = useState(false);
-  // Typed freely in the settings sheet; the room gets it when the sheet closes.
-  const [timer, setTimer] = useState('');
   // Roles just taken out of the game, still on the page while their card shrinks away.
   const [leaving, setLeaving] = useState<ReadonlyMap<string, number>>(new Map());
   const leaveTimers = useRef(new Map<string, number>());
@@ -201,21 +196,6 @@ export function SetupScreen({
     setViewingId(null);
   }
 
-  function openSettings() {
-    setTimer(String(settings.timerSeconds));
-    setShowSettings(true);
-  }
-
-  function closeSettings() {
-    // A number outside the timer's range is pulled into it; anything else leaves the timer as it was.
-    const typed = Number.parseInt(timer, 10);
-    if (!Number.isNaN(typed)) {
-      const timerSeconds = Math.min(TIMER_MAX, Math.max(0, typed));
-      if (timerSeconds !== settings.timerSeconds) onSettings({ ...settings, timerSeconds });
-    }
-    setShowSettings(false);
-  }
-
   function openCreator() {
     setCreating(true);
     setError(false);
@@ -234,7 +214,9 @@ export function SetupScreen({
   return (
     <ScreenLayout
       title={t('screens.setup')}
-      onOpenMenu={openSettings}
+      onOpenMenu={() => {
+        setShowSettings(true);
+      }}
       footer={
         <>
           {/* Always one line, so the footer keeps its height as the count changes. */}
@@ -404,51 +386,18 @@ export function SetupScreen({
         />
       )}
       {showSettings && (
-        <Modal sheet title={t('setup.settings')} onClose={closeSettings}>
-          <div className="mb-5 flex items-center justify-between text-control">
-            <span>{t('language.label')}</span>
-            <LanguageSwitch compact />
-          </div>
-          <div className="grid gap-3 pb-3">
-            <TextField
-              type="number"
-              min="0"
-              max={TIMER_MAX}
-              label={t('setup.timer')}
-              hint={t('setup.timerHint')}
-              value={timer}
-              onChange={(event) => {
-                setTimer(event.target.value);
-              }}
-            />
-            <label className="flex min-h-12 items-center gap-3 text-control">
-              <input
-                className="size-5 accent-ink"
-                type="checkbox"
-                checked={settings.soundOn}
-                onChange={(event) => {
-                  onSettings({ ...settings, soundOn: event.target.checked });
-                }}
-              />
-              {t('setup.sound')}
-            </label>
-            {waking.length > 0 && (
-              <WakeOrderSetting
-                roles={waking}
-                onChange={(order) => {
-                  onWakeOrder(order.map((role) => role.id));
-                }}
-              />
-            )}
-          </div>
-          <div className="pt-3 pb-4">
-            <DeleteRoomButton
-              disabled={reconnecting}
-              failed={roomError === 'try-again'}
-              onDelete={onDelete}
-            />
-          </div>
-        </Modal>
+        <RoomSettingsSheet
+          settings={settings}
+          waking={waking}
+          reconnecting={reconnecting}
+          deleteFailed={roomError === 'try-again'}
+          onSettings={onSettings}
+          onWakeOrder={onWakeOrder}
+          onDelete={onDelete}
+          onClose={() => {
+            setShowSettings(false);
+          }}
+        />
       )}
       {creating && (
         <Modal

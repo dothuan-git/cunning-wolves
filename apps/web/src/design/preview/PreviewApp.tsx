@@ -1,4 +1,10 @@
-import { DEFAULT_SETTINGS, marksFor, nextPhase, type PoolRole } from '@werewolf/shared';
+import {
+  DEFAULT_SETTINGS,
+  marksFor,
+  nextPhase,
+  wakingOrder,
+  type PoolRole,
+} from '@werewolf/shared';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -214,6 +220,18 @@ function PreviewScene({
                   onStart: () => {
                     onNavigate('narrator');
                   },
+                  settings: narratorSettings,
+                  waking: wakingOrder(
+                    exampleRoles,
+                    exampleRoles.map((role) => role.id),
+                    wakeOrder,
+                  ),
+                  onSettings: setNarratorSettings,
+                  onWakeOrder: setWakeOrder,
+                  onDelete: () => {
+                    onNavigate('home');
+                  },
+                  deleteFailed: false,
                 }
               : undefined
           }

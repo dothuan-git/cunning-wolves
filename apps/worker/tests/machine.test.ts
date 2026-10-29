@@ -419,8 +419,8 @@ describe('locks after the lobby', () => {
           role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false },
         }),
       ).toBe('not-allowed');
-      // The narrator's tools stay open while playing; see 'narrator tools in play'.
-      const tools = status === 'playing' ? null : 'not-allowed';
+      // The narrator's tools stay open while reviewing and playing; see 'narrator tools in play'.
+      const tools = status === 'playing' || status === 'reveal' ? null : 'not-allowed';
       expect(refusal(locked, MASTER, { type: 'setWakeOrder', order: ['seer'] })).toBe(tools);
       expect(
         refusal(locked, MASTER, {
@@ -917,6 +917,19 @@ describe('narrator tools in play', () => {
       'not-allowed',
     );
     expect(refusal(state, 'a', { type: 'setWakeOrder', order: [] })).toBe('not-master');
+  });
+
+  it('are open while reviewing the rules, with the card set locked', () => {
+    const state = run(
+      ready(),
+      [MASTER, { type: 'review' }],
+      [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
+      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+    );
+    expect(state.status).toBe('reveal');
+    expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
   });
 });
 

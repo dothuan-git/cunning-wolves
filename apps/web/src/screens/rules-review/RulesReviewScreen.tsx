@@ -1,9 +1,10 @@
-import type { PoolRole } from '@werewolf/shared';
+import type { PoolRole, RoomSettings } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DetailedCard } from '../../components/DetailedCard';
 import { FactionSection } from '../../components/FactionSection';
+import { RoomSettingsSheet } from '../../components/RoomSettingsSheet';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
 import { FACTION_ORDER } from '../../design/faction';
@@ -15,11 +16,23 @@ export function RulesReviewScreen({
 }: {
   roles: readonly { role: PoolRole; count: number }[];
   /** The narrator's controls; players get "I've read the rules" instead */
-  master?: { reconnecting: boolean; onBack: () => void; onStart: () => void };
+  master?: {
+    reconnecting: boolean;
+    onBack: () => void;
+    onStart: () => void;
+    settings: RoomSettings;
+    /** The waking roles in the order the narrator will wake them */
+    waking: readonly PoolRole[];
+    onSettings: (settings: RoomSettings) => void;
+    onWakeOrder: (order: string[]) => void;
+    onDelete: () => void;
+    deleteFailed: boolean;
+  };
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
   const [read, setRead] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [viewing, setViewing] = useState<{ role: PoolRole; count: number } | null>(null);
   const groups = FACTION_ORDER.map((team) => ({
     team,
@@ -28,6 +41,13 @@ export function RulesReviewScreen({
   return (
     <ScreenLayout
       title={t('screens.rulesReview')}
+      onOpenMenu={
+        master
+          ? () => {
+              setShowSettings(true);
+            }
+          : undefined
+      }
       footer={
         master ? (
           <>
@@ -99,6 +119,20 @@ export function RulesReviewScreen({
           count={viewing.count}
           onClose={() => {
             setViewing(null);
+          }}
+        />
+      )}
+      {master && showSettings && (
+        <RoomSettingsSheet
+          settings={master.settings}
+          waking={master.waking}
+          reconnecting={master.reconnecting}
+          deleteFailed={master.deleteFailed}
+          onSettings={master.onSettings}
+          onWakeOrder={master.onWakeOrder}
+          onDelete={master.onDelete}
+          onClose={() => {
+            setShowSettings(false);
           }}
         />
       )}
