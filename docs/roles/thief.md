@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: xem hai lá bài thừa và có thể đổi lá của bạn lấy một trong hai. Nếu cả hai đều là sói, bạn phải lấy một.
+Đêm 1: xem hai lá thừa, có thể đổi lá của mình lấy một trong hai. Nếu cả hai là sói, bắt buộc lấy một.
 
 ## Rule (en)
 

@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Nếu cuộc bỏ phiếu hòa, bạn bị loại thay. Trước khi đi, bạn chọn ai được bỏ phiếu ngày hôm sau.
+Nếu bỏ phiếu hòa, bị loại thay. Trước khi đi, chọn ai được bỏ phiếu ngày hôm sau.
 
 ## Rule (en)
 

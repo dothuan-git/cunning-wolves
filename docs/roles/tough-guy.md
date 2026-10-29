@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu sói tấn công bạn, bạn sống qua đêm đó và chết vào đêm sau.
+Nếu sói tấn công, sống qua đêm đó và chết vào đêm sau.
 
 ## Rule (en)
 

@@ -7,7 +7,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'thief',
     name: { vi: 'Kẻ trộm', en: 'Thief' },
     rule: {
-      vi: 'Đêm 1: xem hai lá bài thừa và có thể đổi lá của bạn lấy một trong hai. Nếu cả hai đều là sói, bạn phải lấy một.',
+      vi: 'Đêm 1: xem hai lá thừa, có thể đổi lá của mình lấy một trong hai. Nếu cả hai là sói, bắt buộc lấy một.',
       en: 'Night 1: look at two extra cards and you may swap your card for one of them. If both are werewolves, you must take one.',
     },
     team: 'village',
@@ -19,7 +19,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'cupid',
     name: { vi: 'Cupid', en: 'Cupid' },
     rule: {
-      vi: 'Đêm 1: chọn hai người làm cặp đôi, có thể gồm cả bạn. Một người chết thì người kia chết theo. Cặp đôi khác phe (một sói, một dân) thắng cùng nhau khi chỉ còn hai người sống.',
+      vi: 'Đêm 1: chọn hai người làm cặp đôi (có thể gồm mình). Một người chết, người kia chết theo. Cặp khác phe (một sói, một dân) thắng cùng nhau khi chỉ còn hai người sống.',
       en: 'Night 1: choose two players as lovers, you may be one. If one lover dies, the other dies too. A mixed couple (one wolf, one villager) wins together when they are the last two alive.',
     },
     team: 'village',
@@ -31,7 +31,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'stuttering-judge',
     name: { vi: 'Thẩm phán', en: 'Stuttering Judge' },
     rule: {
-      vi: 'Đêm đầu tiên, thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, ra ký hiệu đó khi bỏ phiếu thì sẽ có thêm một lượt bỏ phiếu ngay sau đó.',
+      vi: 'Đêm 1: thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, ra ký hiệu đó khi bỏ phiếu: làng bỏ phiếu lại ngay.',
       en: 'On the first night, agree on a secret sign with the narrator. Once per game, make that sign during a vote and a second vote follows at once.',
     },
     team: 'village',
@@ -43,7 +43,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'doppelganger',
     name: { vi: 'Kẻ bắt chước', en: 'Doppelgänger' },
     rule: {
-      vi: 'Đêm 1: chọn một người. Khi họ chết, bạn bí mật nhận vai của họ.',
+      vi: 'Đêm 1: chọn một người. Khi họ chết, bí mật nhận vai của họ.',
       en: 'Night 1: choose a player. When they die, you secretly take their role.',
     },
     team: 'village',
@@ -55,7 +55,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'hoodlum',
     name: { vi: 'Kẻ côn đồ', en: 'Hoodlum' },
     rule: {
-      vi: 'Đêm 1: chọn hai người. Bạn thắng nếu cả hai đã chết và bạn còn sống khi ván kết thúc.',
+      vi: 'Đêm 1: chọn hai người. Thắng nếu cả hai chết và mình còn sống khi hết ván.',
       en: 'Night 1: choose two players. You win if both are dead and you are still alive when the game ends.',
     },
     team: 'solo',
@@ -67,7 +67,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'the-count',
     name: { vi: 'Bá tước', en: 'The Count' },
     rule: {
-      vi: 'Đêm 1: bạn biết có bao nhiêu ma sói ở mỗi nửa làng.',
+      vi: 'Đêm 1: biết mỗi nửa làng có bao nhiêu sói.',
       en: 'Night 1: you learn how many werewolves sit in each half of the village.',
     },
     team: 'village',
@@ -79,7 +79,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'two-sisters',
     name: { vi: 'Hai chị em', en: 'Two Sisters' },
     rule: {
-      vi: 'Hai chị em cùng thức dậy vào ban đêm, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
+      vi: 'Ban đêm cả hai thức dậy, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
       en: 'The sisters wake together at night, recognize each other and may silently share their suspicions.',
     },
     team: 'village',
@@ -91,7 +91,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'three-brothers',
     name: { vi: 'Ba anh em', en: 'Three Brothers' },
     rule: {
-      vi: 'Ba anh em cùng thức dậy vào ban đêm, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
+      vi: 'Ban đêm cả ba thức dậy, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.',
       en: 'The brothers wake together at night, recognize each other and may silently share their suspicions.',
     },
     team: 'village',
@@ -103,7 +103,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'wild-child',
     name: { vi: 'Đứa trẻ hoang dã', en: 'Wild Child' },
     rule: {
-      vi: 'Đêm 1: chọn một người làm hình mẫu. Khi hình mẫu còn sống, bạn là dân làng. Khi họ chết, bạn thành ma sói và thức dậy cùng bầy sói từ đêm sau.',
+      vi: 'Đêm 1: chọn một hình mẫu. Hình mẫu còn sống: là dân làng. Họ chết: thành sói, thức dậy cùng bầy sói từ đêm sau.',
       en: 'Night 1: choose a role model. While your model lives, you are a villager. When they die, you become a werewolf and wake with the pack from the next night.',
     },
     team: 'village',
@@ -115,7 +115,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'wolf-hound',
     name: { vi: 'Chó lai sói', en: 'Wolf-hound' },
     rule: {
-      vi: 'Đêm 1: chọn một lần cho mãi mãi, làm dân làng hay ma sói. Nếu chọn sói, bạn thức dậy cùng bầy sói mỗi đêm. Nếu không, bạn là dân làng.',
+      vi: 'Đêm 1: chọn một lần duy nhất: dân làng hay sói. Chọn sói: thức dậy cùng bầy sói mỗi đêm. Không thì vẫn là dân làng.',
       en: 'Night 1: choose once and for all, villager or werewolf. As a werewolf, you wake with the pack every night. Otherwise you stay a villager.',
     },
     team: 'village',
@@ -127,8 +127,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'actor',
     name: { vi: 'Diễn viên', en: 'Actor' },
     rule: {
-      vi: 'Ba lá năng lực (không phải sói) được úp giữa bàn. Mỗi đêm, chọn một lá và dùng năng lực đó đến đêm sau. Mỗi lá chỉ dùng một lần.',
-      en: 'Three power cards (never werewolves) lie face down. Each night, choose one and use its power until the next night. Each card is used once.',
+      vi: 'Ba lá năng lực (không phải sói) để ngửa giữa bàn. Mỗi đêm chọn một lá và dùng năng lực đó trong đêm. Mỗi lá chỉ dùng một lần.',
+      en: 'Three role cards (never werewolves) lie face up. Each night, choose one and use its power that night. Each card is used once.',
     },
     team: 'village',
     defaultWakeOrder: 120,
@@ -139,7 +139,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'old-hag',
     name: { vi: 'Mụ già', en: 'Old Hag' },
     rule: {
-      vi: 'Mỗi đêm, chọn một người: hôm sau họ không được nói và không được bỏ phiếu.',
+      vi: 'Mỗi đêm chọn một người: hôm sau họ không được nói và không được bỏ phiếu.',
       en: 'Each night, choose a player: the next day they cannot speak or vote.',
     },
     team: 'village',
@@ -151,8 +151,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'spellcaster',
     name: { vi: 'Người niệm chú', en: 'Spellcaster' },
     rule: {
-      vi: 'Mỗi đêm, chọn một người: hôm sau họ không được nói.',
-      en: 'Each night, choose a player: the next day they cannot speak.',
+      vi: 'Mỗi đêm chọn một người: hôm sau họ không được nói. Không chọn một người hai lần.',
+      en: 'Each night, choose a player: the next day they cannot speak. Never choose the same player twice.',
     },
     team: 'village',
     defaultWakeOrder: 140,
@@ -163,7 +163,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'puppeteer',
     name: { vi: 'Người điều khiển rối', en: 'Puppeteer' },
     rule: {
-      vi: 'Một lần trong ván, chọn một người: hôm sau họ phải bỏ phiếu theo ý bạn.',
+      vi: 'Một lần trong ván, chọn một người: hôm sau họ phải bỏ phiếu theo ý mình.',
       en: 'Once per game, choose a player: the next day they must vote as you say.',
     },
     team: 'village',
@@ -175,7 +175,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'fox',
     name: { vi: 'Cáo', en: 'Fox' },
     rule: {
-      vi: 'Mỗi đêm, có thể chỉ vào một người: quản trò gật đầu nếu người đó hoặc một trong hai người ngồi cạnh là sói. Nếu không có sói, bạn mất năng lực.',
+      vi: 'Mỗi đêm có thể chỉ một người: quản trò gật đầu nếu người đó hoặc một trong hai người ngồi cạnh là sói. Không có sói thì mất năng lực.',
       en: 'Each night you may point at a player: the narrator nods if that player or one of their two neighbors is a werewolf. If none is, you lose your power.',
     },
     team: 'village',
@@ -187,7 +187,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'paranormal-investigator',
     name: { vi: 'Nhà điều tra siêu nhiên', en: 'Paranormal Investigator' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người: bạn biết người đó hoặc một trong hai người ngồi cạnh có phải ma sói không.',
+      vi: 'Mỗi đêm chỉ một người: biết người đó hoặc một trong hai người ngồi cạnh có phải sói không.',
       en: 'Each night, point at a player: you learn whether that player or one of their two neighbors is a werewolf.',
     },
     team: 'village',
@@ -199,7 +199,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'wise-monkey',
     name: { vi: 'Khỉ thông thái', en: 'Wise Monkey' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người: bạn biết vai của họ. Nếu đó là ma sói, bầy sói biết bạn là ai.',
+      vi: 'Mỗi đêm chỉ một người: biết vai của họ. Nếu là sói, bầy sói biết mình là ai.',
       en: 'Each night, point at a player: you learn their role. If it is a werewolf, the werewolves learn who you are.',
     },
     team: 'village',
@@ -211,7 +211,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'seer',
     name: { vi: 'Tiên tri', en: 'Seer' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người chơi: quản trò cho bạn xem lá bài của người đó.',
+      vi: 'Mỗi đêm chỉ một người: quản trò cho xem lá bài của họ.',
       en: "Each night, point at a player: the narrator shows you that player's card.",
     },
     team: 'village',
@@ -223,7 +223,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'beholder',
     name: { vi: 'Người chứng kiến', en: 'Beholder' },
     rule: {
-      vi: 'Đêm 1: bạn biết ai là Tiên tri.',
+      vi: 'Đêm 1: biết ai là Tiên tri.',
       en: 'Night 1: you see who the Seer is.',
     },
     team: 'village',
@@ -235,7 +235,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'aura-seer',
     name: { vi: 'Người nhìn hào quang', en: 'Aura Seer' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người: bạn biết họ có năng lực đặc biệt hay không (không phải Dân làng hay Ma sói thường).',
+      vi: 'Mỗi đêm chỉ một người: biết họ có năng lực đặc biệt không (không phải Dân làng hay Ma sói thường).',
       en: 'Each night, point at a player: you learn whether they have a special power (anything but a plain Villager or Werewolf).',
     },
     team: 'village',
@@ -247,8 +247,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bodyguard',
     name: { vi: 'Bảo vệ', en: 'Bodyguard' },
     rule: {
-      vi: 'Mỗi đêm, chọn một người để bảo vệ khỏi sói. Có thể tự bảo vệ mình, nhưng không được bảo vệ cùng một người hai đêm liền.',
-      en: 'Each night, choose a player to protect from the werewolves. You may protect yourself, but not the same player two nights in a row.',
+      vi: 'Mỗi đêm chọn một người để bảo vệ khỏi sói. Không được tự bảo vệ mình, và không bảo vệ một người hai đêm liền.',
+      en: 'Each night, choose a player to protect from the werewolves. You may not protect yourself, or the same player two nights in a row.',
     },
     team: 'village',
     defaultWakeOrder: 220,
@@ -259,8 +259,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'priest',
     name: { vi: 'Linh mục', en: 'Priest' },
     rule: {
-      vi: 'Một lần trong ván, ban phước cho một người: lần tấn công tiếp theo có thể giết họ sẽ thất bại.',
-      en: 'Once per game, bless a player: the next attack that would kill them fails.',
+      vi: 'Một lần trong ván, ban phước cho một người (không phải mình): lần tấn công kế tiếp có thể giết họ thất bại.',
+      en: 'Once per game, bless a player (not yourself): the next attack that would kill them fails.',
     },
     team: 'village',
     defaultWakeOrder: 230,
@@ -271,7 +271,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'werewolf',
     name: { vi: 'Ma sói', en: 'Werewolf' },
     rule: {
-      vi: 'Mỗi đêm, thức dậy cùng bầy sói và thống nhất giết một người. Ban ngày, giả làm dân làng.',
+      vi: 'Mỗi đêm cùng bầy sói thống nhất giết một người. Ban ngày giả làm dân làng.',
       en: 'Each night, wake with the other werewolves and agree on one player to kill. By day, pass as a villager.',
     },
     team: 'werewolf',
@@ -283,7 +283,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'wolf-man',
     name: { vi: 'Người sói', en: 'Wolf Man' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói, nhưng Tiên tri thấy bạn là dân làng.',
+      vi: 'Thức dậy cùng bầy sói, nhưng Tiên tri thấy là dân làng.',
       en: 'You wake with the werewolves, but the Seer sees you as a villager.',
     },
     team: 'werewolf',
@@ -295,7 +295,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'wolf-cub',
     name: { vi: 'Sói con', en: 'Wolf Cub' },
     rule: {
-      vi: 'Nếu bạn chết, đêm sau bầy sói giết hai người.',
+      vi: 'Nếu chết, đêm sau bầy sói giết hai người.',
       en: 'If you die, the werewolves kill two players the next night.',
     },
     team: 'werewolf',
@@ -307,7 +307,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'fruit-brute',
     name: { vi: 'Sói mất khẩu vị', en: 'Fruit Brute' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.',
+      vi: 'Thức dậy cùng bầy sói. Nếu là sói cuối cùng còn sống thì không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.',
       en: 'You wake with the werewolves. If you are the last werewolf alive, you can no longer kill, but you still win once every villager is gone.',
     },
     team: 'werewolf',
@@ -319,7 +319,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'dire-wolf',
     name: { vi: 'Sói khổng lồ', en: 'Dire Wolf' },
     rule: {
-      vi: 'Đêm 1: chọn một bạn đồng hành. Nếu họ chết, bạn chết. Nếu bạn chết, họ vẫn sống.',
+      vi: 'Đêm 1: chọn một bạn đồng hành. Họ chết thì mình chết. Mình chết thì họ vẫn sống.',
       en: 'Night 1: choose a companion. If your companion dies, you die. If you die, they live.',
     },
     team: 'werewolf',
@@ -331,7 +331,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'lone-wolf',
     name: { vi: 'Sói đơn độc', en: 'Lone Wolf' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói nhưng chơi một mình: bạn thắng nếu là người sống sót cuối cùng, hoặc chỉ còn bạn và một người không phải sói.',
+      vi: 'Thức dậy cùng bầy sói nhưng chơi một mình: thắng nếu là người sống sót cuối cùng, hoặc chỉ còn mình và một người không phải sói.',
       en: 'You wake with the werewolves but play alone: you win if you are the last player alive, or if only you and one non-werewolf remain.',
     },
     team: 'solo',
@@ -343,7 +343,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'minion',
     name: { vi: 'Tay sai', en: 'Minion' },
     rule: {
-      vi: 'Đêm 1: bạn biết ai là ma sói. Bạn thắng cùng bầy sói, và Tiên tri thấy bạn là dân làng.',
+      vi: 'Đêm 1: biết ai là sói. Thắng cùng bầy sói; Tiên tri thấy là dân làng.',
       en: 'Night 1: you learn who the werewolves are. You win with them, and the Seer sees you as a villager.',
     },
     team: 'werewolf',
@@ -355,7 +355,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'dream-wolf',
     name: { vi: 'Sói mộng', en: 'Dream Wolf' },
     rule: {
-      vi: 'Bạn không thức dậy cùng bầy sói. Khi một con sói chết, bạn thế chỗ nó.',
+      vi: 'Không thức dậy cùng bầy sói. Khi một con sói chết, thế chỗ nó.',
       en: 'You do not wake with the werewolves. When a werewolf dies, you take their place.',
     },
     team: 'werewolf',
@@ -367,7 +367,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'big-bad-wolf',
     name: { vi: 'Sói hung tợn', en: 'Big Bad Wolf' },
     rule: {
-      vi: 'Thức dậy và giết người cùng bầy sói. Sau đó thức dậy một mình và giết thêm một người, chừng nào chưa có con sói nào chết.',
+      vi: 'Cùng bầy sói giết một người, rồi thức dậy một mình giết thêm một người, chừng nào chưa có sói nào chết.',
       en: 'Wake and kill with the werewolves. Then wake again alone and kill a second player, as long as no werewolf has died.',
     },
     team: 'werewolf',
@@ -379,7 +379,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'cursed-wolf-father',
     name: { vi: 'Sói nguyền', en: 'Cursed Wolf-Father' },
     rule: {
-      vi: 'Mỗi đêm thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, bạn có thể giơ tay: nạn nhân không chết mà bị nguyền, thành ma sói.',
+      vi: 'Mỗi đêm thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, giơ tay: nạn nhân không chết mà bị nguyền, thành sói.',
       en: 'Wake with the werewolves each night. Once per game, after they go back to sleep, you may raise your hand: their victim does not die but is cursed and becomes a werewolf.',
     },
     team: 'werewolf',
@@ -391,7 +391,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'alpha-wolf',
     name: { vi: 'Sói đầu đàn', en: 'Alpha Wolf' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói. Một lần trong ván, bạn thức dậy một mình và giết thêm một người.',
+      vi: 'Thức dậy cùng bầy sói. Một lần trong ván, thức dậy một mình giết thêm một người.',
       en: 'You wake with the werewolves. Once per game, wake again alone and kill one more player.',
     },
     team: 'werewolf',
@@ -403,7 +403,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'mighty-wolf-mother',
     name: { vi: 'Sói mẹ hùng mạnh', en: 'Mighty Wolf-Mother' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói. Năng lực của những người khác không nhắm được vào bạn.',
+      vi: 'Thức dậy cùng bầy sói. Năng lực của người khác không nhắm được vào mình.',
       en: "You wake with the werewolves. Other players' powers cannot target you.",
     },
     team: 'werewolf',
@@ -415,7 +415,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'white-werewolf',
     name: { vi: 'Sói trắng', en: 'White Werewolf' },
     rule: {
-      vi: 'Mỗi đêm thức dậy cùng bầy sói. Cách một đêm, bạn thức dậy một mình và có thể giết một ma sói. Bạn chỉ thắng khi là người sống sót cuối cùng.',
+      vi: 'Mỗi đêm thức dậy cùng bầy sói. Cách một đêm, thức dậy một mình và có thể giết một sói. Chỉ thắng khi là người sống sót cuối cùng.',
       en: 'Wake with the werewolves each night. Every other night, wake alone and you may kill one werewolf. You win only as the last player alive.',
     },
     team: 'solo',
@@ -427,7 +427,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'sorceress',
     name: { vi: 'Phù thủy sói', en: 'Sorceress' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người: bạn biết họ có phải Tiên tri không. Tiên tri thấy bạn là dân làng.',
+      vi: 'Mỗi đêm chỉ một người: biết họ có phải Tiên tri không. Tiên tri thấy là dân làng.',
       en: 'Each night, point at a player: you learn whether they are the Seer. The Seer sees you as a villager.',
     },
     team: 'werewolf',
@@ -439,7 +439,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bogeyman',
     name: { vi: 'Ông ba bị', en: 'Bogeyman' },
     rule: {
-      vi: 'Nếu bầy sói không thống nhất được nạn nhân, bạn giết thay chúng. Bạn thắng khi mọi người thức dậy ban đêm đều đã chết.',
+      vi: 'Nếu bầy sói không thống nhất được nạn nhân, giết thay chúng. Thắng khi mọi người thức dậy ban đêm đều chết.',
       en: 'If the werewolves cannot agree on a victim, you kill for them. You win when every player who wakes at night is dead.',
     },
     team: 'solo',
@@ -451,7 +451,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'chupacabra',
     name: { vi: 'Chupacabra', en: 'Chupacabra' },
     rule: {
-      vi: 'Mỗi đêm, chỉ vào một người: nếu là ma sói, họ chết. Khi hết ma sói, bạn giết một người bất kỳ mỗi đêm. Bạn thắng khi là người sống sót cuối cùng.',
+      vi: 'Mỗi đêm chỉ một người: là sói thì chết. Hết sói, mỗi đêm giết một người bất kỳ. Thắng khi là người sống sót cuối cùng.',
       en: 'Each night, point at a player: if they are a werewolf, they die. Once no werewolf is left, you kill any player each night. You win as the last player alive.',
     },
     team: 'solo',
@@ -463,7 +463,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'baker',
     name: { vi: 'Thợ làm bánh', en: 'Baker' },
     rule: {
-      vi: 'Mỗi đêm, khi bầy sói đi ngủ, bạn thức dậy và có một phần tư cơ hội nhìn thấy một con sói.',
+      vi: 'Mỗi đêm, khi bầy sói đi ngủ thì thức dậy, có một phần tư cơ hội nhìn thấy một con sói.',
       en: 'Each night, as the werewolves go back to sleep, you wake and have a one-in-four chance of seeing one of them.',
     },
     team: 'village',
@@ -475,7 +475,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'pyromaniac',
     name: { vi: 'Kẻ phóng hỏa', en: 'Pyromaniac' },
     rule: {
-      vi: 'Một lần trong ván, đốt nhà của một người: họ vẫn sống nhưng mất năng lực nhà. Nếu đó là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.',
+      vi: 'Một lần trong ván, đốt nhà một người: họ sống nhưng mất năng lực nhà. Nếu là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.',
       en: "Once per game, burn a player's house: they stay alive but lose their house power. If it is the werewolves' victim's house, the victim lives and the first werewolf to their right dies instead.",
     },
     team: 'village',
@@ -487,7 +487,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'vampire',
     name: { vi: 'Ma cà rồng', en: 'Vampire' },
     rule: {
-      vi: 'Mỗi đêm, chọn một nạn nhân: họ chết vào ngày hôm sau. Sói không giết được bạn. Bạn thắng khi chỉ còn ma cà rồng.',
+      vi: 'Mỗi đêm chọn một nạn nhân: họ chết vào ngày hôm sau. Sói không giết được. Thắng khi chỉ còn ma cà rồng.',
       en: 'Each night, choose a victim: they die the next day. Werewolves cannot kill you. You win when only vampires are left.',
     },
     team: 'solo',
@@ -499,7 +499,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'cult-leader',
     name: { vi: 'Giáo chủ', en: 'Cult Leader' },
     rule: {
-      vi: 'Mỗi đêm, tuyển một người vào giáo phái. Bạn thắng khi mọi người còn sống đều trong giáo phái.',
+      vi: 'Mỗi đêm tuyển một người vào giáo phái. Thắng khi mọi người còn sống đều trong giáo phái.',
       en: 'Each night, recruit a player into your cult. You win when every living player is in your cult.',
     },
     team: 'solo',
@@ -511,7 +511,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'witch',
     name: { vi: 'Phù thủy', en: 'Witch' },
     rule: {
-      vi: 'Có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân.',
+      vi: 'Hai bình thuốc, mỗi bình dùng một lần: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho biết nạn nhân.',
       en: "You have two potions, each usable once per game: one saves the werewolves' victim, the other kills any player. Each night the narrator shows you the victim.",
     },
     team: 'village',
@@ -523,7 +523,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'magician',
     name: { vi: 'Ảo thuật gia', en: 'Magician' },
     rule: {
-      vi: 'Mỗi khả năng dùng một lần trong ván: giết một người hoặc cứu một người vào ban đêm. Không được dùng cho bản thân.',
+      vi: 'Hai khả năng, mỗi cái dùng một lần: ban đêm giết hoặc cứu một người. Không dùng cho bản thân.',
       en: 'Once per game each, you may kill a player or heal a player at night, but never yourself.',
     },
     team: 'village',
@@ -535,7 +535,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'gypsy',
     name: { vi: 'Người Di-gan', en: 'Gypsy' },
     rule: {
-      vi: 'Mỗi đêm, quản trò đọc bốn câu hỏi: chọn một câu và một người để hỏi. Hôm sau họ hỏi câu đó, và người chết đầu tiên trả lời có hoặc không.',
+      vi: 'Mỗi đêm quản trò đọc bốn câu hỏi: chọn một câu và một người để hỏi. Hôm sau người đó đặt câu hỏi, người chết đầu tiên trả lời có hoặc không.',
       en: 'Each night, the narrator reads you four questions: pick one and a player to ask it. Next day they ask it, and the first dead player answers yes or no.',
     },
     team: 'village',
@@ -547,7 +547,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'pied-piper',
     name: { vi: 'Người thổi sáo', en: 'Pied Piper' },
     rule: {
-      vi: 'Mỗi đêm, mê hoặc hai người (không được chọn bản thân). Những người bị mê hoặc thức dậy để nhận ra nhau. Bạn thắng khi mọi người còn sống đều bị mê hoặc.',
+      vi: 'Mỗi đêm mê hoặc hai người (không phải mình). Người bị mê hoặc thức dậy để nhận ra nhau. Thắng khi mọi người còn sống đều bị mê hoặc.',
       en: 'Each night, charm two players, never yourself. Charmed players wake together to recognize each other. You win when every living player is charmed.',
     },
     team: 'solo',
@@ -559,7 +559,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'raven',
     name: { vi: 'Quạ', en: 'Raven' },
     rule: {
-      vi: 'Mỗi đêm, có thể chỉ vào một người. Hôm sau, người đó bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.',
+      vi: 'Mỗi đêm có thể chỉ một người: hôm sau họ bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.',
       en: 'Each night you may point at a player. The next day, that player starts the vote with two votes against them.',
     },
     team: 'village',
@@ -571,7 +571,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'troublemaker',
     name: { vi: 'Kẻ gây rối', en: 'Troublemaker' },
     rule: {
-      vi: 'Một lần trong ván, chọn một đêm: hôm sau làng loại hai người liên tiếp.',
+      vi: 'Một lần trong ván, chọn một đêm: hôm sau làng loại hai người.',
       en: 'Once per game, choose a night: the next day the village holds two eliminations.',
     },
     team: 'village',
@@ -583,7 +583,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'insomniac',
     name: { vi: 'Người mất ngủ', en: 'Insomniac' },
     rule: {
-      vi: 'Mỗi đêm, bạn biết ít nhất một trong hai người ngồi cạnh có thức dậy hay không.',
+      vi: 'Mỗi đêm biết ít nhất một trong hai người ngồi cạnh có thức dậy không.',
       en: 'Each night, learn whether at least one of your two neighbors woke up.',
     },
     team: 'village',
@@ -595,7 +595,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'amulet-of-protection',
     name: { vi: 'Bùa hộ mệnh', en: 'Amulet of Protection' },
     rule: {
-      vi: 'Ai giữ bùa thì không thể chết. Mỗi ngày phải chuyền bùa cho người khác, nếu không bùa bị phá hủy.',
+      vi: 'Ai giữ bùa thì không thể chết. Mỗi ngày phải chuyền bùa cho người khác, không thì bùa bị phá.',
       en: 'Whoever holds the amulet cannot die. It must be passed to another player each day, or it is destroyed.',
     },
     team: 'village',
@@ -607,7 +607,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'angel',
     name: { vi: 'Thiên thần', en: 'Angel' },
     rule: {
-      vi: 'Trước đêm 1, làng bỏ phiếu loại một người. Nếu đó là bạn, hoặc bạn chết đêm 1, bạn thắng ngay. Nếu không, bạn thành dân làng thường.',
+      vi: 'Trước đêm 1, làng bỏ phiếu loại một người. Nếu là mình, hoặc mình chết đêm 1, thắng ngay. Không thì thành dân làng thường.',
       en: 'Before Night 1, the village votes someone out. If it is you, or you die on Night 1, you win at once. Otherwise you become a plain villager.',
     },
     team: 'solo',
@@ -619,7 +619,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'apprentice-seer',
     name: { vi: 'Tiên tri tập sự', en: 'Apprentice Seer' },
     rule: {
-      vi: 'Bạn ngủ cho đến khi Tiên tri chết. Khi đó bạn trở thành Tiên tri.',
+      vi: 'Ngủ cho đến khi Tiên tri chết, rồi trở thành Tiên tri.',
       en: 'You sleep until the Seer dies. Then you become the Seer.',
     },
     team: 'village',
@@ -631,7 +631,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bailiff',
     name: { vi: 'Thừa phát lại', en: 'Bailiff' },
     rule: {
-      vi: 'Khi một người có năng lực nhà chết, bạn có thể chuyển năng lực đó cho một người chưa có.',
+      vi: 'Khi người có năng lực nhà chết, có thể chuyển năng lực đó cho một người chưa có.',
       en: 'When a player with a house power dies, you may pass that power to a player who has none.',
     },
     team: 'village',
@@ -643,7 +643,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'barber',
     name: { vi: 'Thợ cắt tóc', en: 'Barber' },
     rule: {
-      vi: 'Một lần trong ván, loại một người. Nếu họ không phải sói, bạn cũng chết.',
+      vi: 'Một lần trong ván, loại một người. Nếu họ không phải sói, mình cũng chết.',
       en: 'Once per game, eliminate a player. If they are not a werewolf, you die too.',
     },
     team: 'village',
@@ -655,7 +655,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bartender',
     name: { vi: 'Chủ quán rượu', en: 'Bartender' },
     rule: {
-      vi: 'Sói không giết được bạn và dân làng không được bỏ phiếu chống bạn. Bạn bỏ phiếu trước. Nếu phiếu của bạn khiến ai đó bị loại, bạn mất sự bảo vệ này.',
+      vi: 'Sói không giết được, dân làng không được bỏ phiếu chống. Bỏ phiếu trước. Nếu phiếu của mình khiến ai đó bị loại, mất sự bảo vệ này.',
       en: 'Werewolves cannot kill you and villagers cannot vote against you. You vote first. If your vote gets someone eliminated, you lose this protection.',
     },
     team: 'village',
@@ -667,7 +667,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bear-tamer',
     name: { vi: 'Người dạy gấu', en: 'Bear Tamer' },
     rule: {
-      vi: 'Mỗi sáng, nếu có sói ngồi ngay cạnh bạn, quản trò gầm gừ như gấu.',
+      vi: 'Mỗi sáng, nếu có sói ngồi ngay cạnh, quản trò gầm như gấu.',
       en: 'Each morning, if a werewolf sits right beside you, the narrator growls like a bear.',
     },
     team: 'village',
@@ -679,7 +679,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'bonesetter',
     name: { vi: 'Thầy nắn xương', en: 'Bonesetter' },
     rule: {
-      vi: 'Một lần trong ván, vào ban ngày, trả lại cho một người năng lực họ đã dùng.',
+      vi: 'Một lần trong ván, ban ngày trả lại cho một người năng lực họ đã dùng.',
       en: 'Once per game, by day, give a player back a power they have already used.',
     },
     team: 'village',
@@ -691,7 +691,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'colossus',
     name: { vi: 'Người khổng lồ', en: 'Colossus' },
     rule: {
-      vi: 'Nếu sói tấn công bạn, bạn sống sót lần đầu, nhưng bầy sói biết bạn là ai.',
+      vi: 'Nếu sói tấn công, sống sót lần đầu nhưng bầy sói biết mình là ai.',
       en: 'If the werewolves attack you, you survive the first time, but the werewolves learn who you are.',
     },
     team: 'village',
@@ -703,7 +703,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'confessor',
     name: { vi: 'Cha giải tội', en: 'Confessor' },
     rule: {
-      vi: 'Một lần trong ván, bắt một người cho bạn xem lá bài của họ.',
+      vi: 'Một lần trong ván, bắt một người cho xem lá bài của họ.',
       en: 'Once per game, make a player show you their card.',
     },
     team: 'village',
@@ -715,7 +715,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'cursed',
     name: { vi: 'Kẻ bị nguyền', en: 'Cursed' },
     rule: {
-      vi: 'Bạn là dân làng. Nếu sói tấn công bạn, bạn không chết mà trở thành ma sói.',
+      vi: 'Là dân làng. Nếu sói tấn công thì không chết mà thành sói.',
       en: 'You are a villager. If the werewolves attack you, you do not die: you become a werewolf.',
     },
     team: 'village',
@@ -727,7 +727,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'devoted-servant',
     name: { vi: 'Người hầu trung thành', en: 'Devoted Servant' },
     rule: {
-      vi: 'Khi làng bỏ phiếu loại một người, trước khi lật bài họ, bạn có thể lộ diện và lấy lá bài và vai của họ. Không dùng được nếu bạn là một trong cặp đôi.',
+      vi: 'Khi làng loại một người, trước khi lật bài họ, có thể lộ diện và lấy lá bài và vai của họ. Không dùng được nếu đang trong cặp đôi.',
       en: 'When the village votes someone out, before their card is shown, you may reveal yourself and take their card and role. Not allowed if you are a lover.',
     },
     team: 'village',
@@ -739,7 +739,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'diseased',
     name: { vi: 'Người bệnh', en: 'Diseased' },
     rule: {
-      vi: 'Nếu sói giết bạn, đêm hôm sau chúng không giết được ai.',
+      vi: 'Nếu bị sói giết, đêm sau bầy sói không giết được ai.',
       en: 'If the werewolves kill you, they cannot kill the next night.',
     },
     team: 'village',
@@ -751,7 +751,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'drunk',
     name: { vi: 'Kẻ say rượu', en: 'Drunk' },
     rule: {
-      vi: 'Bạn tưởng mình là dân làng thường cho đến đêm thứ ba, khi bạn biết vai thật của mình.',
+      vi: 'Tưởng mình là dân làng thường đến đêm thứ ba, khi biết vai thật.',
       en: 'You think you are a plain villager until the third night, when you learn your real role.',
     },
     team: 'village',
@@ -763,7 +763,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'elder',
     name: { vi: 'Già làng', en: 'Elder' },
     rule: {
-      vi: 'Sống sót qua lần bị sói cắn đầu tiên. Nếu bị dân làng bỏ phiếu loại, mọi dân làng có năng lực đều mất năng lực.',
+      vi: 'Sống sót lần sói tấn công đầu tiên. Nếu bị làng loại, mọi dân làng có năng lực đều mất năng lực.',
       en: 'You survive the first werewolf attack. If the village votes you out, every villager with a power loses it.',
     },
     team: 'village',
@@ -775,7 +775,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'farmer',
     name: { vi: 'Nông dân', en: 'Farmer' },
     rule: {
-      vi: 'Các nông dân chọn một người trong số họ làm Đội trưởng, có hai phiếu. Khi Đội trưởng chết, một nông dân khác thay.',
+      vi: 'Nông dân chọn một người trong số họ làm Đội trưởng, có hai phiếu. Đội trưởng chết thì nông dân khác thay.',
       en: 'Farmers pick one of themselves as Captain, who has two votes. When the Captain dies, another Farmer takes over.',
     },
     team: 'village',
@@ -787,7 +787,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'ghost',
     name: { vi: 'Hồn ma', en: 'Ghost' },
     rule: {
-      vi: 'Bạn chết vào đêm 1. Mỗi đêm sau đó, bạn viết một lá thư để quản trò đọc cho làng, không được nêu tên ai.',
+      vi: 'Chết vào đêm 1. Mỗi đêm sau viết một lá thư để quản trò đọc cho làng, không được nêu tên ai.',
       en: 'You die on the first night. Each night after, you write a letter for the narrator to read to the village. It may not name any player.',
     },
     team: 'village',
@@ -799,7 +799,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'hunter',
     name: { vi: 'Thợ săn', en: 'Hunter' },
     rule: {
-      vi: 'Khi chết, dù ban đêm hay do bỏ phiếu, bạn bắn ngay: chỉ vào một người, người đó chết theo bạn.',
+      vi: 'Khi chết (ban đêm hay do bỏ phiếu), bắn ngay: chỉ một người, người đó chết theo.',
       en: 'When you die, at night or by vote, you shoot at once: point at a player, who dies with you.',
     },
     team: 'village',
@@ -811,7 +811,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'knight',
     name: { vi: 'Hiệp sĩ kiếm gỉ', en: 'Knight with the Rusty Sword' },
     rule: {
-      vi: 'Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái bạn nhiễm bệnh: nó chết vào đêm hôm sau.',
+      vi: 'Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái nhiễm bệnh và chết đêm sau.',
       en: 'If the werewolves kill you, your rusty sword infects the first werewolf on your left: they die the next night.',
     },
     team: 'village',
@@ -823,7 +823,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'little-girl',
     name: { vi: 'Cô bé', en: 'Little Girl' },
     rule: {
-      vi: 'Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay nạn nhân của sói.',
+      vi: 'Khi bầy sói thức, có thể hé mắt nhìn trộm. Bị bắt gặp thì chết thay nạn nhân của sói.',
       en: 'While the werewolves are awake, you may peek. If they catch you, you die in place of their victim.',
     },
     team: 'village',
@@ -835,7 +835,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'lord',
     name: { vi: 'Lãnh chúa', en: 'Lord' },
     rule: {
-      vi: 'Một lần trong ván, tha cho người mà làng vừa bỏ phiếu loại.',
+      vi: 'Một lần trong ván, tha cho người làng vừa bỏ phiếu loại.',
       en: 'Once per game, pardon the player the village has just voted out.',
     },
     team: 'village',
@@ -847,7 +847,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'lycan',
     name: { vi: 'Lycan', en: 'Lycan' },
     rule: {
-      vi: 'Bạn là dân làng, nhưng Tiên tri thấy bạn là ma sói.',
+      vi: 'Là dân làng, nhưng Tiên tri thấy là sói.',
       en: 'You are a villager, but the Seer sees you as a werewolf.',
     },
     team: 'village',
@@ -859,7 +859,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'martyr',
     name: { vi: 'Người tử vì đạo', en: 'Martyr' },
     rule: {
-      vi: 'Ngay sau khi làng kết án một người, bạn có thể chết thay họ.',
+      vi: 'Ngay sau khi làng kết án một người, có thể chết thay họ.',
       en: 'Right after the village sentences a player, you may die in their place.',
     },
     team: 'village',
@@ -871,7 +871,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'mayor',
     name: { vi: 'Thị trưởng', en: 'Mayor' },
     rule: {
-      vi: 'Phiếu của bạn tính hai lần.',
+      vi: 'Phiếu tính hai lần.',
       en: 'Your vote counts twice.',
     },
     team: 'village',
@@ -883,7 +883,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'old-man',
     name: { vi: 'Ông lão', en: 'Old Man' },
     rule: {
-      vi: 'Bạn chết vào đêm số X, với X là số ma sói cộng một.',
+      vi: 'Chết vào đêm X, với X là số sói cộng một.',
       en: 'You die on Night X, where X is the number of werewolves plus one.',
     },
     team: 'village',
@@ -895,7 +895,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'pacifist',
     name: { vi: 'Người hòa bình', en: 'Pacifist' },
     rule: {
-      vi: 'Phiếu của bạn không bao giờ được dùng để loại người khác.',
+      vi: 'Không bao giờ bỏ phiếu loại ai.',
       en: 'Your vote can never be for an elimination.',
     },
     team: 'village',
@@ -907,7 +907,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'prejudiced-manipulator',
     name: { vi: 'Kẻ định kiến', en: 'Prejudiced Manipulator' },
     rule: {
-      vi: 'Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy. Bạn chỉ thắng khi cả nhóm còn lại bị loại. Bạn không có năng lực.',
+      vi: 'Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy. Chỉ thắng khi cả nhóm còn lại bị loại. Không có năng lực.',
       en: 'Before the game, the narrator splits the village in two by a visible trait. You win only when the whole other group is eliminated. You have no power.',
     },
     team: 'solo',
@@ -919,7 +919,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'prince',
     name: { vi: 'Hoàng tử', en: 'Prince' },
     rule: {
-      vi: 'Nếu làng bỏ phiếu loại bạn, hãy lật bài: bạn sống sót và ở lại chơi.',
+      vi: 'Nếu làng bỏ phiếu loại, lật bài: sống sót và ở lại chơi.',
       en: 'If the village votes you out, reveal your card: you survive and stay in the game.',
     },
     team: 'village',
@@ -931,7 +931,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'scapegoat',
     name: { vi: 'Vật tế thần', en: 'Scapegoat' },
     rule: {
-      vi: 'Nếu cuộc bỏ phiếu hòa, bạn bị loại thay. Trước khi đi, bạn chọn ai được bỏ phiếu ngày hôm sau.',
+      vi: 'Nếu bỏ phiếu hòa, bị loại thay. Trước khi đi, chọn ai được bỏ phiếu ngày hôm sau.',
       en: 'If a vote ends in a tie, you are eliminated instead. Before you go, you choose who may vote the next day.',
     },
     team: 'village',
@@ -943,7 +943,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'schoolmistress',
     name: { vi: 'Cô giáo', en: 'Schoolmistress' },
     rule: {
-      vi: 'Bạn không được bỏ phiếu. Mỗi ngày, bạn có thể cấm hai người bỏ phiếu.',
+      vi: 'Không được bỏ phiếu. Mỗi ngày có thể cấm hai người bỏ phiếu.',
       en: 'You cannot vote. Each day, you may forbid two players from voting.',
     },
     team: 'village',
@@ -955,7 +955,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'tanner',
     name: { vi: 'Kẻ chán đời', en: 'Tanner' },
     rule: {
-      vi: 'Bạn thắng nếu bạn bị loại.',
+      vi: 'Thắng nếu bị loại.',
       en: 'You win if you are eliminated.',
     },
     team: 'solo',
@@ -967,7 +967,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'tough-guy',
     name: { vi: 'Gã gan lì', en: 'Tough Guy' },
     rule: {
-      vi: 'Nếu sói tấn công bạn, bạn sống qua đêm đó và chết vào đêm sau.',
+      vi: 'Nếu sói tấn công, sống qua đêm đó và chết vào đêm sau.',
       en: 'If the werewolves attack you, you survive that night and die the next one.',
     },
     team: 'village',
@@ -979,7 +979,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'vagabond',
     name: { vi: 'Kẻ lang thang', en: 'Vagabond' },
     rule: {
-      vi: 'Không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào bạn.',
+      vi: 'Không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào mình.',
       en: 'You have no power. The Schoolmistress, Barber, Pyromaniac and Raven cannot target you.',
     },
     team: 'village',
@@ -991,7 +991,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'village-idiot',
     name: { vi: 'Thằng ngốc', en: 'Village Idiot' },
     rule: {
-      vi: 'Nếu bị dân làng bỏ phiếu loại, bạn lật bài và ở lại chơi, nhưng không được bỏ phiếu nữa.',
+      vi: 'Nếu bị làng loại, lật bài và ở lại chơi, nhưng không được bỏ phiếu nữa.',
       en: 'If the village votes you out, you show your card and stay in the game, but you can no longer vote.',
     },
     team: 'village',
@@ -1003,7 +1003,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'villager',
     name: { vi: 'Dân làng', en: 'Villager' },
     rule: {
-      vi: 'Không có năng lực. Trò chuyện, tìm ra sói và bỏ phiếu loại chúng.',
+      vi: 'Không có năng lực. Trò chuyện, tìm sói và bỏ phiếu loại chúng.',
       en: 'You have no power. Talk, find the werewolves and vote them out.',
     },
     team: 'village',

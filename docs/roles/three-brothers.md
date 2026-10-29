@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Ba anh em cùng thức dậy vào ban đêm, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.
+Ban đêm cả ba thức dậy, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.
 
 ## Rule (en)
 

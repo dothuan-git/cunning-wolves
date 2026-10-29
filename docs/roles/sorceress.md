@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: bạn biết họ có phải Tiên tri không. Tiên tri thấy bạn là dân làng.
+Mỗi đêm chỉ một người: biết họ có phải Tiên tri không. Tiên tri thấy là dân làng.
 
 ## Rule (en)
 

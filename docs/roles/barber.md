@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, loại một người. Nếu họ không phải sói, bạn cũng chết.
+Một lần trong ván, loại một người. Nếu họ không phải sói, mình cũng chết.
 
 ## Rule (en)
 

@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi sáng, nếu có sói ngồi ngay cạnh bạn, quản trò gầm gừ như gấu.
+Mỗi sáng, nếu có sói ngồi ngay cạnh, quản trò gầm như gấu.
 
 ## Rule (en)
 

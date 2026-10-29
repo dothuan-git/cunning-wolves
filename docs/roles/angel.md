@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Trước đêm 1, làng bỏ phiếu loại một người. Nếu đó là bạn, hoặc bạn chết đêm 1, bạn thắng ngay. Nếu không, bạn thành dân làng thường.
+Trước đêm 1, làng bỏ phiếu loại một người. Nếu là mình, hoặc mình chết đêm 1, thắng ngay. Không thì thành dân làng thường.
 
 ## Rule (en)
 

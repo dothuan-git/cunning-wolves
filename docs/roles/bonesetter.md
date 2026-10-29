@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, vào ban ngày, trả lại cho một người năng lực họ đã dùng.
+Một lần trong ván, ban ngày trả lại cho một người năng lực họ đã dùng.
 
 ## Rule (en)
 

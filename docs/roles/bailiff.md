@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Khi một người có năng lực nhà chết, bạn có thể chuyển năng lực đó cho một người chưa có.
+Khi người có năng lực nhà chết, có thể chuyển năng lực đó cho một người chưa có.
 
 ## Rule (en)
 

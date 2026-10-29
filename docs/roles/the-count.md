@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: bạn biết có bao nhiêu ma sói ở mỗi nửa làng.
+Đêm 1: biết mỗi nửa làng có bao nhiêu sói.
 
 ## Rule (en)
 

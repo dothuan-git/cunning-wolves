@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, đốt nhà của một người: họ vẫn sống nhưng mất năng lực nhà. Nếu đó là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.
+Một lần trong ván, đốt nhà một người: họ sống nhưng mất năng lực nhà. Nếu là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.
 
 ## Rule (en)
 

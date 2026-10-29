@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi khả năng dùng một lần trong ván: giết một người hoặc cứu một người vào ban đêm. Không được dùng cho bản thân.
+Hai khả năng, mỗi cái dùng một lần: ban đêm giết hoặc cứu một người. Không dùng cho bản thân.
 
 ## Rule (en)
 

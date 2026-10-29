@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người chơi: quản trò cho bạn xem lá bài của người đó.
+Mỗi đêm chỉ một người: quản trò cho xem lá bài của họ.
 
 ## Rule (en)
 

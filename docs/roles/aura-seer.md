@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: bạn biết họ có năng lực đặc biệt hay không (không phải Dân làng hay Ma sói thường).
+Mỗi đêm chỉ một người: biết họ có năng lực đặc biệt không (không phải Dân làng hay Ma sói thường).
 
 ## Rule (en)
 

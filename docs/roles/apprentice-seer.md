@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn ngủ cho đến khi Tiên tri chết. Khi đó bạn trở thành Tiên tri.
+Ngủ cho đến khi Tiên tri chết, rồi trở thành Tiên tri.
 
 ## Rule (en)
 

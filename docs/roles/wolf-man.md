@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói, nhưng Tiên tri thấy bạn là dân làng.
+Thức dậy cùng bầy sói, nhưng Tiên tri thấy là dân làng.
 
 ## Rule (en)
 

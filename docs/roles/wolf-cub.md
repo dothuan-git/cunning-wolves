@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu bạn chết, đêm sau bầy sói giết hai người.
+Nếu chết, đêm sau bầy sói giết hai người.
 
 ## Rule (en)
 

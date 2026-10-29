@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một người làm hình mẫu. Khi hình mẫu còn sống, bạn là dân làng. Khi họ chết, bạn thành ma sói và thức dậy cùng bầy sói từ đêm sau.
+Đêm 1: chọn một hình mẫu. Hình mẫu còn sống: là dân làng. Họ chết: thành sói, thức dậy cùng bầy sói từ đêm sau.
 
 ## Rule (en)
 

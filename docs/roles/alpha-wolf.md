@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói. Một lần trong ván, bạn thức dậy một mình và giết thêm một người.
+Thức dậy cùng bầy sói. Một lần trong ván, thức dậy một mình giết thêm một người.
 
 ## Rule (en)
 

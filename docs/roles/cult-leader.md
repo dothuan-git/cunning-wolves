@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, tuyển một người vào giáo phái. Bạn thắng khi mọi người còn sống đều trong giáo phái.
+Mỗi đêm tuyển một người vào giáo phái. Thắng khi mọi người còn sống đều trong giáo phái.
 
 ## Rule (en)
 

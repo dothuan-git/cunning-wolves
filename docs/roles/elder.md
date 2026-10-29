@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Sống sót qua lần bị sói cắn đầu tiên. Nếu bị dân làng bỏ phiếu loại, mọi dân làng có năng lực đều mất năng lực.
+Sống sót lần sói tấn công đầu tiên. Nếu bị làng loại, mọi dân làng có năng lực đều mất năng lực.
 
 ## Rule (en)
 

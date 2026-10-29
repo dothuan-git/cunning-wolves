@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn hai người làm cặp đôi, có thể gồm cả bạn. Một người chết thì người kia chết theo. Cặp đôi khác phe (một sói, một dân) thắng cùng nhau khi chỉ còn hai người sống.
+Đêm 1: chọn hai người làm cặp đôi (có thể gồm mình). Một người chết, người kia chết theo. Cặp khác phe (một sói, một dân) thắng cùng nhau khi chỉ còn hai người sống.
 
 ## Rule (en)
 

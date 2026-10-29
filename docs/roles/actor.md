@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Ba lá năng lực (không phải sói) được úp giữa bàn. Mỗi đêm, chọn một lá và dùng năng lực đó đến đêm sau. Mỗi lá chỉ dùng một lần.
+Ba lá năng lực (không phải sói) để ngửa giữa bàn. Mỗi đêm chọn một lá và dùng năng lực đó trong đêm. Mỗi lá chỉ dùng một lần.
 
 ## Rule (en)
 
-Three power cards (never werewolves) lie face down. Each night, choose one and use its power until the next night. Each card is used once.
+Three role cards (never werewolves) lie face up. Each night, choose one and use its power that night. Each card is used once.
 
 ## Narrator notes
 

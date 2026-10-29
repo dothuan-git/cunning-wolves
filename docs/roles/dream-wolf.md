@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn không thức dậy cùng bầy sói. Khi một con sói chết, bạn thế chỗ nó.
+Không thức dậy cùng bầy sói. Khi một con sói chết, thế chỗ nó.
 
 ## Rule (en)
 

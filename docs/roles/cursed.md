@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn là dân làng. Nếu sói tấn công bạn, bạn không chết mà trở thành ma sói.
+Là dân làng. Nếu sói tấn công thì không chết mà thành sói.
 
 ## Rule (en)
 

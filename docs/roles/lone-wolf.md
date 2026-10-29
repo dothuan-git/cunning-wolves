@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói nhưng chơi một mình: bạn thắng nếu là người sống sót cuối cùng, hoặc chỉ còn bạn và một người không phải sói.
+Thức dậy cùng bầy sói nhưng chơi một mình: thắng nếu là người sống sót cuối cùng, hoặc chỉ còn mình và một người không phải sói.
 
 ## Rule (en)
 

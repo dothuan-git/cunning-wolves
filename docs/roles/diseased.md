@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu sói giết bạn, đêm hôm sau chúng không giết được ai.
+Nếu bị sói giết, đêm sau bầy sói không giết được ai.
 
 ## Rule (en)
 

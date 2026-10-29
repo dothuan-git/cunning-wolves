@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Phiếu của bạn tính hai lần.
+Phiếu tính hai lần.
 
 ## Rule (en)
 

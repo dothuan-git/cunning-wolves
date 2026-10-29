@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân.
+Hai bình thuốc, mỗi bình dùng một lần: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho biết nạn nhân.
 
 ## Rule (en)
 

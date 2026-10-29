@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chỉ vào một người: bạn biết người đó hoặc một trong hai người ngồi cạnh có phải ma sói không.
+Mỗi đêm chỉ một người: biết người đó hoặc một trong hai người ngồi cạnh có phải sói không.
 
 ## Rule (en)
 

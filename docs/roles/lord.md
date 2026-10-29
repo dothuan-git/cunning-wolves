@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, tha cho người mà làng vừa bỏ phiếu loại.
+Một lần trong ván, tha cho người làng vừa bỏ phiếu loại.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Các nông dân chọn một người trong số họ làm Đội trưởng, có hai phiếu. Khi Đội trưởng chết, một nông dân khác thay.
+Nông dân chọn một người trong số họ làm Đội trưởng, có hai phiếu. Đội trưởng chết thì nông dân khác thay.
 
 ## Rule (en)
 

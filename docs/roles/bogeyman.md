@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu bầy sói không thống nhất được nạn nhân, bạn giết thay chúng. Bạn thắng khi mọi người thức dậy ban đêm đều đã chết.
+Nếu bầy sói không thống nhất được nạn nhân, giết thay chúng. Thắng khi mọi người thức dậy ban đêm đều chết.
 
 ## Rule (en)
 

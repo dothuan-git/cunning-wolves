@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn tưởng mình là dân làng thường cho đến đêm thứ ba, khi bạn biết vai thật của mình.
+Tưởng mình là dân làng thường đến đêm thứ ba, khi biết vai thật.
 
 ## Rule (en)
 

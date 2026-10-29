@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm, chọn một người: hôm sau họ không được nói.
+Mỗi đêm chọn một người: hôm sau họ không được nói. Không chọn một người hai lần.
 
 ## Rule (en)
 
-Each night, choose a player: the next day they cannot speak.
+Each night, choose a player: the next day they cannot speak. Never choose the same player twice.
 
 ## Narrator notes
 

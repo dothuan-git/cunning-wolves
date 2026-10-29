@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, mê hoặc hai người (không được chọn bản thân). Những người bị mê hoặc thức dậy để nhận ra nhau. Bạn thắng khi mọi người còn sống đều bị mê hoặc.
+Mỗi đêm mê hoặc hai người (không phải mình). Người bị mê hoặc thức dậy để nhận ra nhau. Thắng khi mọi người còn sống đều bị mê hoặc.
 
 ## Rule (en)
 

@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn chết vào đêm số X, với X là số ma sói cộng một.
+Chết vào đêm X, với X là số sói cộng một.
 
 ## Rule (en)
 

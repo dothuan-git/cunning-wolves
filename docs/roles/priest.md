@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, ban phước cho một người: lần tấn công tiếp theo có thể giết họ sẽ thất bại.
+Một lần trong ván, ban phước cho một người (không phải mình): lần tấn công kế tiếp có thể giết họ thất bại.
 
 ## Rule (en)
 
-Once per game, bless a player: the next attack that would kill them fails.
+Once per game, bless a player (not yourself): the next attack that would kill them fails.
 
 ## Narrator notes
 

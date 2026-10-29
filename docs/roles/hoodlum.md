@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn hai người. Bạn thắng nếu cả hai đã chết và bạn còn sống khi ván kết thúc.
+Đêm 1: chọn hai người. Thắng nếu cả hai chết và mình còn sống khi hết ván.
 
 ## Rule (en)
 

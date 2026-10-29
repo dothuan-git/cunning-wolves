@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Khi chết, dù ban đêm hay do bỏ phiếu, bạn bắn ngay: chỉ vào một người, người đó chết theo bạn.
+Khi chết (ban đêm hay do bỏ phiếu), bắn ngay: chỉ một người, người đó chết theo.
 
 ## Rule (en)
 

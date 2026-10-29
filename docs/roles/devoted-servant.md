@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Khi làng bỏ phiếu loại một người, trước khi lật bài họ, bạn có thể lộ diện và lấy lá bài và vai của họ. Không dùng được nếu bạn là một trong cặp đôi.
+Khi làng loại một người, trước khi lật bài họ, có thể lộ diện và lấy lá bài và vai của họ. Không dùng được nếu đang trong cặp đôi.
 
 ## Rule (en)
 

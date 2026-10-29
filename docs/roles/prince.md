@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Nếu làng bỏ phiếu loại bạn, hãy lật bài: bạn sống sót và ở lại chơi.
+Nếu làng bỏ phiếu loại, lật bài: sống sót và ở lại chơi.
 
 ## Rule (en)
 

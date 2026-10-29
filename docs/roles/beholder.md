@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: bạn biết ai là Tiên tri.
+Đêm 1: biết ai là Tiên tri.
 
 ## Rule (en)
 

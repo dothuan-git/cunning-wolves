@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: bạn biết ai là ma sói. Bạn thắng cùng bầy sói, và Tiên tri thấy bạn là dân làng.
+Đêm 1: biết ai là sói. Thắng cùng bầy sói; Tiên tri thấy là dân làng.
 
 ## Rule (en)
 

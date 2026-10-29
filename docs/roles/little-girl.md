@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay nạn nhân của sói.
+Khi bầy sói thức, có thể hé mắt nhìn trộm. Bị bắt gặp thì chết thay nạn nhân của sói.
 
 ## Rule (en)
 

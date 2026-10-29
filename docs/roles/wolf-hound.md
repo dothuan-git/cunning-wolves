@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một lần cho mãi mãi, làm dân làng hay ma sói. Nếu chọn sói, bạn thức dậy cùng bầy sói mỗi đêm. Nếu không, bạn là dân làng.
+Đêm 1: chọn một lần duy nhất: dân làng hay sói. Chọn sói: thức dậy cùng bầy sói mỗi đêm. Không thì vẫn là dân làng.
 
 ## Rule (en)
 

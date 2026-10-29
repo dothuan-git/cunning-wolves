@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Một lần trong ván, bắt một người cho bạn xem lá bài của họ.
+Một lần trong ván, bắt một người cho xem lá bài của họ.
 
 ## Rule (en)
 

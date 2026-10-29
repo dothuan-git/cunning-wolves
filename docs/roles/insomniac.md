@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, bạn biết ít nhất một trong hai người ngồi cạnh có thức dậy hay không.
+Mỗi đêm biết ít nhất một trong hai người ngồi cạnh có thức dậy không.
 
 ## Rule (en)
 

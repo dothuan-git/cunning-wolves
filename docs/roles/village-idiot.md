@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Nếu bị dân làng bỏ phiếu loại, bạn lật bài và ở lại chơi, nhưng không được bỏ phiếu nữa.
+Nếu bị làng loại, lật bài và ở lại chơi, nhưng không được bỏ phiếu nữa.
 
 ## Rule (en)
 

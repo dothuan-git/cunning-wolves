@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn là dân làng, nhưng Tiên tri thấy bạn là ma sói.
+Là dân làng, nhưng Tiên tri thấy là sói.
 
 ## Rule (en)
 

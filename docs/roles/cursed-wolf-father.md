@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, bạn có thể giơ tay: nạn nhân không chết mà bị nguyền, thành ma sói.
+Mỗi đêm thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, giơ tay: nạn nhân không chết mà bị nguyền, thành sói.
 
 ## Rule (en)
 

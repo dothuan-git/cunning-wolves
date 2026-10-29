@@ -8,7 +8,7 @@
 
 ## Rule (vi)
 
-Bạn chết vào đêm 1. Mỗi đêm sau đó, bạn viết một lá thư để quản trò đọc cho làng, không được nêu tên ai.
+Chết vào đêm 1. Mỗi đêm sau viết một lá thư để quản trò đọc cho làng, không được nêu tên ai.
 
 ## Rule (en)
 
