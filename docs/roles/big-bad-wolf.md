@@ -2,7 +2,7 @@
 
 - **id:** `big-bad-wolf`
 - **Team:** werewolf
-- **Wakes at night:** yes (80), after `werewolf` and before `witch`
+- **Wakes at night:** yes (320), after `dream-wolf` and before `cursed-wolf-father`
 - **Card art:** missing
 
 ## Rule (vi)

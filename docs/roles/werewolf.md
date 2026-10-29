@@ -2,7 +2,7 @@
 
 - **id:** `werewolf`
 - **Team:** werewolf
-- **Wakes at night:** yes (70), after `bodyguard` and before `big-bad-wolf`
+- **Wakes at night:** yes (240), after `priest` and before `wolf-man`
 - **Card art:** `apps/web/src/assets/cards/werewolf.webp`
 
 ## Rule (vi)

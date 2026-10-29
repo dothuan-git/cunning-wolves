@@ -226,6 +226,7 @@ export function SetupScreen({
   }
 
   const query = nameKey(search);
+  const inFaction = roles.filter((role) => role.team === picking).length;
   const pool = roles.filter(
     (role) => role.team === picking && (!query || nameKey(role.name[locale]).includes(query)),
   );
@@ -316,9 +317,16 @@ export function SetupScreen({
             setPicking(null);
           }}
         >
-          <p key={gapText} className="name-pop mb-3 text-caption text-muted">
-            {gapText}
-          </p>
+          <div className="mb-3 flex items-baseline justify-between gap-3 text-caption text-muted">
+            <p key={gapText} className="name-pop min-w-0">
+              {gapText}
+            </p>
+            <p className="shrink-0 tabular-nums">
+              {t('setup.rolesInPool', {
+                shown: query ? `${String(pool.length)}/${String(inFaction)}` : inFaction,
+              })}
+            </p>
+          </div>
           <div className="mb-3 flex items-center gap-2">
             <div className="min-w-0 flex-1">
               <label htmlFor={searchId} className="sr-only">

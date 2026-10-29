@@ -15,7 +15,12 @@ export interface MarkDef {
   holdersOnly: boolean;
   /** Only one player carries it at a time: marking another player moves it */
   single: boolean;
+  /** The carrier wakes with the wolves from now on, whatever their own role */
+  joinsPack?: boolean;
 }
+
+/** Roles that wake with the wolves although they are not on the wolf team. */
+export const PACK_ROLES: readonly string[] = ['white-werewolf'];
 
 // Shown in this order wherever a player's marks are listed.
 export const MARKS: readonly MarkDef[] = [
@@ -25,6 +30,65 @@ export const MARKS: readonly MarkDef[] = [
     from: [],
     holdersOnly: false,
     single: true,
+  },
+  {
+    id: 'town-crier',
+    label: { vi: 'Người rao tin', en: 'Town Crier' },
+    from: [],
+    holdersOnly: false,
+    single: true,
+  },
+  {
+    id: 'lover',
+    label: { vi: 'Cặp đôi', en: 'Lover' },
+    from: ['cupid'],
+    holdersOnly: false,
+    single: false,
+  },
+  {
+    id: 'role-model',
+    label: { vi: 'Hình mẫu', en: 'Role model' },
+    from: ['wild-child'],
+    holdersOnly: false,
+    single: true,
+  },
+  {
+    id: 'turned',
+    label: { vi: 'Đã hóa sói', en: 'Turned wolf' },
+    from: ['wild-child'],
+    holdersOnly: true,
+    single: false,
+    joinsPack: true,
+  },
+  {
+    id: 'chose-wolves',
+    label: { vi: 'Đã chọn phe sói', en: 'Chose the wolves' },
+    from: ['wolf-hound'],
+    holdersOnly: true,
+    single: false,
+    joinsPack: true,
+  },
+  {
+    id: 'cursed',
+    label: { vi: 'Bị nguyền', en: 'Cursed' },
+    from: ['cursed-wolf-father'],
+    holdersOnly: false,
+    single: true,
+    joinsPack: true,
+  },
+  {
+    id: 'charmed',
+    label: { vi: 'Bị mê hoặc', en: 'Charmed' },
+    from: ['pied-piper'],
+    holdersOnly: false,
+    single: false,
+  },
+  {
+    id: 'target-group',
+    label: { vi: 'Nhóm bị nhắm', en: 'Target group' },
+    from: ['prejudiced-manipulator'],
+    holdersOnly: false,
+    single: false,
   },
   {
     id: 'judge-used',
@@ -83,5 +147,13 @@ export function marksFor(roleId: string, dealt: readonly string[]): MarkDef[] {
     mark.holdersOnly
       ? mark.from.includes(roleId)
       : mark.from.length === 0 || mark.from.some((id) => dealt.includes(id)),
+  );
+}
+
+/** Whether a player dealt `roleId`, carrying the marks `markIds`, wakes with the wolves. */
+export function wakesWithWolves(roleId: string, markIds: readonly string[]): boolean {
+  return (
+    PACK_ROLES.includes(roleId) ||
+    MARKS.some((mark) => mark.joinsPack === true && markIds.includes(mark.id))
   );
 }

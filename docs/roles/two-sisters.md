@@ -2,7 +2,7 @@
 
 - **id:** `two-sisters`
 - **Team:** village
-- **Wakes at night:** yes (20), after `stuttering-judge` and before `three-brothers`
+- **Wakes at night:** yes (80), after `the-count` and before `three-brothers`
 - **Card art:** missing
 
 ## Rule (vi)

@@ -16,7 +16,7 @@ Ask the user for anything missing. Never invent rule text or translations.
 - what the narrator must remember about players because of it (a power used up, a title, an effect on someone): these become marks
 - card art: a file, or none yet
 
-Stop and ask if the role swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant): that is out of scope, per `docs/plan.md`. A role whose marks need a mechanism `MARKS` does not have yet (a link between two players, a player moving to the wolves) needs that mechanism first; see decision 0023.
+A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`, and a mark that moves a player to the wolves has `joinsPack: true` (both in `marks.ts`). A role whose marks need a pointer from one player to another needs that mechanism first; see decision 0023.
 
 ## 2. Role doc
 

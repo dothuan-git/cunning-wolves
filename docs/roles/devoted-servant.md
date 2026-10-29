@@ -1,0 +1,19 @@
+# Devoted Servant / Người hầu trung thành
+
+- **id:** `devoted-servant`
+- **Team:** village
+- **Wakes at night:** no
+- **Marks:** none yet
+- **Card art:** missing
+
+## Rule (vi)
+
+Khi làng bỏ phiếu loại một người, trước khi lật bài họ, bạn có thể lộ diện và lấy lá bài và vai của họ. Không dùng được nếu bạn là một trong cặp đôi.
+
+## Rule (en)
+
+When the village votes someone out, before their card is shown, you may reveal yourself and take their card and role. Not allowed if you are a lover.
+
+## Narrator notes
+
+Wait before showing the voted-out card, so the Servant can speak up. The app does not change anyone's role: if the Servant swaps, tell them their new role in private and call it from the next night. The app shows the card and rule only; it does not run this role's power.

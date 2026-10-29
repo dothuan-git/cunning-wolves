@@ -134,7 +134,7 @@ After Phase 0, six phases, each ending in something playable on real phones.
 
 ## Out of scope for v1
 
-- Roles that swap cards or need extra cards in the deck (Thief, Actor, Devoted Servant). Third-faction and team-changing roles are in scope since decision 0023.
+- Running the powers of roles that swap cards or need extra cards in the deck (Thief, Actor, Devoted Servant), the Gypsy's Spiritualism cards and the Village expansion's houses. These roles, and the roles of Ultimate Werewolf, are in the pool as a card and a rule only. Third-faction and team-changing roles are in scope since decision 0023.
 - Day-phase votes and lynch tracking (mornings only record who died)
 - Any public alive/dead board for players
 - Automatic ability resolution or win detection

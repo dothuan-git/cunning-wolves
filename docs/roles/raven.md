@@ -2,7 +2,7 @@
 
 - **id:** `raven`
 - **Team:** village
-- **Wakes at night:** yes (100), after `witch` and last
+- **Wakes at night:** yes (480), after `pied-piper` and before `troublemaker`
 - **Card art:** missing
 
 ## Rule (vi)

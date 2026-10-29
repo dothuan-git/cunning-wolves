@@ -211,7 +211,8 @@
     "tooMany_other": "Thừa {{count}} vai trò.",
     "wakes": "Thức dậy vào ban đêm",
     "reconnecting": "Đang kết nối lại… chưa thể lưu thay đổi.",
-    "addSolo": "Thêm vai phe thứ ba"
+    "addSolo": "Thêm vai phe thứ ba",
+    "rolesInPool": "Số vai: {{shown}}"
   },
   "rules": {
     "intro": "Mọi người cùng đọc luật. Vai của bạn được giữ bí mật đến khi bắt đầu.",
@@ -247,7 +248,8 @@
     "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}",
     "marksTitle": "Trạng thái · {{name}}",
     "markSince": "Từ {{phase}}",
-    "markHeldBy": "Đang ở {{name}}"
+    "markHeldBy": "Đang ở {{name}}",
+    "packExtras": "Cũng thức dậy cùng bầy sói"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",
