@@ -2,7 +2,7 @@
 
 - **id:** `the-count`
 - **Team:** village
-- **Wakes at night:** yes (70, Night 1 only), after `mason` and before `two-sisters`
+- **Wakes at night:** yes (70, Night 1 only), after `hoodlum` and before `two-sisters`
 - **Marks:** none yet
 - **Card art:** missing
 

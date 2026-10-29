@@ -77,14 +77,6 @@ export const MARKS: readonly MarkDef[] = [
     joinsPack: true,
   },
   {
-    id: 'alpha-turned',
-    label: { vi: 'Bị Sói đầu đàn biến thành sói', en: 'Turned by the Alpha Wolf' },
-    from: ['alpha-wolf'],
-    holdersOnly: false,
-    single: true,
-    joinsPack: true,
-  },
-  {
     id: 'became-wolf',
     label: { vi: 'Đã thành sói', en: 'Became a werewolf' },
     from: ['cursed'],
@@ -182,7 +174,6 @@ export const MARKS: readonly MarkDef[] = [
     from: [
       'puppeteer',
       'priest',
-      'alpha-wolf',
       'pyromaniac',
       'troublemaker',
       'barber',

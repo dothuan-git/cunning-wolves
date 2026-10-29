@@ -65,11 +65,10 @@ describe('marksFor', () => {
   });
 
   it('offers the status marks of the remaining roles while their role is dealt', () => {
-    const dealt = ['alpha-wolf', 'cult-leader', 'dire-wolf', 'vampire', 'priest', 'villager'];
+    const dealt = ['cult-leader', 'dire-wolf', 'vampire', 'priest', 'villager'];
     expect(ids(marksFor('villager', dealt))).toEqual([
       'sheriff',
       'town-crier',
-      'alpha-turned',
       'in-cult',
       'companion',
       'doomed',
@@ -102,7 +101,6 @@ describe('wakesWithWolves', () => {
   it('is true for the White Werewolf, and for anyone marked into the pack', () => {
     expect(wakesWithWolves('white-werewolf', [])).toBe(true);
     expect(wakesWithWolves('lone-wolf', [])).toBe(true);
-    expect(wakesWithWolves('villager', ['alpha-turned'])).toBe(true);
     expect(wakesWithWolves('cursed', ['became-wolf'])).toBe(true);
     expect(wakesWithWolves('villager', ['cursed'])).toBe(true);
     expect(wakesWithWolves('wild-child', ['role-model', 'turned'])).toBe(true);

@@ -64,18 +64,6 @@ export const ROLE_POOL: readonly PoolRole[] = [
     image: 'hoodlum.webp',
   },
   {
-    id: 'mason',
-    name: { vi: 'Hội viên Mason', en: 'Mason' },
-    rule: {
-      vi: 'Đêm 1: các Mason thức dậy và nhận ra nhau. Tất cả đều là dân làng.',
-      en: 'Night 1: the Masons wake and see each other. They are all villagers.',
-    },
-    team: 'village',
-    defaultWakeOrder: 60,
-    wakeNights: 'first',
-    image: 'mason.webp',
-  },
-  {
     id: 'the-count',
     name: { vi: 'Bá tước', en: 'The Count' },
     rule: {
@@ -403,8 +391,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'alpha-wolf',
     name: { vi: 'Sói đầu đàn', en: 'Alpha Wolf' },
     rule: {
-      vi: 'Một lần trong ván, chọn một người không phải sói: họ trở thành ma sói.',
-      en: 'Once per game, choose a non-werewolf: they become a werewolf.',
+      vi: 'Bạn thức dậy cùng bầy sói. Vào các đêm chẵn, bạn thức dậy một mình và giết thêm một người.',
+      en: 'You wake with the werewolves. On even nights, wake again alone and kill one more player.',
     },
     team: 'werewolf',
     defaultWakeOrder: 340,
@@ -1022,17 +1010,5 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'villager.webp',
-  },
-  {
-    id: 'villager-villager',
-    name: { vi: 'Dân làng thật', en: 'Villager-Villager' },
-    rule: {
-      vi: 'Không có năng lực. Quản trò báo cho cả làng biết bạn là dân làng thật ngay từ đầu.',
-      en: 'You have no power. The narrator tells the whole village at the start that you are a true villager.',
-    },
-    team: 'village',
-    defaultWakeOrder: null,
-    wakeNights: 'every',
-    image: 'villager-villager.webp',
   },
 ];
