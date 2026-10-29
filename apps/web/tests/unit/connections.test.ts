@@ -33,7 +33,7 @@ const SETUP: RoomSetup = {
   ruleEdits: { werewolf: 'House rule' },
   customRoles: [{ id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false }],
   wakeOrder: ['werewolf'],
-  settings: { timerSeconds: 60, soundOn: true },
+  settings: { timerSeconds: 60, soundOn: true, marksOn: true },
 };
 const MASTER = {
   kind: 'master',

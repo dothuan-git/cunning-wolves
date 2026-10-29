@@ -42,7 +42,11 @@ function setupInfo(setup: RoomSetup): RoomSetup {
       wakes: role.wakes,
     })),
     wakeOrder: [...setup.wakeOrder],
-    settings: { timerSeconds: setup.settings.timerSeconds, soundOn: setup.settings.soundOn },
+    settings: {
+      timerSeconds: setup.settings.timerSeconds,
+      soundOn: setup.settings.soundOn,
+      marksOn: setup.settings.marksOn,
+    },
   };
 }
 

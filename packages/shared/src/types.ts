@@ -77,6 +77,8 @@ export interface RoomSettings {
   /** Narrator's timer length; 0 = no timer */
   timerSeconds: number;
   soundOn: boolean;
+  /** Whether the narrator can mark players and set a new role; off hides both, keeping what is set */
+  marksOn: boolean;
 }
 
 /** The card set the master builds while players gather. Only the master sees it before Ready. */

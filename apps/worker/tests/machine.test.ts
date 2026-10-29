@@ -31,6 +31,12 @@ function run(state: RoomState, ...steps: [actor: string, action: RoomAction][]):
   }, state);
 }
 
+/** The narrator turns marks on; a room starts with them off. */
+const MARKS_ON: [actor: string, action: RoomAction] = [
+  MASTER,
+  { type: 'setSettings', settings: { timerSeconds: 120, soundOn: false, marksOn: true } },
+];
+
 function refusal(state: RoomState, actor: string, action: RoomAction) {
   const result = apply(state, actor, action, NOW, KEEP);
   return result.ok ? null : result.error;
@@ -271,13 +277,13 @@ describe('setup', () => {
     wakes: true,
   } as const;
 
-  it('starts empty, with a two-minute timer and no sound', () => {
+  it('starts empty, with a two-minute timer, no sound and no marks', () => {
     expect(room().setup).toEqual({
       picks: [],
       ruleEdits: {},
       customRoles: [],
       wakeOrder: [],
-      settings: { timerSeconds: 120, soundOn: false },
+      settings: { timerSeconds: 120, soundOn: false, marksOn: false },
     });
   });
 
@@ -370,13 +376,16 @@ describe('setup', () => {
   });
 
   it('keeps settings with a whole-second timer up to an hour', () => {
-    const settings = { timerSeconds: 90, soundOn: true };
+    const settings = { timerSeconds: 90, soundOn: true, marksOn: true };
     expect(run(room(), [MASTER, { type: 'setSettings', settings }]).setup.settings).toEqual(
       settings,
     );
     for (const timerSeconds of [-1, 1.5, 3601]) {
       expect(
-        refusal(room(), MASTER, { type: 'setSettings', settings: { timerSeconds, soundOn: true } }),
+        refusal(room(), MASTER, {
+          type: 'setSettings',
+          settings: { timerSeconds, soundOn: true, marksOn: false },
+        }),
       ).toBe('not-allowed');
     }
   });
@@ -389,7 +398,7 @@ describe('setup', () => {
       { type: 'editRule', roleId: 'seer', rule: 'x' },
       { type: 'addCustomRole', role: custom },
       { type: 'setWakeOrder', order: [] },
-      { type: 'setSettings', settings: { timerSeconds: 0, soundOn: false } },
+      { type: 'setSettings', settings: { timerSeconds: 0, soundOn: false, marksOn: false } },
     ];
     for (const action of actions) {
       expect(refusal(seated, 'a', action)).toBe('not-master');
@@ -425,7 +434,7 @@ describe('locks after the lobby', () => {
       expect(
         refusal(locked, MASTER, {
           type: 'setSettings',
-          settings: { timerSeconds: 60, soundOn: true },
+          settings: { timerSeconds: 60, soundOn: true, marksOn: true },
         }),
       ).toBe(tools);
     },
@@ -544,7 +553,7 @@ function playing(): RoomState {
   return run(ready(), [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
 }
 
-/** Like `playing`, but Minh is the Witch, so the narrator has a mark to make. */
+/** Like `playing`, but Minh is the Witch and marks are on, so the narrator has a mark to make. */
 function witchPlaying(): RoomState {
   return run(
     room(),
@@ -552,6 +561,7 @@ function witchPlaying(): RoomState {
     ['b', { type: 'join', name: 'Lan', pin: PIN }],
     [MASTER, { type: 'addPick', roleId: 'witch' }],
     [MASTER, { type: 'addPick', roleId: 'werewolf' }],
+    MARKS_ON,
     [MASTER, { type: 'review' }],
     [MASTER, { type: 'startGame' }],
   );
@@ -625,7 +635,7 @@ describe('linked deaths', () => {
     for (const roleId of ['cupid', 'dire-wolf', 'villager', 'werewolf']) {
       state = run(state, [MASTER, { type: 'addPick', roleId }]);
     }
-    state = run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    state = run(state, MARKS_ON, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
     const { assignments } = state;
     const holder = (roleId: string) =>
       Object.keys(assignments).find((id) => assignments[id] === roleId) ?? '';
@@ -697,7 +707,7 @@ describe('set role', () => {
       state = run(state, [id, { type: 'join', name, pin: PIN }]);
     }
     for (const roleId of roles) state = run(state, [MASTER, { type: 'addPick', roleId }]);
-    state = run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    state = run(state, MARKS_ON, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
     const { assignments } = state;
     const holder = (roleId: string) =>
       Object.keys(assignments).find((id) => assignments[id] === roleId) ?? '';
@@ -828,7 +838,7 @@ describe('toggle mark', () => {
     for (const roleId of ['witch', 'werewolf', 'knight', 'priest']) {
       state = run(state, [MASTER, { type: 'addPick', roleId }]);
     }
-    return run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    return run(state, MARKS_ON, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
   }
   const mark = (playerId: string, id: string) =>
     ({ type: 'toggleMark', playerId, mark: id }) as const;
@@ -849,7 +859,7 @@ describe('toggle mark', () => {
     expect(run(marking(), [MASTER, mark('b', 'rusted')]).game?.marks).toEqual({
       b: { rusted: NIGHT_1 },
     });
-    expect(refusal(playing(), MASTER, mark('b', 'rusted'))).toBe('not-allowed');
+    expect(refusal(run(playing(), MARKS_ON), MASTER, mark('b', 'rusted'))).toBe('not-allowed');
   });
 
   it('moves a single mark to the newly marked player', () => {
@@ -872,6 +882,39 @@ describe('toggle mark', () => {
     expect(refusal(marking(), 'a', mark('b', 'rusted'))).toBe('not-master');
     const finished = run(marking(), [MASTER, { type: 'finishGame' }]);
     expect(refusal(finished, MASTER, mark('a', 'rusted'))).toBe('not-allowed');
+  });
+
+  it('refuses marks and new roles while marks are off, and keeps what was set', () => {
+    const off = (state: RoomState) =>
+      run(state, [
+        MASTER,
+        { type: 'setSettings', settings: { timerSeconds: 120, soundOn: false, marksOn: false } },
+      ]);
+    const marked = run(marking(), [MASTER, mark('a', 'heal-used')]);
+    const hidden = off(marked);
+    expect(refusal(hidden, MASTER, mark('a', 'kill-used'))).toBe('not-allowed');
+    expect(refusal(hidden, MASTER, mark('a', 'heal-used'))).toBe('not-allowed');
+    expect(hidden.game?.marks).toEqual({ a: { 'heal-used': NIGHT_1 } });
+    expect(run(hidden, MARKS_ON, [MASTER, mark('a', 'heal-used')]).game?.marks).toEqual({});
+    // A game with a role-changing card refuses new roles too while marks are off.
+    let state = room();
+    for (const [id, name] of [
+      ['a', 'Minh'],
+      ['b', 'Lan'],
+    ] as const) {
+      state = run(state, [id, { type: 'join', name, pin: PIN }]);
+    }
+    for (const roleId of ['doppelganger', 'seer']) {
+      state = run(state, [MASTER, { type: 'addPick', roleId }]);
+    }
+    state = run(state, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
+    expect(refusal(state, MASTER, { type: 'setRole', playerId: 'a', roleId: 'seer' })).toBe(
+      'not-allowed',
+    );
+    expect(
+      run(state, MARKS_ON, [MASTER, { type: 'setRole', playerId: 'a', roleId: 'seer' }]).game
+        ?.newRoles,
+    ).toEqual({ a: { role: 'seer', phase: NIGHT_1 } });
   });
 });
 
@@ -923,14 +966,17 @@ describe('set note', () => {
 });
 
 describe('narrator tools in play', () => {
-  it('keeps wake order, timer and sound open, and the card set locked', () => {
+  it('keeps wake order, timer, sound and marks open, and the card set locked', () => {
     const state = run(
       playing(),
       [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
-      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+      [
+        MASTER,
+        { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true, marksOn: true } },
+      ],
     );
     expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
-    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true, marksOn: true });
     expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
     expect(refusal(state, MASTER, { type: 'editRule', roleId: 'seer', rule: 'x' })).toBe(
       'not-allowed',
@@ -943,11 +989,14 @@ describe('narrator tools in play', () => {
       ready(),
       [MASTER, { type: 'review' }],
       [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
-      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+      [
+        MASTER,
+        { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true, marksOn: true } },
+      ],
     );
     expect(state.status).toBe('reveal');
     expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
-    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true, marksOn: true });
     expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
   });
 });

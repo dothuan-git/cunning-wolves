@@ -80,7 +80,8 @@ function PreviewScene({
   const [marks, setMarks] = useState(exampleMarks);
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
-  const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
+  // Marks on, so the narrator scene shows them; a real room starts with them off.
+  const [narratorSettings, setNarratorSettings] = useState({ ...DEFAULT_SETTINGS, marksOn: true });
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
   // A full table: the sample players and twelve more.

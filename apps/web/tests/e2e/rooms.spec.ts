@@ -330,6 +330,17 @@ test('lovers die together, and the narrator gives a player a new role', async ({
   await master.getByRole('button', { name: 'Start game' }).click();
   await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
 
+  // Marks start off: no player has a marks button until the narrator turns them on.
+  await expect(master.getByRole('button', { name: 'Mark Minh dead' })).toBeVisible();
+  await expect(master.getByRole('button', { name: /^Marks for / })).toHaveCount(0);
+  await master.getByRole('button', { name: 'Menu', exact: true }).click();
+  const marksOn = master.getByRole('checkbox', { name: 'Player marks', exact: true });
+  await expect(marksOn).not.toBeChecked();
+  await marksOn.click();
+  await expect(marksOn).toBeChecked();
+  await master.keyboard.press('Escape');
+  await expect(master.getByRole('dialog')).toHaveCount(0);
+
   // Both players become lovers; one death takes the other along, and one tap brings both back.
   for (const name of ['Minh', 'Lan']) {
     await master.getByRole('button', { name: `Marks for ${name} (0)`, exact: true }).click();

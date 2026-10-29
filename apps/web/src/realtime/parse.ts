@@ -111,17 +111,24 @@ function roomSetup(value: unknown): RoomSetup | null {
     if (typeof rule !== 'string') return null;
     ruleEdits[roleId] = rule;
   }
-  const { timerSeconds, soundOn } = value.settings;
+  const { timerSeconds, soundOn, marksOn } = value.settings;
   if (
     !picks ||
     !customRoles ||
     !wakeOrder ||
     typeof timerSeconds !== 'number' ||
-    typeof soundOn !== 'boolean'
+    typeof soundOn !== 'boolean' ||
+    typeof marksOn !== 'boolean'
   ) {
     return null;
   }
-  return { picks, ruleEdits, customRoles, wakeOrder, settings: { timerSeconds, soundOn } };
+  return {
+    picks,
+    ruleEdits,
+    customRoles,
+    wakeOrder,
+    settings: { timerSeconds, soundOn, marksOn },
+  };
 }
 
 function localized(value: unknown): RoomRole['name'] | null {

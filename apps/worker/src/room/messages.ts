@@ -38,8 +38,11 @@ function parseSettings(value: unknown): RoomSettings | null {
   if (!isObject(value)) return null;
   const timerSeconds = field(value, 'timerSeconds');
   const soundOn = field(value, 'soundOn');
-  return typeof timerSeconds === 'number' && typeof soundOn === 'boolean'
-    ? { timerSeconds, soundOn }
+  const marksOn = field(value, 'marksOn');
+  return typeof timerSeconds === 'number' &&
+    typeof soundOn === 'boolean' &&
+    typeof marksOn === 'boolean'
+    ? { timerSeconds, soundOn, marksOn }
     : null;
 }
 

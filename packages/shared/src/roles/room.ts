@@ -8,7 +8,11 @@ export const RULE_MAX = 500;
 export const PICKS_MAX = 40;
 export const CUSTOM_ROLES_MAX = 20;
 export const TIMER_MAX = 3600;
-export const DEFAULT_SETTINGS: RoomSettings = { timerSeconds: 120, soundOn: false };
+export const DEFAULT_SETTINGS: RoomSettings = {
+  timerSeconds: 120,
+  soundOn: false,
+  marksOn: false,
+};
 
 // Waking custom roles come after every pool role by default, in the order they were made.
 const CUSTOM_WAKE_START = 1000;

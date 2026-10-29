@@ -18,6 +18,7 @@ import { Modal } from '../../components/Modal';
 import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
+import { SwitchRow } from '../../components/SwitchRow';
 import { WakeOrderSetting } from '../../components/WakeOrderSetting';
 import { NoteField, TextField } from '../../components/TextField';
 import { FACTION_TEXT, FACTION_WASH } from '../../design/faction';
@@ -206,7 +207,8 @@ export function NarratorScreen({
       const text = noteText(night, player.id);
       if (text !== '') playerNotes[night] = text;
     }
-    const options = markOptions[player.id] ?? [];
+    // Marks off hides the tag button and chips; what was marked stays in the room.
+    const options = settings.marksOn ? (markOptions[player.id] ?? []) : [];
     const own = marksOf(player.id);
     const carried = options.filter((mark) => Object.hasOwn(own, mark.id));
     const entries = playerTimeline({
@@ -469,7 +471,7 @@ export function NarratorScreen({
           );
         })}
       </div>
-      {marking !== null && (
+      {marking !== null && settings.marksOn && (
         <MarksSheet
           name={everyone.find((player) => player.id === marking)?.name ?? ''}
           disabled={reconnecting}
@@ -559,10 +561,9 @@ export function NarratorScreen({
                 setTimerDraft(event.target.value);
               }}
             />
-            <label className="flex min-h-12 items-center gap-3 text-control">
-              <input
-                type="checkbox"
-                className="size-5 accent-ink"
+            <div className="divide-y divide-line border-y border-line">
+              <SwitchRow
+                label={t('setup.sound')}
                 checked={settings.soundOn}
                 disabled={reconnecting}
                 onChange={(event) => {
@@ -570,8 +571,15 @@ export function NarratorScreen({
                   onSettings({ ...settings, soundOn: event.target.checked });
                 }}
               />
-              {t('setup.sound')}
-            </label>
+              <SwitchRow
+                label={t('setup.marks')}
+                checked={settings.marksOn}
+                disabled={reconnecting}
+                onChange={(event) => {
+                  onSettings({ ...settings, marksOn: event.target.checked });
+                }}
+              />
+            </div>
             {wakingGroups.length > 0 && (
               <WakeOrderSetting
                 roles={wakingGroups.map((group) => group.role)}

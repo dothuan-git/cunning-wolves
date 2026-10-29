@@ -193,6 +193,7 @@
     "settings": "Table settings",
     "timer": "Night timer (seconds)",
     "sound": "Sound cues",
+    "marks": "Player marks",
     "ready": "Review rules",
     "needRoles": "Fill every seat to continue.",
     "roleRequired": "Enter a name and description.",
