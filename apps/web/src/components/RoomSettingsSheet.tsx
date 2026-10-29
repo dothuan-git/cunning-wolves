@@ -8,8 +8,8 @@ import { TextField } from './TextField';
 import { WakeOrderSetting } from './WakeOrderSetting';
 
 /**
- * The narrator's settings sheet before the game: language, timer, sound, wake order and deleting
- * the room. The timer is typed freely and the room gets it when the sheet closes.
+ * The narrator's settings sheet before the game: language, timer, sound, marks, wake order and
+ * deleting the room. The timer is typed freely and the room gets it when the sheet closes.
  */
 export function RoomSettingsSheet({
   settings,
@@ -72,6 +72,17 @@ export function RoomSettingsSheet({
             }}
           />
           {t('setup.sound')}
+        </label>
+        <label className="flex min-h-12 items-center gap-3 text-control">
+          <input
+            className="size-5 accent-ink"
+            type="checkbox"
+            checked={settings.marksOn}
+            onChange={(event) => {
+              onSettings({ ...settings, marksOn: event.target.checked });
+            }}
+          />
+          {t('setup.marks')}
         </label>
         {waking.length > 0 && (
           <WakeOrderSetting

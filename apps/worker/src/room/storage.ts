@@ -75,6 +75,8 @@ function ensureSchema(sql: SqlStorage): void {
     phase_number INTEGER NOT NULL,
     PRIMARY KEY (player_id, mark)
   )`);
+  // The marks switch. A room saved before it has no row, so marks load off; a row means on.
+  sql.exec('CREATE TABLE IF NOT EXISTS marks_on (value INTEGER NOT NULL)');
   // Roles a power gave players. A game saved before them has no rows, so it loads with none.
   sql.exec(`CREATE TABLE IF NOT EXISTS new_roles (
     player_id TEXT PRIMARY KEY,
@@ -176,10 +178,12 @@ function loadSetup(sql: SqlStorage): RoomSetup {
     .toArray()
     .map((row) => text(row, 'role_id'));
   const [settingsRow] = sql.exec('SELECT * FROM settings LIMIT 1').toArray();
+  const [marksRow] = sql.exec('SELECT value FROM marks_on LIMIT 1').toArray();
   const settings = settingsRow
     ? {
         timerSeconds: integer(settingsRow, 'timer_seconds'),
         soundOn: integer(settingsRow, 'sound_on') === 1,
+        marksOn: marksRow !== undefined,
       }
     : { ...DEFAULT_SETTINGS };
   return { picks, ruleEdits, customRoles, wakeOrder, settings };
@@ -295,6 +299,8 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       setup.settings.timerSeconds,
       setup.settings.soundOn ? 1 : 0,
     );
+    sql.exec('DELETE FROM marks_on');
+    if (setup.settings.marksOn) sql.exec('INSERT INTO marks_on VALUES (1)');
     sql.exec('DELETE FROM assignments');
     for (const [playerId, roleId] of Object.entries(state.assignments)) {
       sql.exec('INSERT INTO assignments VALUES (?, ?)', playerId, roleId);

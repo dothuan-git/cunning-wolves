@@ -206,7 +206,8 @@ export function NarratorScreen({
       const text = noteText(night, player.id);
       if (text !== '') playerNotes[night] = text;
     }
-    const options = markOptions[player.id] ?? [];
+    // Marks off hides the tag button and chips; what was marked stays in the room.
+    const options = settings.marksOn ? (markOptions[player.id] ?? []) : [];
     const own = marksOf(player.id);
     const carried = options.filter((mark) => Object.hasOwn(own, mark.id));
     const entries = playerTimeline({
@@ -469,7 +470,7 @@ export function NarratorScreen({
           );
         })}
       </div>
-      {marking !== null && (
+      {marking !== null && settings.marksOn && (
         <MarksSheet
           name={everyone.find((player) => player.id === marking)?.name ?? ''}
           disabled={reconnecting}
@@ -571,6 +572,18 @@ export function NarratorScreen({
                 }}
               />
               {t('setup.sound')}
+            </label>
+            <label className="flex min-h-12 items-center gap-3 text-control">
+              <input
+                type="checkbox"
+                className="size-5 accent-ink"
+                checked={settings.marksOn}
+                disabled={reconnecting}
+                onChange={(event) => {
+                  onSettings({ ...settings, marksOn: event.target.checked });
+                }}
+              />
+              {t('setup.marks')}
             </label>
             {wakingGroups.length > 0 && (
               <WakeOrderSetting

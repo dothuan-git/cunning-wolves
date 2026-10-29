@@ -143,7 +143,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false },
+        settings: { timerSeconds: 120, soundOn: false, marksOn: false },
       },
       pin: PIN,
       assignments: [],
@@ -256,7 +256,10 @@ describe('Room', () => {
       role: { name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
     });
     master.send({ type: 'setWakeOrder', order: ['custom-0', 'werewolf'] });
-    master.send({ type: 'setSettings', settings: { timerSeconds: 45, soundOn: true } });
+    master.send({
+      type: 'setSettings',
+      settings: { timerSeconds: 45, soundOn: true, marksOn: true },
+    });
     await master.next(masterView((view) => view.setup.settings.timerSeconds === 45));
 
     const again = await enter(roomId, TOKENS.master);
@@ -268,7 +271,14 @@ describe('Room', () => {
         { id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
       ],
       wakeOrder: ['custom-0', 'werewolf'],
-      settings: { timerSeconds: 45, soundOn: true },
+      settings: { timerSeconds: 45, soundOn: true, marksOn: true },
+    });
+    await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
+      expect(loadRoom(state.storage.sql)?.setup.settings).toEqual({
+        timerSeconds: 45,
+        soundOn: true,
+        marksOn: true,
+      });
     });
     for (const text of minh.received) {
       expect(text).not.toContain('House rule');
@@ -307,7 +317,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false },
+        settings: { timerSeconds: 120, soundOn: false, marksOn: false },
       });
       expect(loaded?.assignments).toEqual({});
       expect(loaded?.game).toBeNull();
@@ -373,6 +383,10 @@ describe('Room', () => {
     const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
     master.send({ type: 'addPick', roleId: 'cupid' });
     master.send({ type: 'addPick', roleId: 'werewolf' });
+    master.send({
+      type: 'setSettings',
+      settings: { timerSeconds: 120, soundOn: false, marksOn: true },
+    });
     master.send({ type: 'review' });
     master.send({ type: 'startGame' });
     master.send({ type: 'toggleDeath', playerId: lanId });
@@ -413,7 +427,10 @@ describe('Room', () => {
       sql.exec('DELETE FROM notes');
       sql.exec('DROP TABLE marks');
       sql.exec('DROP TABLE new_roles');
+      sql.exec('DROP TABLE marks_on');
       const older = loadRoom(sql);
+      // Saved before the marks switch: marks load off.
+      expect(older?.setup.settings.marksOn).toBe(false);
       expect(older?.game).toEqual({
         phase: { kind: 'night', number: 1 },
         deaths: {},
@@ -645,7 +662,7 @@ describe('parseClientMessage', () => {
       },
     ],
     [{ type: 'setWakeOrder', order: ['witch', 'seer'] }],
-    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }],
+    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true, marksOn: false } }],
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
@@ -708,6 +725,10 @@ describe('parseClientMessage', () => {
     [
       'settings without sound',
       JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60 } }),
+    ],
+    [
+      'settings without marks',
+      JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }),
     ],
   ])('rejects %s', (_label, raw) => {
     expect(parseClientMessage(raw)).toBeNull();

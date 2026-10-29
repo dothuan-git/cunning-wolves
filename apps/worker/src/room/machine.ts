@@ -275,6 +275,13 @@ export function apply(
     case 'setNote': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
+      // Marks off hides marks and new roles; what was set stays, but nothing changes.
+      if (
+        (action.type === 'toggleMark' || action.type === 'setRole') &&
+        !state.setup.settings.marksOn
+      ) {
+        return refuse('not-allowed');
+      }
       // A new role is any pool role (the Thief's extra cards are not dealt) or a picked custom one.
       const roleIds = [...ROLE_POOL.map((role) => role.id), ...state.setup.picks];
       const result = applyGame(state.game, state.assignments, roleIds, action);
@@ -511,11 +518,11 @@ function applySetup(setup: RoomSetup, action: SetupAction): SetupResult {
       return { ok: true, setup: { ...setup, wakeOrder: order } };
     }
     case 'setSettings': {
-      const { timerSeconds, soundOn } = action.settings;
+      const { timerSeconds, soundOn, marksOn } = action.settings;
       if (!Number.isInteger(timerSeconds) || timerSeconds < 0 || timerSeconds > TIMER_MAX) {
         return refuse('not-allowed');
       }
-      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn } } };
+      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn, marksOn } } };
     }
   }
 }

@@ -252,6 +252,24 @@ for (const size of [
   }
 }
 
+test('turning player marks off in the menu hides every marks button and chip', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  const marksButtons = page.getByRole('button', { name: /^Marks for / });
+  await expect(marksButtons.first()).toBeVisible();
+  const toggle = async (checked: boolean) => {
+    await page.getByRole('button', { name: 'Menu', exact: true }).click();
+    const marks = page.getByRole('checkbox', { name: 'Player marks', exact: true });
+    await marks.setChecked(checked);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  };
+  await toggle(false);
+  await expect(marksButtons).toHaveCount(0);
+  await expect(page.getByText('Heal used', { exact: true })).toHaveCount(0);
+  await toggle(true);
+  await expect(marksButtons.first()).toBeVisible();
+});
+
 test('the setup settings sheet sets the wake order, and it is kept when reopened', async ({
   page,
 }) => {
