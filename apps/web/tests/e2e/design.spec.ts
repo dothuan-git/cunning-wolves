@@ -138,9 +138,9 @@ test('the marks sheet switches marks, moves a single mark, and leaves the status
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: 'Marks for Hà (1)', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: 'Marks · Hà', exact: true });
-  await expect(sheet.getByRole('checkbox', { name: /Heal potion used/ })).toBeChecked();
+  await expect(sheet.getByRole('checkbox', { name: /Heal used/ })).toBeChecked();
   await expect(sheet).toContainText('Now with Linh');
-  await sheet.getByRole('checkbox', { name: /Kill potion used/ }).check();
+  await sheet.getByRole('checkbox', { name: /Kill used/ }).check();
   await sheet.getByRole('checkbox', { name: /Sheriff/ }).check();
   await closeSheet(page);
   await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();

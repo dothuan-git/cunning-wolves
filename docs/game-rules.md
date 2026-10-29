@@ -95,26 +95,41 @@ The worker builds each viewer's state before sending it. A player's client never
 
 Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles. Marking a player with a single mark moves it from whoever had it.
 
-| Mark             | Offered by                  | Carried by         |
-| ---------------- | --------------------------- | ------------------ |
-| Sheriff          | every game                  | one player at once |
-| Town Crier       | every game                  | one player at once |
-| Lover            | Cupid                       | any player         |
-| Role model       | Wild Child                  | one player at once |
-| Turned wolf      | Wild Child                  | its holder         |
-| Chose the wolves | Wolf-hound                  | its holder         |
-| Cursed           | Cursed Wolf-Father          | one player at once |
-| Charmed          | Pied Piper                  | any player         |
-| Target group     | Prejudiced Manipulator      | any player         |
-| Second vote used | Stuttering Judge            | its holder         |
-| Power lost       | Fox, Big Bad Wolf           | its holder         |
-| Heal potion used | Witch                       | its holder         |
-| Kill potion used | Witch                       | its holder         |
-| Extra life used  | Elder                       | its holder         |
-| Can't vote       | Village Idiot               | its holder         |
-| Rusted           | Knight with the Rusty Sword | any player         |
+| Mark                     | Offered by                                                                                   | Carried by         |
+| ------------------------ | -------------------------------------------------------------------------------------------- | ------------------ |
+| Sheriff                  | every game                                                                                   | one player at once |
+| Town Crier               | every game                                                                                   | one player at once |
+| Lover                    | Cupid                                                                                        | any player         |
+| Role model               | Wild Child                                                                                   | one player at once |
+| Turned wolf              | Wild Child                                                                                   | its holder         |
+| Chose the wolves         | Wolf-hound                                                                                   | its holder         |
+| Cursed                   | Cursed Wolf-Father                                                                           | one player at once |
+| Turned by the Alpha Wolf | Alpha Wolf                                                                                   | one player at once |
+| Became a werewolf        | Cursed                                                                                       | its holder         |
+| Charmed                  | Pied Piper                                                                                   | any player         |
+| In the cult              | Cult Leader                                                                                  | any player         |
+| Target group             | Prejudiced Manipulator                                                                       | any player         |
+| Dire Wolf's companion    | Dire Wolf                                                                                    | one player at once |
+| Doppelgänger's model     | Doppelgänger                                                                                 | one player at once |
+| Hoodlum's target         | Hoodlum                                                                                      | any player         |
+| Dies soon                | Tough Guy, Vampire                                                                           | any player         |
+| Blessed                  | Priest                                                                                       | one player at once |
+| Holds the amulet         | Amulet of Protection                                                                         | one player at once |
+| House burned             | Pyromaniac                                                                                   | any player         |
+| Captain                  | Farmer                                                                                       | one holder at once |
+| Revealed                 | Prince                                                                                       | its holder         |
+| Power used               | Puppeteer, Priest, Alpha Wolf, Pyromaniac, Troublemaker, Barber, Bonesetter, Confessor, Lord | its holder         |
+| Second vote used         | Stuttering Judge                                                                             | its holder         |
+| Power lost               | Fox, Big Bad Wolf, Bartender                                                                 | its holder         |
+| Heal used                | Witch, Magician                                                                              | its holder         |
+| Kill used                | Witch, Magician                                                                              | its holder         |
+| Extra life used          | Elder, Colossus                                                                              | its holder         |
+| Can't vote               | Village Idiot, Vagabond                                                                      | its holder         |
+| Rusted                   | Knight with the Rusty Sword                                                                  | any player         |
 
-**The wolves' pack.** Turned wolf, Chose the wolves and Cursed move a player to the wolves. Such a player, and the White Werewolf, also appear in the panel of the first wolf role woken that night, under "Also wakes with the wolves", with their own role beside the name. They keep their own panel and notes. The app never changes a player's role or team by itself.
+Only lasting effects have a mark. A power that lasts one night or day (the Bodyguard's protection, the Raven's two votes, the Old Hag's banishment, the Wolf Cub's double kill) has none: the narrator keeps it in the night's note.
+
+**The wolves' pack.** Turned wolf, Chose the wolves, Cursed, Turned by the Alpha Wolf and Became a werewolf move a player to the wolves. Such a player, the White Werewolf and the Lone Wolf also appear in the panel of the first wolf role woken that night, under "Also wakes with the wolves", with their own role beside the name. They keep their own panel and notes. The app never changes a player's role or team by itself.
 
 ## Wake order
 
