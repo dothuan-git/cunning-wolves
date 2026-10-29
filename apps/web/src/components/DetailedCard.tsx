@@ -131,7 +131,7 @@ export function DetailedCard({
                     if (!editRule.value.trim()) editRule.onChange(ruleBefore.current);
                     setEditingRule(false);
                   }}
-                  className="block w-full resize-none rounded-control border border-line bg-field p-2 text-center font-sans text-body text-pretty text-ink transition-colors focus-visible:outline-2 focus-visible:outline-village"
+                  className="block w-full resize-none rounded-control border border-line bg-field p-2 text-center font-sans text-body text-pretty text-ink transition-colors"
                 />
                 <p key="editing" id={hintId} className="name-pop mt-1 text-caption text-muted">
                   {t('card.editDone')}

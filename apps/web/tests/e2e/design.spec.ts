@@ -521,7 +521,12 @@ test('keyboard focus is visible and reduced motion disables card animation', asy
   await expect(page.locator('[data-design-screen]')).toBeVisible();
   await page.getByRole('button', { name: 'Menu', exact: true }).click();
   const language = page.getByRole('combobox', { name: 'Language', exact: true });
+  // A tap draws no ring on a dropdown; reaching it with Tab does.
   await language.focus();
+  await expect(language).toHaveCSS('outline-style', 'none');
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(language).toBeFocused();
   await expect(language).toHaveCSS('outline-style', 'solid');
   await expect(language).toHaveCSS('outline-color', 'rgb(42, 65, 112)');
   await page.keyboard.press('Escape');
