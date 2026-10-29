@@ -2,7 +2,11 @@ import { ROOM_ID_PATTERN } from '@werewolf/shared';
 import { useSyncExternalStore } from 'react';
 
 export type Route =
-  { name: 'home' } | { name: 'create' } | { name: 'room'; id: string } | { name: 'design' };
+  | { name: 'home' }
+  | { name: 'create' }
+  | { name: 'rules' }
+  | { name: 'room'; id: string }
+  | { name: 'design' };
 
 const ROOM_PATH = /^\/room\/([^/]+)$/;
 const NAVIGATE_EVENT = 'app:navigate';
@@ -11,6 +15,7 @@ const NAVIGATE_EVENT = 'app:navigate';
 export function parseRoute(pathname: string): Route {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (path === '/new') return { name: 'create' };
+  if (path === '/rules') return { name: 'rules' };
   if (path === '/design') return { name: 'design' };
   const id = ROOM_PATH.exec(path)?.[1];
   if (id !== undefined && ROOM_ID_PATTERN.test(id)) return { name: 'room', id };
@@ -20,6 +25,7 @@ export function parseRoute(pathname: string): Route {
 export const paths = {
   home: '/',
   create: '/new',
+  rules: '/rules',
   room: (id: string) => `/room/${id}`,
 };
 

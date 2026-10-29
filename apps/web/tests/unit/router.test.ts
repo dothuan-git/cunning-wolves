@@ -7,6 +7,8 @@ describe('parseRoute', () => {
     ['', { name: 'home' }],
     ['/new', { name: 'create' }],
     ['/new/', { name: 'create' }],
+    ['/rules', { name: 'rules' }],
+    ['/rules/', { name: 'rules' }],
     ['/design', { name: 'design' }],
     ['/room/ab12cd34', { name: 'room', id: 'ab12cd34' }],
     ['/room/ab12cd34/', { name: 'room', id: 'ab12cd34' }],
@@ -24,5 +26,6 @@ describe('parseRoute', () => {
   it('builds paths that parse back', () => {
     expect(parseRoute(paths.room('mill0000'))).toEqual({ name: 'room', id: 'mill0000' });
     expect(parseRoute(paths.create)).toEqual({ name: 'create' });
+    expect(parseRoute(paths.rules)).toEqual({ name: 'rules' });
   });
 });

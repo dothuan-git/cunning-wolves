@@ -7,6 +7,7 @@ export const SCREEN_IDS = [
   'player-lobby',
   'rules-review',
   'my-card',
+  'rule-book',
   'components',
 ] as const;
 export type ScreenId = (typeof SCREEN_IDS)[number];
@@ -19,6 +20,7 @@ export const SCREEN_LABELS = {
   'player-lobby': 'screens.playerLobby',
   'rules-review': 'screens.rulesReview',
   'my-card': 'screens.myCard',
+  'rule-book': 'screens.ruleBook',
   components: 'preview.components',
 } as const;
 export const STATES = [
@@ -46,6 +48,7 @@ export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
   'player-lobby': ['default', 'loading', 'long', 'many', 'removed'],
   'rules-review': ['default', 'many', 'master'],
   'my-card': ['default', 'hidden', 'long'],
+  'rule-book': ['default'],
   components: ['default'],
 };
 export function isScreen(value: string | null): value is ScreenId {

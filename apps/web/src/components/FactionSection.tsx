@@ -11,11 +11,14 @@ import { FactionEmblem } from './FactionEmblem';
 export function FactionSection({
   team,
   count,
+  countText,
   children,
 }: {
   team: Team;
   /** Players in this faction: every copy of every role in it. */
   count: number;
+  /** Replaces "N players" where the block counts something else. */
+  countText?: string;
   children: ReactNode;
 }) {
   const { t } = useTranslation();
@@ -33,7 +36,7 @@ export function FactionSection({
           {t(`faction.${team}`)}
         </h2>
         <p key={count} className="count-pop shrink-0 text-caption text-muted">
-          {t('common.countPlayers', { count })}
+          {countText ?? t('common.countPlayers', { count })}
         </p>
       </div>
       <ul className="grid grid-cols-3 gap-2">{children}</ul>

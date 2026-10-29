@@ -54,7 +54,8 @@
     "narrator": "Narrator",
     "playerLobby": "The village",
     "rulesReview": "Tonight’s roles",
-    "myCard": "Your role card"
+    "myCard": "Your role card",
+    "ruleBook": "Rule book"
   },
   "common": {
     "back": "Back",
@@ -318,5 +319,15 @@
     "deleteFailed": "Couldn’t delete the room. Try again.",
     "deletedTitle": "The narrator deleted this room",
     "deletedBody": "This game is over. Join another room or create your own."
+  },
+  "ruleBook": {
+    "open": "Rule book",
+    "search": "Search roles",
+    "count_one": "{{count}} role",
+    "count_other": "{{count}} roles",
+    "shown_one": "{{shown}} of {{count}} role",
+    "shown_other": "{{shown}} of {{count}} roles",
+    "noMatch": "No roles match your search.",
+    "lookCloser": "Read the rule for {{role}}"
   }
 }
