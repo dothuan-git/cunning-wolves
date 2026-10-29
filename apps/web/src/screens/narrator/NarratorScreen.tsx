@@ -3,12 +3,14 @@ import {
   TIMER_MAX,
   wakesOnNight,
   type MarkDef,
+  type PoolRole,
   type RoomSettings,
 } from '@werewolf/shared';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DeleteRoomButton } from '../../components/DeleteRoomButton';
+import { DetailedCard } from '../../components/DetailedCard';
 import { HoldButton } from '../../components/HoldButton';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { MarkChips } from '../../components/MarkChips';
@@ -94,6 +96,8 @@ export function NarratorScreen({
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
   // The player whose marks sheet is open.
   const [marking, setMarking] = useState<string | null>(null);
+  // The role whose detailed card is open.
+  const [viewing, setViewing] = useState<PoolRole | null>(null);
 
   // The countdown lives on this phone; a new length from the room resets it.
   const length = settings.timerSeconds;
@@ -435,13 +439,22 @@ export function NarratorScreen({
               className="panel min-w-0 overflow-hidden"
               aria-label={group.role.name[locale]}
             >
-              <h3 className={`px-3.5 py-1.5 motion-safe:transition-colors ${wash}`}>
-                <RoleBanner
-                  name={group.role.name[locale]}
-                  team={group.role.team}
-                  image={group.role.image}
-                  dead={out}
-                />
+              <h3 className={`px-3.5 py-1 motion-safe:transition-colors ${wash}`}>
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  className="press flex min-h-12 max-w-full items-center rounded-control text-left focus-visible:outline-2 focus-visible:outline-village"
+                  onClick={() => {
+                    setViewing(group.role);
+                  }}
+                >
+                  <RoleBanner
+                    name={group.role.name[locale]}
+                    team={group.role.team}
+                    image={group.role.image}
+                    dead={out}
+                  />
+                </button>
               </h3>
               <ul className="divide-y divide-line">{group.players.map(renderPlayer)}</ul>
               {group === packGroup && pack.length > 0 && (
@@ -471,6 +484,14 @@ export function NarratorScreen({
           );
         })}
       </div>
+      {viewing !== null && (
+        <DetailedCard
+          role={viewing}
+          onClose={() => {
+            setViewing(null);
+          }}
+        />
+      )}
       {marking !== null && settings.marksOn && (
         <MarksSheet
           name={everyone.find((player) => player.id === marking)?.name ?? ''}
