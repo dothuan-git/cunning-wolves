@@ -174,6 +174,7 @@ export const MARKS: readonly MarkDef[] = [
     from: [
       'puppeteer',
       'priest',
+      'alpha-wolf',
       'pyromaniac',
       'troublemaker',
       'barber',

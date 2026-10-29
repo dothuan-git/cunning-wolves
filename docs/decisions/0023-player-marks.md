@@ -26,4 +26,4 @@ The narrator page only knew Alive and Dead, and a role was either village or wer
 - Keeping Dead as its own pill keeps the most frequent action at one tap in a dark room; a dropdown would hide it and could hold only one status.
 - The app still never resolves abilities: a mark is a record, and nothing happens automatically when one is made.
 - Roles that swap cards (Thief, Actor, Devoted Servant) need extra cards in the deck and a different deal. They are in the pool as a card and a rule only; the app does not run their powers.
-- Mason and Villager-Villager were removed (same as Two Sisters and Villager); the Alpha Wolf now kills one more player on even nights, per Thuan.
+- Mason and Villager-Villager were removed (same as Two Sisters and Villager); the Alpha Wolf kills one more player once per game (unofficial source).

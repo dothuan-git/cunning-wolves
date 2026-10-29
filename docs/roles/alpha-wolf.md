@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói. Vào các đêm chẵn, bạn thức dậy một mình và giết thêm một người.
+Bạn thức dậy cùng bầy sói. Một lần trong ván, bạn thức dậy một mình và giết thêm một người.
 
 ## Rule (en)
 
-You wake with the werewolves. On even nights, wake again alone and kill one more player.
+You wake with the werewolves. Once per game, wake again alone and kill one more player.
 
 ## Narrator notes
 
-Wakes with the werewolves every night, and alone on even nights (the app lists it every night). Thuan's version of the rule. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+Wakes with the werewolves every night, and once per game alone for a second kill. From an unofficial source (werewolv.es); check it against your copy. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.

@@ -96,36 +96,36 @@ The worker builds each viewer's state before sending it. A player's client never
 
 Marks are pool data in `packages/shared/src/roles/marks.ts`. A mark is offered when one of its roles is dealt (or in every game when it names none); a holders-only mark can be carried only by a player dealt one of its roles or now playing one. A role a power gave someone offers its marks like a dealt one, and a carried mark can always be taken off. Marking a player with a single mark moves it from whoever had it.
 
-| Mark                  | Offered by                                                                       | Carried by         |
-| --------------------- | -------------------------------------------------------------------------------- | ------------------ |
-| Sheriff               | every game                                                                       | one player at once |
-| Town Crier            | every game                                                                       | one player at once |
-| Lover                 | Cupid                                                                            | any player         |
-| Role model            | Wild Child                                                                       | one player at once |
-| Turned wolf           | Wild Child                                                                       | its holder         |
-| Chose the wolves      | Wolf-hound                                                                       | its holder         |
-| Cursed                | Cursed Wolf-Father                                                               | one player at once |
-| Became a werewolf     | Cursed                                                                           | its holder         |
-| Charmed               | Pied Piper                                                                       | any player         |
-| In the cult           | Cult Leader                                                                      | any player         |
-| Target group          | Prejudiced Manipulator                                                           | any player         |
-| Dire Wolf's companion | Dire Wolf                                                                        | one player at once |
-| Doppelgänger's model  | Doppelgänger                                                                     | one player at once |
-| Hoodlum's target      | Hoodlum                                                                          | any player         |
-| Dies soon             | Tough Guy, Vampire                                                               | any player         |
-| Blessed               | Priest                                                                           | one player at once |
-| Holds the amulet      | Amulet of Protection                                                             | one player at once |
-| House burned          | Pyromaniac                                                                       | any player         |
-| Captain               | Farmer                                                                           | one holder at once |
-| Revealed              | Prince                                                                           | its holder         |
-| Power used            | Puppeteer, Priest, Pyromaniac, Troublemaker, Barber, Bonesetter, Confessor, Lord | its holder         |
-| Second vote used      | Stuttering Judge                                                                 | its holder         |
-| Power lost            | Fox, Big Bad Wolf, Bartender                                                     | its holder         |
-| Heal used             | Witch, Magician                                                                  | its holder         |
-| Kill used             | Witch, Magician                                                                  | its holder         |
-| Extra life used       | Elder, Colossus                                                                  | its holder         |
-| Can't vote            | Village Idiot, Vagabond                                                          | its holder         |
-| Rusted                | Knight with the Rusty Sword                                                      | any player         |
+| Mark                  | Offered by                                                                                   | Carried by         |
+| --------------------- | -------------------------------------------------------------------------------------------- | ------------------ |
+| Sheriff               | every game                                                                                   | one player at once |
+| Town Crier            | every game                                                                                   | one player at once |
+| Lover                 | Cupid                                                                                        | any player         |
+| Role model            | Wild Child                                                                                   | one player at once |
+| Turned wolf           | Wild Child                                                                                   | its holder         |
+| Chose the wolves      | Wolf-hound                                                                                   | its holder         |
+| Cursed                | Cursed Wolf-Father                                                                           | one player at once |
+| Became a werewolf     | Cursed                                                                                       | its holder         |
+| Charmed               | Pied Piper                                                                                   | any player         |
+| In the cult           | Cult Leader                                                                                  | any player         |
+| Target group          | Prejudiced Manipulator                                                                       | any player         |
+| Dire Wolf's companion | Dire Wolf                                                                                    | one player at once |
+| Doppelgänger's model  | Doppelgänger                                                                                 | one player at once |
+| Hoodlum's target      | Hoodlum                                                                                      | any player         |
+| Dies soon             | Tough Guy, Vampire                                                                           | any player         |
+| Blessed               | Priest                                                                                       | one player at once |
+| Holds the amulet      | Amulet of Protection                                                                         | one player at once |
+| House burned          | Pyromaniac                                                                                   | any player         |
+| Captain               | Farmer                                                                                       | one holder at once |
+| Revealed              | Prince                                                                                       | its holder         |
+| Power used            | Puppeteer, Priest, Alpha Wolf, Pyromaniac, Troublemaker, Barber, Bonesetter, Confessor, Lord | its holder         |
+| Second vote used      | Stuttering Judge                                                                             | its holder         |
+| Power lost            | Fox, Big Bad Wolf, Bartender                                                                 | its holder         |
+| Heal used             | Witch, Magician                                                                              | its holder         |
+| Kill used             | Witch, Magician                                                                              | its holder         |
+| Extra life used       | Elder, Colossus                                                                              | its holder         |
+| Can't vote            | Village Idiot, Vagabond                                                                      | its holder         |
+| Rusted                | Knight with the Rusty Sword                                                                  | any player         |
 
 **Linked deaths.** Marking a player dead also marks dead, in the same phase, the other lovers, and the Dire Wolf when its companion dies (not the other way round), following chains. Marking that player alive again brings back those who died with them in that phase. See decision 0024.
 
@@ -171,7 +171,7 @@ The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.
 30. Dream Wolf (`dream-wolf`, 310)
 31. Big Bad Wolf (`big-bad-wolf`, 320)
 32. Cursed Wolf-Father (`cursed-wolf-father`, 330)
-33. Alpha Wolf (`alpha-wolf`, 340): wakes again alone on even nights
+33. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
 34. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
 35. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
 36. Sorceress (`sorceress`, 370)

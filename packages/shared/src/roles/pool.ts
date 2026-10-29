@@ -391,8 +391,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'alpha-wolf',
     name: { vi: 'Sói đầu đàn', en: 'Alpha Wolf' },
     rule: {
-      vi: 'Bạn thức dậy cùng bầy sói. Vào các đêm chẵn, bạn thức dậy một mình và giết thêm một người.',
-      en: 'You wake with the werewolves. On even nights, wake again alone and kill one more player.',
+      vi: 'Bạn thức dậy cùng bầy sói. Một lần trong ván, bạn thức dậy một mình và giết thêm một người.',
+      en: 'You wake with the werewolves. Once per game, wake again alone and kill one more player.',
     },
     team: 'werewolf',
     defaultWakeOrder: 340,
