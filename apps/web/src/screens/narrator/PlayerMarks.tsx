@@ -111,7 +111,7 @@ export function MarksSheet({
             </optgroup>
           </select>
           {role.current.id !== role.dealt.id && (
-            <span className="text-caption text-muted">
+            <span className="name-pop text-caption text-muted">
               {t('narrator.dealtRole', { role: role.dealt.name[locale] })}
             </span>
           )}
@@ -123,7 +123,7 @@ export function MarksSheet({
             <label className="flex min-h-12 items-center gap-3 py-1 text-control">
               <input
                 type="checkbox"
-                className="size-5 shrink-0 accent-ink"
+                className="check-pop size-5 shrink-0 accent-ink"
                 checked={since !== undefined}
                 disabled={disabled}
                 onChange={() => {
@@ -132,13 +132,14 @@ export function MarksSheet({
               />
               <span className="min-w-0 flex-1">
                 <span className="block break-words">{mark.label[locale]}</span>
+                {/* Keyed by its text, so a changed line slides in again. */}
                 {since !== undefined ? (
-                  <span className="block text-caption text-muted">
+                  <span key={`since-${since}`} className="name-pop block text-caption text-muted">
                     {t('narrator.markSince', { phase: since })}
                   </span>
                 ) : (
                   heldBy !== undefined && (
-                    <span className="block text-caption text-muted">
+                    <span key={`held-${heldBy}`} className="name-pop block text-caption text-muted">
                       {t('narrator.markHeldBy', { name: heldBy })}
                     </span>
                   )

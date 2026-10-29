@@ -182,6 +182,64 @@
     transition-delay: 0s;
   }
 
+  /* A mark chip pops in, and shrinks away before it leaves (MarkChips keeps it LEAVE_MS). */
+  .chip-in {
+    animation: chip-in 180ms ease-out;
+  }
+
+  .chip-out {
+    animation: chip-out 160ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  @keyframes chip-in {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  @keyframes chip-out {
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  /* A row just undone (a death taken back) slides out before it leaves. */
+  .row-out {
+    animation: row-out 160ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  @keyframes row-out {
+    to {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  /* A ticked or unticked box pops. Two names, so either change restarts it. */
+  .check-pop:checked {
+    animation: check-on 200ms ease-out;
+  }
+
+  .check-pop:not(:checked) {
+    animation: check-off 200ms ease-out;
+  }
+
+  @keyframes check-on {
+    from {
+      transform: scale(1.35);
+    }
+  }
+
+  @keyframes check-off {
+    from {
+      transform: scale(0.75);
+    }
+  }
+
   /* The picked player's name slides in. */
   .name-pop {
     animation: name-pop 180ms ease-out;

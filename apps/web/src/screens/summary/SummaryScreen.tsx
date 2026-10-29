@@ -10,6 +10,7 @@ import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { Tabs } from '../../components/Tabs';
 import { FACTION_ORDER, FACTION_TEXT, FACTION_WASH } from '../../design/faction';
+import { markChipClass } from '../../design/markTone';
 import { useLocale } from '../../i18n/useLocale';
 import type { JournalPhase, Phase, RevealedPlayerItem } from '../types';
 import { PhasePanel } from './PhasePanel';
@@ -137,9 +138,7 @@ export function SummaryScreen({
                                   }
                                   large
                                 />
-                                <MarkChips
-                                  labels={player.marks.map((mark) => mark.label[locale])}
-                                />
+                                <MarkChips marks={player.marks} />
                               </div>
                               <span className="min-w-0 shrink-0 text-right">
                                 <RoleBanner
@@ -225,7 +224,9 @@ export function SummaryScreen({
                                 key={`mark-${marked.id}-${mark.id}`}
                                 className="flex min-h-12 items-center px-3.5 py-2"
                               >
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-caption font-medium ${markChipClass(mark.id)}`}
+                                >
                                   <Icon name="tag" className="size-3.5" />
                                   {t('summary.marked', {
                                     name: marked.name,
