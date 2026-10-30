@@ -91,9 +91,12 @@ export function SummaryScreen({
             content: (
               <div className="stagger grid gap-3">
                 <p className="text-caption text-muted">{t('summary.revealedNotice')}</p>
-                {/* The reveal answers "who were the wolves?" first, so each faction is its own list. */}
+                {/* The reveal answers "who were the wolves?" first, so each faction is its own list.
+                    A player whose role changed counts with the faction they ended in. */}
                 {FACTION_ORDER.map((team) => {
-                  const members = players.filter((player) => player.role.team === team);
+                  const members = players.filter(
+                    (player) => (player.newRole ?? player.role).team === team,
+                  );
                   if (members.length === 0) return null;
                   return (
                     <section
@@ -138,18 +141,18 @@ export function SummaryScreen({
                               </div>
                               <span className="min-w-0 shrink-0 text-right">
                                 <RoleBanner
-                                  name={player.role.name[locale]}
-                                  team={player.role.team}
+                                  name={
+                                    player.newRole
+                                      ? t('common.roleChange', {
+                                          from: player.role.name[locale],
+                                          to: player.newRole.name[locale],
+                                        })
+                                      : player.role.name[locale]
+                                  }
+                                  team={team}
                                   image={player.role.image}
                                   dead={death !== undefined}
                                 />
-                                {player.newRole && (
-                                  <span
-                                    className={`mt-0.5 block text-caption font-medium ${FACTION_TEXT[player.newRole.team]}`}
-                                  >
-                                    {t('summary.newRole', { role: player.newRole.name[locale] })}
-                                  </span>
-                                )}
                               </span>
                             </li>
                           );

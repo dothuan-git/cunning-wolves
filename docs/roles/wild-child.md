@@ -16,4 +16,4 @@ Night 1: choose a role model. While your model is alive you are a villager, what
 
 ## Narrator notes
 
-Night 1: the Wild Child points at a role model; note who it is. When the model dies, change the Wild Child's role to Werewolf: from the next night they wake with the wolves, in the wolves' panel. Not telling the village whether a dead Wild Child had turned keeps the doubt alive.
+Night 1: the Wild Child points at a role model; note who it is. When the model dies, change the Wild Child's role to Werewolf: from the next night they wake with the wolves, and their panel turns wolf red. Not telling the village whether a dead Wild Child had turned keeps the doubt alive.

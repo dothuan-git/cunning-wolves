@@ -75,7 +75,8 @@
     "morning": "Sáng {{number}}",
     "menu": "Tùy chọn",
     "holdHint": "Nhấn và giữ",
-    "keepHolding": "Giữ thêm chút nữa…"
+    "keepHolding": "Giữ thêm chút nữa…",
+    "roleChange": "{{from}} → {{to}}"
   },
   "faction": {
     "village": "Phe Dân",
@@ -270,8 +271,7 @@
     "deadCount": "{{count}} đã chết",
     "diedIn": "Đã chết · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} người chơi",
-    "nowPlays": "{{name}} giờ là {{role}}",
-    "newRole": "Giờ là {{role}}"
+    "nowPlays": "{{name}} giờ là {{role}}"
   },
   "components": {
     "primary": "Thao tác chính",

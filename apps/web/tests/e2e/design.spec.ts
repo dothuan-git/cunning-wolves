@@ -133,11 +133,10 @@ test('marking a player dead during the night keeps that night’s note as its on
   await expect(linh).toHaveValue('Bitten by the wolves');
 });
 
-test('the role sheet moves a player to another role and back, and leaves the status alone', async ({
+test('a lone player changed to another role keeps the panel, retitled in the new faction', async ({
   page,
 }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
-  const wolves = page.getByRole('region', { name: 'Wolf', exact: true });
   const button = page.getByRole('button', { name: "Change Huy's role", exact: true });
   await expect(button).toHaveClass(/text-muted/);
   await button.click();
@@ -148,14 +147,36 @@ test('the role sheet moves a player to another role and back, and leaves the sta
   await picker.selectOption('werewolf');
   await expect(sheet).toContainText('Dealt Villager');
   await closeSheet(page);
-  await expect(wolves).toContainText('Huy');
-  await expect(wolves).toContainText('Dealt Villager');
+  const changed = page.getByRole('region', { name: 'Villager → Wolf', exact: true });
+  await expect(changed).toContainText('Huy');
+  await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
+  await expect(page.getByRole('region', { name: 'Villager', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Wolf', exact: true })).not.toContainText('Huy');
   await expect(button).toHaveClass(/text-ink/);
   await button.click();
   await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
   await closeSheet(page);
-  await expect(wolves).not.toContainText('Huy');
+  await expect(page.getByRole('region', { name: 'Villager', exact: true })).toContainText('Huy');
+  await expect(changed).toHaveCount(0);
   await expect(page.getByRole('status')).toHaveText('6 players alive');
+});
+
+test('a player changed out of a shared panel splits off right below it', async ({ page }) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  await page.getByRole('button', { name: "Change An's role", exact: true }).click();
+  await page.getByRole('dialog').getByRole('combobox').selectOption('seer');
+  await closeSheet(page);
+  const wolves = page.getByRole('region', { name: 'Wolf', exact: true });
+  const split = page.getByRole('region', { name: 'Wolf → Seer', exact: true });
+  await expect(wolves).toContainText('Minh');
+  await expect(wolves).not.toContainText('An');
+  await expect(split).toContainText('An');
+  await expect(split.getByRole('heading')).toHaveClass(/bg-village-wash/);
+  const order = await page
+    .locator('section[aria-label]')
+    .filter({ has: page.locator('h3') })
+    .evaluateAll((panels) => panels.map((panel) => panel.getAttribute('aria-label')));
+  expect(order.indexOf('Wolf → Seer')).toBe(order.indexOf('Wolf') + 1);
 });
 
 test('tapping an earlier note edits it without changing the player status', async ({ page }) => {

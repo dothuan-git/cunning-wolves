@@ -75,7 +75,8 @@
     "morning": "Morning {{number}}",
     "menu": "Menu",
     "holdHint": "Press and hold",
-    "keepHolding": "Keep holding…"
+    "keepHolding": "Keep holding…",
+    "roleChange": "{{from}} → {{to}}"
   },
   "faction": {
     "village": "Village",
@@ -270,8 +271,7 @@
     "deadCount": "{{count}} dead",
     "diedIn": "Died · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} players",
-    "nowPlays": "{{name}} now plays {{role}}",
-    "newRole": "Now {{role}}"
+    "nowPlays": "{{name}} now plays {{role}}"
   },
   "components": {
     "primary": "Primary action",

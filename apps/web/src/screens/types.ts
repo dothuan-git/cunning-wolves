@@ -23,13 +23,13 @@ export interface JournalPhase {
   /** Roles a power gave players in this phase */
   newRoles: readonly (PlayerListItem & { role: PoolRole })[];
 }
-export interface GroupPlayerItem extends PlayerListItem {
-  /** The role they were dealt, when a power gave them the group's role instead */
-  dealt?: PoolRole;
-}
+/** A narrator panel: players dealt `role`, or those of them who now play `newRole`. */
 export interface RoleGroupItem {
+  /** The dealt role: it sets the panel's place and wake nights */
   role: PoolRole;
-  players: readonly GroupPlayerItem[];
+  /** The role a power gave these players; it sets the panel's faction color */
+  newRole?: PoolRole;
+  players: readonly PlayerListItem[];
 }
 /** The roles a narrator can give a player, when a role that changes roles is dealt. */
 export interface RoleChoices {

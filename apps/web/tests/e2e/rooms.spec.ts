@@ -342,17 +342,17 @@ test('lovers are marked dead one by one, and the narrator gives a player a new r
   await master.getByRole('button', { name: 'Restore Minh' }).click();
   await expect(master.getByRole('button', { name: 'Mark Minh dead' })).toBeVisible();
 
-  // The Doppelgänger's player now plays the Seer and moves to the Seer's panel.
+  // The Doppelgänger's player now plays the Werewolf: the panel stays, retitled in wolf red.
   const copier = master.getByRole('region', { name: 'Doppelgänger', exact: true });
   await copier.getByRole('button', { name: /^Change .* role$/ }).click();
   const sheet = master.getByRole('dialog', { name: /^Role · / });
-  await sheet.getByRole('combobox', { name: 'Plays' }).selectOption({ label: 'Seer' });
+  await sheet.getByRole('combobox', { name: 'Plays' }).selectOption({ label: 'Werewolf' });
   await sheet.getByRole('button', { name: 'Done', exact: true }).click();
-  const seer = master.getByRole('region', { name: 'Seer', exact: true });
-  await expect(seer.getByText('Dealt Doppelgänger', { exact: true })).toBeVisible();
-  await expect(master.getByRole('region', { name: 'Doppelgänger', exact: true })).toHaveCount(0);
+  const changed = master.getByRole('region', { name: 'Doppelgänger → Werewolf', exact: true });
+  await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
+  await expect(copier).toHaveCount(0);
   await master.reload();
-  await expect(seer.getByText('Dealt Doppelgänger', { exact: true })).toBeVisible();
+  await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
 
   // A player's phone never hears of it.
   for (const message of minhMessages) {

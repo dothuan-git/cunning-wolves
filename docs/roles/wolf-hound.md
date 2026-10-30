@@ -16,4 +16,4 @@ Night 1: choose, once and for all, to be a villager or a werewolf. A werewolf wa
 
 ## Narrator notes
 
-Night 1: the Wolf-hound chooses by gesture, once and for all. If they choose the wolves, change their role to Werewolf: they wake with the wolves from then on, in the wolves' panel. Otherwise they sleep and play as a villager.
+Night 1: the Wolf-hound chooses by gesture, once and for all. If they choose the wolves, change their role to Werewolf: they wake with the wolves from then on, and their panel turns wolf red. Otherwise they sleep and play as a villager.

@@ -13,6 +13,7 @@ import { useLocale } from '../../i18n/useLocale';
 import { RoomListScreen } from '../../screens/home/RoomListScreen';
 import { MyCardScreen } from '../../screens/my-card/MyCardScreen';
 import { NameEntryScreen } from '../../screens/name-entry/NameEntryScreen';
+import { roleGroups } from '../../screens/narrator/groups';
 import { NarratorScreen } from '../../screens/narrator/NarratorScreen';
 import { PlayerLobbyScreen } from '../../screens/player-lobby/PlayerLobbyScreen';
 import { RuleBookScreen } from '../../screens/rule-book/RuleBookScreen';
@@ -254,14 +255,7 @@ function PreviewScene({
     case 'narrator':
       return (
         <NarratorScreen
-          groups={[
-            ...exampleGroups,
-            ...ROLE_POOL.filter(
-              (role) =>
-                Object.values(newRoles).includes(role.id) &&
-                !exampleGroups.some((group) => group.role.id === role.id),
-            ).map((role) => ({ role, players: [] })),
-          ]
+          groups={[...exampleGroups]
             .sort((a, b) => {
               const place = (id: string) => {
                 const index = wakeOrder.indexOf(id);
@@ -269,16 +263,18 @@ function PreviewScene({
               };
               return place(a.role.id) - place(b.role.id);
             })
-            .map((group) => ({
-              ...group,
-              players: exampleGroups
-                .flatMap((dealt) => dealt.players.map((player) => ({ player, dealt: dealt.role })))
-                .filter(({ player, dealt }) => (newRoles[player.id] ?? dealt.id) === group.role.id)
-                .map(({ player, dealt }) => {
-                  const shown = players.find((item) => item.id === player.id) ?? player;
-                  return dealt.id === group.role.id ? shown : { ...shown, dealt };
-                }),
-            }))}
+            .flatMap((group) =>
+              roleGroups(
+                group.role,
+                group.players.map((player) => ({
+                  player: players.find((item) => item.id === player.id) ?? player,
+                  playing:
+                    exampleRoles.find((role) => role.id === newRoles[player.id]) ??
+                    ROLE_POOL.find((role) => role.id === newRoles[player.id]) ??
+                    group.role,
+                })),
+              ),
+            )}
           phase={phase}
           notes={Object.fromEntries(
             Array.from({ length: phase.number }, (_, index) => [

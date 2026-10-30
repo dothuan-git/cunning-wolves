@@ -26,7 +26,8 @@ import { useFlip } from '../../design/useFlip';
 import { useLeaving } from '../../design/useLeaving';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
-import type { GroupPlayerItem, Phase, RoleChoices, RoleGroupItem } from '../types';
+import type { Phase, PlayerListItem, RoleChoices, RoleGroupItem } from '../types';
+import { groupKey } from './groups';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
 import { RoleChangeButton, RoleSheet } from './RoleChange';
@@ -149,7 +150,14 @@ export function NarratorScreen({
     setShowTools(false);
   }
 
-  const wakingGroups = groups.filter((group) => group.role.defaultWakeOrder !== null);
+  // A role split into several panels is one entry in the wake order.
+  const wakingRoles = [
+    ...new Map(
+      groups
+        .filter((group) => group.role.defaultWakeOrder !== null)
+        .map((group) => [group.role.id, group.role]),
+    ).values(),
+  ];
   // A role whose every player now plays another one has nobody left to wake.
   const held = groups.filter((group) => group.players.length > 0);
   const tonightGroups = held.filter((group) => wakesOnNight(group.role, phase.number));
@@ -181,7 +189,7 @@ export function NarratorScreen({
     panels,
     [
       ...[...tonightGroups, ...restingGroups].map(
-        (group) => `${group.role.id}:${group.players.map((player) => player.id).join(',')}`,
+        (group) => `${groupKey(group)}:${group.players.map((player) => player.id).join(',')}`,
       ),
       `pack:${pack.map(({ player }) => player.id).join(',')}`,
     ].join('|'),
@@ -191,7 +199,16 @@ export function NarratorScreen({
     return t(value.kind === 'night' ? 'common.night' : 'common.morning', { number: value.number });
   }
 
-  function renderPlayer(player: GroupPlayerItem) {
+  function panelTitle(group: RoleGroupItem): string {
+    return group.newRole
+      ? t('common.roleChange', {
+          from: group.role.name[locale],
+          to: group.newRole.name[locale],
+        })
+      : group.role.name[locale];
+  }
+
+  function renderPlayer(player: PlayerListItem, group: RoleGroupItem) {
     const death = deaths[player.id];
     const dead = death !== undefined;
     const playerNotes: Record<number, string> = {};
@@ -214,17 +231,12 @@ export function NarratorScreen({
     return (
       <li key={player.id} data-flip={`player:${player.id}`} className="px-3.5 pb-1.5">
         <div className="flex min-h-12 items-center justify-between gap-2">
-          <PlayerChip
-            name={player.name}
-            dead={dead}
-            detail={player.dealt && t('narrator.dealtRole', { role: player.dealt.name[locale] })}
-            large
-          />
+          <PlayerChip name={player.name} dead={dead} large />
           <div className="flex shrink-0 items-center">
             {roleChoices && (
               <RoleChangeButton
                 name={player.name}
-                changed={player.dealt !== undefined}
+                changed={group.newRole !== undefined}
                 disabled={reconnecting}
                 onOpen={() => {
                   setChanging(player.id);
@@ -414,13 +426,15 @@ export function NarratorScreen({
         {[...tonightGroups, ...restingGroups].map((group) => {
           // A role whose players are all dead goes grey: band, name and art.
           const out = group.players.length > 0 && group.players.every((p) => p.id in deaths);
-          const wash = out ? 'bg-line' : FACTION_WASH[group.role.team];
+          // A panel takes the faction of the role its players play now.
+          const { team } = group.newRole ?? group.role;
+          const wash = out ? 'bg-line' : FACTION_WASH[team];
           return (
             <section
-              key={group.role.id}
-              data-flip={`role:${group.role.id}`}
+              key={groupKey(group)}
+              data-flip={`role:${groupKey(group)}`}
               className="panel min-w-0 overflow-hidden"
-              aria-label={group.role.name[locale]}
+              aria-label={panelTitle(group)}
             >
               <h3 className={`px-3.5 py-1 motion-safe:transition-colors ${wash}`}>
                 <button
@@ -428,18 +442,20 @@ export function NarratorScreen({
                   aria-haspopup="dialog"
                   className="press flex min-h-12 max-w-full items-center rounded-control text-left focus-visible:outline-2 focus-visible:outline-village"
                   onClick={() => {
-                    setViewing(group.role);
+                    setViewing(group.newRole ?? group.role);
                   }}
                 >
                   <RoleBanner
-                    name={group.role.name[locale]}
-                    team={group.role.team}
+                    name={panelTitle(group)}
+                    team={team}
                     image={group.role.image}
                     dead={out}
                   />
                 </button>
               </h3>
-              <ul className="divide-y divide-line">{group.players.map(renderPlayer)}</ul>
+              <ul className="divide-y divide-line">
+                {group.players.map((player) => renderPlayer(player, group))}
+              </ul>
               {group === packGroup && pack.length > 0 && (
                 <section
                   aria-label={t('narrator.packExtras')}
@@ -479,8 +495,8 @@ export function NarratorScreen({
         <RoleSheet
           name={changingPlayer.name}
           choices={roleChoices}
-          current={changingGroup.role}
-          dealt={changingPlayer.dealt ?? changingGroup.role}
+          current={changingGroup.newRole ?? changingGroup.role}
+          dealt={changingGroup.role}
           disabled={reconnecting}
           onChange={(roleId) => {
             onSetRole(changingPlayer.id, roleId);
@@ -553,9 +569,9 @@ export function NarratorScreen({
                 }}
               />
             </div>
-            {wakingGroups.length > 0 && (
+            {wakingRoles.length > 0 && (
               <WakeOrderSetting
-                roles={wakingGroups.map((group) => group.role)}
+                roles={wakingRoles}
                 onChange={(order) => {
                   onWakeOrder(order.map((role) => role.id));
                 }}

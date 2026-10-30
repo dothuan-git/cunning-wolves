@@ -114,7 +114,8 @@
 - **Role change replaces player marks** (branch `feat/role-change`, 2026-10-30):
   - Player marks are gone: the tag button and sheet, chips, marks in the summary, and the Player marks setting. Linked deaths are gone too: a death marks only the player tapped.
   - While a role that changes roles is dealt, every player has a swap button beside the status pill. It opens a sheet with only the **Plays** picker.
-  - Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father and Alpha Wolf now unlock it: the narrator gives the turned player the Werewolf, and they move to the wolves' panel.
+  - A changed player keeps their dealt panel, retitled "Dealt → New" in the new role's faction color; in a shared panel they split off right below it. The summary groups players by the faction they ended in.
+  - Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father and Alpha Wolf now unlock it: the narrator gives the turned player the Werewolf, and their panel turns wolf red.
   - See decision 0026.
 
 ## Next

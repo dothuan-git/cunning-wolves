@@ -29,7 +29,8 @@ import { PlayerLobbyScreen } from '../player-lobby/PlayerLobbyScreen';
 import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
 import { SummaryScreen } from '../summary/SummaryScreen';
-import type { GroupPlayerItem, RoleChoices, RoleGroupItem } from '../types';
+import { roleGroups } from '../narrator/groups';
+import type { RoleChoices, RoleGroupItem } from '../types';
 
 function goHome() {
   navigate(paths.home);
@@ -193,36 +194,21 @@ function NarratorRoom({
   const groups = useMemo<RoleGroupItem[]>(() => {
     const roles = roomRoles(setup);
     const picked = gameRoles(setup).map(({ role }) => role);
-    const playing = (assignment: Assignment) =>
-      currentRole(assignment.playerId, assignment.roleId, newRoles);
-    // A role a power gave someone that nobody was dealt (the Thief's extra card) gets its own panel.
-    const extra = roles.filter(
-      (role) =>
-        !setup.picks.includes(role.id) &&
-        assignments.some((assignment) => playing(assignment) === role.id),
+    const waking = wakingOrder(roles, setup.picks, setup.wakeOrder);
+    const resting = picked.filter((role) => role.defaultWakeOrder === null);
+    // Players stay under their dealt role; one who now plays another splits off below it.
+    return [...waking, ...resting].flatMap((role) =>
+      roleGroups(
+        role,
+        players.flatMap((player) => {
+          const assignment = assignments.find((known) => known.playerId === player.id);
+          if (assignment?.roleId !== role.id) return [];
+          const id = currentRole(player.id, role.id, newRoles);
+          const playing = roles.find((known) => known.id === id) ?? role;
+          return [{ player: { id: player.id, name: player.name }, playing }];
+        }),
+      ),
     );
-    const waking = wakingOrder(
-      roles,
-      [...setup.picks, ...extra.map((role) => role.id)],
-      setup.wakeOrder,
-    );
-    const resting = [...picked, ...extra].filter((role) => role.defaultWakeOrder === null);
-    return [...waking, ...resting].map((role) => ({
-      role,
-      players: players.flatMap((player): GroupPlayerItem[] => {
-        const assignment = assignments.find((known) => known.playerId === player.id);
-        if (!assignment || playing(assignment) !== role.id) return [];
-        const dealt =
-          assignment.roleId === role.id
-            ? undefined
-            : roles.find((known) => known.id === assignment.roleId);
-        return [
-          dealt
-            ? { id: player.id, name: player.name, dealt }
-            : { id: player.id, name: player.name },
-        ];
-      }),
-    }));
   }, [setup, assignments, players, newRoles]);
   const roleChoices = useMemo<RoleChoices | undefined>(() => {
     if (!offersNewRoles(assignments.map(({ roleId }) => roleId))) return undefined;
