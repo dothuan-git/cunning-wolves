@@ -3,7 +3,6 @@
 - **id:** `puppeteer`
 - **Team:** village
 - **Wakes at night:** yes (150), after `spellcaster` and before `fox`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

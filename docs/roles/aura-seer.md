@@ -3,7 +3,6 @@
 - **id:** `aura-seer`
 - **Team:** village
 - **Wakes at night:** yes (210), after `beholder` and before `bodyguard`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

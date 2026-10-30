@@ -3,8 +3,7 @@
 - **id:** `minion`
 - **Team:** werewolf
 - **Wakes at night:** yes (300, Night 1 only), after `lone-wolf` and before `dream-wolf`
-- **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/minion.webp`
 
 ## Rule (vi)
 

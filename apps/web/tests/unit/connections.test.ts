@@ -33,7 +33,7 @@ const SETUP: RoomSetup = {
   ruleEdits: { werewolf: 'House rule' },
   customRoles: [{ id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false }],
   wakeOrder: ['werewolf'],
-  settings: { timerSeconds: 60, soundOn: true, marksOn: true },
+  settings: { timerSeconds: 60, soundOn: true },
 };
 const MASTER = {
   kind: 'master',
@@ -47,7 +47,6 @@ const MASTER = {
     phase: { kind: 'morning', number: 2 },
     deaths: { aaaa: { kind: 'night', number: 2 } },
     notes: { 1: { aaaa: 'Saw the baker.' } },
-    marks: { aaaa: { lover: { kind: 'morning', number: 1 } } },
     newRoles: { aaaa: { role: 'seer', phase: { kind: 'night', number: 2 } } },
   },
 } as const;
@@ -138,7 +137,6 @@ describe('parseServerMessage', () => {
             phase: { kind: 'night', number: 1 },
             deaths: {},
             notes: { 1: { aaaa: 'Saw.' } },
-            marks: {},
             newRoles: {},
           },
         },
@@ -188,8 +186,8 @@ describe('parseServerMessage', () => {
       { type: 'state', view: { ...MASTER, game: { ...MASTER.game, notes: { 1: { aaaa: 2 } } } } },
     ],
     [
-      'a game without marks',
-      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, marks: undefined } } },
+      'a game without new roles',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, newRoles: undefined } } },
     ],
     [
       'a new role without its role',
@@ -199,13 +197,6 @@ describe('parseServerMessage', () => {
           ...MASTER,
           game: { ...MASTER.game, newRoles: { aaaa: { phase: { kind: 'night', number: 1 } } } },
         },
-      },
-    ],
-    [
-      'a mark in an unknown phase',
-      {
-        type: 'state',
-        view: { ...MASTER, game: { ...MASTER.game, marks: { aaaa: { lover: 'dusk' } } } },
       },
     ],
     [

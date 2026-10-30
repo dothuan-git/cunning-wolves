@@ -3,7 +3,6 @@
 - **id:** `cult-leader`
 - **Team:** solo
 - **Wakes at night:** yes (430), after `vampire` and before `witch`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

@@ -275,6 +275,9 @@ test('the room keeps what the narrator marks, and no player sees it', async ({ b
   await master.getByRole('button', { name: 'Start game' }).click();
   await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
 
+  // No dealt role changes roles, so nobody's role can be changed.
+  await expect(master.getByRole('button', { name: /^Change .* role$/ })).toHaveCount(0);
+
   // A death, a note sent when its field is left, and the end of the night.
   await master.getByRole('button', { name: 'Mark Minh dead' }).click();
   await master.getByRole('textbox', { name: 'Note for Lan' }).fill('Saw the wolves.');
@@ -310,7 +313,9 @@ test('the room keeps what the narrator marks, and no player sees it', async ({ b
   }
 });
 
-test('lovers die together, and the narrator gives a player a new role', async ({ browser }) => {
+test('lovers are marked dead one by one, and the narrator gives a player a new role', async ({
+  browser,
+}) => {
   const roomName = `Chapel ${String(Date.now()).slice(-6)}`;
   const master = await phone(browser);
   const minh = await phone(browser);
@@ -330,44 +335,24 @@ test('lovers die together, and the narrator gives a player a new role', async ({
   await master.getByRole('button', { name: 'Start game' }).click();
   await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
 
-  // Marks start off: no player has a marks button until the narrator turns them on.
-  await expect(master.getByRole('button', { name: 'Mark Minh dead' })).toBeVisible();
-  await expect(master.getByRole('button', { name: /^Marks for / })).toHaveCount(0);
-  await master.getByRole('button', { name: 'Menu', exact: true }).click();
-  const marksOn = master.getByRole('checkbox', { name: 'Player marks', exact: true });
-  await expect(marksOn).not.toBeChecked();
-  await marksOn.click();
-  await expect(marksOn).toBeChecked();
-  await master.keyboard.press('Escape');
-  await expect(master.getByRole('dialog')).toHaveCount(0);
-
-  // Both players become lovers; one death takes the other along, and one tap brings both back.
-  for (const name of ['Minh', 'Lan']) {
-    await master.getByRole('button', { name: `Marks for ${name} (0)`, exact: true }).click();
-    const sheet = master.getByRole('dialog', { name: `Marks · ${name}`, exact: true });
-    // The switch follows the room, so it turns on once the room has answered.
-    const lover = sheet.getByRole('checkbox', { name: 'Lover' });
-    await lover.click();
-    await expect(lover).toBeChecked();
-    await sheet.getByRole('button', { name: 'Done', exact: true }).click();
-  }
+  // With Cupid dealt, a death still marks only the player tapped.
   await master.getByRole('button', { name: 'Mark Minh dead' }).click();
-  await expect(master.getByRole('button', { name: 'Restore Lan' })).toBeVisible();
-  await master.getByRole('button', { name: 'Restore Minh' }).click();
+  await expect(master.getByRole('button', { name: 'Restore Minh' })).toBeVisible();
   await expect(master.getByRole('button', { name: 'Mark Lan dead' })).toBeVisible();
+  await master.getByRole('button', { name: 'Restore Minh' }).click();
   await expect(master.getByRole('button', { name: 'Mark Minh dead' })).toBeVisible();
 
-  // The Doppelgänger's player now plays the Seer and moves to the Seer's panel.
+  // The Doppelgänger's player now plays the Werewolf: the panel stays, retitled in wolf red.
   const copier = master.getByRole('region', { name: 'Doppelgänger', exact: true });
-  await copier.getByRole('button', { name: /^Marks for / }).click();
-  const sheet = master.getByRole('dialog', { name: /^Marks · / });
-  await sheet.getByRole('combobox', { name: 'Plays' }).selectOption({ label: 'Seer' });
+  await copier.getByRole('button', { name: /^Change .* role$/ }).click();
+  const sheet = master.getByRole('dialog', { name: /^Role · / });
+  await sheet.getByRole('combobox', { name: 'Plays' }).selectOption({ label: 'Werewolf' });
   await sheet.getByRole('button', { name: 'Done', exact: true }).click();
-  const seer = master.getByRole('region', { name: 'Seer', exact: true });
-  await expect(seer.getByText('Dealt Doppelgänger', { exact: true })).toBeVisible();
-  await expect(master.getByRole('region', { name: 'Doppelgänger', exact: true })).toHaveCount(0);
+  const changed = master.getByRole('region', { name: 'Doppelgänger → Werewolf', exact: true });
+  await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
+  await expect(copier).toHaveCount(0);
   await master.reload();
-  await expect(seer.getByText('Dealt Doppelgänger', { exact: true })).toBeVisible();
+  await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
 
   // A player's phone never hears of it.
   for (const message of minhMessages) {

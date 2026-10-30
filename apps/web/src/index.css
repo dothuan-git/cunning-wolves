@@ -524,16 +524,18 @@
   }
 
   .thumbnail-name {
-    /* Physical sides: the name's own writing mode is vertical, which turns logical ones. */
-    top: var(--pad);
-    right: var(--pad);
     font-size: clamp(var(--text-caption), 9cqw, var(--text-role));
     line-height: 1.15;
   }
 
+  /* The gap between the art and the name, scaled to the card like the rest of the thumbnail. */
+  .thumbnail-row {
+    gap: 0;
+  }
+
   /* A card with an "x" over its corner keeps its name clear of it. */
   .thumbnail-card[data-removable='true'] .thumbnail-name {
-    top: calc(var(--pad) + 0.75rem);
+    margin-top: 0.75rem;
   }
 
   .thumbnail-chip {
@@ -541,15 +543,15 @@
     left: var(--pad);
   }
 
-  /* Room around the figure, so it sits in the card instead of filling it. */
+  /* Room above and below the figure, so it sits in the card instead of filling it. */
   .thumbnail-art {
-    padding: 10cqw 4cqw;
+    padding: 10cqw 0;
   }
 
-  /* The role name runs down the card's top right edge. */
+  /* The role name runs down the card's top right edge, in a column of its own beside the art. */
   .role-title {
     writing-mode: vertical-rl;
-    max-height: calc(100% - 2.5rem);
+    max-height: 100%;
     overflow-wrap: anywhere;
   }
 

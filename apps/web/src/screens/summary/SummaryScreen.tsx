@@ -1,16 +1,13 @@
-import { MARKS } from '@werewolf/shared';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { FactionEmblem } from '../../components/FactionEmblem';
 import { Icon } from '../../components/Icon';
-import { MarkChips } from '../../components/MarkChips';
 import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { Tabs } from '../../components/Tabs';
 import { FACTION_ORDER, FACTION_TEXT, FACTION_WASH } from '../../design/faction';
-import { markChipClass } from '../../design/markTone';
 import { useLocale } from '../../i18n/useLocale';
 import type { JournalPhase, Phase, RevealedPlayerItem } from '../types';
 import { PhasePanel } from './PhasePanel';
@@ -94,9 +91,12 @@ export function SummaryScreen({
             content: (
               <div className="stagger grid gap-3">
                 <p className="text-caption text-muted">{t('summary.revealedNotice')}</p>
-                {/* The reveal answers "who were the wolves?" first, so each faction is its own list. */}
+                {/* The reveal answers "who were the wolves?" first, so each faction is its own list.
+                    A player whose role changed counts with the faction they ended in. */}
                 {FACTION_ORDER.map((team) => {
-                  const members = players.filter((player) => player.role.team === team);
+                  const members = players.filter(
+                    (player) => (player.newRole ?? player.role).team === team,
+                  );
                   if (members.length === 0) return null;
                   return (
                     <section
@@ -129,7 +129,7 @@ export function SummaryScreen({
                               key={player.id}
                               className="flex min-h-16 items-center justify-between gap-3 px-3.5 py-2"
                             >
-                              <div className="grid min-w-0 gap-1">
+                              <div className="min-w-0">
                                 <PlayerChip
                                   name={player.name}
                                   dead={death !== undefined}
@@ -138,22 +138,21 @@ export function SummaryScreen({
                                   }
                                   large
                                 />
-                                <MarkChips marks={player.marks} />
                               </div>
                               <span className="min-w-0 shrink-0 text-right">
                                 <RoleBanner
-                                  name={player.role.name[locale]}
-                                  team={player.role.team}
+                                  name={
+                                    player.newRole
+                                      ? t('common.roleChange', {
+                                          from: player.role.name[locale],
+                                          to: player.newRole.name[locale],
+                                        })
+                                      : player.role.name[locale]
+                                  }
+                                  team={team}
                                   image={player.role.image}
                                   dead={death !== undefined}
                                 />
-                                {player.newRole && (
-                                  <span
-                                    className={`mt-0.5 block text-caption font-medium ${FACTION_TEXT[player.newRole.team]}`}
-                                  >
-                                    {t('summary.newRole', { role: player.newRole.name[locale] })}
-                                  </span>
-                                )}
                               </span>
                             </li>
                           );
@@ -174,7 +173,7 @@ export function SummaryScreen({
               ) : (
                 // The whole story reads top to bottom; nights sit on ink so they stand apart from mornings.
                 <ol className="stagger grid gap-2.5">
-                  {journal.map(({ phase, notes, deaths, marks, newRoles }) => {
+                  {journal.map(({ phase, notes, deaths, newRoles }) => {
                     const night = phase.kind === 'night';
                     return (
                       <PhasePanel
@@ -216,33 +215,13 @@ export function SummaryScreen({
                               </span>
                             </li>
                           ))}
-                          {marks.map((marked) => {
-                            const mark = MARKS.find((known) => known.id === marked.mark);
-                            if (!mark) return null;
-                            return (
-                              <li
-                                key={`mark-${marked.id}-${mark.id}`}
-                                className="flex min-h-12 items-center px-3.5 py-2"
-                              >
-                                <span
-                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-caption font-medium ${markChipClass(mark.id)}`}
-                                >
-                                  <Icon name="tag" className="size-3.5" />
-                                  {t('summary.marked', {
-                                    name: marked.name,
-                                    mark: mark.label[locale],
-                                  })}
-                                </span>
-                              </li>
-                            );
-                          })}
                           {newRoles.map((changed) => (
                             <li
                               key={`role-${changed.id}`}
                               className="flex min-h-12 items-center px-3.5 py-2"
                             >
                               <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
-                                <Icon name="tag" className="size-3.5" />
+                                <Icon name="swap" className="size-3.5" />
                                 {t('summary.nowPlays', {
                                   name: changed.name,
                                   role: changed.role.name[locale],

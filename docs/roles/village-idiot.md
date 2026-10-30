@@ -3,7 +3,7 @@
 - **id:** `village-idiot`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/village-idiot.webp`
 
 ## Rule (vi)
 

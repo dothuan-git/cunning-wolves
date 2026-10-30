@@ -1,9 +1,8 @@
-# Fruit Brute / Sói mất khẩu vị
+# Fruit Brute / Sói chán ăn
 
 - **id:** `fruit-brute`
 - **Team:** werewolf
 - **Wakes at night:** yes (270), after `wolf-cub` and before `dire-wolf`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

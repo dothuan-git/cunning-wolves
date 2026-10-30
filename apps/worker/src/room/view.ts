@@ -45,7 +45,6 @@ function setupInfo(setup: RoomSetup): RoomSetup {
     settings: {
       timerSeconds: setup.settings.timerSeconds,
       soundOn: setup.settings.soundOn,
-      marksOn: setup.settings.marksOn,
     },
   };
 }
@@ -66,7 +65,7 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
   };
 }
 
-/** Phases, deaths, notes, marks and new roles: for the master, and for seated players after Finish. */
+/** Phases, deaths, notes and new roles: for the master, and for seated players after Finish. */
 function gameStateInfo(game: GameState): GameState {
   return {
     phase: { kind: game.phase.kind, number: game.phase.number },
@@ -78,17 +77,6 @@ function gameStateInfo(game: GameState): GameState {
     ),
     notes: Object.fromEntries(
       Object.entries(game.notes).map(([night, byPlayer]) => [night, { ...byPlayer }]),
-    ),
-    marks: Object.fromEntries(
-      Object.entries(game.marks).map(([id, own]) => [
-        id,
-        Object.fromEntries(
-          Object.entries(own).map(([mark, marked]) => [
-            mark,
-            { kind: marked.kind, number: marked.number },
-          ]),
-        ),
-      ]),
     ),
     newRoles: Object.fromEntries(
       Object.entries(game.newRoles).map(([id, changed]) => [
@@ -127,7 +115,7 @@ function cardInfo(state: RoomState, viewer: string): RoomRole | null {
   return roleInfo(role);
 }
 
-/** Every player's role and the marks, once the game is finished. */
+/** Every player's role and the game, once it is finished. */
 function revealInfo(state: RoomState): Reveal | null {
   if (state.status !== 'finished' || !state.game) return null;
   return {

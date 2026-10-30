@@ -3,7 +3,7 @@
 - **id:** `three-brothers`
 - **Team:** village
 - **Wakes at night:** yes (90), after `two-sisters` and before `wild-child`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/three-brothers.webp`
 
 ## Rule (vi)
 

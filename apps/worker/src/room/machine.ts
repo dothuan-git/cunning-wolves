@@ -4,9 +4,7 @@ import {
   cleanRule,
   CUSTOM_ROLES_MAX,
   DEFAULT_SETTINGS,
-  currentRole,
   isValidName,
-  marksForPlayer,
   offersNewRoles,
   NAME_MAX,
   nameKey,
@@ -19,7 +17,6 @@ import {
   RULE_MAX,
   TIMER_MAX,
   type GameState,
-  type Phase,
   type RoomAction,
   type RoomSetup,
   type RoomStatus,
@@ -251,7 +248,6 @@ export function apply(
         phase: { kind: 'night', number: 1 },
         deaths: {},
         notes: {},
-        marks: {},
         newRoles: {},
       };
       return { ok: true, state: { ...state, status: 'playing', assignments, game } };
@@ -259,7 +255,7 @@ export function apply(
     case 'finishGame': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing') return refuse('not-allowed');
-      // The deal and the marks stay for the summary.
+      // The deal and the game stay for the summary.
       return { ok: true, state: { ...state, status: 'finished' } };
     }
     case 'playAgain': {
@@ -270,18 +266,10 @@ export function apply(
     }
     case 'endPhase':
     case 'toggleDeath':
-    case 'toggleMark':
     case 'setRole':
     case 'setNote': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
-      // Marks off hides marks and new roles; what was set stays, but nothing changes.
-      if (
-        (action.type === 'toggleMark' || action.type === 'setRole') &&
-        !state.setup.settings.marksOn
-      ) {
-        return refuse('not-allowed');
-      }
       // A new role is any pool role (the Thief's extra cards are not dealt) or a picked custom one.
       const roleIds = [...ROLE_POOL.map((role) => role.id), ...state.setup.picks];
       const result = applyGame(state.game, state.assignments, roleIds, action);
@@ -290,13 +278,10 @@ export function apply(
   }
 }
 
-type GameAction = Extract<
-  RoomAction,
-  { type: 'endPhase' | 'toggleDeath' | 'toggleMark' | 'setRole' | 'setNote' }
->;
+type GameAction = Extract<RoomAction, { type: 'endPhase' | 'toggleDeath' | 'setRole' | 'setNote' }>;
 type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErrorCode };
 
-/** The narrator's marks while playing. Who may make them is checked by `apply`. */
+/** The narrator's changes while playing. Who may make them is checked by `apply`. */
 function applyGame(
   game: GameState,
   assignments: Record<string, string>,
@@ -315,55 +300,15 @@ function applyGame(
     case 'toggleDeath': {
       const { playerId } = action;
       if (!Object.hasOwn(assignments, playerId)) return refuse('not-allowed');
-      const death = Object.hasOwn(game.deaths, playerId) ? game.deaths[playerId] : undefined;
-      if (death) {
-        // Bring back the players who died with this one, so one tap undoes the whole chain.
-        const revived = linkedChain(playerId, game, assignments, (id) => {
-          const other = Object.hasOwn(game.deaths, id) ? game.deaths[id] : undefined;
-          return other !== undefined && samePhase(other, death);
-        });
+      if (Object.hasOwn(game.deaths, playerId)) {
         const deaths = Object.fromEntries(
-          Object.entries(game.deaths).filter(([id]) => !revived.has(id)),
+          Object.entries(game.deaths).filter(([id]) => id !== playerId),
         );
         return { ok: true, game: { ...game, deaths } };
       }
-      const dying = linkedChain(
-        playerId,
-        game,
-        assignments,
-        (id) => !Object.hasOwn(game.deaths, id),
-      );
       // fromEntries, so an id like `__proto__` stays an own key.
-      const deaths = {
-        ...game.deaths,
-        ...Object.fromEntries([...dying].map((id) => [id, game.phase])),
-      };
+      const deaths = { ...game.deaths, ...Object.fromEntries([[playerId, game.phase]]) };
       return { ok: true, game: { ...game, deaths } };
-    }
-    case 'toggleMark': {
-      const { playerId } = action;
-      const roleId = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
-      if (roleId === undefined) return refuse('not-allowed');
-      const own = Object.hasOwn(game.marks, playerId) ? game.marks[playerId] : undefined;
-      // A carried mark can always come off, even once a new role no longer offers it.
-      if (own && Object.hasOwn(own, action.mark)) {
-        return {
-          ok: true,
-          game: { ...game, marks: withoutMark(game.marks, playerId, action.mark) },
-        };
-      }
-      const mark = marksForPlayer(
-        roleId,
-        currentRole(playerId, roleId, game.newRoles),
-        rolesInPlay(assignments, game.newRoles),
-      ).find((offered) => offered.id === action.mark);
-      if (!mark) return refuse('not-allowed');
-      // A single mark moves: whoever had it loses it.
-      const others = mark.single
-        ? Object.keys(game.marks).reduce((marks, id) => withoutMark(marks, id, mark.id), game.marks)
-        : game.marks;
-      const marks = { ...others, [playerId]: { ...own, [mark.id]: game.phase } };
-      return { ok: true, game: { ...game, marks } };
     }
     case 'setRole': {
       const { playerId } = action;
@@ -403,65 +348,6 @@ function applyGame(
       return { ok: true, game: { ...game, notes } };
     }
   }
-}
-
-/**
- * `playerId` and everyone whose death follows from theirs, among the players `counts` accepts: the
- * other lovers, and the Dire Wolf when its companion dies (not the other way round). See
- * decision 0024.
- */
-function linkedChain(
-  playerId: string,
-  game: GameState,
-  assignments: Record<string, string>,
-  counts: (id: string) => boolean,
-): Set<string> {
-  const has = (id: string, markId: string) =>
-    Object.hasOwn(game.marks, id) && Object.hasOwn(game.marks[id] ?? {}, markId);
-  const players = Object.keys(assignments);
-  const chain = new Set([playerId]);
-  // A set iterates over the members added while it runs, so this walks the whole chain.
-  for (const id of chain) {
-    const next = [
-      ...(has(id, 'lover') ? players.filter((other) => has(other, 'lover')) : []),
-      ...(has(id, 'companion')
-        ? players.filter(
-            (other) => currentRole(other, assignments[other] ?? '', game.newRoles) === 'dire-wolf',
-          )
-        : []),
-    ];
-    for (const other of next) {
-      if (!chain.has(other) && counts(other)) chain.add(other);
-    }
-  }
-  return chain;
-}
-
-/** Every dealt role and every role a power gave someone: the roles whose marks this game offers. */
-function rolesInPlay(
-  assignments: Record<string, string>,
-  newRoles: GameState['newRoles'],
-): string[] {
-  return [...Object.values(assignments), ...Object.values(newRoles).map(({ role }) => role)];
-}
-
-function samePhase(a: Phase, b: Phase): boolean {
-  return a.kind === b.kind && a.number === b.number;
-}
-
-/** The marks with one taken off a player; a player left with none drops out. */
-function withoutMark(
-  marks: GameState['marks'],
-  playerId: string,
-  markId: string,
-): GameState['marks'] {
-  return Object.fromEntries(
-    Object.entries(marks).flatMap(([id, own]) => {
-      if (id !== playerId) return [[id, own]];
-      const kept = Object.fromEntries(Object.entries(own).filter(([mark]) => mark !== markId));
-      return Object.keys(kept).length > 0 ? [[id, kept]] : [];
-    }),
-  );
 }
 
 type SetupAction = Extract<
@@ -518,11 +404,11 @@ function applySetup(setup: RoomSetup, action: SetupAction): SetupResult {
       return { ok: true, setup: { ...setup, wakeOrder: order } };
     }
     case 'setSettings': {
-      const { timerSeconds, soundOn, marksOn } = action.settings;
+      const { timerSeconds, soundOn } = action.settings;
       if (!Number.isInteger(timerSeconds) || timerSeconds < 0 || timerSeconds > TIMER_MAX) {
         return refuse('not-allowed');
       }
-      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn, marksOn } } };
+      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn } } };
     }
   }
 }

@@ -101,7 +101,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'wild-child',
-    name: { vi: 'Đứa trẻ hoang dã', en: 'Wild Child' },
+    name: { vi: 'Con hoang', en: 'Wild Child' },
     rule: {
       vi: 'Đêm 1: chọn một hình mẫu. Chừng nào hình mẫu còn sống, bạn là dân làng, dù họ là vai gì. Khi họ chết, bạn thành sói và thức dậy cùng bầy sói từ đêm sau.',
       en: 'Night 1: choose a role model. While your model is alive you are a villager, whatever their role is. When they die, you become a werewolf and wake with the pack from the next night.',
@@ -305,7 +305,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'fruit-brute',
-    name: { vi: 'Sói mất khẩu vị', en: 'Fruit Brute' },
+    name: { vi: 'Sói chán ăn', en: 'Fruit Brute' },
     rule: {
       vi: 'Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn mất khẩu vị và không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.',
       en: 'You wake with the werewolves. If you are the last werewolf alive, you lose your appetite and can no longer kill, but you still win once every villager is gone.',
@@ -367,7 +367,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'big-bad-wolf',
     name: { vi: 'Sói hung tợn', en: 'Big Bad Wolf' },
     rule: {
-      vi: 'Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Đứa trẻ hoang dã hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.',
+      vi: 'Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Con hoang hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.',
       en: 'Each night, kill with the werewolves. Then, as long as no werewolf has died (a Wild Child or Wolf-hound who turned wolf counts), wake again alone and kill a second player. Never a werewolf.',
     },
     team: 'werewolf',
@@ -821,7 +821,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'little-girl',
-    name: { vi: 'Cô bé', en: 'Little Girl' },
+    name: { vi: 'Ti hí', en: 'Little Girl' },
     rule: {
       vi: 'Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay cho nạn nhân của sói.',
       en: 'While the werewolves are awake, you may peek. If they catch you, you die instead of their victim.',

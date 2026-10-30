@@ -61,8 +61,6 @@ export interface GameState {
   deaths: Record<string, Phase>;
   /** Night number → player id → note */
   notes: Record<number, Record<string, string>>;
-  /** Player id → mark id (see MARKS) → the phase it was marked in */
-  marks: Record<string, Record<string, Phase>>;
   /** Player id → the role they play now instead of their dealt one, and since when */
   newRoles: Record<string, NewRole>;
 }
@@ -77,8 +75,6 @@ export interface RoomSettings {
   /** Narrator's timer length; 0 = no timer */
   timerSeconds: number;
   soundOn: boolean;
-  /** Whether the narrator can mark players and set a new role; off hides both, keeping what is set */
-  marksOn: boolean;
 }
 
 /** The card set the master builds while players gather. Only the master sees it before Ready. */

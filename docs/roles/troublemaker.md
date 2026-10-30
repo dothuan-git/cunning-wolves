@@ -3,8 +3,7 @@
 - **id:** `troublemaker`
 - **Team:** village
 - **Wakes at night:** yes (490), after `raven` and before `insomniac`
-- **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/troublemaker.webp`
 
 ## Rule (vi)
 

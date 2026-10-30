@@ -3,7 +3,7 @@
 - **id:** `dream-wolf`
 - **Team:** werewolf
 - **Wakes at night:** yes (310), after `minion` and before `big-bad-wolf`
-- **Marks:** none yet
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** missing
 
 ## Rule (vi)

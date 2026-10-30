@@ -1,5 +1,7 @@
 # 0025 — The narrator gives a player a new role
 
+Status: accepted; amended by decision 0026: the picker has its own sheet, more roles unlock it, and marks are gone.
+
 ## Context
 
 Several powers give a player another role: the Doppelgänger copies a dead player, the Thief swaps for an extra card, the Devoted Servant takes the voted-out role, the Drunk learns their real role on Night 3, the Apprentice Seer becomes the Seer, the Bailiff passes on a power, the Angel becomes a plain Villager, the Dream Wolf takes a werewolf's place. A mark can't say which role, and the narrator needs that player woken with the new role.

@@ -3,7 +3,7 @@
 - **id:** `angel`
 - **Team:** solo
 - **Wakes at night:** no
-- **Marks:** none
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** missing
 
 ## Rule (vi)

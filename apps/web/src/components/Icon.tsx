@@ -21,7 +21,7 @@ const paths = {
   shuffle: 'M16 4h4v4M4 20 20 4M20 16v4h-4M14 14l6 6M4 4l5 5',
   trash: 'M4 7h16M10 11v6m4-6v6M9 7V4h6v3M6 7l1 13h10l1-13',
   crown: 'M4 18h16M5 15 3 7l5 4 4-6 4 6 5-4-2 8H5Z',
-  tag: 'M3 3h8l10 10-8 8L3 11V3Zm5 5h.01',
+  swap: 'M8 3 4 7l4 4M4 7h16m-4 14 4-4-4-4m4 4H4',
 } as const;
 
 export type IconName = keyof typeof paths;

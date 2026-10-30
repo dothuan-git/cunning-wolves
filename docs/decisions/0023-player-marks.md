@@ -1,5 +1,7 @@
 # 0023 — Player marks, a third faction and wake nights
 
+Status: accepted; player marks are superseded by decision 0026. The third faction and wake nights stand.
+
 ## Context
 
 The narrator page only knew Alive and Dead, and a role was either village or werewolf. Thuan wants every role of the _Werewolves of Millers Hollow_ family, including third-faction and team-changing ones (Cupid, Accursed Wolf-Father, Wild Child, Pied Piper, White Wolf…). Each of those leaves something on a player that the narrator must remember: a title, a used potion, an infection, a lover. Some roles also wake only on Night 1 or every other night.

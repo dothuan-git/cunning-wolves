@@ -3,7 +3,6 @@
 - **id:** `bogeyman`
 - **Team:** solo
 - **Wakes at night:** yes (380), after `sorceress` and before `chupacabra`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

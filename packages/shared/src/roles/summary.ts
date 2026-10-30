@@ -1,5 +1,4 @@
 import type { GameState, Phase } from '../types';
-import { MARKS } from './marks';
 
 export interface JournalPlayer {
   id: string;
@@ -7,15 +6,13 @@ export interface JournalPlayer {
 }
 
 /**
- * One phase of the game log: its notes (nights only), the players who died, marks made, and roles
- * a power gave players.
+ * One phase of the game log: its notes (nights only), the players who died, and roles a power gave
+ * players.
  */
 export interface JournalEntry {
   phase: Phase;
   notes: (JournalPlayer & { text: string })[];
   deaths: JournalPlayer[];
-  /** Mark ids, in MARKS order for each player */
-  marks: (JournalPlayer & { mark: string })[];
   /** Role ids */
   newRoles: (JournalPlayer & { role: string })[];
 }
@@ -48,13 +45,6 @@ export function gameJournal(game: GameState, players: readonly JournalPlayer[]):
             samePhase(game.deaths[player.id], kind, number),
         )
         .map(({ id, name }) => ({ id, name }));
-      const marks = players.flatMap((player) => {
-        const own = Object.hasOwn(game.marks, player.id) ? game.marks[player.id] : undefined;
-        if (!own) return [];
-        return MARKS.filter(
-          (mark) => Object.hasOwn(own, mark.id) && samePhase(own[mark.id], kind, number),
-        ).map((mark) => ({ id: player.id, name: player.name, mark: mark.id }));
-      });
       const newRoles = players.flatMap((player) => {
         const changed = Object.hasOwn(game.newRoles, player.id)
           ? game.newRoles[player.id]
@@ -63,8 +53,8 @@ export function gameJournal(game: GameState, players: readonly JournalPlayer[]):
           ? [{ id: player.id, name: player.name, role: changed.role }]
           : [];
       });
-      if (notes.length > 0 || deaths.length > 0 || marks.length > 0 || newRoles.length > 0)
-        entries.push({ phase: { kind, number }, notes, deaths, marks, newRoles });
+      if (notes.length > 0 || deaths.length > 0 || newRoles.length > 0)
+        entries.push({ phase: { kind, number }, notes, deaths, newRoles });
     }
   }
   return entries;

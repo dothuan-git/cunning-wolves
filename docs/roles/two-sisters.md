@@ -3,7 +3,7 @@
 - **id:** `two-sisters`
 - **Team:** village
 - **Wakes at night:** yes (80), after `the-count` and before `three-brothers`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/two-sisters.webp`
 
 ## Rule (vi)
 

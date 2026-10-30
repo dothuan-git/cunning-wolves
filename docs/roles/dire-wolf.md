@@ -3,7 +3,6 @@
 - **id:** `dire-wolf`
 - **Team:** werewolf
 - **Wakes at night:** yes (280), after `fruit-brute` and before `lone-wolf`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

@@ -3,7 +3,6 @@
 - **id:** `hoodlum`
 - **Team:** solo
 - **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `the-count`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

@@ -111,9 +111,16 @@
 - **Rule book** (branch `feat/rule-book`, 2026-10-29):
   - A Rule book page at `/rules` lists every pool role by faction as thumbnail cards, with a search box (Vietnamese or English name, accents ignored); tapping a card opens its rule. Home opens it from a book icon beside the menu.
 
+- **Role change replaces player marks** (branch `feat/role-change`, 2026-10-30):
+  - Player marks are gone: the tag button and sheet, chips, marks in the summary, and the Player marks setting. Linked deaths are gone too: a death marks only the player tapped.
+  - While a role that changes roles is dealt, every player has a swap button beside the status pill. It opens a sheet with only the **Plays** picker.
+  - A changed player keeps their dealt panel, retitled "Dealt → New" in the new role's faction color; in a shared panel they split off right below it. The summary groups players by the faction they ended in.
+  - Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father and Alpha Wolf now unlock it: the narrator gives the turned player the Werewolf, and their panel turns wolf red.
+  - See decision 0026.
+
 ## Next
 
-1. **Roles that need more than a mark** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
+1. **Roles the app can't run yet** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
 2. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
 3. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
 

@@ -3,8 +3,7 @@
 - **id:** `pied-piper`
 - **Team:** solo
 - **Wakes at night:** yes (470), after `gypsy` and before `raven`
-- **Marks:** `charmed` (on each charmed player)
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/pied-piper.webp`
 
 ## Rule (vi)
 
@@ -16,4 +15,4 @@ Each night, charm two players, never yourself. All charmed players wake together
 
 ## Narrator notes
 
-Each night the Piper points at two players they have not charmed; mark both "Charmed". Wake the charmed players together after the Piper so they see each other. The Witch cannot cure the charm. The Piper wins when every living player is charmed.
+Each night the Piper points at two players they have not charmed; note both. Wake the charmed players together after the Piper so they see each other. The Witch cannot cure the charm. The Piper wins when every living player is charmed.

@@ -2,8 +2,6 @@ import {
   gameJournal,
   gameRoles,
   currentRole,
-  MARKS,
-  marksForPlayer,
   offersNewRoles,
   ROLE_POOL,
   roomRoles,
@@ -31,7 +29,8 @@ import { PlayerLobbyScreen } from '../player-lobby/PlayerLobbyScreen';
 import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
 import { SummaryScreen } from '../summary/SummaryScreen';
-import type { GroupPlayerItem, RoleChoices, RoleGroupItem } from '../types';
+import { roleGroups } from '../narrator/groups';
+import type { RoleChoices, RoleGroupItem } from '../types';
 
 function goHome() {
   navigate(paths.home);
@@ -174,11 +173,10 @@ const FIRST_NIGHT: GameState = {
   phase: { kind: 'night', number: 1 },
   deaths: {},
   notes: {},
-  marks: {},
   newRoles: {},
 };
 
-/** The narrator page: the room keeps the deal, phases, deaths, notes and marks. */
+/** The narrator page: the room keeps the deal, phases, deaths, notes and new roles. */
 function NarratorRoom({
   view,
   reconnecting,
@@ -196,58 +194,22 @@ function NarratorRoom({
   const groups = useMemo<RoleGroupItem[]>(() => {
     const roles = roomRoles(setup);
     const picked = gameRoles(setup).map(({ role }) => role);
-    const playing = (assignment: Assignment) =>
-      currentRole(assignment.playerId, assignment.roleId, newRoles);
-    // A role a power gave someone that nobody was dealt (the Thief's extra card) gets its own panel.
-    const extra = roles.filter(
-      (role) =>
-        !setup.picks.includes(role.id) &&
-        assignments.some((assignment) => playing(assignment) === role.id),
+    const waking = wakingOrder(roles, setup.picks, setup.wakeOrder);
+    const resting = picked.filter((role) => role.defaultWakeOrder === null);
+    // Players stay under their dealt role; one who now plays another splits off below it.
+    return [...waking, ...resting].flatMap((role) =>
+      roleGroups(
+        role,
+        players.flatMap((player) => {
+          const assignment = assignments.find((known) => known.playerId === player.id);
+          if (assignment?.roleId !== role.id) return [];
+          const id = currentRole(player.id, role.id, newRoles);
+          const playing = roles.find((known) => known.id === id) ?? role;
+          return [{ player: { id: player.id, name: player.name }, playing }];
+        }),
+      ),
     );
-    const waking = wakingOrder(
-      roles,
-      [...setup.picks, ...extra.map((role) => role.id)],
-      setup.wakeOrder,
-    );
-    const resting = [...picked, ...extra].filter((role) => role.defaultWakeOrder === null);
-    return [...waking, ...resting].map((role) => ({
-      role,
-      players: players.flatMap((player): GroupPlayerItem[] => {
-        const assignment = assignments.find((known) => known.playerId === player.id);
-        if (!assignment || playing(assignment) !== role.id) return [];
-        const dealt =
-          assignment.roleId === role.id
-            ? undefined
-            : roles.find((known) => known.id === assignment.roleId);
-        return [
-          dealt
-            ? { id: player.id, name: player.name, dealt }
-            : { id: player.id, name: player.name },
-        ];
-      }),
-    }));
   }, [setup, assignments, players, newRoles]);
-  const { marks } = game;
-  const markOptions = useMemo(() => {
-    // The roles a power gave players offer their marks too, as the room allows.
-    const inPlay = [
-      ...assignments.map(({ roleId }) => roleId),
-      ...Object.values(newRoles).map(({ role }) => role),
-    ];
-    return Object.fromEntries(
-      assignments.map(({ playerId, roleId }) => {
-        const offered = marksForPlayer(roleId, currentRole(playerId, roleId, newRoles), inPlay);
-        const own = Object.hasOwn(marks, playerId) ? marks[playerId] : undefined;
-        // A mark the player carries stays in the sheet so it can come off after a role change.
-        return [
-          playerId,
-          MARKS.filter(
-            (mark) => offered.includes(mark) || (own !== undefined && Object.hasOwn(own, mark.id)),
-          ),
-        ];
-      }),
-    );
-  }, [assignments, newRoles, marks]);
   const roleChoices = useMemo<RoleChoices | undefined>(() => {
     if (!offersNewRoles(assignments.map(({ roleId }) => roleId))) return undefined;
     const inGame = gameRoles(setup).map(({ role }) => role);
@@ -262,14 +224,11 @@ function NarratorRoom({
       phase={game.phase}
       notes={game.notes}
       deaths={game.deaths}
-      marks={game.marks}
-      markOptions={markOptions}
       roleChoices={roleChoices}
       settings={setup.settings}
       reconnecting={reconnecting}
       onPlayerNote={(night, playerId, text) => send({ type: 'setNote', night, playerId, text })}
       onTogglePlayer={(playerId) => send({ type: 'toggleDeath', playerId })}
-      onToggleMark={(playerId, mark) => send({ type: 'toggleMark', playerId, mark })}
       onSetRole={(playerId, roleId) => send({ type: 'setRole', playerId, roleId })}
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
@@ -308,14 +267,12 @@ function SummaryRoom({
     const roleId = assignments.find((assignment) => assignment.playerId === player.id)?.roleId;
     const role = findRole(roleId);
     if (!role || roleId === undefined) return [];
-    const own = Object.hasOwn(game.marks, player.id) ? game.marks[player.id] : undefined;
-    const marks = MARKS.filter((mark) => own !== undefined && Object.hasOwn(own, mark.id));
     const playing = currentRole(player.id, roleId, game.newRoles);
     const newRole = playing === roleId ? undefined : findRole(playing);
     return [
       newRole
-        ? { id: player.id, name: player.name, role, newRole, marks }
-        : { id: player.id, name: player.name, role, marks },
+        ? { id: player.id, name: player.name, role, newRole }
+        : { id: player.id, name: player.name, role },
     ];
   });
   const journal = gameJournal(game, players).map((entry) => ({

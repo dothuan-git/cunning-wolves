@@ -3,8 +3,8 @@
 - **id:** `thief`
 - **Team:** village
 - **Wakes at night:** yes (10, Night 1 only), first and before `cupid`
-- **Marks:** none yet
-- **Card art:** missing
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
+- **Card art:** `apps/web/src/assets/cards/thief.webp`
 
 ## Rule (vi)
 

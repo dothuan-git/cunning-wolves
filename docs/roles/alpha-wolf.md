@@ -3,8 +3,8 @@
 - **id:** `alpha-wolf`
 - **Team:** werewolf
 - **Wakes at night:** yes (340), after `cursed-wolf-father` and before `mighty-wolf-mother`
-- **Marks:** none yet
-- **Card art:** missing
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
+- **Card art:** `apps/web/src/assets/cards/alpha-wolf.webp`
 
 ## Rule (vi)
 

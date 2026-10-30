@@ -3,8 +3,7 @@
 - **id:** `vampire`
 - **Team:** solo
 - **Wakes at night:** yes (420), after `pyromaniac` and before `cult-leader`
-- **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/vampire.webp`
 
 ## Rule (vi)
 

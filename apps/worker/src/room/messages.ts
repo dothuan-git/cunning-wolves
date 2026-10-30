@@ -38,11 +38,8 @@ function parseSettings(value: unknown): RoomSettings | null {
   if (!isObject(value)) return null;
   const timerSeconds = field(value, 'timerSeconds');
   const soundOn = field(value, 'soundOn');
-  const marksOn = field(value, 'marksOn');
-  return typeof timerSeconds === 'number' &&
-    typeof soundOn === 'boolean' &&
-    typeof marksOn === 'boolean'
-    ? { timerSeconds, soundOn, marksOn }
+  return typeof timerSeconds === 'number' && typeof soundOn === 'boolean'
+    ? { timerSeconds, soundOn }
     : null;
 }
 
@@ -92,13 +89,6 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
     case 'toggleDeath': {
       const playerId = field(data, 'playerId');
       return typeof playerId === 'string' ? { type, playerId } : null;
-    }
-    case 'toggleMark': {
-      const playerId = field(data, 'playerId');
-      const mark = field(data, 'mark');
-      return typeof playerId === 'string' && typeof mark === 'string'
-        ? { type, playerId, mark }
-        : null;
     }
     case 'setRole': {
       const playerId = field(data, 'playerId');

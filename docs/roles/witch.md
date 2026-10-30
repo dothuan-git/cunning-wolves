@@ -3,7 +3,7 @@
 - **id:** `witch`
 - **Team:** village
 - **Wakes at night:** yes (440), after `cult-leader` and before `magician`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/witch.webp`
 
 ## Rule (vi)
 
