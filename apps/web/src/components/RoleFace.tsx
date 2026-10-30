@@ -9,15 +9,18 @@ import { FACTION_TEXT } from '../design/faction';
 const LOOK = {
   detailed: {
     face: 'p-5',
-    name: 'top-5 right-5 text-title',
+    name: 'text-title',
     chip: 'top-5 left-5 px-2',
     art: '',
+    // The gap between the art and the name.
+    row: 'gap-0',
   },
   thumbnail: {
     face: 'thumbnail-face',
     name: 'thumbnail-name',
     chip: 'thumbnail-chip px-1.5 py-0.5 leading-none',
     art: 'thumbnail-art',
+    row: 'thumbnail-row',
   },
 } as const;
 
@@ -47,9 +50,6 @@ export function RoleFace({
   const team = FACTION_TEXT[role.team];
   return (
     <div className={`flex h-full flex-col ${look.face}`}>
-      <Name className={`role-title absolute z-10 font-display font-semibold ${look.name} ${team}`}>
-        {role.name[locale]}
-      </Name>
       {count !== undefined && (
         <span
           key={count}
@@ -59,8 +59,17 @@ export function RoleFace({
           <span className="sr-only">{t('rules.copies', { count })}</span>
         </span>
       )}
-      <div className={`min-h-0 flex-1 ${look.art}`}>
-        <RoleArtwork file={role.image} />
+      {/* The name and the art share one row, so they can never overlap: the name keeps its own
+          column on the right (first in reading order) and the art fills the rest. */}
+      <div className={`flex min-h-0 flex-1 flex-row-reverse ${look.row}`}>
+        <Name
+          className={`role-title shrink-0 self-start font-display font-semibold ${look.name} ${team}`}
+        >
+          {role.name[locale]}
+        </Name>
+        <div className={`min-h-0 min-w-0 flex-1 ${look.art}`}>
+          <RoleArtwork file={role.image} />
+        </div>
       </div>
       {!thumbnail &&
         (rule ?? <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>)}
