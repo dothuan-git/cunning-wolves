@@ -2,8 +2,6 @@ import {
   gameJournal,
   gameRoles,
   currentRole,
-  MARKS,
-  marksForPlayer,
   offersNewRoles,
   ROLE_POOL,
   roomRoles,
@@ -174,11 +172,10 @@ const FIRST_NIGHT: GameState = {
   phase: { kind: 'night', number: 1 },
   deaths: {},
   notes: {},
-  marks: {},
   newRoles: {},
 };
 
-/** The narrator page: the room keeps the deal, phases, deaths, notes and marks. */
+/** The narrator page: the room keeps the deal, phases, deaths, notes and new roles. */
 function NarratorRoom({
   view,
   reconnecting,
@@ -227,27 +224,6 @@ function NarratorRoom({
       }),
     }));
   }, [setup, assignments, players, newRoles]);
-  const { marks } = game;
-  const markOptions = useMemo(() => {
-    // The roles a power gave players offer their marks too, as the room allows.
-    const inPlay = [
-      ...assignments.map(({ roleId }) => roleId),
-      ...Object.values(newRoles).map(({ role }) => role),
-    ];
-    return Object.fromEntries(
-      assignments.map(({ playerId, roleId }) => {
-        const offered = marksForPlayer(roleId, currentRole(playerId, roleId, newRoles), inPlay);
-        const own = Object.hasOwn(marks, playerId) ? marks[playerId] : undefined;
-        // A mark the player carries stays in the sheet so it can come off after a role change.
-        return [
-          playerId,
-          MARKS.filter(
-            (mark) => offered.includes(mark) || (own !== undefined && Object.hasOwn(own, mark.id)),
-          ),
-        ];
-      }),
-    );
-  }, [assignments, newRoles, marks]);
   const roleChoices = useMemo<RoleChoices | undefined>(() => {
     if (!offersNewRoles(assignments.map(({ roleId }) => roleId))) return undefined;
     const inGame = gameRoles(setup).map(({ role }) => role);
@@ -262,14 +238,11 @@ function NarratorRoom({
       phase={game.phase}
       notes={game.notes}
       deaths={game.deaths}
-      marks={game.marks}
-      markOptions={markOptions}
       roleChoices={roleChoices}
       settings={setup.settings}
       reconnecting={reconnecting}
       onPlayerNote={(night, playerId, text) => send({ type: 'setNote', night, playerId, text })}
       onTogglePlayer={(playerId) => send({ type: 'toggleDeath', playerId })}
-      onToggleMark={(playerId, mark) => send({ type: 'toggleMark', playerId, mark })}
       onSetRole={(playerId, roleId) => send({ type: 'setRole', playerId, roleId })}
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
@@ -308,14 +281,12 @@ function SummaryRoom({
     const roleId = assignments.find((assignment) => assignment.playerId === player.id)?.roleId;
     const role = findRole(roleId);
     if (!role || roleId === undefined) return [];
-    const own = Object.hasOwn(game.marks, player.id) ? game.marks[player.id] : undefined;
-    const marks = MARKS.filter((mark) => own !== undefined && Object.hasOwn(own, mark.id));
     const playing = currentRole(player.id, roleId, game.newRoles);
     const newRole = playing === roleId ? undefined : findRole(playing);
     return [
       newRole
-        ? { id: player.id, name: player.name, role, newRole, marks }
-        : { id: player.id, name: player.name, role, marks },
+        ? { id: player.id, name: player.name, role, newRole }
+        : { id: player.id, name: player.name, role },
     ];
   });
   const journal = gameJournal(game, players).map((entry) => ({

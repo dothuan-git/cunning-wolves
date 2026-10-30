@@ -19,24 +19,6 @@
   /* Roles that win alone: the purple of the third faction's ribbon, dark enough to read on its wash. */
   --color-solo: #5b2f7a;
   --color-solo-wash: #ebe2f0;
-  /* Mark inks: one fixed ink per mark, on its chips only (design/markTone.ts). Each pairs a dark
-     ink with its pale wash, at the faction washes' lightness but never their hue. */
-  --color-mark-rose: #8a2a52;
-  --color-mark-rose-wash: #f2dde6;
-  --color-mark-rust: #8a3a12;
-  --color-mark-rust-wash: #f2dfcf;
-  --color-mark-ochre: #6b4f06;
-  --color-mark-ochre-wash: #efe4c2;
-  --color-mark-moss: #3b5a1c;
-  --color-mark-moss-wash: #e0e9d1;
-  --color-mark-teal: #1b5a56;
-  --color-mark-teal-wash: #d4eae6;
-  --color-mark-sea: #1c4e6a;
-  --color-mark-sea-wash: #d5e7ee;
-  --color-mark-slate: #39424d;
-  --color-mark-slate-wash: #e3e5e7;
-  --color-mark-umber: #5a3e2b;
-  --color-mark-umber-wash: #e8ddd3;
   /* "You are here and connected": the live dot and the glow around your own tile. */
   --color-live: #2a8f55;
   --color-danger: #a3321f;

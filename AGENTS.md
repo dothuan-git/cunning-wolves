@@ -47,7 +47,7 @@ React 19, Vite 8, Tailwind CSS 4, i18next · Cloudflare Workers + Durable Object
 - Never send another player's role to a player client. The worker builds each viewer's state (master or player) before every send, following the visibility table in `docs/game-rules.md`. Never send full state and filter on the client.
 - Only the room master's actions change room state, and every change goes through the Room state machine.
 - Message and API types live in `packages/shared` and are imported by both web and worker; never redefine them locally.
-- The app records what the narrator marks. It never resolves abilities or decides winners, with one exception: a linked death (the other lover, a Dire Wolf whose companion dies) is marked together with the first (decision 0024).
+- The app records what the narrator marks. It never resolves abilities or decides winners; a death marks only the player tapped (decision 0026).
 
 ### i18n
 

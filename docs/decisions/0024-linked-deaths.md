@@ -1,5 +1,7 @@
 # 0024 — Linked deaths are marked together
 
+Status: superseded by decision 0026: a death marks only the player tapped.
+
 ## Context
 
 Some deaths always bring another: when a lover dies, the other lover dies too, and the Dire Wolf dies when its companion dies. The narrator had to remember to tap both players. Thuan chose to have the app mark the second death itself, although the app otherwise never resolves an ability.

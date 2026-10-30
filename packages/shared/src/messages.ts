@@ -52,8 +52,6 @@ export type ClientMessage =
   | { type: 'endPhase'; phase: Phase }
   /** Marks a player dead in the current phase, or undoes it */
   | { type: 'toggleDeath'; playerId: string }
-  /** Puts a mark (see MARKS) on a player in the current phase, or takes it off */
-  | { type: 'toggleMark'; playerId: string; mark: string }
   /** The role a player plays now; null (or the dealt role) goes back to the dealt one */
   | { type: 'setRole'; playerId: string; roleId: string | null }
   /** Empty text removes the note */
@@ -94,7 +92,7 @@ export interface MasterView {
   pin: string | null;
   /** Who holds which role; empty until the game starts */
   assignments: Assignment[];
-  /** Phases, deaths, notes and marks; null until the game starts */
+  /** Phases, deaths, notes and new roles; null until the game starts */
   game: GameState | null;
 }
 
@@ -121,7 +119,7 @@ export interface PlayerView {
   roles: GameRole[];
   /** This player's own role, once the game starts; never anyone else's */
   card: RoomRole | null;
-  /** Every player's role and the narrator's marks: only once the game is finished */
+  /** Every player's role and the narrator's game: only once the game is finished */
   reveal: Reveal | null;
 }
 

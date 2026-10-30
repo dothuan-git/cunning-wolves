@@ -111,14 +111,13 @@ function roomSetup(value: unknown): RoomSetup | null {
     if (typeof rule !== 'string') return null;
     ruleEdits[roleId] = rule;
   }
-  const { timerSeconds, soundOn, marksOn } = value.settings;
+  const { timerSeconds, soundOn } = value.settings;
   if (
     !picks ||
     !customRoles ||
     !wakeOrder ||
     typeof timerSeconds !== 'number' ||
-    typeof soundOn !== 'boolean' ||
-    typeof marksOn !== 'boolean'
+    typeof soundOn !== 'boolean'
   ) {
     return null;
   }
@@ -127,7 +126,7 @@ function roomSetup(value: unknown): RoomSetup | null {
     ruleEdits,
     customRoles,
     wakeOrder,
-    settings: { timerSeconds, soundOn, marksOn },
+    settings: { timerSeconds, soundOn },
   };
 }
 
@@ -181,7 +180,6 @@ function gameState(value: unknown): GameState | null {
     !isObject(value) ||
     !isObject(value.deaths) ||
     !isObject(value.notes) ||
-    !isObject(value.marks) ||
     !isObject(value.newRoles)
   ) {
     return null;
@@ -204,17 +202,6 @@ function gameState(value: unknown): GameState | null {
     }
     notes[Number(night)] = entries;
   }
-  const marks: Record<string, Record<string, Phase>> = {};
-  for (const [playerId, own] of Object.entries(value.marks)) {
-    if (!isObject(own)) return null;
-    const entries: Record<string, Phase> = {};
-    for (const [mark, at] of Object.entries(own)) {
-      const marked = phase(at);
-      if (!marked) return null;
-      entries[mark] = marked;
-    }
-    marks[playerId] = entries;
-  }
   const newRoles: GameState['newRoles'] = {};
   for (const [playerId, changed] of Object.entries(value.newRoles)) {
     if (!isObject(changed) || typeof changed.role !== 'string') return null;
@@ -222,7 +209,7 @@ function gameState(value: unknown): GameState | null {
     if (!since) return null;
     newRoles[playerId] = { role: changed.role, phase: since };
   }
-  return { phase: current, deaths, notes, marks, newRoles };
+  return { phase: current, deaths, notes, newRoles };
 }
 
 function reveal(value: unknown): Reveal | null {

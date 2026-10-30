@@ -1,4 +1,4 @@
-import { MARKS, type PoolRole } from '@werewolf/shared';
+import type { PoolRole } from '@werewolf/shared';
 import type { RevealedPlayerItem, RoleGroupItem } from '../../screens/types';
 
 const exampleRule = {
@@ -108,23 +108,14 @@ export const manyRoles: readonly PoolRole[] = [
 
 // Synthetic design fixtures only. The production ROLE_POOL remains untouched.
 export const exampleRoles = [seer, wolf, witch, priest, villager];
-const marks = (...ids: string[]) => MARKS.filter((mark) => ids.includes(mark.id));
 export const examplePlayers: readonly RevealedPlayerItem[] = [
-  { id: 'linh', name: 'Linh', role: seer, marks: marks('blessed') },
-  { id: 'minh', name: 'Minh', role: wolf, marks: [] },
-  { id: 'an', name: 'An', role: wolf, marks: [] },
-  { id: 'ha', name: 'Hà', role: witch, marks: marks('heal-used') },
-  { id: 'huy', name: 'Huy', role: villager, marks: [] },
-  { id: 'mai', name: 'Mai', role: priest, marks: [] },
+  { id: 'linh', name: 'Linh', role: seer },
+  { id: 'minh', name: 'Minh', role: wolf },
+  { id: 'an', name: 'An', role: wolf },
+  { id: 'ha', name: 'Hà', role: witch },
+  { id: 'huy', name: 'Huy', role: villager },
+  { id: 'mai', name: 'Mai', role: priest },
 ];
-/** Example marks while playing: the Priest blessed Linh, and Hà has used her heal. */
-export const exampleMarks: Record<
-  string,
-  Record<string, { kind: 'night' | 'morning'; number: number }>
-> = {
-  linh: { blessed: { kind: 'morning', number: 1 } },
-  ha: { 'heal-used': { kind: 'night', number: 1 } },
-};
 // Every role, so players whose role never wakes can still be marked dead.
 export const exampleGroups: readonly RoleGroupItem[] = exampleRoles.map((role) => ({
   role,

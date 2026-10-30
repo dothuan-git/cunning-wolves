@@ -1,6 +1,5 @@
 import {
   DEFAULT_SETTINGS,
-  marksFor,
   nextPhase,
   ROLE_POOL,
   wakingOrder,
@@ -22,15 +21,7 @@ import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
 import type { Phase, SeatedPlayerItem } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
-import {
-  exampleGroups,
-  exampleMarks,
-  examplePlayers,
-  exampleRoles,
-  manyRoles,
-  seer,
-  villager,
-} from './fixtures';
+import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
 import type { PreviewState, ScreenId } from './screens';
 
@@ -79,11 +70,11 @@ function PreviewScene({
     if (state === 'morning') sample.linh = { kind: 'night', number: 2 };
     return sample;
   });
-  const [marks, setMarks] = useState(exampleMarks);
+  // Player id → the role the narrator gave them, as a role-changing card would allow.
+  const [newRoles, setNewRoles] = useState<Record<string, string>>({});
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
-  // Marks on, so the narrator scene shows them; a real room starts with them off.
-  const [narratorSettings, setNarratorSettings] = useState({ ...DEFAULT_SETTINGS, marksOn: true });
+  const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
   // A full table: the sample players and twelve more.
@@ -107,7 +98,7 @@ function PreviewScene({
           index === 0 ? { ...player, name: 'Nguyễn Hoàng Minh Phương' } : player,
         )
       : state === 'many'
-        ? [...examplePlayers, ...crowd.map((guest) => ({ ...guest, role: villager, marks: [] }))]
+        ? [...examplePlayers, ...crowd.map((guest) => ({ ...guest, role: villager }))]
         : examplePlayers;
   switch (screen) {
     case 'home':
@@ -263,7 +254,14 @@ function PreviewScene({
     case 'narrator':
       return (
         <NarratorScreen
-          groups={[...exampleGroups]
+          groups={[
+            ...exampleGroups,
+            ...ROLE_POOL.filter(
+              (role) =>
+                Object.values(newRoles).includes(role.id) &&
+                !exampleGroups.some((group) => group.role.id === role.id),
+            ).map((role) => ({ role, players: [] })),
+          ]
             .sort((a, b) => {
               const place = (id: string) => {
                 const index = wakeOrder.indexOf(id);
@@ -273,9 +271,13 @@ function PreviewScene({
             })
             .map((group) => ({
               ...group,
-              players: group.players.map(
-                (player) => players.find((item) => item.id === player.id) ?? player,
-              ),
+              players: exampleGroups
+                .flatMap((dealt) => dealt.players.map((player) => ({ player, dealt: dealt.role })))
+                .filter(({ player, dealt }) => (newRoles[player.id] ?? dealt.id) === group.role.id)
+                .map(({ player, dealt }) => {
+                  const shown = players.find((item) => item.id === player.id) ?? player;
+                  return dealt.id === group.role.id ? shown : { ...shown, dealt };
+                }),
             }))}
           phase={phase}
           notes={Object.fromEntries(
@@ -285,24 +287,18 @@ function PreviewScene({
             ]),
           )}
           deaths={deaths}
-          marks={marks}
-          markOptions={Object.fromEntries(
-            examplePlayers.map((player) => [
-              player.id,
-              marksFor(
-                player.role.id,
-                examplePlayers.map((other) => other.role.id),
-              ),
-            ]),
-          )}
-          onToggleMark={(id, mark) => {
-            setMarks((current) => {
-              const own = current[id] ?? {};
-              const kept = Object.fromEntries(Object.entries(own).filter(([key]) => key !== mark));
-              return { ...current, [id]: mark in own ? kept : { ...own, [mark]: phase } };
+          roleChoices={{
+            inGame: exampleRoles,
+            others: ROLE_POOL.filter((role) => !exampleRoles.some((own) => own.id === role.id)),
+          }}
+          onSetRole={(id, roleId) => {
+            setNewRoles((current) => {
+              const others = Object.fromEntries(
+                Object.entries(current).filter(([key]) => key !== id),
+              );
+              return roleId === null ? others : { ...others, [id]: roleId };
             });
           }}
-          onSetRole={() => undefined}
           settings={narratorSettings}
           onPlayerNote={(night, id, text) => {
             setNoteEdits((current) => ({
@@ -356,14 +352,12 @@ function PreviewScene({
                       { id: 'ha', name: 'Hà', text: t('preview.noteWitch') },
                     ],
                     deaths: [],
-                    marks: [{ id: 'ha', name: 'Hà', mark: 'heal-used' }],
                     newRoles: [],
                   },
                   {
                     phase: { kind: 'morning', number: 1 },
                     notes: [],
                     deaths: [{ id: 'huy', name: 'Huy' }],
-                    marks: [{ id: 'linh', name: 'Linh', mark: 'blessed' }],
                     newRoles: [],
                   },
                   {
@@ -373,7 +367,6 @@ function PreviewScene({
                       { id: 'minh', name: 'Minh', text: t('preview.noteWolves2') },
                     ],
                     deaths: [{ id: 'linh', name: 'Linh' }],
-                    marks: [],
                     newRoles: [],
                   },
                 ]

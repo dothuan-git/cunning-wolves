@@ -2,7 +2,6 @@ import {
   NOTE_MAX,
   TIMER_MAX,
   wakesOnNight,
-  type MarkDef,
   type PoolRole,
   type RoomSettings,
 } from '@werewolf/shared';
@@ -13,7 +12,6 @@ import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { DetailedCard } from '../../components/DetailedCard';
 import { HoldButton } from '../../components/HoldButton';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
-import { MarkChips } from '../../components/MarkChips';
 import { PlayerStatusControl } from '../../components/PlayerStatusControl';
 import { Icon } from '../../components/Icon';
 import { Modal } from '../../components/Modal';
@@ -31,7 +29,7 @@ import { playChime, unlockSound } from '../../sound/chime';
 import type { GroupPlayerItem, Phase, RoleChoices, RoleGroupItem } from '../types';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
-import { MarksButton, MarksSheet } from './PlayerMarks';
+import { RoleChangeButton, RoleSheet } from './RoleChange';
 import { playerTimeline } from './phase';
 
 // As long as the `row-out` animation in index.css.
@@ -42,14 +40,11 @@ export function NarratorScreen({
   phase,
   notes,
   deaths,
-  marks,
-  markOptions,
   roleChoices,
   settings,
   reconnecting = false,
   onPlayerNote,
   onTogglePlayer,
-  onToggleMark,
   onSetRole,
   onEndPhase,
   onWakeOrder,
@@ -65,10 +60,6 @@ export function NarratorScreen({
   notes: Readonly<Record<number, Readonly<Record<string, string>>>>;
   /** Player id → the phase the narrator marked them dead in. */
   deaths: Readonly<Record<string, Phase>>;
-  /** Player id → mark id → the phase it was marked in. */
-  marks: Readonly<Record<string, Readonly<Record<string, Phase>>>>;
-  /** Player id → the marks that player may carry in this game, in display order. */
-  markOptions: Readonly<Record<string, readonly MarkDef[]>>;
   /** The roles a power can give a player; left out when no dealt role changes roles */
   roleChoices?: RoleChoices;
   settings: RoomSettings;
@@ -77,7 +68,6 @@ export function NarratorScreen({
   /** Sends a note; returns false when it could not be sent, so it is tried again later */
   onPlayerNote: SaveNote;
   onTogglePlayer: (playerId: string) => void;
-  onToggleMark: (playerId: string, markId: string) => void;
   /** The role a player plays now; null goes back to the dealt one */
   onSetRole: (playerId: string, roleId: string | null) => void;
   onEndPhase: () => void;
@@ -94,8 +84,8 @@ export function NarratorScreen({
   const [showTools, setShowTools] = useState(false);
   const [timerDraft, setTimerDraft] = useState('');
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
-  // The player whose marks sheet is open.
-  const [marking, setMarking] = useState<string | null>(null);
+  // The player whose role sheet is open.
+  const [changing, setChanging] = useState<string | null>(null);
   // The role whose detailed card is open.
   const [viewing, setViewing] = useState<PoolRole | null>(null);
 
@@ -163,7 +153,7 @@ export function NarratorScreen({
   // A role whose every player now plays another one has nobody left to wake.
   const held = groups.filter((group) => group.players.length > 0);
   const tonightGroups = held.filter((group) => wakesOnNight(group.role, phase.number));
-  // Roles that don't wake tonight still need a place in the list so they can be marked.
+  // Roles that don't wake tonight still need a place in the list so their players can be marked dead.
   const restingGroups = held.filter((group) => !wakesOnNight(group.role, phase.number));
   const everyone = groups.flatMap((group) => group.players);
   const alive = everyone.filter((player) => !(player.id in deaths)).length;
@@ -172,15 +162,13 @@ export function NarratorScreen({
   const packGroup =
     tonightGroups.find((group) => group.role.id === 'werewolf') ??
     tonightGroups.find((group) => group.role.team === 'werewolf');
-  const pack = packGroup ? packExtras(groups, marks) : [];
-  const marksOf = (playerId: string): Readonly<Record<string, Phase>> =>
-    (Object.hasOwn(marks, playerId) ? marks[playerId] : undefined) ?? {};
+  const pack = packGroup ? packExtras(groups) : [];
   const isNight = phase.kind === 'night';
-  const markingGroup =
-    marking === null
+  const changingGroup =
+    changing === null
       ? undefined
-      : groups.find((group) => group.players.some((player) => player.id === marking));
-  const markingDealt = markingGroup?.players.find((player) => player.id === marking)?.dealt;
+      : groups.find((group) => group.players.some((player) => player.id === changing));
+  const changingPlayer = changingGroup?.players.find((player) => player.id === changing);
   // A death just undone keeps its row a moment, so it slides out instead of vanishing.
   const shownDeaths = useLeaving(
     Object.entries(deaths).map(([id, at]) => ({ id, at })),
@@ -211,10 +199,6 @@ export function NarratorScreen({
       const text = noteText(night, player.id);
       if (text !== '') playerNotes[night] = text;
     }
-    // Marks off hides the tag button and chips; what was marked stays in the room.
-    const options = settings.marksOn ? (markOptions[player.id] ?? []) : [];
-    const own = marksOf(player.id);
-    const carried = options.filter((mark) => Object.hasOwn(own, mark.id));
     const entries = playerTimeline({
       notes: playerNotes,
       death,
@@ -237,13 +221,13 @@ export function NarratorScreen({
             large
           />
           <div className="flex shrink-0 items-center">
-            {options.length > 0 && (
-              <MarksButton
+            {roleChoices && (
+              <RoleChangeButton
                 name={player.name}
-                count={carried.length}
+                changed={player.dealt !== undefined}
                 disabled={reconnecting}
                 onOpen={() => {
-                  setMarking(player.id);
+                  setChanging(player.id);
                 }}
               />
             )}
@@ -257,7 +241,6 @@ export function NarratorScreen({
             />
           </div>
         </div>
-        <MarkChips marks={carried} fold className="pb-1.5" />
         {entries.length > 0 && (
           // The top padding keeps the first note's overlap off the status pill above it.
           <ol aria-label={t('narrator.history', { name: player.name })} className="pt-1">
@@ -492,41 +475,18 @@ export function NarratorScreen({
           }}
         />
       )}
-      {marking !== null && settings.marksOn && (
-        <MarksSheet
-          name={everyone.find((player) => player.id === marking)?.name ?? ''}
+      {roleChoices && changingGroup && changingPlayer && (
+        <RoleSheet
+          name={changingPlayer.name}
+          choices={roleChoices}
+          current={changingGroup.role}
+          dealt={changingPlayer.dealt ?? changingGroup.role}
           disabled={reconnecting}
-          role={
-            roleChoices && markingGroup
-              ? {
-                  ...roleChoices,
-                  current: markingGroup.role,
-                  dealt: markingDealt ?? markingGroup.role,
-                  onChange: (roleId) => {
-                    onSetRole(marking, roleId);
-                  },
-                }
-              : undefined
-          }
-          options={(markOptions[marking] ?? []).map((mark) => {
-            const own = marksOf(marking);
-            const since = Object.hasOwn(own, mark.id) ? own[mark.id] : undefined;
-            const holder = mark.single
-              ? everyone.find(
-                  (player) => player.id !== marking && Object.hasOwn(marksOf(player.id), mark.id),
-                )
-              : undefined;
-            return {
-              mark,
-              since: since && phaseLabel(since),
-              heldBy: holder?.name,
-            };
-          })}
-          onToggle={(markId) => {
-            onToggleMark(marking, markId);
+          onChange={(roleId) => {
+            onSetRole(changingPlayer.id, roleId);
           }}
           onClose={() => {
-            setMarking(null);
+            setChanging(null);
           }}
         />
       )}
@@ -590,14 +550,6 @@ export function NarratorScreen({
                 onChange={(event) => {
                   if (event.target.checked) unlockSound();
                   onSettings({ ...settings, soundOn: event.target.checked });
-                }}
-              />
-              <SwitchRow
-                label={t('setup.marks')}
-                checked={settings.marksOn}
-                disabled={reconnecting}
-                onChange={(event) => {
-                  onSettings({ ...settings, marksOn: event.target.checked });
                 }}
               />
             </div>

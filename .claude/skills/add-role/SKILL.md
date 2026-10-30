@@ -13,10 +13,10 @@ Ask the user for anything missing. Never invent rule text or translations.
 - team: `village`, `werewolf` or `solo` (wins on its own)
 - name and rule in Vietnamese **and** English
 - does it wake at night, and if so between which existing roles, and on which nights (every night, Night 1 only, or even nights)
-- what the narrator must remember about players because of it (a power used up, a title, an effect on someone): these become marks
+- does its power give a player another role, or turn a player into a wolf
 - card art: a file, or none yet
 
-A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`, and a mark that moves a player to the wolves has `joinsPack: true` (both in `marks.ts`). A role whose marks need a pointer from one player to another needs that mechanism first; see decision 0023. A role whose power gives a player another role goes in `ROLE_CHANGERS` (`marks.ts`, decision 0025); a death that always follows another goes in `linkedChain` in the worker's `machine.ts` (decision 0024).
+A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`. A role whose power gives a player another role, or turns a player into a wolf, goes in `ROLE_CHANGERS` (both in `packages/shared/src/roles/newRoles.ts`, decisions 0025 and 0026). Anything else the narrator must remember goes in the night's note; the app has no player marks and never links deaths.
 
 ## 2. Role doc
 
@@ -32,9 +32,9 @@ Add the entry to `packages/shared/src/roles/pool.ts`:
 - `image: '<id>.webp'`.
 - Keep the array sorted by `defaultWakeOrder` (waking roles first), then non-waking roles by `id`.
 
-## 4. Marks
+## 4. Role change
 
-For each thing the narrator must remember, add a mark to `packages/shared/src/roles/marks.ts` with a `{ vi, en }` label, `from: ['<id>']`, `holdersOnly` (only the role's holder carries it) and `single` (one player at a time). Add the row to the Marks table in `docs/game-rules.md`.
+If the role changes roles, add its id to `ROLE_CHANGERS` in `packages/shared/src/roles/newRoles.ts`, add it to the list under **Role change** in `docs/game-rules.md`, and add the **Changes roles** line to its doc.
 
 ## 5. Card art slot
 
@@ -47,11 +47,10 @@ If the role wakes, add it to the wake order list in `docs/game-rules.md`, noting
 
 ## 7. Tests
 
-- `packages/shared/tests/pool.test.ts` already checks ids, both languages, unique wake orders, wake nights and the art file name for every role; `marks.test.ts` checks that every mark names pool roles.
-- A new mark gets a case in `marks.test.ts` (who is offered it).
+- `packages/shared/tests/pool.test.ts` already checks ids, both languages, unique wake orders, wake nights and the art file name for every role; `newRoles.test.ts` checks that every role changer is a pool role.
 - Add a dedicated test only if the role brings new behavior.
 - Run `pnpm --filter @werewolf/shared test`, `pnpm typecheck` and `pnpm i18n:check`.
 
 ## 8. Commit
 
-On a feature branch: `feat(roles): add <id>`, containing the pool entry, its marks, role doc, art (if any), and the game-rules and progress updates.
+On a feature branch: `feat(roles): add <id>`, containing the pool entry, role doc, art (if any), and the game-rules and progress updates.

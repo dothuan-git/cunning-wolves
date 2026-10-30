@@ -5,5 +5,5 @@ export * from './names';
 export * from './roles/pool';
 export * from './roles/room';
 export * from './roles/game';
-export * from './roles/marks';
+export * from './roles/newRoles';
 export * from './roles/summary';

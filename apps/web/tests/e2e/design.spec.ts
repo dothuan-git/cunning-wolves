@@ -133,37 +133,28 @@ test('marking a player dead during the night keeps that night’s note as its on
   await expect(linh).toHaveValue('Bitten by the wolves');
 });
 
-test('the marks sheet switches marks, moves a single mark, and leaves the status alone', async ({
+test('the role sheet moves a player to another role and back, and leaves the status alone', async ({
   page,
 }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
-  await page.getByRole('button', { name: 'Marks for Hà (1)', exact: true }).click();
-  const sheet = page.getByRole('dialog', { name: 'Marks · Hà', exact: true });
-  await expect(sheet.getByRole('checkbox', { name: /Heal used/ })).toBeChecked();
-  await expect(sheet).toContainText('Now with Linh');
-  await sheet.getByRole('checkbox', { name: /Kill used/ }).check();
-  await sheet.getByRole('checkbox', { name: /Blessed/ }).check();
+  const wolves = page.getByRole('region', { name: 'Wolf', exact: true });
+  const button = page.getByRole('button', { name: "Change Huy's role", exact: true });
+  await expect(button).toHaveClass(/text-muted/);
+  await button.click();
+  const sheet = page.getByRole('dialog', { name: 'Role · Huy', exact: true });
+  const picker = sheet.getByRole('combobox', { name: 'Plays', exact: true });
+  await expect(picker).toHaveValue('villager');
+  await expect(sheet.getByRole('checkbox')).toHaveCount(0);
+  await picker.selectOption('werewolf');
+  await expect(sheet).toContainText('Dealt Villager');
   await closeSheet(page);
-  await expect(page.getByRole('button', { name: 'Marks for Hà (3)', exact: true })).toBeVisible();
-  // Each chip wears its mark's ink, and an unticked mark's chip leaves.
-  const chip = (label: string) =>
-    page.getByRole('listitem').filter({ hasText: new RegExp(`^${label}$`) });
-  await expect(chip('Heal used')).toHaveClass(/bg-mark-moss-wash/);
-  await expect(chip('Kill used')).toHaveClass(/bg-mark-rose-wash/);
-  await page.getByRole('button', { name: 'Marks for Hà (3)', exact: true }).click();
-  await page
-    .getByRole('dialog')
-    .getByRole('checkbox', { name: /Kill used/ })
-    .uncheck();
+  await expect(wolves).toContainText('Huy');
+  await expect(wolves).toContainText('Dealt Villager');
+  await expect(button).toHaveClass(/text-ink/);
+  await button.click();
+  await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
   await closeSheet(page);
-  await expect(chip('Kill used')).toHaveCount(0);
-  // It leaves the page too, once it has shrunk away.
-  await expect(page.getByText('Kill used', { exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Marks for Hà (2)', exact: true })).toBeVisible();
-  // Only the witch's holder is offered her potions.
-  await page.getByRole('button', { name: 'Marks for Minh (0)', exact: true }).click();
-  await expect(page.getByRole('dialog').getByRole('checkbox')).toHaveCount(1);
-  await closeSheet(page);
+  await expect(wolves).not.toContainText('Huy');
   await expect(page.getByRole('status')).toHaveText('6 players alive');
 });
 
@@ -265,24 +256,6 @@ for (const size of [
     });
   }
 }
-
-test('turning player marks off in the menu hides every marks button and chip', async ({ page }) => {
-  await page.goto('/design?screen=narrator&lang=en&capture=1');
-  const marksButtons = page.getByRole('button', { name: /^Marks for / });
-  await expect(marksButtons.first()).toBeVisible();
-  const toggle = async (checked: boolean) => {
-    await page.getByRole('button', { name: 'Menu', exact: true }).click();
-    const marks = page.getByRole('checkbox', { name: 'Player marks', exact: true });
-    await marks.setChecked(checked);
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  };
-  await toggle(false);
-  await expect(marksButtons).toHaveCount(0);
-  await expect(page.getByText('Heal used', { exact: true })).toHaveCount(0);
-  await toggle(true);
-  await expect(marksButtons.first()).toBeVisible();
-});
 
 test('the setup settings sheet sets the wake order, and it is kept when reopened', async ({
   page,

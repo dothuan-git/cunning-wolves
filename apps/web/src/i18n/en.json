@@ -93,7 +93,7 @@
     "notePlaceholder": "Add an observation…",
     "statusFor": "Status for {{name}}",
     "nameYou": "{{name}} (you)",
-    "marks": "Marks for {{name}} ({{number}})"
+    "changeRole": "Change {{name}}'s role"
   },
   "card": {
     "tapToEdit": "Tap to edit rule.",
@@ -194,7 +194,6 @@
     "settings": "Table settings",
     "timer": "Night timer (seconds)",
     "sound": "Sound cues",
-    "marks": "Player marks",
     "ready": "Review rules",
     "needRoles": "Fill every seat to continue.",
     "roleRequired": "Enter a name and description.",
@@ -248,10 +247,8 @@
     "wakeTile": "{{role}}, {{position}} of {{total}}",
     "wakeHint": "Drag, or use the arrow keys, to change the order.",
     "wakeMoved": "{{role}} is now {{position}} of {{total}}",
-    "marksTitle": "Marks · {{name}}",
-    "markSince": "Since {{phase}}",
-    "markHeldBy": "Now with {{name}}",
     "packExtras": "Also wakes with the wolves",
+    "roleTitle": "Role · {{name}}",
     "playsRole": "Plays",
     "dealtRole": "Dealt {{role}}",
     "rolesInGame": "In this game",
@@ -273,7 +270,6 @@
     "deadCount": "{{count}} dead",
     "diedIn": "Died · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} players",
-    "marked": "{{name}}: {{mark}}",
     "nowPlays": "{{name}} now plays {{role}}",
     "newRole": "Now {{role}}"
   },

@@ -143,7 +143,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false, marksOn: false },
+        settings: { timerSeconds: 120, soundOn: false },
       },
       pin: PIN,
       assignments: [],
@@ -258,7 +258,7 @@ describe('Room', () => {
     master.send({ type: 'setWakeOrder', order: ['custom-0', 'werewolf'] });
     master.send({
       type: 'setSettings',
-      settings: { timerSeconds: 45, soundOn: true, marksOn: true },
+      settings: { timerSeconds: 45, soundOn: true },
     });
     await master.next(masterView((view) => view.setup.settings.timerSeconds === 45));
 
@@ -271,13 +271,12 @@ describe('Room', () => {
         { id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
       ],
       wakeOrder: ['custom-0', 'werewolf'],
-      settings: { timerSeconds: 45, soundOn: true, marksOn: true },
+      settings: { timerSeconds: 45, soundOn: true },
     });
     await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
       expect(loadRoom(state.storage.sql)?.setup.settings).toEqual({
         timerSeconds: 45,
         soundOn: true,
-        marksOn: true,
       });
     });
     for (const text of minh.received) {
@@ -317,7 +316,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false, marksOn: false },
+        settings: { timerSeconds: 120, soundOn: false },
       });
       expect(loaded?.assignments).toEqual({});
       expect(loaded?.game).toBeNull();
@@ -374,7 +373,7 @@ describe('Room', () => {
     });
   });
 
-  it('keeps the narrator marks across a reload, and sends them to the master only', async () => {
+  it('keeps the narrator game across a reload, and sends it to the master only', async () => {
     const roomId = await newRoom();
     const master = await enter(roomId, TOKENS.master);
     const minh = await join(roomId, TOKENS.minh, 'Minh');
@@ -382,19 +381,15 @@ describe('Room', () => {
     const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
     const lanId = await deviceIdFromToken(TOKENS.lan, roomId);
     master.send({ type: 'addPick', roleId: 'cupid' });
-    master.send({ type: 'addPick', roleId: 'werewolf' });
-    master.send({
-      type: 'setSettings',
-      settings: { timerSeconds: 120, soundOn: false, marksOn: true },
-    });
+    master.send({ type: 'addPick', roleId: 'thief' });
     master.send({ type: 'review' });
     master.send({ type: 'startGame' });
     master.send({ type: 'toggleDeath', playerId: lanId });
     master.send({ type: 'setNote', night: 1, playerId: minhId, text: 'Secret note' });
-    master.send({ type: 'toggleMark', playerId: minhId, mark: 'lover' });
+    master.send({ type: 'setRole', playerId: minhId, roleId: 'werewolf' });
     master.send({ type: 'endPhase', phase: { kind: 'night', number: 1 } });
-    master.send({ type: 'setWakeOrder', order: ['werewolf', 'cupid'] });
-    await master.next(masterView((view) => view.setup.wakeOrder[0] === 'werewolf'));
+    master.send({ type: 'setWakeOrder', order: ['thief', 'cupid'] });
+    await master.next(masterView((view) => view.setup.wakeOrder[0] === 'thief'));
 
     const again = await enter(roomId, TOKENS.master);
     const { view } = await again.next(masterView());
@@ -402,17 +397,16 @@ describe('Room', () => {
       phase: { kind: 'morning', number: 1 },
       deaths: { [lanId]: { kind: 'night', number: 1 } },
       notes: { 1: { [minhId]: 'Secret note' } },
-      marks: { [minhId]: { lover: { kind: 'night', number: 1 } } },
-      newRoles: {},
+      newRoles: { [minhId]: { role: 'werewolf', phase: { kind: 'night', number: 1 } } },
     });
     for (const text of [...minh.received, ...lan.received]) {
       expect(text).not.toContain('Secret note');
       expect(text).not.toContain('"game"');
-      expect(text).not.toContain('"lover"');
+      expect(text).not.toContain('"newRoles"');
     }
   });
 
-  it('starts a game dealt before the room kept marks at Night 1, and round-trips what it keeps', async () => {
+  it('starts a game dealt before the room kept its game at Night 1, and round-trips what it keeps', async () => {
     const roomId = await newRoom();
     const master = await enter(roomId, TOKENS.master);
     await join(roomId, TOKENS.minh, 'Minh');
@@ -425,17 +419,23 @@ describe('Room', () => {
       sql.exec('DELETE FROM game');
       sql.exec('DELETE FROM deaths');
       sql.exec('DELETE FROM notes');
-      sql.exec('DROP TABLE marks');
       sql.exec('DROP TABLE new_roles');
-      sql.exec('DROP TABLE marks_on');
+      // A room saved while it still had player marks loads, and the old tables go.
+      sql.exec(
+        'CREATE TABLE marks (player_id TEXT, mark TEXT, phase_kind TEXT, phase_number INTEGER)',
+      );
+      sql.exec("INSERT INTO marks VALUES ('x', 'lover', 'night', 1)");
+      sql.exec('CREATE TABLE marks_on (value INTEGER NOT NULL)');
+      sql.exec('INSERT INTO marks_on VALUES (1)');
       const older = loadRoom(sql);
-      // Saved before the marks switch: marks load off.
-      expect(older?.setup.settings.marksOn).toBe(false);
+      expect(older?.setup.settings).toEqual({ timerSeconds: 120, soundOn: false });
+      expect(
+        sql.exec("SELECT name FROM sqlite_master WHERE name IN ('marks', 'marks_on')").toArray(),
+      ).toEqual([]);
       expect(older?.game).toEqual({
         phase: { kind: 'night', number: 1 },
         deaths: {},
         notes: {},
-        marks: {},
         newRoles: {},
       });
       if (!older) throw new Error('room did not load');
@@ -445,17 +445,12 @@ describe('Room', () => {
         phase: { kind: 'morning', number: 2 },
         deaths: Object.fromEntries([['__proto__', death]]),
         notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
-        marks: Object.fromEntries([['__proto__', { lover: death, 'heal-used': death }]]),
         newRoles: Object.fromEntries([['__proto__', { role: 'seer', phase: death }]]),
       };
       saveRoom(state.storage, { ...older, game });
       const loaded = loadRoom(sql)?.game;
       expect(Object.keys(loaded?.deaths ?? {})).toEqual(['__proto__']);
       expect(Object.keys(loaded?.notes[1] ?? {})).toEqual(['__proto__']);
-      const marks = Object.entries(loaded?.marks ?? {});
-      expect(marks.map(([id, own]) => [id, Object.keys(own).sort()])).toEqual([
-        ['__proto__', ['heal-used', 'lover']],
-      ]);
       expect(Object.entries(loaded?.newRoles ?? {})).toEqual([
         ['__proto__', { role: 'seer', phase: death }],
       ]);
@@ -662,7 +657,7 @@ describe('parseClientMessage', () => {
       },
     ],
     [{ type: 'setWakeOrder', order: ['witch', 'seer'] }],
-    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true, marksOn: false } }],
+    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }],
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
@@ -672,7 +667,6 @@ describe('parseClientMessage', () => {
     [{ type: 'handOver', playerId: 'abc' }],
     [{ type: 'endPhase', phase: { kind: 'morning', number: 2 } }],
     [{ type: 'toggleDeath', playerId: 'abc' }],
-    [{ type: 'toggleMark', playerId: 'abc', mark: 'lover' }],
     [{ type: 'setRole', playerId: 'abc', roleId: 'seer' }],
     [{ type: 'setRole', playerId: 'abc', roleId: null }],
     [
@@ -713,7 +707,10 @@ describe('parseClientMessage', () => {
       'a phase of another kind',
       JSON.stringify({ type: 'endPhase', phase: { kind: 'dusk', number: 1 } }),
     ],
-    ['a mark without a mark', JSON.stringify({ type: 'toggleMark', playerId: 'abc' })],
+    [
+      'a player mark, which the room no longer has',
+      JSON.stringify({ type: 'toggleMark', playerId: 'abc', mark: 'lover' }),
+    ],
     ['a new role without a role', JSON.stringify({ type: 'setRole', playerId: 'abc' })],
     ['a new role as a number', JSON.stringify({ type: 'setRole', playerId: 'abc', roleId: 3 })],
     ['a note without text', JSON.stringify({ type: 'setNote', night: 1, playerId: 'abc' })],
@@ -725,10 +722,6 @@ describe('parseClientMessage', () => {
     [
       'settings without sound',
       JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60 } }),
-    ],
-    [
-      'settings without marks',
-      JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }),
     ],
   ])('rejects %s', (_label, raw) => {
     expect(parseClientMessage(raw)).toBeNull();

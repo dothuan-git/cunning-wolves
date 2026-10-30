@@ -1,4 +1,4 @@
-import type { MarkDef, Phase, PoolRole, RoomSummary } from '@werewolf/shared';
+import type { Phase, PoolRole, RoomSummary } from '@werewolf/shared';
 
 export type { Phase };
 
@@ -15,15 +15,11 @@ export interface RevealedPlayerItem extends PlayerListItem {
   role: PoolRole;
   /** The role a power gave them, when it differs from the dealt one */
   newRole?: PoolRole;
-  /** The marks they carried when the game ended */
-  marks: readonly MarkDef[];
 }
 export interface JournalPhase {
   phase: Phase;
   notes: readonly (PlayerListItem & { text: string })[];
   deaths: readonly PlayerListItem[];
-  /** Mark ids (see MARKS) made in this phase */
-  marks: readonly (PlayerListItem & { mark: string })[];
   /** Roles a power gave players in this phase */
   newRoles: readonly (PlayerListItem & { role: PoolRole })[];
 }

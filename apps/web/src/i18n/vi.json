@@ -93,7 +93,7 @@
     "notePlaceholder": "Thêm ghi chú…",
     "statusFor": "Trạng thái của {{name}}",
     "nameYou": "{{name}} (bạn)",
-    "marks": "Trạng thái của {{name}} ({{number}})"
+    "changeRole": "Đổi vai của {{name}}"
   },
   "card": {
     "tapToEdit": "Chạm để sửa luật.",
@@ -194,7 +194,6 @@
     "settings": "Thiết lập bàn chơi",
     "timer": "Thời gian ban đêm (giây)",
     "sound": "Âm thanh",
-    "marks": "Trạng thái người chơi",
     "ready": "Xem lại luật",
     "needRoles": "Xếp đủ vai để tiếp tục.",
     "roleRequired": "Nhập tên và mô tả vai.",
@@ -248,10 +247,8 @@
     "wakeTile": "{{role}}, thứ {{position}}/{{total}}",
     "wakeHint": "Kéo, hoặc dùng phím mũi tên, để đổi thứ tự.",
     "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}",
-    "marksTitle": "Trạng thái · {{name}}",
-    "markSince": "Từ {{phase}}",
-    "markHeldBy": "Đang ở {{name}}",
     "packExtras": "Cũng thức dậy cùng bầy sói",
+    "roleTitle": "Vai · {{name}}",
     "playsRole": "Đang là",
     "dealtRole": "Bài gốc: {{role}}",
     "rolesInGame": "Trong ván này",
@@ -273,7 +270,6 @@
     "deadCount": "{{count}} đã chết",
     "diedIn": "Đã chết · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} người chơi",
-    "marked": "{{name}}: {{mark}}",
     "nowPlays": "{{name}} giờ là {{role}}",
     "newRole": "Giờ là {{role}}"
   },
