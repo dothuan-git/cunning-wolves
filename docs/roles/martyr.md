@@ -3,7 +3,7 @@
 - **id:** `martyr`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/martyr.webp`
 
 ## Rule (vi)
 

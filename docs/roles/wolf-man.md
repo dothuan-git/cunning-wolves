@@ -3,7 +3,7 @@
 - **id:** `wolf-man`
 - **Team:** werewolf
 - **Wakes at night:** yes (250), after `werewolf` and before `wolf-cub`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/wolf-man.webp`
 
 ## Rule (vi)
 

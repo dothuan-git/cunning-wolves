@@ -3,7 +3,7 @@
 - **id:** `stuttering-judge`
 - **Team:** village
 - **Wakes at night:** yes (30, Night 1 only), after `cupid` and before `doppelganger`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/stuttering-judge.webp`
 
 ## Rule (vi)
 

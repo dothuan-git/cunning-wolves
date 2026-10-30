@@ -3,7 +3,7 @@
 - **id:** `cult-leader`
 - **Team:** solo
 - **Wakes at night:** yes (430), after `vampire` and before `witch`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/cult-leader.webp`
 
 ## Rule (vi)
 

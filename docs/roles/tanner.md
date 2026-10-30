@@ -3,7 +3,7 @@
 - **id:** `tanner`
 - **Team:** solo
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/tanner.webp`
 
 ## Rule (vi)
 

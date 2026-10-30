@@ -3,7 +3,7 @@
 - **id:** `hoodlum`
 - **Team:** solo
 - **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `the-count`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/hoodlum.webp`
 
 ## Rule (vi)
 

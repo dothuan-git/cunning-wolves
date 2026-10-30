@@ -3,7 +3,7 @@
 - **id:** `actor`
 - **Team:** village
 - **Wakes at night:** yes (120), after `wolf-hound` and before `old-hag`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/actor.webp`
 
 ## Rule (vi)
 

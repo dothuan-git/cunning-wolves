@@ -3,7 +3,7 @@
 - **id:** `bartender`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/bartender.webp`
 
 ## Rule (vi)
 

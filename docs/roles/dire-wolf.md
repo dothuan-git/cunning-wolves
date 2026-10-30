@@ -3,7 +3,7 @@
 - **id:** `dire-wolf`
 - **Team:** werewolf
 - **Wakes at night:** yes (280), after `fruit-brute` and before `lone-wolf`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/dire-wolf.webp`
 
 ## Rule (vi)
 

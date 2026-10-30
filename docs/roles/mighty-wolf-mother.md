@@ -3,7 +3,7 @@
 - **id:** `mighty-wolf-mother`
 - **Team:** werewolf
 - **Wakes at night:** yes (350), after `alpha-wolf` and before `white-werewolf`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/mighty-wolf-mother.webp`
 
 ## Rule (vi)
 

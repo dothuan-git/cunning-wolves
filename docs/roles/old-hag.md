@@ -3,7 +3,7 @@
 - **id:** `old-hag`
 - **Team:** village
 - **Wakes at night:** yes (130), after `actor` and before `spellcaster`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/old-hag.webp`
 
 ## Rule (vi)
 
