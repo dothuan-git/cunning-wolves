@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nông dân chọn một người trong số họ làm Đội trưởng, có hai phiếu. Đội trưởng chết thì nông dân khác thay.
+Từ ngày thứ hai, các Nông dân chọn một người trong số họ làm Đội trưởng, phiếu tính hai. Đội trưởng chết thì một Nông dân khác thay.
 
 ## Rule (en)
 
-Farmers pick one of themselves as Captain, who has two votes. When the Captain dies, another Farmer takes over.
+From the second day, the Farmers choose one of themselves as Captain, whose vote counts twice. When the Captain dies, another Farmer takes over.
 
 ## Narrator notes
 

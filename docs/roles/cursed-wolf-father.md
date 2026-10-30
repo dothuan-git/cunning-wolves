@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, chỉ tay: nạn nhân không chết mà bị nguyền, thành sói.
+Mỗi đêm bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, bạn giơ tay: nạn nhân không chết mà bị nguyền, bí mật thành sói. Họ vẫn giữ năng lực ban đêm của mình.
 
 ## Rule (en)
 
-Wake with the werewolves each night. Once per game, after they go back to sleep, you may point a person: their victim does not die but is cursed and becomes a werewolf.
+You wake with the werewolves each night. Once per game, after they go back to sleep, raise your hand: their victim does not die but is cursed and secretly becomes a werewolf. They keep their own night power too.
 
 ## Narrator notes
 

@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Khi chết (ban đêm hay do bỏ phiếu), bắn ngay: chỉ một người, người đó chết theo.
+Khi bạn chết, dù bằng cách nào, bạn bắn ngay một người, người đó chết theo. Không ai được nói cho đến khi bạn chọn xong.
 
 ## Rule (en)
 
-When you die, at night or by vote, you shoot at once: point at a player, who dies with you.
+When you die, however it happens, you immediately shoot one player, who dies too. Nobody speaks until you have chosen.

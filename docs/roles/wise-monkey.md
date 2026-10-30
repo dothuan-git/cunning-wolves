@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: biết vai của họ. Nếu là sói, bầy sói biết mình là ai.
+Một lần trong ván, vào một đêm, bạn bí mật xem vai của một người bạn chọn. Nếu họ không phải sói, bạn được chọn tiếp người khác, bao nhiêu lần tuỳ ý. Ngay khi gặp một con sói, bạn bị loại.
 
 ## Rule (en)
 
-Each night, point at a player: you learn their role. If it is a werewolf, the werewolves learn who you are.
+Once per game, on one night, you secretly look at the role of a player you choose. If they are not a werewolf, you may keep choosing others as many times as you like. As soon as you find a werewolf, you are eliminated.
 
 ## Narrator notes
 
-From the 25th anniversary edition of Millers Hollow. The printed rule could not be found online: this is a placeholder from the card's description. Replace it with the text from the box. The app shows the card and rule only; it does not run this role's power.
+From the 25th anniversary edition of Millers Hollow (Asmodee France’s character presentation). Call the Wise Monkey once; the narrator shows each role they point at, one by one, until they stop or find a werewolf. The app shows the card and rule only; it does not run this role’s power.

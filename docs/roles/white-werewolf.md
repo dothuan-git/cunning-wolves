@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm thức dậy cùng bầy sói. Cách một đêm, thức dậy một mình và có thể giết một sói. Chỉ thắng khi là người sống sót cuối cùng.
+Mỗi đêm bạn thức dậy cùng bầy sói. Cách một đêm, bạn thức dậy một mình và có thể giết một con sói. Bạn chơi một mình: chỉ thắng khi là người sống sót cuối cùng.
 
 ## Rule (en)
 
-Wake with the werewolves each night. Every other night, wake alone and you may kill one werewolf. You win only as the last player alive.
+You wake with the werewolves every night. Every other night, you wake again alone and may kill a werewolf. You play alone: you win only as the last player alive.
 
 ## Narrator notes
 

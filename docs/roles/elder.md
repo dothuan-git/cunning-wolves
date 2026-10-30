@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Sống sót lần sói tấn công đầu tiên. Nếu bị làng loại, mọi dân làng có năng lực đều mất năng lực.
+Sói phải tấn công bạn hai lần mới giết được. Bỏ phiếu loại, thuốc độc của Phù thủy hoặc phát bắn của Thợ săn giết bạn ngay, và khi đó mọi dân làng mất năng lực đặc biệt.
 
 ## Rule (en)
 
-You survive the first werewolf attack. If the village votes you out, every villager with a power loses it.
+The werewolves must attack you twice to kill you. A vote, the Witch's poison or the Hunter's shot kills you at once, and then every villager loses their special power.

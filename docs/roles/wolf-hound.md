@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một lần duy nhất: dân làng hay sói. Chọn sói: thức dậy cùng bầy sói mỗi đêm. Không thì vẫn là dân làng.
+Đêm 1: chọn một lần duy nhất làm dân làng hay làm sói. Nếu chọn sói, bạn thức dậy cùng bầy sói mỗi đêm và cùng chọn nạn nhân. Nếu không, bạn ngủ tiếp và thắng cùng dân làng.
 
 ## Rule (en)
 
-Night 1: choose once and for all, villager or werewolf. As a werewolf, you wake with the pack every night. Otherwise you stay a villager.
+Night 1: choose, once and for all, to be a villager or a werewolf. A werewolf wakes with the pack every night and helps choose the victim. A villager stays asleep and wins with the village.
 
 ## Narrator notes
 

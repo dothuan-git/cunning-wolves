@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Mỗi đêm có thể chỉ một người: hôm sau họ bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.
+Mỗi đêm bạn có thể chỉ một người: hôm sau họ bắt đầu cuộc bỏ phiếu với sẵn hai phiếu chống.
 
 ## Rule (en)
 
-Each night you may point at a player. The next day, that player starts the vote with two votes against them.
+Each night you may point at a player: the next day they start the vote with two votes against them.

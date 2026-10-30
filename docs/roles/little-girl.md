@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Khi bầy sói thức, có thể hé mắt nhìn trộm. Bị bắt gặp thì chết thay nạn nhân của sói.
+Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay cho nạn nhân của sói.
 
 ## Rule (en)
 
-While the werewolves are awake, you may peek. If they catch you, you die in place of their victim.
+While the werewolves are awake, you may peek. If they catch you, you die instead of their victim.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm chọn một người: hôm sau họ không được nói và không được bỏ phiếu.
+Mỗi đêm chọn một người để đuổi đi: hôm sau họ phải ngồi ngoài, không được nói và không được bỏ phiếu. Bạn không được chọn mình, hay chọn một người hai lần.
 
 ## Rule (en)
 
-Each night, choose a player: the next day they cannot speak or vote.
+Each night, choose a player to send away: the next day they sit out and cannot speak or vote. You cannot choose yourself, or the same player twice.
 
 ## Narrator notes
 

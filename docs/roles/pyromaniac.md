@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, đốt nhà một người: họ sống nhưng mất năng lực nhà. Nếu là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.
+Một lần trong ván, đốt nhà một người: họ vẫn sống nhưng mất năng lực nhà. Nếu đó là nhà nạn nhân của sói, nạn nhân sống và con sói đầu tiên bên phải họ chết thay.
 
 ## Rule (en)
 
-Once per game, burn a player's house: they stay alive but lose their house power. If it is the werewolves' victim's house, the victim lives and the first werewolf to their right dies instead.
+Once per game, burn down a player's house: they stay alive but lose their house power. If it is the house of the werewolves' victim, the victim lives and the first werewolf to their right dies instead.
 
 ## Narrator notes
 

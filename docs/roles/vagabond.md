@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào mình.
+Bạn không có nhà và không có năng lực. Cô giáo, Thợ cắt tóc, Kẻ phóng hỏa và Quạ không nhắm được vào bạn. Thừa phát lại có thể trao cho bạn một năng lực nhà.
 
 ## Rule (en)
 
-You have no power. The Schoolmistress, Barber, Pyromaniac and Raven cannot target you.
+You have no house and no power. The Schoolmistress, Barber, Pyromaniac and Raven cannot target you. The Bailiff may give you a house power.
 
 ## Narrator notes
 

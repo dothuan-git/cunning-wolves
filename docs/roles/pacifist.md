@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Không bao giờ bỏ phiếu loại ai.
+Bạn không bao giờ bỏ phiếu loại ai: phiếu của bạn luôn là phiếu chống việc loại người.
 
 ## Rule (en)
 
-Your vote can never be for an elimination.
+You can never vote to eliminate anyone: your vote always goes against an elimination.
 
 ## Narrator notes
 

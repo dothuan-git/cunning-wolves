@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: biết họ có năng lực đặc biệt không (không phải Dân làng hay Ma sói thường).
+Mỗi đêm chỉ một người: bạn biết họ có năng lực đặc biệt hay không, tức là vai nào khác Dân làng thường và Ma sói thường.
 
 ## Rule (en)
 
-Each night, point at a player: you learn whether they have a special power (anything but a plain Villager or Werewolf).
+Each night, point at a player: you learn whether they have a special power, meaning any role other than a plain Villager or plain Werewolf.
 
 ## Narrator notes
 

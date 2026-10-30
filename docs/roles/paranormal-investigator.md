@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: biết người đó hoặc một trong hai người ngồi cạnh có phải sói không.
+Một lần trong ván, chỉ một người: bạn biết người đó hoặc một trong hai người ngồi cạnh có phải sói không, nhưng không biết là ai.
 
 ## Rule (en)
 
-Each night, point at a player: you learn whether that player or one of their two neighbors is a werewolf.
+Once per game, point at a player: you learn whether that player or one of their two neighbors is a werewolf, but not which one.
 
 ## Narrator notes
 

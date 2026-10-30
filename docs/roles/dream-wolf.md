@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Không thức dậy cùng bầy sói. Khi một con sói chết, thế chỗ nó.
+Bạn thuộc phe sói nhưng không thức dậy cùng bầy sói. Khi một con sói chết, bạn thế chỗ nó và từ đó thức dậy cùng bầy sói.
 
 ## Rule (en)
 
-You do not wake with the werewolves. When a werewolf dies, you take their place.
+You are on the werewolf team but do not wake with the pack. When a werewolf dies, you take their place and wake with the pack from then on.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nếu làng bỏ phiếu loại, nói rõ mình là Hoàng tử: sống sót và ở lại chơi.
+Nếu làng bỏ phiếu loại bạn, hãy lật bài: bạn sống sót, hôm đó không ai bị loại, và làng đi ngủ.
 
 ## Rule (en)
 
-If the village votes you out, announce that you are the Prince: you survive and stay in the game.
+If the village votes you out, show your card: you survive, nobody is eliminated that day, and the village goes to sleep.
 
 ## Narrator notes
 

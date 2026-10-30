@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Ban đêm cả hai thức dậy, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.
+Đêm 1, hai chị em cùng thức dậy và nhận ra nhau, nên biết chắc người kia là dân làng. Những đêm sau, quản trò có thể gọi hai người dậy lần nữa để lặng lẽ bàn bạc.
 
 ## Rule (en)
 
-The sisters wake together at night, recognize each other and may silently share their suspicions.
+On Night 1 the two sisters wake together and see each other, so each knows the other is a villager. On later nights the narrator may wake them again to agree quietly on what to do.
 
 ## Narrator notes
 

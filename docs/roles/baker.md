@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm, khi bầy sói đi ngủ thì thức dậy, có một phần tư cơ hội nhìn thấy một con sói.
+Mỗi đêm, bạn mở mắt đúng lúc bầy sói vừa đi ngủ, nên có khoảng một phần tư cơ hội nhìn thấy một con sói.
 
 ## Rule (en)
 
-Each night, as the werewolves go back to sleep, you wake and have a one-in-four chance of seeing one of them.
+Each night, you open your eyes just as the werewolves go back to sleep, so you have about a one-in-four chance of glimpsing one of them.
 
 ## Narrator notes
 

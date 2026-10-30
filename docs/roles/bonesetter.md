@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, ban ngày trả lại cho một người năng lực họ đã dùng.
+Một lần trong ván, ban ngày, trả lại cho một người khác năng lực họ đã dùng.
 
 ## Rule (en)
 
-Once per game, by day, give a player back a power they have already used.
+Once per game, by day, give another player back a power they have already used.
 
 ## Narrator notes
 

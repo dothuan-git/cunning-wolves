@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: quản trò cho biết họ là sói hay dân làng.
+Mỗi đêm chỉ một người: quản trò cho bạn biết họ có phải sói không. Bạn chỉ biết sói hay không, không biết vai thật của họ.
 
 ## Rule (en)
 
-Each night, point at a player: the narrator tells you whether they are a werewolf or a villager.
+Each night, point at a player: the narrator tells you whether they are a werewolf. You learn only that, not their role.

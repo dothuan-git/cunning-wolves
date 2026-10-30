@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Hai khả năng, mỗi cái dùng một lần: ban đêm giết hoặc cứu một người. Không dùng cho bản thân.
+Mỗi đêm bạn dùng một năng lực khác nhau: quản trò giữ một chồng vai hoạt động ban đêm và mỗi đêm (kể cả đêm 1) cho bạn xem một lá. Bạn dùng năng lực của vai đó trong đêm ấy, ví dụ Tiên tri hoặc Người mất ngủ.
 
 ## Rule (en)
 
-Once per game each, you may kill a player or heal a player at night, but never yourself.
+You use a different night power each night: the narrator keeps a pile of night roles and shows you one card each night (the first included). You use that role's power that night, for example the Seer or the Insomniac.
 
 ## Narrator notes
 
-Only one weak summary of this card was found. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+From Ultimate Werewolf (Bézier Games) role list. Before the game, set aside a pile of night roles; each night, including the first, show the Magician one card and run that power. The app shows the card and rule only; it does not run this role’s power.

@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn hai người. Thắng nếu cả hai chết và mình còn sống khi hết ván.
+Đêm 1: bí mật chọn hai người. Bạn thắng một mình nếu cả hai bị loại và bạn còn sống khi hết ván. Bạn không tự giết được ai.
 
 ## Rule (en)
 
-Night 1: choose two players. You win if both are dead and you are still alive when the game ends.
+Night 1: secretly choose two players. You win, alone, if both are eliminated and you are still alive when the game ends. You cannot kill anyone yourself.
 
 ## Narrator notes
 
-From Ultimate Werewolf (Bézier Games). No source with the card text was found; this is the commonly described rule. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+From Ultimate Werewolf (Bézier Games). The original card picks two players; the Extreme edition picks as many players as there are werewolves. Agree on one before the game. The app shows the card and rule only; it does not run this role’s power.

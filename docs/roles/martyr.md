@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Ngay sau khi làng kết án một người, có thể chết thay họ.
+Một lần trong ván, ngay sau khi làng kết án một người (trước khi lộ vai), bạn có thể chọn bị loại thay họ.
 
 ## Rule (en)
 
-Right after the village sentences a player, you may die in their place.
+Once per game, right after the village sentences a player (before their role is shown), you may choose to be eliminated in their place.
 
 ## Narrator notes
 
-From Ultimate Werewolf (Bézier Games). Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+From Ultimate Werewolf (Bézier Games) role list. Ask the Martyr right after the sentence and before the condemned player’s role is shown. The app shows the card and rule only; it does not run this role’s power.

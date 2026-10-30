@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm tuyển một người vào giáo phái. Thắng khi mọi người còn sống đều trong giáo phái.
+Mỗi đêm chọn một người vào giáo phái. Họ vẫn thuộc phe cũ và không biết mình bị tuyển. Bạn thắng khi mọi người còn sống đều trong giáo phái. Bạn chết thì giáo phái tan.
 
 ## Rule (en)
 
-Each night, recruit a player into your cult. You win when every living player is in your cult.
+Each night, choose a player to join your cult. They stay on their own team and do not know. You win when every living player is in your cult. If you die, the cult ends.
 
 ## Narrator notes
 

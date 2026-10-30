@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nếu bị sói giết, đêm sau bầy sói không giết được ai.
+Nếu bị sói giết, đêm sau bầy sói bị ốm nên không giết được ai.
 
 ## Rule (en)
 
-If the werewolves kill you, they cannot kill the next night.
+If the werewolves kill you, they are too sick to kill anyone the next night.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Khi người có năng lực nhà chết, có thể chuyển năng lực đó cho một người chưa có.
+Khi một người có năng lực nhà chết, bạn có thể trao năng lực đó cho một Kẻ lang thang (người chưa có năng lực nhà). Bạn chết thì không làm được nữa.
 
 ## Rule (en)
 
-When a player with a house power dies, you may pass that power to a player who has none.
+When a player with a house power dies, you may give that power to a Vagabond (a player with no house power). If you die, you can no longer do this.
 
 ## Narrator notes
 

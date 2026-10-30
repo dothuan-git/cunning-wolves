@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Thức dậy cùng bầy sói. Nếu là sói cuối cùng còn sống thì không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
+Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn mất khẩu vị và không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
 
 ## Rule (en)
 
-You wake with the werewolves. If you are the last werewolf alive, you can no longer kill, but you still win once every villager is gone.
+You wake with the werewolves. If you are the last werewolf alive, you lose your appetite and can no longer kill, but you still win once every villager is gone.
 
 ## Narrator notes
 

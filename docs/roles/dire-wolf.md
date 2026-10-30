@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một bạn đồng hành. Họ chết thì mình chết. Mình chết thì họ vẫn sống.
+Bạn thức dậy cùng bầy sói. Đêm 1, chọn một bạn đồng hành (họ không biết). Bạn đồng hành chết thì bạn chết theo; bạn chết thì họ vẫn sống. Nếu bạn là sói cuối cùng, cái chết của họ không còn ảnh hưởng đến bạn.
 
 ## Rule (en)
 
-Night 1: choose a companion. If your companion dies, you die. If you die, they live.
+You wake with the werewolves. On Night 1, choose a companion, who is not told. If your companion dies, you die; if you die, they live. If you are the last werewolf, their death no longer affects you.
 
 ## Narrator notes
 

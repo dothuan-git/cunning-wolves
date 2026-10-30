@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Thức dậy cùng bầy sói. Một lần trong ván, thức dậy một mình giết thêm một người.
+Bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi làng loại một con sói vào ban ngày, bạn có thể biến nạn nhân của bầy sói thành sói thay vì giết họ.
 
 ## Rule (en)
 
-You wake with the werewolves. Once per game, wake again alone and kill one more player.
+You wake with the werewolves. Once per game, after the village has eliminated a werewolf by day, you may turn the werewolves' victim into a werewolf instead of killing them.
 
 ## Narrator notes
 
-Wakes with the werewolves every night, and once per game alone for a second kill. From an unofficial source (werewolv.es); check it against your copy. Sources differ between editions: check the wording against your copy. The app shows the card and rule only; it does not run this role's power.
+From the Ultimate Werewolf (Bézier Games) role list. Wakes with the werewolves. The conversion is available only on a night after the village has eliminated a werewolf by day. The app shows the card and rule only; it does not run this role’s power.

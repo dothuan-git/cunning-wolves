@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chỉ một người: quản trò cho biết vai của họ.
+Một lần trong ván, ban ngày, chọn một người: họ phải lén cho bạn xem lá vai của mình.
 
 ## Rule (en)
 
-Once per game, point at a player: the narrator tells you their role.
+Once per game, by day, choose a player: they must secretly show you their role card.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nếu bầy sói không thống nhất được nạn nhân, giết thay chúng. Thắng khi mọi người thức dậy ban đêm đều chết.
+Mỗi đêm, nếu bầy sói không thống nhất được nạn nhân, bạn chọn thay chúng. Bạn chơi một mình và thắng khi mọi người có thức dậy ban đêm đều đã chết.
 
 ## Rule (en)
 
-If the werewolves cannot agree on a victim, you kill for them. You win when every player who wakes at night is dead.
+Each night, if the werewolves cannot agree on a victim, you choose one for them. You play alone and win when every player who wakes at night is dead.
 
 ## Narrator notes
 

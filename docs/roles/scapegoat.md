@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Nếu bỏ phiếu hòa, bị loại thay. Trước khi đi, chọn ai được bỏ phiếu ngày hôm sau.
+Nếu bỏ phiếu hòa, bạn bị loại thay cho những người hòa phiếu. Trước khi đi, bạn chọn ai được bỏ phiếu ngày hôm sau.
 
 ## Rule (en)
 
-If a vote ends in a tie, you are eliminated instead. Before you go, you choose who may vote the next day.
+If a vote ends in a tie, you are eliminated instead of the tied players. Before you go, you choose who may vote the next day.

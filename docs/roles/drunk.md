@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Tưởng mình là dân làng thường đến đêm thứ ba, khi biết vai thật.
+Quản trò bí mật gán cho bạn một vai, nhưng bạn tưởng mình là dân làng thường đến đêm thứ ba, khi tỉnh rượu và biết vai thật. Tiên tri thấy vai thật của bạn.
 
 ## Rule (en)
 
-You think you are a plain villager until the third night, when you learn your real role.
+The narrator secretly gives you a role, but you think you are a plain villager until the third night, when you sober up and learn it. The Seer sees your real role.
 
 ## Narrator notes
 

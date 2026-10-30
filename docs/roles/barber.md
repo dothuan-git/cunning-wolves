@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, loại một người. Nếu họ không phải sói, mình cũng chết.
+Một lần trong ván, ban ngày, loại một người bất kỳ (trừ Kẻ lang thang). Nếu họ không phải sói, bạn cũng chết.
 
 ## Rule (en)
 
-Once per game, eliminate a player. If they are not a werewolf, you die too.
+Once per game, by day, eliminate any player (not a Vagabond). If they are not a werewolf, you die too.
 
 ## Narrator notes
 

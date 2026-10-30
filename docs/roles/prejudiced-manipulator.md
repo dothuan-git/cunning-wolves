@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy. Chỉ thắng khi cả nhóm còn lại bị loại. Không có năng lực.
+Trước ván, quản trò chia làng thành hai nhóm theo một đặc điểm dễ thấy và nói to cho mọi người. Bạn chỉ thắng khi cả nhóm còn lại bị loại hết. Bạn không có năng lực.
 
 ## Rule (en)
 
-Before the game, the narrator splits the village in two by a visible trait. You win only when the whole other group is eliminated. You have no power.
+Before the game, the narrator splits the village in two by an obvious trait and announces it. You win only when everyone in the other group is eliminated. You have no power.
 
 ## Narrator notes
 

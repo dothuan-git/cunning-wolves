@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nếu chết, đêm sau bầy sói giết hai người.
+Nếu bạn chết, dù bằng cách nào, đêm sau bầy sói giết hai người.
 
 ## Rule (en)
 
-If you die, the werewolves kill two players the next night.
+If you die, however it happens, the werewolves kill two players the next night.
 
 ## Narrator notes
 
