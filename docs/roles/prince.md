@@ -3,7 +3,6 @@
 - **id:** `prince`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/prince.webp`
 
 ## Rule (vi)

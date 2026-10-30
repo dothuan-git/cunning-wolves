@@ -3,7 +3,6 @@
 - **id:** `insomniac`
 - **Team:** village
 - **Wakes at night:** yes (500), after `troublemaker` and last
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/insomniac.webp`
 
 ## Rule (vi)

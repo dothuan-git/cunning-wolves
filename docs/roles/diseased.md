@@ -3,7 +3,6 @@
 - **id:** `diseased`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/diseased.webp`
 
 ## Rule (vi)

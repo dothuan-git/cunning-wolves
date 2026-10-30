@@ -3,7 +3,6 @@
 - **id:** `wolf-cub`
 - **Team:** werewolf
 - **Wakes at night:** yes (260), after `wolf-man` and before `fruit-brute`
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/wolf-cub.webp`
 
 ## Rule (vi)

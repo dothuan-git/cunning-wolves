@@ -3,7 +3,6 @@
 - **id:** `prejudiced-manipulator`
 - **Team:** solo
 - **Wakes at night:** no
-- **Marks:** `target-group` (on each player of the group they must eliminate)
 - **Card art:** missing
 
 ## Rule (vi)
@@ -16,4 +15,4 @@ Before the game, the narrator splits the village in two by an obvious trait and 
 
 ## Narrator notes
 
-Before the game, announce a visible split of the village in two groups (glasses, height, age…). The Manipulator belongs to one; mark everyone in the other "Target group". They win only when that whole group is eliminated. Also known as the Abominable Sectarian.
+Before the game, announce a visible split of the village in two groups (glasses, height, age…). The Manipulator belongs to one; note everyone in the other. They win only when that whole group is eliminated. Also known as the Abominable Sectarian.

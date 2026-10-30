@@ -3,7 +3,6 @@
 - **id:** `mayor`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/mayor.webp`
 
 ## Rule (vi)

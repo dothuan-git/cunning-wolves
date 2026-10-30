@@ -3,7 +3,6 @@
 - **id:** `actor`
 - **Team:** village
 - **Wakes at night:** yes (120), after `wolf-hound` and before `old-hag`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

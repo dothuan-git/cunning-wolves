@@ -3,7 +3,6 @@
 - **id:** `pyromaniac`
 - **Team:** village
 - **Wakes at night:** yes (410), after `baker` and before `vampire`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

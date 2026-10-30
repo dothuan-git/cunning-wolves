@@ -3,7 +3,6 @@
 - **id:** `lycan`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/lycan.webp`
 
 ## Rule (vi)

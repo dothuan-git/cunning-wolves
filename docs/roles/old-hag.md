@@ -3,7 +3,6 @@
 - **id:** `old-hag`
 - **Team:** village
 - **Wakes at night:** yes (130), after `actor` and before `spellcaster`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

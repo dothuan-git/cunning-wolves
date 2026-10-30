@@ -3,7 +3,7 @@
 - **id:** `cursed-wolf-father`
 - **Team:** werewolf
 - **Wakes at night:** yes (330), after `big-bad-wolf` and before `alpha-wolf`
-- **Marks:** `cursed` (on the cursed player, once per game)
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** missing
 
 ## Rule (vi)
@@ -16,4 +16,4 @@ You wake with the werewolves each night. Once per game, after they go back to sl
 
 ## Narrator notes
 
-After the wolves sleep, ask whether the Cursed Wolf-Father raises a hand. If so, the victim does not die: touch them, mark them "Cursed", and they wake with the wolves from the next night (and still wake for their own power). The power is used once. Cursing the Bear Tamer makes the bear growl every morning.
+After the wolves sleep, ask whether the Cursed Wolf-Father raises a hand. If so, the victim does not die: touch them and change their role to Werewolf, and they wake with the wolves from the next night (and still wake for their own power). The power is used once. Cursing the Bear Tamer makes the bear growl every morning.

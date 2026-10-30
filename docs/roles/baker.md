@@ -3,7 +3,6 @@
 - **id:** `baker`
 - **Team:** village
 - **Wakes at night:** yes (400), after `chupacabra` and before `pyromaniac`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

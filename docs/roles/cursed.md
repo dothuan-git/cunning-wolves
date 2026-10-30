@@ -3,7 +3,7 @@
 - **id:** `cursed`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/cursed.webp`
 
 ## Rule (vi)

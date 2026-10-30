@@ -3,7 +3,6 @@
 - **id:** `wise-monkey`
 - **Team:** village
 - **Wakes at night:** yes (180), after `paranormal-investigator` and before `seer`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

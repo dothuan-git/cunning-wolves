@@ -3,7 +3,6 @@
 - **id:** `priest`
 - **Team:** village
 - **Wakes at night:** yes (230), after `bodyguard` and before `werewolf`
-- **Marks:** none yet
 - **Card art:** `apps/web/src/assets/cards/priest.webp`
 
 ## Rule (vi)

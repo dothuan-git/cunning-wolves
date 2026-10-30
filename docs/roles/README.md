@@ -10,7 +10,7 @@ One file per pool role: `docs/roles/<id>.md`. Add roles with the `add-role` skil
 - **id:** `<id>`
 - **Team:** village | werewolf | solo
 - **Wakes at night:** no | yes, after `<role id>` and before `<role id>`; every night | Night 1 only | even nights
-- **Marks:** none | `<mark id>` (what it records), …
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt (only for a role in `ROLE_CHANGERS`; leave the line out otherwise)
 - **Card art:** `apps/web/src/assets/cards/<id>.webp` (or "missing")
 
 ## Rule (vi)

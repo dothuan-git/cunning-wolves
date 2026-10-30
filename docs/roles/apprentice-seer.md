@@ -3,7 +3,7 @@
 - **id:** `apprentice-seer`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
+- **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/apprentice-seer.webp`
 
 ## Rule (vi)

@@ -3,7 +3,6 @@
 - **id:** `chupacabra`
 - **Team:** solo
 - **Wakes at night:** yes (390), after `bogeyman` and before `baker`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

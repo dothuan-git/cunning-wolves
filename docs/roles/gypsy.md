@@ -3,7 +3,6 @@
 - **id:** `gypsy`
 - **Team:** village
 - **Wakes at night:** yes (460), after `magician` and before `pied-piper`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

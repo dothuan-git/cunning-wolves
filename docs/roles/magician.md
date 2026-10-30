@@ -3,7 +3,6 @@
 - **id:** `magician`
 - **Team:** village
 - **Wakes at night:** yes (450), after `witch` and before `gypsy`
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)

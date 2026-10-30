@@ -3,7 +3,6 @@
 - **id:** `lord`
 - **Team:** village
 - **Wakes at night:** no
-- **Marks:** none yet
 - **Card art:** missing
 
 ## Rule (vi)
