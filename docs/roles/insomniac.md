@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm biết ít nhất một trong hai người ngồi cạnh có thức dậy không.
+Mỗi đêm, sau khi mọi người đã hành động xong, bạn biết ít nhất một trong hai người ngồi cạnh có thức dậy không, nhưng không biết là ai.
 
 ## Rule (en)
 
-Each night, learn whether at least one of your two neighbors woke up.
+Each night, after everyone else has acted, you learn whether at least one of your two neighbors woke up. You do not learn which one.
 
 ## Narrator notes
 

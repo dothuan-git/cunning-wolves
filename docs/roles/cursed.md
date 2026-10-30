@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Là dân làng. Nếu sói tấn công thì không chết mà thành sói.
+Bạn là dân làng. Nếu sói tấn công, bạn không chết mà bí mật thành sói, và từ đó thức dậy cùng bầy sói.
 
 ## Rule (en)
 
-You are a villager. If the werewolves attack you, you do not die: you become a werewolf.
+You are a villager. If the werewolves attack you, you do not die: you secretly become a werewolf and wake with them from then on.
 
 ## Narrator notes
 

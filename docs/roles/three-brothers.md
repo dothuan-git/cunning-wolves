@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Ban đêm cả ba thức dậy, nhận ra nhau và có thể lặng lẽ trao đổi nghi ngờ.
+Đêm 1, ba anh em cùng thức dậy và nhận ra nhau, nên biết chắc hai người kia là dân làng. Những đêm sau, quản trò có thể gọi ba người dậy lần nữa để lặng lẽ bàn bạc.
 
 ## Rule (en)
 
-The brothers wake together at night, recognize each other and may silently share their suspicions.
+On Night 1 the three brothers wake together and see each other, so each knows the others are villagers. On later nights the narrator may wake them again to agree quietly on what to do.
 
 ## Narrator notes
 

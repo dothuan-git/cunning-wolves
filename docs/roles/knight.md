@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Nếu bị sói giết, thanh kiếm gỉ làm con sói đầu tiên bên trái nhiễm bệnh và chết đêm sau.
+Nếu bị sói giết, thanh kiếm gỉ làm một con sói bị thương: trong số các sói đã tấn công bạn, con sói đầu tiên bên trái bạn sẽ chết vào đêm sau.
 
 ## Rule (en)
 
-If the werewolves kill you, your rusty sword infects the first werewolf on your left: they die the next night.
+If the werewolves kill you, your rusty sword wounds one of them: among the werewolves who attacked you, the first one on your left dies the next night.

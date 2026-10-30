@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Đêm 1: chọn một hình mẫu. Hình mẫu còn sống: là dân làng. Họ chết: thành sói, thức dậy cùng bầy sói từ đêm sau.
+Đêm 1: chọn một hình mẫu. Chừng nào hình mẫu còn sống, bạn là dân làng, dù họ là vai gì. Khi họ chết, bạn thành sói và thức dậy cùng bầy sói từ đêm sau.
 
 ## Rule (en)
 
-Night 1: choose a role model. While your model lives, you are a villager. When they die, you become a werewolf and wake with the pack from the next night.
+Night 1: choose a role model. While your model is alive you are a villager, whatever their role is. When they die, you become a werewolf and wake with the pack from the next night.
 
 ## Narrator notes
 

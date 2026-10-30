@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Hai bình thuốc, mỗi bình dùng một lần: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho biết nạn nhân.
+Bạn có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân. Bạn được dùng thuốc cho chính mình, và dùng cả hai bình trong cùng một đêm.
 
 ## Rule (en)
 
-You have two potions, each usable once per game: one saves the werewolves' victim, the other kills any player. Each night the narrator tells you the victim.
+You have two potions, each usable once per game: one saves the werewolves' victim, the other kills any player. Each night the narrator shows you the victim. You may use a potion on yourself, and both in the same night.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: biết họ có phải Tiên tri không. Tiên tri được báo là dân làng.
+Bạn thuộc phe sói nhưng không thức dậy cùng bầy sói. Mỗi đêm chỉ một người: bạn biết họ có phải Tiên tri không. Tiên tri thấy bạn là dân làng.
 
 ## Rule (en)
 
-Each night, point at a player: you learn whether they are the Seer. The Seer is told you are a villager.
+You are on the werewolf team but do not wake with the pack. Each night, point at a player: you learn whether they are the Seer. The Seer sees you as a villager.
 
 ## Narrator notes
 

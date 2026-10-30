@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Mỗi đêm cùng bầy sói thống nhất giết một người. Ban ngày giả làm dân làng.
+Mỗi đêm thức dậy cùng bầy sói và lặng lẽ thống nhất giết một người (không phải sói). Không thống nhất được thì đêm đó không ai chết. Ban ngày giả làm dân làng.
 
 ## Rule (en)
 
-Each night, wake with the other werewolves and agree on one player to kill. By day, pass as a villager.
+Each night, wake with the other werewolves and silently agree on one player to kill (never a werewolf). If you cannot agree, nobody dies. By day, pass as a villager.

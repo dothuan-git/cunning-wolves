@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Thức dậy cùng bầy sói nhưng chơi một mình: thắng nếu là người sống sót cuối cùng, hoặc chỉ còn mình và một người không phải sói.
+Bạn thức dậy cùng bầy sói và cùng chọn nạn nhân, nhưng chơi một mình. Bạn thắng nếu là người sống sót cuối cùng, hoặc chỉ còn bạn và một người không phải sói. Tiên tri thấy bạn là sói.
 
 ## Rule (en)
 
-You wake with the werewolves but play alone: you win if you are the last player alive, or if only you and one non-werewolf remain.
+You wake with the werewolves and help choose the victim, but you play alone. You win if you are the last player alive, or if only you and one non-werewolf remain. The Seer sees you as a werewolf.
 
 ## Narrator notes
 

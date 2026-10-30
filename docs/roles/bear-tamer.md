@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Mỗi sáng, nếu có sói ngồi ngay cạnh, quản trò gầm như gấu.
+Mỗi sáng, sau khi công bố nạn nhân của đêm, quản trò gầm như gấu nếu một trong hai người còn sống ngồi cạnh bạn là sói.
 
 ## Rule (en)
 
-Each morning, if a werewolf sits right beside you, the narrator growls like a bear.
+Each morning, after the night's victims are announced, the narrator growls like a bear if one of your two living neighbors is a werewolf.
 
 ## Narrator notes
 

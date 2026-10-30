@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Ngủ cho đến khi Tiên tri chết, rồi trở thành Tiên tri.
+Bạn ngủ. Khi Tiên tri bị loại, bạn thành Tiên tri và mỗi đêm thức dậy để biết một người có phải sói không.
 
 ## Rule (en)
 
-You sleep until the Seer dies. Then you become the Seer.
+You sleep. If the Seer is eliminated, you become the Seer and wake each night to learn whether a player is a werewolf.
 
 ## Narrator notes
 

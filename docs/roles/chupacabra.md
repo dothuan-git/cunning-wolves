@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm chỉ một người: là sói thì chết. Hết sói, mỗi đêm giết một người bất kỳ. Thắng khi là người sống sót cuối cùng.
+Mỗi đêm chỉ một người: nếu là sói thì chết (bạn không được báo có trúng không). Khi hết sói, mỗi đêm bạn giết một người bất kỳ. Bạn thắng khi là người sống sót cuối cùng.
 
 ## Rule (en)
 
-Each night, point at a player: if they are a werewolf, they die. Once no werewolf is left, you kill any player each night. You win as the last player alive.
+Each night, point at a player: if they are a werewolf, they die (you are not told if it worked). Once no werewolf is left, you kill any player each night. You win as the last player alive.
 
 ## Narrator notes
 

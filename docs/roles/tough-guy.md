@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Nếu sói tấn công, sống qua đêm đó và chết vào đêm sau.
+Nếu bị sói tấn công, bạn sống qua đêm đó nhưng chết vào đêm sau. Bạn không được báo là mình bị tấn công.
 
 ## Rule (en)
 
-If the werewolves attack you, you survive that night and die the next one.
+If the werewolves attack you, you survive that night but die the next one. You are not told you were attacked.
 
 ## Narrator notes
 

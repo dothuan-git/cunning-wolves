@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm quản trò đọc bốn câu hỏi: chọn một câu và một người để hỏi. Hôm sau người đó đặt câu hỏi, người chết đầu tiên trả lời có hoặc không.
+Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
 
 ## Rule (en)
 
-Each night, the narrator reads you four questions: pick one and a player to ask it. Next day they ask it, and the first dead player answers yes or no.
+Each night the narrator may read you the four questions on a Spiritualism card: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".
 
 ## Narrator notes
 

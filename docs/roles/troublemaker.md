@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một đêm: hôm sau làng loại hai người.
+Một lần trong ván, chọn một đêm: hôm sau làng loại hai người thay vì một.
 
 ## Rule (en)
 
-Once per game, choose a night: the next day the village holds two eliminations.
+Once per game, choose a night: the next day the village eliminates two players instead of one.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Mỗi đêm mê hoặc hai người (không phải mình). Người bị mê hoặc thức dậy để nhận ra nhau. Thắng khi mọi người còn sống đều bị mê hoặc.
+Mỗi đêm mê hoặc hai người (không phải mình). Mọi người bị mê hoặc cùng thức dậy để nhận ra nhau, và vẫn giữ vai và năng lực của họ. Bạn thắng khi mọi người còn sống khác đều bị mê hoặc.
 
 ## Rule (en)
 
-Each night, charm two players, never yourself. Charmed players wake together to recognize each other. You win when every living player is charmed.
+Each night, charm two players, never yourself. All charmed players wake together to see each other, and keep their own roles and powers. You win when every other living player is charmed.
 
 ## Narrator notes
 

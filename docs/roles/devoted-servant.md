@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Khi làng loại một người, trước khi công bố vai của họ, có thể lộ diện và nhận vai đó. Không dùng được nếu đang trong cặp đôi.
+Khi làng loại một người, trước khi lộ vai của họ, bạn có thể lộ diện và nhận vai đó. Bạn chơi vai mới như thể đó là đêm đầu tiên. Không dùng được nếu bạn đang trong cặp đôi.
 
 ## Rule (en)
 
-When the village votes someone out, before their role is announced, you may reveal yourself and take their role. Not allowed if you are a lover.
+When the village votes someone out, before their role is revealed, you may reveal yourself and take their role. You play it as if it were the first night. Not allowed if you are a lover.
 
 ## Narrator notes
 

@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Thắng nếu bị loại.
+Bạn chỉ thắng nếu bị loại. Khi bạn thắng, mọi phe khác đều thua.
 
 ## Rule (en)
 
-You win if you are eliminated.
+You win only if you are eliminated. When you win, every other team loses.
 
 ## Narrator notes
 

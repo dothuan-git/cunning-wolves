@@ -8,12 +8,12 @@
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một người: hôm sau họ phải bỏ phiếu theo ý mình.
+Nếu sói tấn công bạn ban đêm, con rối thế thân chịu đòn thay: bạn sống sót, lật bài cho mọi người thấy và ở lại chơi. Từ đó bạn không được nói nữa (vẫn được ra hiệu và bỏ phiếu). Lần thứ hai bị chọn, dù bởi làng hay bởi sói, bạn bị loại.
 
 ## Rule (en)
 
-Once per game, choose a player: the next day they must vote as you say.
+If the werewolves attack you at night, your wooden double takes the blow: you survive, show your card to everyone and stay in the game. From then on you cannot speak (you may still gesture and vote). The second time you are chosen, by the village or the werewolves, you are eliminated.
 
 ## Narrator notes
 
-From the 25th anniversary edition of Millers Hollow. The printed rule could not be found online: this is a placeholder from the card's description. Replace it with the text from the box. The app shows the card and rule only; it does not run this role's power.
+From the 25th anniversary edition of Millers Hollow (Asmodee France’s character presentation). Village side. Does not wake at night; the narrator tracks whether the double has been used. The app shows the card and rule only; it does not run this role’s power.

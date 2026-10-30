@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Trước đêm 1, làng bỏ phiếu loại một người. Nếu là mình, hoặc mình chết đêm 1, thắng ngay. Không thì thành dân làng thường.
+Ván bắt đầu bằng cuộc bỏ phiếu của làng trước đêm 1. Nếu bạn bị loại ở đó, hoặc chết trong đêm 1, bạn thắng và ván kết thúc. Nếu không, bạn thành dân làng thường.
 
 ## Rule (en)
 
-Before Night 1, the village votes someone out. If it is you, or you die on Night 1, you win at once. Otherwise you become a plain villager.
+The game starts with a village vote before Night 1. If you are voted out then, or killed on Night 1, you win and the game ends. Otherwise you become a plain villager.
 
 ## Narrator notes
 

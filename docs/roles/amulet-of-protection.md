@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Ai giữ bùa thì không thể chết. Mỗi ngày phải chuyền bùa cho người khác, không thì bùa bị phá.
+Đây là vật phẩm, không phải vai. Ai giữ bùa thì không thể bị loại. Mỗi đêm người giữ phải chuyền bùa cho người khác; nếu chuyền lại cho người từng giữ hoặc bị từ chối, bùa bị phá.
 
 ## Rule (en)
 
-Whoever holds the amulet cannot die. It must be passed to another player each day, or it is destroyed.
+An item, not a role. Whoever holds the amulet cannot be eliminated. The holder must pass it to another player each night; if it goes back to a past holder or is refused, it is destroyed.
 
 ## Narrator notes
 

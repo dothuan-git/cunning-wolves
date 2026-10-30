@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Quản trò nêu ba vai (không phải sói). Mỗi đêm chọn một vai và dùng năng lực đó trong đêm. Mỗi vai chỉ dùng một lần.
+Quản trò đặt sẵn ba vai có năng lực (không phải sói). Mỗi đêm bạn có thể chọn một vai và dùng năng lực đó cho đến đêm sau. Vai đã dùng bị bỏ đi, không dùng lại được.
 
 ## Rule (en)
 
-The narrator names three roles (never werewolves). Each night, choose one and use its power that night. Each role is used once.
+The narrator sets aside three power roles (never werewolves). Each night you may choose one and use its power until the next night. A role you have used is removed and cannot be used again.
 
 ## Narrator notes
 

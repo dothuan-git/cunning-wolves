@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Sói không giết được, dân làng không được bỏ phiếu chống. Bỏ phiếu trước. Nếu phiếu của mình khiến ai đó bị loại, mất sự bảo vệ này.
+Sói không giết được bạn, dân làng không được bỏ phiếu chống bạn. Bạn luôn bỏ phiếu đầu tiên. Nếu phiếu của bạn khiến ai đó bị loại, bạn mất sự bảo vệ này.
 
 ## Rule (en)
 
-Werewolves cannot kill you and villagers cannot vote against you. You vote first. If your vote gets someone eliminated, you lose this protection.
+Werewolves cannot kill you and villagers cannot vote against you. You always vote first. If your vote gets someone eliminated, you lose this protection.
 
 ## Narrator notes
 
