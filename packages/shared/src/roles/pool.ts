@@ -305,7 +305,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'fruit-brute',
-    name: { vi: 'Sói mất khẩu vị', en: 'Fruit Brute' },
+    name: { vi: 'Sói chán ăn', en: 'Fruit Brute' },
     rule: {
       vi: 'Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn mất khẩu vị và không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.',
       en: 'You wake with the werewolves. If you are the last werewolf alive, you lose your appetite and can no longer kill, but you still win once every villager is gone.',
@@ -821,7 +821,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'little-girl',
-    name: { vi: 'Cô bé', en: 'Little Girl' },
+    name: { vi: 'Ti hí', en: 'Little Girl' },
     rule: {
       vi: 'Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay cho nạn nhân của sói.',
       en: 'While the werewolves are awake, you may peek. If they catch you, you die instead of their victim.',

@@ -1,4 +1,4 @@
-# Fruit Brute / Sói mất khẩu vị
+# Fruit Brute / Sói chán ăn
 
 - **id:** `fruit-brute`
 - **Team:** werewolf
