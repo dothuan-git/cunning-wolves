@@ -101,7 +101,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'wild-child',
-    name: { vi: 'Đứa trẻ hoang dã', en: 'Wild Child' },
+    name: { vi: 'Con hoang', en: 'Wild Child' },
     rule: {
       vi: 'Đêm 1: chọn một hình mẫu. Chừng nào hình mẫu còn sống, bạn là dân làng, dù họ là vai gì. Khi họ chết, bạn thành sói và thức dậy cùng bầy sói từ đêm sau.',
       en: 'Night 1: choose a role model. While your model is alive you are a villager, whatever their role is. When they die, you become a werewolf and wake with the pack from the next night.',
@@ -367,7 +367,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'big-bad-wolf',
     name: { vi: 'Sói hung tợn', en: 'Big Bad Wolf' },
     rule: {
-      vi: 'Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Đứa trẻ hoang dã hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.',
+      vi: 'Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Con hoang hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.',
       en: 'Each night, kill with the werewolves. Then, as long as no werewolf has died (a Wild Child or Wolf-hound who turned wolf counts), wake again alone and kill a second player. Never a werewolf.',
     },
     team: 'werewolf',

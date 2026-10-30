@@ -11,7 +11,7 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Bá tước** (The Count) — chỉ đêm 1. Đêm 1: quản trò cho bạn biết mỗi nửa làng có bao nhiêu sói.
 - **Hai chị em** (Two Sisters) — mỗi đêm. Đêm 1, hai chị em cùng thức dậy và nhận ra nhau, nên biết chắc người kia là dân làng. Những đêm sau, quản trò có thể gọi hai người dậy lần nữa để lặng lẽ bàn bạc.
 - **Ba anh em** (Three Brothers) — mỗi đêm. Đêm 1, ba anh em cùng thức dậy và nhận ra nhau, nên biết chắc hai người kia là dân làng. Những đêm sau, quản trò có thể gọi ba người dậy lần nữa để lặng lẽ bàn bạc.
-- **Đứa trẻ hoang dã** (Wild Child) — chỉ đêm 1. Đêm 1: chọn một hình mẫu. Chừng nào hình mẫu còn sống, bạn là dân làng, dù họ là vai gì. Khi họ chết, bạn thành sói và thức dậy cùng bầy sói từ đêm sau.
+- **Con hoang** (Wild Child) — chỉ đêm 1. Đêm 1: chọn một hình mẫu. Chừng nào hình mẫu còn sống, bạn là dân làng, dù họ là vai gì. Khi họ chết, bạn thành sói và thức dậy cùng bầy sói từ đêm sau.
 - **Chó lai sói** (Wolf-hound) — chỉ đêm 1. Đêm 1: chọn một lần duy nhất làm dân làng hay làm sói. Nếu chọn sói, bạn thức dậy cùng bầy sói mỗi đêm và cùng chọn nạn nhân. Nếu không, bạn ngủ tiếp và thắng cùng dân làng.
 - **Diễn viên** (Actor) — mỗi đêm. Quản trò đặt sẵn ba vai có năng lực (không phải sói). Mỗi đêm bạn có thể chọn một vai và dùng năng lực đó cho đến đêm sau. Vai đã dùng bị bỏ đi, không dùng lại được.
 - **Mụ già** (Old Hag) — mỗi đêm. Mỗi đêm chọn một người để đuổi đi: hôm sau họ phải ngồi ngoài, không được nói và không được bỏ phiếu. Bạn không được chọn mình, hay chọn một người hai lần.
@@ -75,7 +75,7 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Sói khổng lồ** (Dire Wolf) — mỗi đêm. Bạn thức dậy cùng bầy sói. Đêm 1, chọn một bạn đồng hành (họ không biết). Bạn đồng hành chết thì bạn chết theo; bạn chết thì họ vẫn sống. Nếu bạn là sói cuối cùng, cái chết của họ không còn ảnh hưởng đến bạn.
 - **Tay sai** (Minion) — chỉ đêm 1. Đêm 1: bạn biết ai là sói, nhưng bầy sói không biết bạn. Bạn thắng cùng bầy sói, và Tiên tri thấy bạn là dân làng.
 - **Sói mộng** (Dream Wolf) — mỗi đêm. Bạn thuộc phe sói nhưng không thức dậy cùng bầy sói. Khi một con sói chết, bạn thế chỗ nó và từ đó thức dậy cùng bầy sói.
-- **Sói hung tợn** (Big Bad Wolf) — mỗi đêm. Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Đứa trẻ hoang dã hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.
+- **Sói hung tợn** (Big Bad Wolf) — mỗi đêm. Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Con hoang hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.
 - **Sói nguyền** (Cursed Wolf-Father) — mỗi đêm. Mỗi đêm bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi bầy sói ngủ, bạn giơ tay: nạn nhân không chết mà bị nguyền, bí mật thành sói. Họ vẫn giữ năng lực ban đêm của mình.
 - **Sói đầu đàn** (Alpha Wolf) — mỗi đêm. Bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi làng loại một con sói vào ban ngày, bạn có thể biến nạn nhân của bầy sói thành sói thay vì giết họ.
 - **Sói mẹ hùng mạnh** (Mighty Wolf-Mother) — mỗi đêm. Mỗi đêm bạn thức dậy cùng bầy sói. Hai đêm đầu, bạn còn thức dậy một mình để chọn một người: nếu họ là dân làng có năng lực, họ mất năng lực ngay và thành dân làng thường (chỉ hai người biết). Không có tác dụng với sói, và không phá được tình yêu của cặp đôi.

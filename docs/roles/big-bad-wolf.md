@@ -7,7 +7,7 @@
 
 ## Rule (vi)
 
-Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Đứa trẻ hoang dã hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.
+Mỗi đêm, cùng bầy sói giết một người. Sau đó, chừng nào chưa có sói nào chết (kể cả Con hoang hay Chó lai sói đã thành sói), bạn thức dậy một mình và giết thêm một người. Không được giết sói.
 
 ## Rule (en)
 

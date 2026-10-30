@@ -1,4 +1,4 @@
-# Wild Child / Đứa trẻ hoang dã
+# Wild Child / Con hoang
 
 - **id:** `wild-child`
 - **Team:** village
