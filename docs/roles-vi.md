@@ -51,7 +51,7 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Hồn ma** (Ghost) — không thức dậy. Bạn chết vào đêm 1. Từ đó, mỗi đêm (kể cả đêm 1) bạn viết một chữ cái lên giấy để quản trò đưa cho làng, như lời nhắn từ bên kia thế giới. Không được viết tên hay chữ cái đầu tên ai, và ban ngày không được nói.
 - **Thợ săn** (Hunter) — không thức dậy. Khi bạn chết, dù bằng cách nào, bạn bắn ngay một người, người đó chết theo. Không ai được nói cho đến khi bạn chọn xong.
 - **Hiệp sĩ kiếm gỉ** (Knight with the Rusty Sword) — không thức dậy. Nếu bị sói giết, thanh kiếm gỉ làm một con sói bị thương: trong số các sói đã tấn công bạn, con sói đầu tiên bên trái bạn sẽ chết vào đêm sau.
-- **Cô bé** (Little Girl) — không thức dậy. Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay cho nạn nhân của sói.
+- **Ti hí** (Little Girl) — không thức dậy. Khi bầy sói thức, bạn có thể hé mắt nhìn trộm. Nếu bị bắt gặp, bạn chết thay cho nạn nhân của sói.
 - **Lãnh chúa** (Lord) — không thức dậy. Một lần trong ván, sau khi làng bỏ phiếu loại ai đó, bạn có thể tha cho người đó: họ không bị loại và vai vẫn giữ kín. Bạn cũng có thể tha cho chính mình.
 - **Lycan** (Lycan) — không thức dậy. Bạn là dân làng, nhưng Tiên tri thấy bạn là sói.
 - **Người tử vì đạo** (Martyr) — không thức dậy. Một lần trong ván, ngay sau khi làng kết án một người (trước khi lộ vai), bạn có thể chọn bị loại thay họ.
@@ -71,7 +71,7 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Ma sói** (Werewolf) — mỗi đêm. Mỗi đêm thức dậy cùng bầy sói và lặng lẽ thống nhất giết một người (không phải sói). Không thống nhất được thì đêm đó không ai chết. Ban ngày giả làm dân làng.
 - **Người sói** (Wolf Man) — mỗi đêm. Bạn thức dậy cùng bầy sói và chơi như một con sói, nhưng Tiên tri thấy bạn là dân làng.
 - **Sói con** (Wolf Cub) — mỗi đêm. Nếu bạn chết, dù bằng cách nào, đêm sau bầy sói giết hai người.
-- **Sói mất khẩu vị** (Fruit Brute) — mỗi đêm. Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn mất khẩu vị và không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
+- **Sói chán ăn** (Fruit Brute) — mỗi đêm. Bạn thức dậy cùng bầy sói. Nếu bạn là con sói cuối cùng còn sống, bạn mất khẩu vị và không giết được nữa, nhưng vẫn thắng khi dân làng bị loại hết.
 - **Sói khổng lồ** (Dire Wolf) — mỗi đêm. Bạn thức dậy cùng bầy sói. Đêm 1, chọn một bạn đồng hành (họ không biết). Bạn đồng hành chết thì bạn chết theo; bạn chết thì họ vẫn sống. Nếu bạn là sói cuối cùng, cái chết của họ không còn ảnh hưởng đến bạn.
 - **Tay sai** (Minion) — chỉ đêm 1. Đêm 1: bạn biết ai là sói, nhưng bầy sói không biết bạn. Bạn thắng cùng bầy sói, và Tiên tri thấy bạn là dân làng.
 - **Sói mộng** (Dream Wolf) — mỗi đêm. Bạn thuộc phe sói nhưng không thức dậy cùng bầy sói. Khi một con sói chết, bạn thế chỗ nó và từ đó thức dậy cùng bầy sói.
