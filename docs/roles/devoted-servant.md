@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** no
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/devoted-servant.webp`
 
 ## Rule (vi)
 

@@ -3,7 +3,7 @@
 - **id:** `tough-guy`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/tough-guy.webp`
 
 ## Rule (vi)
 

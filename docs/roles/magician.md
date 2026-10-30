@@ -3,7 +3,7 @@
 - **id:** `magician`
 - **Team:** village
 - **Wakes at night:** yes (450), after `witch` and before `gypsy`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/magician.webp`
 
 ## Rule (vi)
 

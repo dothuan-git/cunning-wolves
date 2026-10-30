@@ -3,7 +3,7 @@
 - **id:** `prejudiced-manipulator`
 - **Team:** solo
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/prejudiced-manipulator.webp`
 
 ## Rule (vi)
 

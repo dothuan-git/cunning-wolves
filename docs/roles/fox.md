@@ -3,7 +3,7 @@
 - **id:** `fox`
 - **Team:** village
 - **Wakes at night:** yes (160), after `puppeteer` and before `paranormal-investigator`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/fox.webp`
 
 ## Rule (vi)
 

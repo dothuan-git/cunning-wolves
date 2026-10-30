@@ -3,7 +3,7 @@
 - **id:** `spellcaster`
 - **Team:** village
 - **Wakes at night:** yes (140), after `old-hag` and before `puppeteer`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/spellcaster.webp`
 
 ## Rule (vi)
 

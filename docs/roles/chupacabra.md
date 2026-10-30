@@ -3,7 +3,7 @@
 - **id:** `chupacabra`
 - **Team:** solo
 - **Wakes at night:** yes (390), after `bogeyman` and before `baker`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/chupacabra.webp`
 
 ## Rule (vi)
 

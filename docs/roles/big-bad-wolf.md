@@ -3,7 +3,7 @@
 - **id:** `big-bad-wolf`
 - **Team:** werewolf
 - **Wakes at night:** yes (320), after `dream-wolf` and before `cursed-wolf-father`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/big-bad-wolf.webp`
 
 ## Rule (vi)
 

@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** yes (110, Night 1 only), after `wild-child` and before `actor`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/wolf-hound.webp`
 
 ## Rule (vi)
 

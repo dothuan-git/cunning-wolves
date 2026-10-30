@@ -4,7 +4,7 @@
 - **Team:** werewolf
 - **Wakes at night:** yes (330), after `big-bad-wolf` and before `alpha-wolf`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/cursed-wolf-father.webp`
 
 ## Rule (vi)
 
