@@ -3,7 +3,7 @@
 - **id:** `bodyguard`
 - **Team:** village
 - **Wakes at night:** yes (220), after `aura-seer` and before `priest`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/bodyguard.webp`
 
 ## Rule (vi)
 

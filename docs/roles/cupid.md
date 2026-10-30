@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** yes (20, Night 1 only), after `thief` and before `stuttering-judge`
 - **Marks:** `lover` (on each of the two, shown as "Lover")
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/cupid.webp`
 
 ## Rule (vi)
 

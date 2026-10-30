@@ -3,7 +3,7 @@
 - **id:** `bear-tamer`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/bear-tamer.webp`
 
 ## Rule (vi)
 

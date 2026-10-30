@@ -1,9 +1,9 @@
-# Little Girl / Cô bé
+# Little Girl / Ti hí
 
 - **id:** `little-girl`
 - **Team:** village
 - **Wakes at night:** no
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/little-girl.webp`
 
 ## Rule (vi)
 

@@ -4,7 +4,7 @@
 - **Team:** werewolf
 - **Wakes at night:** yes (370), after `white-werewolf` and before `bogeyman`
 - **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/sorceress.webp`
 
 ## Rule (vi)
 

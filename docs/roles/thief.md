@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** yes (10, Night 1 only), first and before `cupid`
 - **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/thief.webp`
 
 ## Rule (vi)
 

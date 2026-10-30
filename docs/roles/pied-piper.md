@@ -4,7 +4,7 @@
 - **Team:** solo
 - **Wakes at night:** yes (470), after `gypsy` and before `raven`
 - **Marks:** `charmed` (on each charmed player)
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/pied-piper.webp`
 
 ## Rule (vi)
 

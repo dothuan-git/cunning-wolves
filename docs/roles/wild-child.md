@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** yes (100, Night 1 only), after `three-brothers` and before `wolf-hound`
 - **Marks:** `role-model` (on the chosen player), `turned` (on the Wild Child once the model dies)
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/wild-child.webp`
 
 ## Rule (vi)
 

@@ -4,7 +4,7 @@
 - **Team:** village
 - **Wakes at night:** yes (200, Night 1 only), after `seer` and before `aura-seer`
 - **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/beholder.webp`
 
 ## Rule (vi)
 

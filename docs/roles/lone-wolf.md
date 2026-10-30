@@ -4,7 +4,7 @@
 - **Team:** solo
 - **Wakes at night:** yes (290), after `dire-wolf` and before `minion`
 - **Marks:** none yet
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/lone-wolf.webp`
 
 ## Rule (vi)
 
