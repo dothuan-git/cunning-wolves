@@ -310,6 +310,9 @@ function PlayerRoom({
   const { t } = useTranslation();
   const [notSent, setNotSent] = useState(false);
   const [rejoining, setRejoining] = useState(false);
+  const [readingRoles, setReadingRoles] = useState(false);
+  // Coming back from the roles, the card is already in hand: no second toss.
+  const [cardSeen, setCardSeen] = useState(false);
 
   if (view.seat === 'joined' && view.reveal) {
     return (
@@ -324,7 +327,26 @@ function PlayerRoom({
   }
 
   if (view.seat === 'joined' && view.card) {
-    return <MyCardScreen role={view.card} />;
+    if (readingRoles) {
+      return (
+        <RulesReviewScreen
+          roles={view.roles}
+          onShowCard={() => {
+            setReadingRoles(false);
+            setCardSeen(true);
+          }}
+        />
+      );
+    }
+    return (
+      <MyCardScreen
+        role={view.card}
+        dealIn={!cardSeen}
+        onReviewRoles={() => {
+          setReadingRoles(true);
+        }}
+      />
+    );
   }
 
   if (view.seat === 'joined' && view.roles.length > 0) {

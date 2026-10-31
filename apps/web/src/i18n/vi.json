@@ -221,6 +221,7 @@
     "copies": "{{count}} vai trong ván",
     "hint": "Chạm vào lá bài để đọc luật.",
     "lookCloser": "Xem rõ lá {{role}}, {{count}} vai trong ván",
+    "toCard": "Bài của tôi",
     "understood": "Tôi đã đọc luật",
     "waiting": "Đang chờ quản trò bắt đầu.",
     "masterIntro": "Mọi người đang đọc luật này. Chưa ai nhận bài.",

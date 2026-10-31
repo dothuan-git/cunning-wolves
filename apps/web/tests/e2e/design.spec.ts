@@ -239,6 +239,27 @@ test('the card is dealt in from above when the page opens, but not with reduced 
   await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
 });
 
+test('a player goes back from their card to the roles and forward again', async ({ page }) => {
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Tonight’s roles', exact: true })).toBeVisible();
+  // The game has started: no "I've read the rules" or waiting line.
+  await expect(page.getByRole('button', { name: 'I’ve read the rules' })).toHaveCount(0);
+  await expect(page.getByText('Waiting for the narrator to begin.')).toHaveCount(0);
+  await page.getByRole('button', { name: /^Look closer at Seer/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('Each night, choose one player');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: 'My card', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your role card', exact: true })).toBeVisible();
+  // Already in hand: it comes back face down, without a second toss.
+  await expect(page.getByRole('button', { name: 'Flip your card' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
+});
+
 test('the card can be flipped from the keyboard', async ({ page }) => {
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
   const seer = page.getByRole('heading', { name: 'Seer', exact: true });
