@@ -1,20 +1,18 @@
-import { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { Icon } from './Icon';
+import { CloseContext, useModalClose } from './modalClose';
 import { ScrollArea } from './ScrollArea';
 
 // How long the closing animation runs before the dialog is removed.
 const CLOSE_MS = 160;
 
-/** Closes the modal it sits in, with its closing animation. */
-const CloseContext = createContext<() => void>(() => undefined);
-
 /** A full-width Done button for the foot of a modal; it closes with the animation. */
 export function ModalDone() {
   const { t } = useTranslation();
-  const close = useContext(CloseContext);
+  const close = useModalClose();
   return (
     <Button className="press w-full" onClick={close}>
       {t('common.done')}

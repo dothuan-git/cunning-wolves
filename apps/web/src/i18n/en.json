@@ -251,8 +251,7 @@
     "wakeMoved": "{{role}} is now {{position}} of {{total}}",
     "packExtras": "Also wakes with the wolves",
     "roleTitle": "Role · {{name}}",
-    "playsRole": "Plays",
-    "dealtRole": "Dealt {{role}}",
+    "dealt": "Dealt",
     "rolesInGame": "In this game",
     "otherRoles": "Other roles"
   },

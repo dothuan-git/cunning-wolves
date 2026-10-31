@@ -141,12 +141,12 @@ test('a lone player changed to another role keeps the panel, retitled in the new
   await expect(button).toHaveClass(/text-muted/);
   await button.click();
   const sheet = page.getByRole('dialog', { name: 'Role · Huy', exact: true });
-  const picker = sheet.getByRole('combobox', { name: 'Plays', exact: true });
-  await expect(picker).toHaveValue('villager');
-  await expect(sheet.getByRole('checkbox')).toHaveCount(0);
-  await picker.selectOption('werewolf');
-  await expect(sheet).toContainText('Dealt Villager');
-  await closeSheet(page);
+  const villager = sheet.getByRole('button', { name: 'Villager Dealt', exact: true });
+  await expect(villager).toHaveAttribute('aria-pressed', 'true');
+  await expect(sheet.getByRole('button', { name: 'Done' })).toHaveCount(0);
+  // One tap picks the role and closes the sheet.
+  await sheet.getByRole('button', { name: 'Wolf', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
   const changed = page.getByRole('region', { name: 'Villager → Wolf', exact: true });
   await expect(changed).toContainText('Huy');
   await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
@@ -154,8 +154,12 @@ test('a lone player changed to another role keeps the panel, retitled in the new
   await expect(page.getByRole('region', { name: 'Wolf', exact: true })).not.toContainText('Huy');
   await expect(button).toHaveClass(/text-ink/);
   await button.click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
-  await closeSheet(page);
+  await expect(sheet.getByRole('button', { name: 'Wolf', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await villager.click();
+  await expect(sheet).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Villager', exact: true })).toContainText('Huy');
   await expect(changed).toHaveCount(0);
   await expect(page.getByRole('status')).toHaveText('6 players alive');
@@ -164,8 +168,7 @@ test('a lone player changed to another role keeps the panel, retitled in the new
 test('a player changed out of a shared panel splits off right below it', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: "Change An's role", exact: true }).click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('seer');
-  await closeSheet(page);
+  await page.getByRole('dialog').getByRole('button', { name: 'Seer', exact: true }).click();
   const wolves = page.getByRole('region', { name: 'Wolf', exact: true });
   const split = page.getByRole('region', { name: 'Wolf → Seer', exact: true });
   await expect(wolves).toContainText('Minh');
