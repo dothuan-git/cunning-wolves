@@ -11,10 +11,13 @@ export function RoleCard({
   role,
   revealed,
   onToggle,
+  dealIn = true,
 }: {
   role: PoolRole;
   revealed: boolean;
   onToggle: () => void;
+  /** Tosses the card in as it appears; off when the player comes back to a card already dealt. */
+  dealIn?: boolean;
 }) {
   const { t } = useTranslation();
   // The role is in the page only while it shows or turns away, so a hidden card can't be read.
@@ -30,7 +33,7 @@ export function RoleCard({
     };
   }, [revealed]);
   return (
-    <div className="flip-card deal-in">
+    <div className={`flip-card ${dealIn ? 'deal-in' : ''}`}>
       <div className="role-card" data-revealed={revealed}>
         <div className="flip-face border border-field-border shadow-card">
           <img src={cardBack} alt="" className="size-full object-cover" />

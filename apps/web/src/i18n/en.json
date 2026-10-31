@@ -221,6 +221,7 @@
     "copies": "{{count}} in this game",
     "hint": "Tap a card to read its rule.",
     "lookCloser": "Look closer at {{role}}, {{count}} in this game",
+    "toCard": "My card",
     "understood": "I’ve read the rules",
     "waiting": "Waiting for the narrator to begin.",
     "masterIntro": "Everyone is reading these rules now. Nobody has a card yet.",
