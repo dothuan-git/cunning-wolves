@@ -250,8 +250,7 @@
     "wakeMoved": "{{role}} giờ ở vị trí {{position}}/{{total}}",
     "packExtras": "Cũng thức dậy cùng bầy sói",
     "roleTitle": "Vai · {{name}}",
-    "playsRole": "Đang là",
-    "dealtRole": "Bài gốc: {{role}}",
+    "dealt": "Bài gốc",
     "rolesInGame": "Trong ván này",
     "otherRoles": "Vai khác"
   },

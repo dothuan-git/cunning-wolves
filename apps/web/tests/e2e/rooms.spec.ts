@@ -346,8 +346,8 @@ test('lovers are marked dead one by one, and the narrator gives a player a new r
   const copier = master.getByRole('region', { name: 'Doppelgänger', exact: true });
   await copier.getByRole('button', { name: /^Change .* role$/ }).click();
   const sheet = master.getByRole('dialog', { name: /^Role · / });
-  await sheet.getByRole('combobox', { name: 'Plays' }).selectOption({ label: 'Werewolf' });
-  await sheet.getByRole('button', { name: 'Done', exact: true }).click();
+  await sheet.getByRole('button', { name: 'Werewolf', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
   const changed = master.getByRole('region', { name: 'Doppelgänger → Werewolf', exact: true });
   await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
   await expect(copier).toHaveCount(0);
