@@ -3,7 +3,7 @@
 - **id:** `baker`
 - **Team:** village
 - **Wakes at night:** yes (400), after `chupacabra` and before `vampire`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/baker.webp`
 
 ## Rule (vi)
 

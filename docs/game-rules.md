@@ -118,54 +118,55 @@ The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.
 3. Stuttering Judge (`stuttering-judge`, 30): Night 1 only
 4. Doppelgänger (`doppelganger`, 40): Night 1 only
 5. Hoodlum (`hoodlum`, 50): Night 1 only
-6. The Count (`the-count`, 70): Night 1 only
-7. Two Sisters (`two-sisters`, 80)
-8. Three Brothers (`three-brothers`, 90)
-9. Wild Child (`wild-child`, 100): Night 1 only
-10. Wolf-hound (`wolf-hound`, 110): Night 1 only
-11. Actor (`actor`, 120)
-12. Old Hag (`old-hag`, 130)
-13. Spellcaster (`spellcaster`, 140)
-14. Puppeteer (`puppeteer`, 150)
-15. Fox (`fox`, 160)
-16. Paranormal Investigator (`paranormal-investigator`, 170)
-17. Wise Monkey (`wise-monkey`, 180)
-18. Seer (`seer`, 190)
-19. Beholder (`beholder`, 200): Night 1 only
-20. Aura Seer (`aura-seer`, 210)
-21. Confessor (`confessor`, 215): once per game
-22. Bodyguard (`bodyguard`, 220)
-23. Priest (`priest`, 230)
-24. Werewolf (`werewolf`, 240)
-25. Wolf Man (`wolf-man`, 250)
-26. Wolf Cub (`wolf-cub`, 260)
-27. Fruit Brute (`fruit-brute`, 270)
-28. Dire Wolf (`dire-wolf`, 280)
-29. Lone Wolf (`lone-wolf`, 290)
-30. Minion (`minion`, 300): Night 1 only
-31. Dream Wolf (`dream-wolf`, 310)
-32. Big Bad Wolf (`big-bad-wolf`, 320)
-33. Cursed Wolf-Father (`cursed-wolf-father`, 330)
-34. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
-35. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
-36. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
-37. Sorceress (`sorceress`, 370)
-38. Bogeyman (`bogeyman`, 380)
-39. Chupacabra (`chupacabra`, 390)
-40. Baker (`baker`, 400)
-41. Vampire (`vampire`, 420)
-42. Cult Leader (`cult-leader`, 430)
-43. Witch (`witch`, 440)
-44. Magician (`magician`, 450)
-45. Gypsy (`gypsy`, 460)
-46. Pied Piper (`pied-piper`, 470)
-47. Raven (`raven`, 480): once per game
-48. Schoolmistress (`schoolmistress`, 485): once per game
-49. Troublemaker (`troublemaker`, 490)
-50. Bonesetter (`bonesetter`, 495): once per game
-51. Insomniac (`insomniac`, 500)
+6. Gossiper (`gossiper`, 60): Night 1 only
+7. The Count (`the-count`, 70): Night 1 only
+8. Two Sisters (`two-sisters`, 80)
+9. Three Brothers (`three-brothers`, 90)
+10. Wild Child (`wild-child`, 100): Night 1 only
+11. Wolf-hound (`wolf-hound`, 110): Night 1 only
+12. Actor (`actor`, 120)
+13. Old Hag (`old-hag`, 130)
+14. Spellcaster (`spellcaster`, 140)
+15. Puppeteer (`puppeteer`, 150)
+16. Fox (`fox`, 160)
+17. Paranormal Investigator (`paranormal-investigator`, 170)
+18. Wise Monkey (`wise-monkey`, 180)
+19. Seer (`seer`, 190)
+20. Beholder (`beholder`, 200): Night 1 only
+21. Aura Seer (`aura-seer`, 210)
+22. Confessor (`confessor`, 215): once per game
+23. Bodyguard (`bodyguard`, 220)
+24. Priest (`priest`, 230)
+25. Werewolf (`werewolf`, 240)
+26. Wolf Man (`wolf-man`, 250)
+27. Wolf Cub (`wolf-cub`, 260)
+28. Fruit Brute (`fruit-brute`, 270)
+29. Dire Wolf (`dire-wolf`, 280)
+30. Lone Wolf (`lone-wolf`, 290)
+31. Minion (`minion`, 300): Night 1 only
+32. Dream Wolf (`dream-wolf`, 310)
+33. Big Bad Wolf (`big-bad-wolf`, 320)
+34. Cursed Wolf-Father (`cursed-wolf-father`, 330)
+35. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
+36. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
+37. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
+38. Sorceress (`sorceress`, 370)
+39. Bogeyman (`bogeyman`, 380)
+40. Chupacabra (`chupacabra`, 390)
+41. Baker (`baker`, 400)
+42. Vampire (`vampire`, 420)
+43. Cult Leader (`cult-leader`, 430)
+44. Witch (`witch`, 440)
+45. Magician (`magician`, 450)
+46. Gypsy (`gypsy`, 460)
+47. Pied Piper (`pied-piper`, 470)
+48. Raven (`raven`, 480): once per game
+49. Schoolmistress (`schoolmistress`, 485): once per game
+50. Troublemaker (`troublemaker`, 490)
+51. Bonesetter (`bonesetter`, 495): once per game
+52. Insomniac (`insomniac`, 500)
 
-Never wake: Amulet of Protection (an item the narrator hands out), Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Barber, Innkeeper, Bear Tamer, Colossus, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Tanner, Tough Guy, Village Idiot, Villager, Villager-Villager.
+Never wake: Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Barber, Innkeeper, Bear Tamer, Colossus, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Tanner, Tough Guy, Village Idiot, Villager, Villager-Villager.
 
 ## Connections and lifetime
 

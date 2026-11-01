@@ -3,7 +3,7 @@
 - **id:** `bogeyman`
 - **Team:** solo
 - **Wakes at night:** yes (380), after `sorceress` and before `chupacabra`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/bogeyman.webp`
 
 ## Rule (vi)
 

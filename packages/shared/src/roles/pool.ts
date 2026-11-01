@@ -64,6 +64,18 @@ export const ROLE_POOL: readonly PoolRole[] = [
     image: 'hoodlum.webp',
   },
   {
+    id: 'gossiper',
+    name: { vi: 'Kẻ buôn chuyện', en: 'Gossiper' },
+    rule: {
+      vi: 'Đêm 1: quản trò chỉ cho bạn một người giữ vai quan trọng nhất của mỗi phe (dân làng, sói, độc lập), theo thứ tự ngẫu nhiên. Bạn không biết ai thuộc phe nào.',
+      en: "Night 1: the narrator points at one player from each faction who holds that faction's most important role, in random order. You don't learn which is which.",
+    },
+    team: 'village',
+    defaultWakeOrder: 60,
+    wakeNights: 'first',
+    image: 'gossiper.webp',
+  },
+  {
     id: 'the-count',
     name: { vi: 'Bá tước', en: 'The Count' },
     rule: {
@@ -521,7 +533,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
   },
   {
     id: 'gypsy',
-    name: { vi: 'Người Di-gan', en: 'Gypsy' },
+    name: { vi: 'Người gọi hồn', en: 'Gypsy' },
     rule: {
       vi: 'Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".',
       en: 'Each night the narrator may read you the four questions on a Spiritualism card: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".',
@@ -578,18 +590,6 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 500,
     wakeNights: 'every',
     image: 'insomniac.webp',
-  },
-  {
-    id: 'amulet-of-protection',
-    name: { vi: 'Bùa hộ mệnh', en: 'Amulet of Protection' },
-    rule: {
-      vi: 'Đây là vật phẩm, không phải vai. Ai giữ bùa thì không thể bị loại. Mỗi đêm người giữ phải chuyền bùa cho người khác; nếu chuyền lại cho người từng giữ hoặc bị từ chối, bùa bị phá.',
-      en: 'An item, not a role. Whoever holds the amulet cannot be eliminated. The holder must pass it to another player each night; if it goes back to a past holder or is refused, it is destroyed.',
-    },
-    team: 'village',
-    defaultWakeOrder: null,
-    wakeNights: 'every',
-    image: 'amulet-of-protection.webp',
   },
   {
     id: 'angel',

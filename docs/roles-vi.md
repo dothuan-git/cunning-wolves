@@ -2,12 +2,13 @@
 
 Tạo từ `packages/shared/src/roles/pool.ts`.
 
-## Phe Dân làng (61)
+## Phe Dân làng (58)
 
 - **Kẻ trộm** (Thief) — chỉ đêm 1. Có hai lá vai thừa được úp riêng. Đêm 1, bạn xem hai lá đó và có thể đổi vai của mình lấy một lá, rồi giữ vai mới đến hết ván. Nếu cả hai đều là sói, bạn bắt buộc phải đổi.
 - **Cupid** (Cupid) — chỉ đêm 1. Đêm 1: chọn hai người làm cặp đôi (có thể chọn cả mình). Hai người lặng lẽ nhận ra nhau. Một người chết thì người kia chết theo ngay. Cặp đôi không được bỏ phiếu chống nhau ở cả hai lần bỏ phiếu ban ngày. Nếu một người là sói, một người là dân, họ lập thành phe riêng và chỉ thắng khi là hai người sống sót cuối cùng.
 - **Thẩm phán** (Stuttering Judge) — chỉ đêm 1. Đêm 1: thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, khi làng đang bỏ phiếu treo cổ, bạn ra ký hiệu đó: lượt bỏ phiếu treo cổ thứ hai bắt đầu ngay, không thảo luận, nên ngày đó có hai người phải lên giàn treo cổ.
 - **Kẻ bắt chước** (Doppelgänger) — chỉ đêm 1. Đêm 1: chọn một người. Cho đến khi họ chết, bạn vẫn là dân làng. Khi họ chết, bạn bí mật nhận vai và phe của họ. Bạn không nhận được năng lực họ đã dùng, hay năng lực chỉ dùng được ở đêm 1.
+- **Kẻ buôn chuyện** (Gossiper) — chỉ đêm 1. Đêm 1: quản trò chỉ cho bạn một người giữ vai quan trọng nhất của mỗi phe (dân làng, sói, độc lập), theo thứ tự ngẫu nhiên. Bạn không biết ai thuộc phe nào.
 - **Bá tước** (The Count) — chỉ đêm 1. Đêm 1: quản trò cho bạn biết mỗi nửa làng có bao nhiêu sói.
 - **Hai chị em** (Two Sisters) — mỗi đêm. Đêm 1, hai chị em cùng thức dậy và nhận ra nhau, nên biết chắc người kia là dân làng. Những đêm sau, quản trò có thể gọi hai người dậy lần nữa để lặng lẽ bàn bạc.
 - **Ba anh em** (Three Brothers) — mỗi đêm. Đêm 1, ba anh em cùng thức dậy và nhận ra nhau, nên biết chắc hai người kia là dân làng. Những đêm sau, quản trò có thể gọi ba người dậy lần nữa để lặng lẽ bàn bạc.
@@ -28,11 +29,10 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Thợ làm bánh** (Baker) — mỗi đêm. Mỗi đêm, bạn có thể giơ tay báo quản trò rằng muốn thức dậy sớm. Bạn mở mắt đúng lúc bầy sói vừa đi ngủ, nên có khoảng một phần tư cơ hội nhìn thấy một con sói.
 - **Phù thủy** (Witch) — mỗi đêm. Bạn có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân. Bạn được dùng thuốc cho chính mình, và dùng cả hai bình trong cùng một đêm.
 - **Ảo thuật gia** (Magician) — mỗi đêm. Mỗi đêm bạn dùng một năng lực khác nhau: quản trò giữ một chồng vai hoạt động ban đêm và mỗi đêm (kể cả đêm 1) cho bạn xem một lá. Bạn dùng năng lực của vai đó trong đêm ấy, ví dụ Tiên tri hoặc Người mất ngủ.
-- **Người Di-gan** (Gypsy) — mỗi đêm. Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
+- **Người gọi hồn** (Gypsy) — mỗi đêm. Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
 - **Quạ** (Raven) — mỗi đêm. Một lần trong ván, vào ban đêm, bạn có thể chỉ một người: hôm sau họ bắt đầu lần bỏ phiếu treo cổ với sẵn hai phiếu chống.
 - **Kẻ gây rối** (Troublemaker) — mỗi đêm. Một lần trong ván, chọn một đêm: hôm sau làng bỏ phiếu treo cổ hai lần thay vì một.
 - **Người mất ngủ** (Insomniac) — mỗi đêm. Mỗi đêm, sau khi mọi người đã hành động xong, bạn biết ít nhất một trong hai người ngồi cạnh có thức dậy không, nhưng không biết là ai.
-- **Bùa hộ mệnh** (Amulet of Protection) — không thức dậy. Đây là vật phẩm, không phải vai. Ai giữ bùa thì không thể bị loại. Mỗi đêm người giữ phải chuyền bùa cho người khác; nếu chuyền lại cho người từng giữ hoặc bị từ chối, bùa bị phá.
 - **Tiên tri tập sự** (Apprentice Seer) — không thức dậy. Bạn ngủ. Khi Tiên tri bị loại, bạn thành Tiên tri và mỗi đêm thức dậy để biết một người có phải sói không.
 - **Thợ cắt tóc** (Barber) — không thức dậy. Một lần trong ván, ban ngày, loại một người bất kỳ. Nếu họ không phải sói, bạn cũng chết.
 - **Chủ quán rượu** (Innkeeper) — không thức dậy. Sói không giết được bạn vào ban đêm. Nếu bạn lật bài cho mọi người xem, bạn mất sự bảo vệ này và từ đó luôn bỏ phiếu đầu tiên ở cả hai lần bỏ phiếu ban ngày.

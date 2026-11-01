@@ -3,7 +3,7 @@
 - **id:** `puppeteer`
 - **Team:** village
 - **Wakes at night:** yes (150), after `spellcaster` and before `fox`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/puppeteer.webp`
 
 ## Rule (vi)
 
