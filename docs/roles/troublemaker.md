@@ -2,7 +2,7 @@
 
 - **id:** `troublemaker`
 - **Team:** village
-- **Wakes at night:** yes (490), after `raven` and before `bonesetter`
+- **Wakes at night:** yes (490), after `schoolmistress` and before `bonesetter`
 - **Card art:** `apps/web/src/assets/cards/troublemaker.webp`
 
 ## Rule (vi)

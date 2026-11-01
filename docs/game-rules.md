@@ -162,7 +162,7 @@ The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.
 47. Pied Piper (`pied-piper`, 470)
 48. Raven (`raven`, 480): once per game
 49. Schoolmistress (`schoolmistress`, 485): once per game
-50. Troublemaker (`troublemaker`, 490)
+50. Troublemaker (`troublemaker`, 490): once per game
 51. Bonesetter (`bonesetter`, 495): once per game
 52. Insomniac (`insomniac`, 500)
 

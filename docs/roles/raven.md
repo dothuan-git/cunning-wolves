@@ -2,7 +2,7 @@
 
 - **id:** `raven`
 - **Team:** village
-- **Wakes at night:** yes (480), after `pied-piper` and before `troublemaker`
+- **Wakes at night:** yes (480), after `pied-piper` and before `schoolmistress`
 - **Card art:** `apps/web/src/assets/cards/raven.webp`
 
 ## Rule (vi)
