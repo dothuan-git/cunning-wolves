@@ -1,9 +1,9 @@
-# Gypsy / Người Di-gan
+# Gypsy / Người gọi hồn
 
 - **id:** `gypsy`
 - **Team:** village
 - **Wakes at night:** yes (460), after `magician` and before `pied-piper`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/gypsy.webp`
 
 ## Rule (vi)
 

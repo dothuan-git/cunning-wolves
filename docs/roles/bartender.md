@@ -1,4 +1,4 @@
-# Bartender / Chủ quán rượu
+# Innkeeper / Chủ quán rượu
 
 - **id:** `bartender`
 - **Team:** village
@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Sói không giết được bạn, dân làng không được bỏ phiếu chống bạn. Bạn luôn bỏ phiếu đầu tiên. Nếu phiếu của bạn khiến ai đó bị loại, bạn mất sự bảo vệ này.
+Sói không giết được bạn vào ban đêm. Nếu bạn lật bài cho mọi người xem, bạn mất sự bảo vệ này và từ đó luôn bỏ phiếu đầu tiên ở cả hai lần bỏ phiếu ban ngày.
 
 ## Rule (en)
 
-Werewolves cannot kill you and villagers cannot vote against you. You always vote first. If your vote gets someone eliminated, you lose this protection.
+Werewolves can't kill you at night. If you reveal your card to everyone, you lose this protection and from then on always vote first in both day votes.
 
 ## Narrator notes
 

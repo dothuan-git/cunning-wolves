@@ -2,7 +2,7 @@
 
 - **id:** `aura-seer`
 - **Team:** village
-- **Wakes at night:** yes (210), after `beholder` and before `bodyguard`
+- **Wakes at night:** yes (210), after `beholder` and before `confessor`
 - **Card art:** `apps/web/src/assets/cards/aura-seer.webp`
 
 ## Rule (vi)

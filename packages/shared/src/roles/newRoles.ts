@@ -13,7 +13,6 @@ export const ROLE_CHANGERS: readonly string[] = [
   'devoted-servant',
   'drunk',
   'apprentice-seer',
-  'bailiff',
   'angel',
   'dream-wolf',
   'wild-child',

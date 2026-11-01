@@ -8,11 +8,11 @@
 
 ## Rule (vi)
 
-Bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi làng loại một con sói vào ban ngày, bạn có thể biến nạn nhân của bầy sói thành sói thay vì giết họ.
+Bạn thức dậy cùng bầy sói. Một lần trong ván, sau khi bỏ phiếu sinh tử treo cổ một con sói, bạn có thể biến nạn nhân của bầy sói thành sói thay vì giết họ.
 
 ## Rule (en)
 
-You wake with the werewolves. Once per game, after the village has eliminated a werewolf by day, you may turn the werewolves' victim into a werewolf instead of killing them.
+You wake with the werewolves. Once per game, after the life-or-death vote hangs a werewolf, you may turn the werewolves' victim into a werewolf instead of killing them.
 
 ## Narrator notes
 

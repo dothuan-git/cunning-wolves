@@ -2,7 +2,7 @@
 
 - **id:** `bodyguard`
 - **Team:** village
-- **Wakes at night:** yes (220), after `aura-seer` and before `priest`
+- **Wakes at night:** yes (220), after `confessor` and before `priest`
 - **Card art:** `apps/web/src/assets/cards/bodyguard.webp`
 
 ## Rule (vi)

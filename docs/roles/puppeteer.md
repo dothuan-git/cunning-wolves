@@ -3,15 +3,15 @@
 - **id:** `puppeteer`
 - **Team:** village
 - **Wakes at night:** yes (150), after `spellcaster` and before `fox`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/puppeteer.webp`
 
 ## Rule (vi)
 
-Nếu sói tấn công bạn ban đêm, con rối thế thân chịu đòn thay: bạn sống sót, lật bài cho mọi người thấy và ở lại chơi. Từ đó bạn không được nói nữa (vẫn được ra hiệu và bỏ phiếu). Lần thứ hai bị chọn, dù bởi làng hay bởi sói, bạn bị loại.
+Nếu sói tấn công bạn ban đêm, con rối thế thân chịu đòn thay: bạn sống sót, lật bài cho mọi người thấy và ở lại chơi. Từ đó bạn không được nói nữa (vẫn được ra hiệu và bỏ phiếu). Lần thứ hai bị sói tấn công hoặc bị treo cổ, bạn bị loại.
 
 ## Rule (en)
 
-If the werewolves attack you at night, your wooden double takes the blow: you survive, show your card to everyone and stay in the game. From then on you cannot speak (you may still gesture and vote). The second time you are chosen, by the village or the werewolves, you are eliminated.
+If the werewolves attack you at night, your wooden double takes the blow: you survive, show your card to everyone and stay in the game. From then on you cannot speak (you may still gesture and vote). The second time the werewolves attack you or you are hanged, you are eliminated.
 
 ## Narrator notes
 

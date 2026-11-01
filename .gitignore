@@ -16,6 +16,7 @@ test-results/
 playwright-report/
 blob-report/
 coverage/
+output/
 
 # env
 .env*
@@ -29,6 +30,8 @@ CLAUDE.local.md
 .DS_Store
 Thumbs.db
 *.log
+.agents
+.codex
 
 # taste-skill working files (inspector screenshots, direction sheets)
 .taste-skill/

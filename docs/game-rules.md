@@ -87,9 +87,19 @@ The worker builds each viewer's state before sending it. A player's client never
 - Note fields are separate from status controls: editing a note never marks or unmarks a player. Only the master can edit notes; player views do not receive them during play. See decisions `0007-per-player-night-comments.md`, `0010-single-list-night-and-morning.md` and `0012-medieval-light-redesign.md`.
 - **The room keeps all of it:** the phase, deaths and notes survive a refresh, and only the master's phone receives them. Ending a phase names the phase being ended, so a hold that arrives twice ends one phase, not two. See decision 0020.
 - A note is saved about a second after the narrator stops typing, and when its field is left. A note typed while reconnecting is sent once the connection is back. Notes are up to 1000 characters.
-- **Role change:** only while a role that changes roles is dealt (Thief, Doppelgänger, Devoted Servant, Drunk, Apprentice Seer, Bailiff, Angel, Dream Wolf, and the roles that turn a player into a wolf: Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father, Alpha Wolf). Then every player has a swap button beside the status pill; it opens a sheet with one **Plays** picker: this game's roles first, then the rest of the pool. Any player can be changed, so a player cursed or bitten by the wolves is given the Werewolf. The player stays with their dealt role: its panel is retitled "Dealt role → New role" in the new role's faction color, and wakes where and when the dealt role does. When the panel holds other players, the changed player splits off into their own panel right below it; players changed to the same role share it. The button is ink while a player plays another role. The player's phone keeps the dealt card, and the change never reaches it during play. Going back to the dealt role takes it off. New roles survive a refresh and are cleared by Play again. The summary lists the player under the faction of the role they ended with, as "Dealt role → New role", and the change in the journal. See decisions 0025 and 0026.
+- **Role change:** only while a role that changes roles is dealt (Thief, Doppelgänger, Devoted Servant, Drunk, Apprentice Seer, Angel, Dream Wolf, and the roles that turn a player into a wolf: Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father, Alpha Wolf). Then every player has a swap button beside the status pill; it opens a sheet with one **Plays** picker: this game's roles first, then the rest of the pool. Any player can be changed, so a player cursed or bitten by the wolves is given the Werewolf. The player stays with their dealt role: its panel is retitled "Dealt role → New role" in the new role's faction color, and wakes where and when the dealt role does. When the panel holds other players, the changed player splits off into their own panel right below it; players changed to the same role share it. The button is ink while a player plays another role. The player's phone keeps the dealt card, and the change never reaches it during play. Going back to the dealt role takes it off. New roles survive a refresh and are cleared by Play again. The summary lists the player under the faction of the role they ended with, as "Dealt role → New role", and the change in the journal. See decisions 0025 and 0026.
 - **Timer:** the narrator starts, pauses and resets a countdown from the menu. Its length is the room's timer setting (0 hides it). It runs on the narrator's phone only, so a refresh resets it. With sound on, a short chime plays when it reaches zero.
 - The app records what the narrator marks. It never resolves abilities or decides winners. A death marks only the player tapped: the narrator marks a lover or a Dire Wolf who dies with someone else separately (decision 0026).
+
+## The day vote
+
+A house rule: the official game has one vote, and the player with the most votes is eliminated. Here the day has three steps. The app does not run them; the narrator does.
+
+1. **Hanging vote** (bỏ phiếu treo cổ): the village votes for one player.
+2. **On the gallows** (lên giàn treo cổ): that player speaks their last words.
+3. **Life-or-death vote** (bỏ phiếu sinh tử): everyone votes whether the player lives or dies.
+
+A player the life-or-death vote kills is **hanged** (bị treo cổ). Role rules use these terms: powers that spare or swap the death (Prince, Village Idiot, Lord, Martyr) act on the life-or-death vote; vote-count powers (Mayor, Innkeeper, Cupid) apply to both votes; the Raven's two votes and the Schoolmistress's block count in the hanging vote only; the Scapegoat only moves the gallows, so the life-or-death vote still decides.
 
 ## The wolves' pack
 
@@ -108,52 +118,55 @@ The `add-role` skill adds each waking role here. Role details: `docs/roles/<id>.
 3. Stuttering Judge (`stuttering-judge`, 30): Night 1 only
 4. Doppelgänger (`doppelganger`, 40): Night 1 only
 5. Hoodlum (`hoodlum`, 50): Night 1 only
-6. The Count (`the-count`, 70): Night 1 only
-7. Two Sisters (`two-sisters`, 80)
-8. Three Brothers (`three-brothers`, 90)
-9. Wild Child (`wild-child`, 100): Night 1 only
-10. Wolf-hound (`wolf-hound`, 110): Night 1 only
-11. Actor (`actor`, 120)
-12. Old Hag (`old-hag`, 130)
-13. Spellcaster (`spellcaster`, 140)
-14. Puppeteer (`puppeteer`, 150)
-15. Fox (`fox`, 160)
-16. Paranormal Investigator (`paranormal-investigator`, 170)
-17. Wise Monkey (`wise-monkey`, 180)
-18. Seer (`seer`, 190)
-19. Beholder (`beholder`, 200): Night 1 only
-20. Aura Seer (`aura-seer`, 210)
-21. Bodyguard (`bodyguard`, 220)
-22. Priest (`priest`, 230)
-23. Werewolf (`werewolf`, 240)
-24. Wolf Man (`wolf-man`, 250)
-25. Wolf Cub (`wolf-cub`, 260)
-26. Fruit Brute (`fruit-brute`, 270)
-27. Dire Wolf (`dire-wolf`, 280)
-28. Lone Wolf (`lone-wolf`, 290)
-29. Minion (`minion`, 300): Night 1 only
-30. Dream Wolf (`dream-wolf`, 310)
-31. Big Bad Wolf (`big-bad-wolf`, 320)
-32. Cursed Wolf-Father (`cursed-wolf-father`, 330)
-33. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
-34. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
-35. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
-36. Sorceress (`sorceress`, 370)
-37. Bogeyman (`bogeyman`, 380)
-38. Chupacabra (`chupacabra`, 390)
-39. Baker (`baker`, 400)
-40. Pyromaniac (`pyromaniac`, 410)
-41. Vampire (`vampire`, 420)
-42. Cult Leader (`cult-leader`, 430)
-43. Witch (`witch`, 440)
-44. Magician (`magician`, 450)
-45. Gypsy (`gypsy`, 460)
-46. Pied Piper (`pied-piper`, 470)
-47. Raven (`raven`, 480)
-48. Troublemaker (`troublemaker`, 490)
-49. Insomniac (`insomniac`, 500)
+6. Gossiper (`gossiper`, 60): Night 1 only
+7. The Count (`the-count`, 70): Night 1 only
+8. Two Sisters (`two-sisters`, 80)
+9. Three Brothers (`three-brothers`, 90)
+10. Wild Child (`wild-child`, 100): Night 1 only
+11. Wolf-hound (`wolf-hound`, 110): Night 1 only
+12. Actor (`actor`, 120)
+13. Old Hag (`old-hag`, 130)
+14. Spellcaster (`spellcaster`, 140)
+15. Puppeteer (`puppeteer`, 150)
+16. Fox (`fox`, 160)
+17. Paranormal Investigator (`paranormal-investigator`, 170)
+18. Wise Monkey (`wise-monkey`, 180)
+19. Seer (`seer`, 190)
+20. Beholder (`beholder`, 200): Night 1 only
+21. Aura Seer (`aura-seer`, 210)
+22. Confessor (`confessor`, 215): once per game
+23. Bodyguard (`bodyguard`, 220)
+24. Priest (`priest`, 230)
+25. Werewolf (`werewolf`, 240)
+26. Wolf Man (`wolf-man`, 250)
+27. Wolf Cub (`wolf-cub`, 260)
+28. Fruit Brute (`fruit-brute`, 270)
+29. Dire Wolf (`dire-wolf`, 280)
+30. Lone Wolf (`lone-wolf`, 290)
+31. Minion (`minion`, 300): Night 1 only
+32. Dream Wolf (`dream-wolf`, 310)
+33. Big Bad Wolf (`big-bad-wolf`, 320)
+34. Cursed Wolf-Father (`cursed-wolf-father`, 330)
+35. Alpha Wolf (`alpha-wolf`, 340): once per game wakes again alone for a second kill
+36. Mighty Wolf-Mother (`mighty-wolf-mother`, 350)
+37. White Werewolf (`white-werewolf`, 360): with the wolves every night, and alone on even nights
+38. Sorceress (`sorceress`, 370)
+39. Bogeyman (`bogeyman`, 380)
+40. Chupacabra (`chupacabra`, 390)
+41. Baker (`baker`, 400)
+42. Vampire (`vampire`, 420)
+43. Cult Leader (`cult-leader`, 430)
+44. Witch (`witch`, 440)
+45. Magician (`magician`, 450)
+46. Gypsy (`gypsy`, 460)
+47. Pied Piper (`pied-piper`, 470)
+48. Raven (`raven`, 480): once per game
+49. Schoolmistress (`schoolmistress`, 485): once per game
+50. Troublemaker (`troublemaker`, 490): once per game
+51. Bonesetter (`bonesetter`, 495): once per game
+52. Insomniac (`insomniac`, 500)
 
-Never wake: Amulet of Protection (an item the narrator hands out), Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Bailiff, Barber, Bartender, Bear Tamer, Bonesetter, Colossus, Confessor, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Schoolmistress, Tanner, Tough Guy, Vagabond, Village Idiot, Villager, Villager-Villager.
+Never wake: Angel (the village votes before Night 1), Apprentice Seer (wakes once the Seer has died), Barber, Innkeeper, Bear Tamer, Colossus, Cursed, Devoted Servant, Diseased, Drunk, Elder, Farmer, Ghost (writes a letter each night once dead), Hunter, Knight with the Rusty Sword, Little Girl (she may peek during the werewolves' turn), Lord, Lycan, Martyr, Mayor, Old Man, Pacifist, Prejudiced Manipulator, Prince, Scapegoat, Tanner, Tough Guy, Village Idiot, Villager, Villager-Villager.
 
 ## Connections and lifetime
 

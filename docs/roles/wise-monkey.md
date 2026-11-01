@@ -3,7 +3,7 @@
 - **id:** `wise-monkey`
 - **Team:** village
 - **Wakes at night:** yes (180), after `paranormal-investigator` and before `seer`
-- **Card art:** missing
+- **Card art:** `apps/web/src/assets/cards/wise-monkey.webp`
 
 ## Rule (vi)
 

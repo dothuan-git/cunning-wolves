@@ -2,16 +2,16 @@
 
 - **id:** `hoodlum`
 - **Team:** solo
-- **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `the-count`
+- **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `gossiper`
 - **Card art:** `apps/web/src/assets/cards/hoodlum.webp`
 
 ## Rule (vi)
 
-Đêm 1: bí mật chọn hai người. Bạn thắng một mình nếu cả hai bị loại và bạn còn sống khi hết ván. Bạn không tự giết được ai.
+Đêm 1: bí mật chọn hai người. Bạn thắng một mình nếu cả hai chết và bạn còn sống khi hết ván.
 
 ## Rule (en)
 
-Night 1: secretly choose two players. You win, alone, if both are eliminated and you are still alive when the game ends. You cannot kill anyone yourself.
+Night 1: secretly choose two players. You win, alone, if both die and you are still alive at the end.
 
 ## Narrator notes
 

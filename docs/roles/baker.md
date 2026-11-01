@@ -2,16 +2,16 @@
 
 - **id:** `baker`
 - **Team:** village
-- **Wakes at night:** yes (400), after `chupacabra` and before `pyromaniac`
-- **Card art:** missing
+- **Wakes at night:** yes (400), after `chupacabra` and before `vampire`
+- **Card art:** `apps/web/src/assets/cards/baker.webp`
 
 ## Rule (vi)
 
-Mỗi đêm, bạn mở mắt đúng lúc bầy sói vừa đi ngủ, nên có khoảng một phần tư cơ hội nhìn thấy một con sói.
+Mỗi đêm, bạn có thể giơ tay báo quản trò rằng muốn thức dậy sớm. Bạn mở mắt đúng lúc bầy sói vừa đi ngủ, nên có khoảng một phần tư cơ hội nhìn thấy một con sói.
 
 ## Rule (en)
 
-Each night, you open your eyes just as the werewolves go back to sleep, so you have about a one-in-four chance of glimpsing one of them.
+Each night, you may raise your hand to tell the narrator you want to wake early. You open your eyes just as the werewolves go back to sleep, so you have about a one-in-four chance of glimpsing a wolf.
 
 ## Narrator notes
 

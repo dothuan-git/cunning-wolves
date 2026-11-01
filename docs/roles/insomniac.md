@@ -2,7 +2,7 @@
 
 - **id:** `insomniac`
 - **Team:** village
-- **Wakes at night:** yes (500), after `troublemaker` and last
+- **Wakes at night:** yes (500), after `bonesetter` and last
 - **Card art:** `apps/web/src/assets/cards/insomniac.webp`
 
 ## Rule (vi)
