@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Phiếu của bạn tính hai lần.
+Phiếu của bạn tính hai lần ở cả hai lần bỏ phiếu ban ngày.
 
 ## Rule (en)
 
-Your vote counts twice.
+Your vote counts twice in both day votes.
 
 ## Narrator notes
 

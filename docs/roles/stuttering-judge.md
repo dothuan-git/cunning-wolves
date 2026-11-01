@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Đêm 1: thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, khi làng đang bỏ phiếu, bạn ra ký hiệu đó: lượt bỏ phiếu thứ hai bắt đầu ngay, không thảo luận, nên ngày đó có hai người bị loại.
+Đêm 1: thống nhất một ký hiệu bí mật với quản trò. Một lần trong ván, khi làng đang bỏ phiếu treo cổ, bạn ra ký hiệu đó: lượt bỏ phiếu treo cổ thứ hai bắt đầu ngay, không thảo luận, nên ngày đó có hai người phải lên giàn treo cổ.
 
 ## Rule (en)
 
-Night 1: agree on a secret sign with the narrator. Once per game, make that sign during a vote: a second vote starts straight away with no debate, so two players are eliminated that day.
+Night 1: agree on a secret sign with the narrator. Once per game, make that sign during the hanging vote: a second hanging vote starts straight away with no debate, so two players go on the gallows that day.
 
 ## Narrator notes
 

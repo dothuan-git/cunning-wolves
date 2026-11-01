@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Nếu bạn chết, dù bằng cách nào, đêm sau bầy sói giết hai người.
+Khi bạn chết, đêm kế tiếp bầy sói giết hai người (chỉ một đêm đó).
 
 ## Rule (en)
 
-If you die, however it happens, the werewolves kill two players the next night.
+When you die, the werewolves kill two players the next night (that night only).
 
 ## Narrator notes
 

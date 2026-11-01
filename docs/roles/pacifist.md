@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Bạn không bao giờ bỏ phiếu loại ai: phiếu của bạn luôn là phiếu chống việc loại người.
+Bạn không bao giờ bỏ phiếu treo cổ. Khi bỏ phiếu sinh tử, bạn luôn bỏ phiếu cho người đó sống.
 
 ## Rule (en)
 
-You can never vote to eliminate anyone: your vote always goes against an elimination.
+You never vote in the hanging vote. In the life-or-death vote you always vote to spare.
 
 ## Narrator notes
 

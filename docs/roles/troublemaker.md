@@ -2,16 +2,16 @@
 
 - **id:** `troublemaker`
 - **Team:** village
-- **Wakes at night:** yes (490), after `raven` and before `insomniac`
+- **Wakes at night:** yes (490), after `raven` and before `bonesetter`
 - **Card art:** `apps/web/src/assets/cards/troublemaker.webp`
 
 ## Rule (vi)
 
-Một lần trong ván, chọn một đêm: hôm sau làng loại hai người thay vì một.
+Một lần trong ván, chọn một đêm: hôm sau làng bỏ phiếu treo cổ hai lần thay vì một.
 
 ## Rule (en)
 
-Once per game, choose a night: the next day the village eliminates two players instead of one.
+Once per game, choose a night: the next day the village holds two hanging votes instead of one.
 
 ## Narrator notes
 

@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Một lần trong ván, ngay sau khi làng kết án một người (trước khi lộ vai), bạn có thể chọn bị loại thay họ.
+Một lần trong ván, ngay sau khi bỏ phiếu sinh tử treo cổ một người (trước khi lộ vai), bạn có thể chọn bị loại thay họ.
 
 ## Rule (en)
 
-Once per game, right after the village sentences a player (before their role is shown), you may choose to be eliminated in their place.
+Once per game, right after the life-or-death vote hangs a player (before their role is shown), you may choose to be eliminated in their place.
 
 ## Narrator notes
 

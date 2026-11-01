@@ -130,6 +130,6 @@
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
 - Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript. The development gallery uses synthetic data and is excluded from production JavaScript.
-- 74 of 84 roles have card art; the rest show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
-- Missing card art: amulet-of-protection, bailiff, baker, bogeyman, ghost, gypsy, paranormal-investigator, puppeteer, pyromaniac, wise-monkey.
+- 73 of 81 roles have card art; the rest show the hooded fallback figure. Add `<role-id>.webp` images; see `apps/web/src/assets/cards/README.md`.
+- Missing card art: amulet-of-protection, baker, bogeyman, ghost, gypsy, paranormal-investigator, puppeteer, wise-monkey.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

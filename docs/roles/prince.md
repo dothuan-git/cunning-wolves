@@ -7,11 +7,11 @@
 
 ## Rule (vi)
 
-Nếu làng bỏ phiếu loại bạn, hãy lật bài: bạn sống sót, hôm đó không ai bị loại, và làng đi ngủ.
+Nếu bỏ phiếu sinh tử sắp treo cổ bạn, hãy lật bài: bạn sống sót, hôm đó không ai bị loại, và làng đi ngủ.
 
 ## Rule (en)
 
-If the village votes you out, show your card: you survive, nobody is eliminated that day, and the village goes to sleep.
+If the life-or-death vote would hang you, show your card: you survive, nobody is eliminated that day, and the village goes to sleep.
 
 ## Narrator notes
 

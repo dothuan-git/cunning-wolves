@@ -7,8 +7,8 @@
 
 ## Rule (vi)
 
-Sói phải tấn công bạn hai lần mới giết được. Bỏ phiếu loại, thuốc độc của Phù thủy hoặc phát bắn của Thợ săn giết bạn ngay, và khi đó mọi dân làng mất năng lực đặc biệt.
+Sói phải tấn công bạn hai lần mới giết được. Bị treo cổ, thuốc độc của Phù thủy hoặc phát bắn của Thợ săn giết bạn ngay, và khi đó mọi dân làng mất năng lực đặc biệt.
 
 ## Rule (en)
 
-The werewolves must attack you twice to kill you. A vote, the Witch's poison or the Hunter's shot kills you at once, and then every villager loses their special power.
+The werewolves must attack you twice to kill you. Being hanged, the Witch's poison or the Hunter's shot kills you at once, and then every villager loses their special power.
