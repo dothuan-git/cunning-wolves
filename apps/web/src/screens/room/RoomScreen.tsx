@@ -2,15 +2,19 @@ import {
   gameJournal,
   gameRoles,
   currentRole,
+  GYPSY_QUESTIONS,
   offersNewRoles,
+  questionOffer,
   ROLE_POOL,
   roomRoles,
   wakingOrder,
   type Assignment,
   type GameState,
   type MasterView,
+  type NarratorAction,
   type PlayerInfo,
   type PlayerView,
+  type PoolRole,
   type RoomRole,
   type ServerErrorCode,
 } from '@werewolf/shared';
@@ -30,7 +34,7 @@ import { RulesReviewScreen } from '../rules-review/RulesReviewScreen';
 import { SetupScreen } from '../setup/SetupScreen';
 import { SummaryScreen } from '../summary/SummaryScreen';
 import { roleGroups } from '../narrator/groups';
-import type { RoleChoices, RoleGroupItem } from '../types';
+import type { ActionItem, ActionNoteItem, RoleChoices, RoleGroupItem } from '../types';
 
 function goHome() {
   navigate(paths.home);
@@ -174,9 +178,24 @@ const FIRST_NIGHT: GameState = {
   deaths: {},
   notes: {},
   newRoles: {},
+  actions: [],
+  questionDeck: [],
 };
 
-/** The narrator page: the room keeps the deal, phases, deaths, notes and new roles. */
+/** An action with its ids swapped for what they name; null for an id this app doesn't know. */
+function actionItem(
+  action: NarratorAction,
+  findRole: (id: string) => PoolRole | undefined,
+): ActionItem | null {
+  if (action.type === 'role') {
+    const role = findRole(action.role);
+    return role ? { type: 'role', role } : null;
+  }
+  const question = GYPSY_QUESTIONS.find((known) => known.id === action.question);
+  return question ? { type: 'question', question } : null;
+}
+
+/** The narrator page: the room keeps the deal, phases, deaths, notes, new roles and actions. */
 function NarratorRoom({
   view,
   reconnecting,
@@ -190,7 +209,7 @@ function NarratorRoom({
 }) {
   const { setup, assignments, players } = view;
   const game = view.game ?? FIRST_NIGHT;
-  const { newRoles } = game;
+  const { newRoles, actions, questionDeck } = game;
   const groups = useMemo<RoleGroupItem[]>(() => {
     const roles = roomRoles(setup);
     const picked = gameRoles(setup).map(({ role }) => role);
@@ -218,18 +237,37 @@ function NarratorRoom({
     );
     return { inGame, others };
   }, [setup, assignments]);
+  const actionNotes = useMemo<ActionNoteItem[]>(() => {
+    const roles = roomRoles(setup);
+    return actions.flatMap((note) => {
+      const item = actionItem(note, (id) => roles.find((known) => known.id === id));
+      return item ? [{ ...item, playerId: note.playerId, phase: note.phase }] : [];
+    });
+  }, [setup, actions]);
+  const questions = useMemo(
+    () =>
+      questionOffer(questionDeck).flatMap((id) =>
+        GYPSY_QUESTIONS.filter((question) => question.id === id),
+      ),
+    [questionDeck],
+  );
   return (
     <NarratorScreen
       groups={groups}
       phase={game.phase}
       notes={game.notes}
+      actions={actionNotes}
       deaths={game.deaths}
       roleChoices={roleChoices}
+      questions={questions}
       settings={setup.settings}
       reconnecting={reconnecting}
       onPlayerNote={(night, playerId, text) => send({ type: 'setNote', night, playerId, text })}
       onTogglePlayer={(playerId) => send({ type: 'toggleDeath', playerId })}
       onSetRole={(playerId, roleId) => send({ type: 'setRole', playerId, roleId })}
+      onPickQuestion={(playerId, questionId) =>
+        send({ type: 'pickQuestion', playerId, questionId })
+      }
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
       onSettings={(settings) => send({ type: 'setSettings', settings })}
@@ -277,9 +315,9 @@ function SummaryRoom({
   });
   const journal = gameJournal(game, players).map((entry) => ({
     ...entry,
-    newRoles: entry.newRoles.flatMap((changed) => {
-      const role = findRole(changed.role);
-      return role ? [{ id: changed.id, name: changed.name, role }] : [];
+    actions: entry.actions.flatMap((action) => {
+      const item = actionItem(action, findRole);
+      return item ? [{ ...item, id: action.id, name: action.name }] : [];
     }),
   }));
   return (

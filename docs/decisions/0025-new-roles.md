@@ -1,6 +1,6 @@
 # 0025 — The narrator gives a player a new role
 
-Status: accepted; amended by decision 0026: the picker has its own sheet, more roles unlock it, and marks are gone.
+Status: accepted; amended by decision 0026: the picker has its own sheet, more roles unlock it, and marks are gone. Decision 0027 adds a log of role changes (`actions`), which the journal reads instead of `newRoles`.
 
 ## Context
 

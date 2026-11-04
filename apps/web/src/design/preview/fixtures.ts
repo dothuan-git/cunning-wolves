@@ -45,6 +45,15 @@ export const villager: PoolRole = {
   wakeNights: 'every',
   image: 'villager.webp',
 };
+export const gypsy: PoolRole = {
+  id: 'gypsy',
+  name: { vi: 'Người gọi hồn', en: 'Gypsy' },
+  rule: exampleRule,
+  team: 'village',
+  defaultWakeOrder: 40,
+  wakeNights: 'every',
+  image: 'gypsy.webp',
+};
 export const priest: PoolRole = {
   id: 'priest',
   name: { vi: 'Linh mục', en: 'Priest' },

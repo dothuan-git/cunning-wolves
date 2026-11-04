@@ -535,8 +535,8 @@ export const ROLE_POOL: readonly PoolRole[] = [
     id: 'gypsy',
     name: { vi: 'Người gọi hồn', en: 'Gypsy' },
     rule: {
-      vi: 'Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".',
-      en: 'Each night the narrator may read you the four questions on a Spiritualism card: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".',
+      vi: 'Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi: chọn một câu và một người trung gian để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".',
+      en: 'Each night the narrator may read you four questions: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".',
     },
     team: 'village',
     defaultWakeOrder: 460,

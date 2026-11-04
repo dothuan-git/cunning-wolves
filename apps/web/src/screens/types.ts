@@ -1,6 +1,7 @@
-import type { Phase, PoolRole, RoomSummary } from '@werewolf/shared';
+import type { GypsyQuestion, Phase, PoolRole, RoomSummary } from '@werewolf/shared';
 
 export type { Phase };
+export type QuestionItem = GypsyQuestion;
 
 // Presentation props, not room state or wire messages.
 export interface PlayerListItem {
@@ -16,12 +17,17 @@ export interface RevealedPlayerItem extends PlayerListItem {
   /** The role a power gave them, when it differs from the dealt one */
   newRole?: PoolRole;
 }
+/** Something the narrator did, with its ids swapped for what they name. */
+export type ActionItem =
+  { type: 'role'; role: PoolRole } | { type: 'question'; question: QuestionItem };
+/** An action as a note in a player's history on the narrator page. */
+export type ActionNoteItem = ActionItem & { playerId: string; phase: Phase };
 export interface JournalPhase {
   phase: Phase;
   notes: readonly (PlayerListItem & { text: string })[];
   deaths: readonly PlayerListItem[];
-  /** Roles a power gave players in this phase */
-  newRoles: readonly (PlayerListItem & { role: PoolRole })[];
+  /** What the narrator did in this phase, in order */
+  actions: readonly (PlayerListItem & ActionItem)[];
 }
 /** A narrator panel: players dealt `role`, or those of them who now play `newRole`. */
 export interface RoleGroupItem {

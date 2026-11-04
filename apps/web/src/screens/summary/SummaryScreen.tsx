@@ -173,7 +173,7 @@ export function SummaryScreen({
               ) : (
                 // The whole story reads top to bottom; nights sit on ink so they stand apart from mornings.
                 <ol className="stagger grid gap-2.5">
-                  {journal.map(({ phase, notes, deaths, newRoles }) => {
+                  {journal.map(({ phase, notes, deaths, actions }) => {
                     const night = phase.kind === 'night';
                     return (
                       <PhasePanel
@@ -215,20 +215,35 @@ export function SummaryScreen({
                               </span>
                             </li>
                           ))}
-                          {newRoles.map((changed) => (
-                            <li
-                              key={`role-${changed.id}`}
-                              className="flex min-h-12 items-center px-3.5 py-2"
-                            >
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
-                                <Icon name="swap" className="size-3.5" />
-                                {t('summary.nowPlays', {
-                                  name: changed.name,
-                                  role: changed.role.name[locale],
-                                })}
-                              </span>
-                            </li>
-                          ))}
+                          {actions.map((action) =>
+                            action.type === 'role' ? (
+                              <li
+                                key={`role-${action.id}`}
+                                className="flex min-h-12 items-center px-3.5 py-2"
+                              >
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-field px-2.5 py-0.5 text-caption font-medium">
+                                  <Icon name="swap" className="size-3.5" />
+                                  {t('summary.nowPlays', {
+                                    name: action.name,
+                                    role: action.role.name[locale],
+                                  })}
+                                </span>
+                              </li>
+                            ) : (
+                              <li
+                                key={`question-${action.id}`}
+                                className="flex items-start gap-1.5 px-3.5 py-2.5 text-body"
+                              >
+                                <Icon name="question" className="mt-1 size-4 text-muted" />
+                                <span className="min-w-0 break-words">
+                                  {t('summary.pickedQuestion', {
+                                    name: action.name,
+                                    question: action.question.text[locale],
+                                  })}
+                                </span>
+                              </li>
+                            ),
+                          )}
                         </ul>
                       </PhasePanel>
                     );

@@ -22,6 +22,8 @@ const paths = {
   trash: 'M4 7h16M10 11v6m4-6v6M9 7V4h6v3M6 7l1 13h10l1-13',
   crown: 'M4 18h16M5 15 3 7l5 4 4-6 4 6 5-4-2 8H5Z',
   swap: 'M8 3 4 7l4 4M4 7h16m-4 14 4-4-4-4m4 4H4',
+  question:
+    'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.5 9.5a2.5 2.5 0 1 1 3.7 2.2c-.8.4-1.2 1-1.2 1.8v.5M12 17h.01',
 } as const;
 
 export type IconName = keyof typeof paths;

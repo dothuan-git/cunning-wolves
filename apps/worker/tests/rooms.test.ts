@@ -2,6 +2,7 @@ import {
   CLOSE_REPLACED,
   CLOSE_ROOM_DELETED,
   CLOSE_ROOM_GONE,
+  GYPSY_QUESTIONS,
   type CreateRoomResponse,
   type GameState,
   type LobbyMessage,
@@ -398,11 +399,23 @@ describe('Room', () => {
       deaths: { [lanId]: { kind: 'night', number: 1 } },
       notes: { 1: { [minhId]: 'Secret note' } },
       newRoles: { [minhId]: { role: 'werewolf', phase: { kind: 'night', number: 1 } } },
+      actions: [
+        {
+          type: 'role',
+          role: 'werewolf',
+          playerId: minhId,
+          phase: { kind: 'night', number: 1 },
+        },
+      ],
+      questionDeck: expect.any(Array) as string[],
     });
+    expect(view.game?.questionDeck).toHaveLength(GYPSY_QUESTIONS.length);
     for (const text of [...minh.received, ...lan.received]) {
       expect(text).not.toContain('Secret note');
       expect(text).not.toContain('"game"');
       expect(text).not.toContain('"newRoles"');
+      expect(text).not.toContain('"actions"');
+      expect(text).not.toContain('"questionDeck"');
     }
   });
 
@@ -420,6 +433,8 @@ describe('Room', () => {
       sql.exec('DELETE FROM deaths');
       sql.exec('DELETE FROM notes');
       sql.exec('DROP TABLE new_roles');
+      sql.exec('DROP TABLE action_notes');
+      sql.exec('DROP TABLE question_deck');
       // A room saved while it still had player marks loads, and the old tables go.
       sql.exec(
         'CREATE TABLE marks (player_id TEXT, mark TEXT, phase_kind TEXT, phase_number INTEGER)',
@@ -437,6 +452,8 @@ describe('Room', () => {
         deaths: {},
         notes: {},
         newRoles: {},
+        actions: [],
+        questionDeck: [],
       });
       if (!older) throw new Error('room did not load');
       // A player id that is also an object key survives saving and loading.
@@ -446,6 +463,11 @@ describe('Room', () => {
         deaths: Object.fromEntries([['__proto__', death]]),
         notes: { 1: Object.fromEntries([['__proto__', 'Saw.']]) },
         newRoles: Object.fromEntries([['__proto__', { role: 'seer', phase: death }]]),
+        actions: [
+          { type: 'role', role: 'seer', playerId: '__proto__', phase: death },
+          { type: 'question', question: 'q07', playerId: 'gypsy-player', phase: death },
+        ],
+        questionDeck: ['q09', 'q02', 'q31'],
       };
       saveRoom(state.storage, { ...older, game });
       const loaded = loadRoom(sql)?.game;
@@ -455,6 +477,10 @@ describe('Room', () => {
         ['__proto__', { role: 'seer', phase: death }],
       ]);
       expect(loaded?.phase).toEqual({ kind: 'morning', number: 2 });
+      expect(loaded?.actions).toEqual(game.actions);
+      expect(loaded?.questionDeck).toEqual(['q09', 'q02', 'q31']);
+      saveRoom(state.storage, { ...older, game: { ...game, questionDeck: [] } });
+      expect(loadRoom(sql)?.game?.questionDeck).toEqual([]);
     });
   });
 
@@ -676,6 +702,8 @@ describe('parseClientMessage', () => {
       },
     ],
     [{ type: 'setNote', night: 1, playerId: 'abc', text: 'Saw.' }],
+    [{ type: 'pickQuestion', playerId: 'abc', questionId: 'q01' }],
+    [{ type: 'pickQuestion', playerId: 'abc', questionId: null }],
   ])('accepts %o', (message) => {
     expect(parseClientMessage(JSON.stringify(message))).toEqual(message);
   });
@@ -693,6 +721,12 @@ describe('parseClientMessage', () => {
     ['a join without a PIN', JSON.stringify({ type: 'join', name: 'Minh' })],
     ['a PIN as a number', JSON.stringify({ type: 'join', name: 'Minh', pin: 1234 })],
     ['a hand-over without a player', JSON.stringify({ type: 'handOver' })],
+    ['a pick without a player', JSON.stringify({ type: 'pickQuestion', questionId: 'q01' })],
+    ['a pick without a question', JSON.stringify({ type: 'pickQuestion', playerId: 'abc' })],
+    [
+      'a pick with a numeric question',
+      JSON.stringify({ type: 'pickQuestion', playerId: 'abc', questionId: 1 }),
+    ],
     ['setOpen with a string', JSON.stringify({ type: 'setOpen', open: 'no' })],
     ['a pick without a role', JSON.stringify({ type: 'addPick' })],
     ['a rule that is not text', JSON.stringify({ type: 'editRule', roleId: 'seer', rule: 1 })],

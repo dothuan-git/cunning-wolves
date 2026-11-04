@@ -3,20 +3,27 @@ import {
   cleanName,
   cleanRule,
   CUSTOM_ROLES_MAX,
+  currentRole,
   DEFAULT_SETTINGS,
+  GYPSY_QUESTIONS,
+  GYPSY_ROLE_ID,
   isValidName,
   offersNewRoles,
   NAME_MAX,
   nameKey,
   nextPhase,
+  nextQuestionDeck,
   NOTE_MAX,
   PICKS_MAX,
+  questionOffer,
   ROLE_NAME_MAX,
   ROLE_POOL,
   roomRoles,
   RULE_MAX,
   TIMER_MAX,
+  type ActionNote,
   type GameState,
+  type Phase,
   type RoomAction,
   type RoomSetup,
   type RoomStatus,
@@ -249,6 +256,13 @@ export function apply(
         deaths: {},
         notes: {},
         newRoles: {},
+        actions: [],
+        // After the deal, so the questions never change who gets which card. Every game gets a
+        // deck, because a player can become the Gypsy later.
+        questionDeck: shuffle(
+          GYPSY_QUESTIONS.map((question) => question.id),
+          random,
+        ),
       };
       return { ok: true, state: { ...state, status: 'playing', assignments, game } };
     }
@@ -267,6 +281,7 @@ export function apply(
     case 'endPhase':
     case 'toggleDeath':
     case 'setRole':
+    case 'pickQuestion':
     case 'setNote': {
       if (!isMaster) return refuse('not-master');
       if (state.status !== 'playing' || !state.game) return refuse('not-allowed');
@@ -278,8 +293,25 @@ export function apply(
   }
 }
 
-type GameAction = Extract<RoomAction, { type: 'endPhase' | 'toggleDeath' | 'setRole' | 'setNote' }>;
+type GameAction = Extract<
+  RoomAction,
+  { type: 'endPhase' | 'toggleDeath' | 'setRole' | 'pickQuestion' | 'setNote' }
+>;
 type GameResult = { ok: true; game: GameState } | { ok: false; error: ServerErrorCode };
+
+const samePhase = (a: Phase, b: Phase) => a.kind === b.kind && a.number === b.number;
+
+/** The action notes without the one a new choice replaces: this player's, of this type, this phase. */
+function withoutPhaseNote(
+  game: GameState,
+  playerId: string,
+  type: ActionNote['type'],
+): ActionNote[] {
+  return game.actions.filter(
+    (note) =>
+      note.type !== type || note.playerId !== playerId || !samePhase(note.phase, game.phase),
+  );
+}
 
 /** The narrator's changes while playing. Who may make them is checked by `apply`. */
 function applyGame(
@@ -295,7 +327,13 @@ function applyGame(
       if (action.phase.kind !== phase.kind || action.phase.number !== phase.number) {
         return refuse('not-allowed');
       }
-      return { ok: true, game: { ...game, phase: nextPhase(phase) } };
+      const next = nextPhase(phase);
+      const picked = game.actions.flatMap((note) =>
+        note.type === 'question' ? [note.question] : [],
+      );
+      const questionDeck =
+        next.kind === 'night' ? nextQuestionDeck(game.questionDeck, picked) : game.questionDeck;
+      return { ok: true, game: { ...game, phase: next, questionDeck } };
     }
     case 'toggleDeath': {
       const { playerId } = action;
@@ -319,12 +357,44 @@ function applyGame(
       const others = Object.fromEntries(
         Object.entries(game.newRoles).filter(([id]) => id !== playerId),
       );
-      if (action.roleId === null || action.roleId === dealtRole) {
-        return { ok: true, game: { ...game, newRoles: others } };
+      const role = action.roleId ?? dealtRole;
+      if (role !== dealtRole && !roleIds.includes(role)) return refuse('not-allowed');
+      const newRoles =
+        role === dealtRole ? others : { ...others, [playerId]: { role, phase: game.phase } };
+      const kept = withoutPhaseNote(game, playerId, 'role');
+      // Landing back on the role this phase began with undoes the change, so it leaves no note.
+      const roleAtStart =
+        kept
+          .flatMap((note) =>
+            note.type === 'role' && note.playerId === playerId ? [note.role] : [],
+          )
+          .at(-1) ?? dealtRole;
+      const actions: ActionNote[] =
+        role === roleAtStart
+          ? kept
+          : [...kept, { type: 'role', playerId, phase: game.phase, role }];
+      return { ok: true, game: { ...game, newRoles, actions } };
+    }
+    case 'pickQuestion': {
+      const { playerId, questionId } = action;
+      const dealtRole = Object.hasOwn(assignments, playerId) ? assignments[playerId] : undefined;
+      if (dealtRole === undefined || game.phase.kind !== 'night') return refuse('not-allowed');
+      const kept = withoutPhaseNote(game, playerId, 'question');
+      // Before the Gypsy check: a pick must come off a player made the Gypsy by mistake.
+      if (questionId === null) return { ok: true, game: { ...game, actions: kept } };
+      if (currentRole(playerId, dealtRole, game.newRoles) !== GYPSY_ROLE_ID) {
+        return refuse('not-allowed');
       }
-      if (!roleIds.includes(action.roleId)) return refuse('not-allowed');
-      const newRoles = { ...others, [playerId]: { role: action.roleId, phase: game.phase } };
-      return { ok: true, game: { ...game, newRoles } };
+      const death = Object.hasOwn(game.deaths, playerId) ? game.deaths[playerId] : undefined;
+      if (!canNoteNight(death, game.phase.number)) return refuse('not-allowed');
+      if (!questionOffer(game.questionDeck).includes(questionId)) return refuse('not-allowed');
+      const note: ActionNote = {
+        type: 'question',
+        playerId,
+        phase: game.phase,
+        question: questionId,
+      };
+      return { ok: true, game: { ...game, actions: [...kept, note] } };
     }
     case 'setNote': {
       const { night, playerId } = action;

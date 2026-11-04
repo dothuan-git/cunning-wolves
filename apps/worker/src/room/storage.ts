@@ -1,6 +1,7 @@
 import {
   DEFAULT_SETTINGS,
   TEAMS,
+  type ActionNote,
   type CustomRole,
   type GameState,
   type Phase,
@@ -77,6 +78,17 @@ function ensureSchema(sql: SqlStorage): void {
     phase_kind TEXT NOT NULL,
     phase_number INTEGER NOT NULL
   )`);
+  // What the narrator did. A game saved before these has no rows, so it loads with none.
+  sql.exec(`CREATE TABLE IF NOT EXISTS action_notes (
+    idx INTEGER PRIMARY KEY,
+    type TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    value TEXT NOT NULL,
+    phase_kind TEXT NOT NULL,
+    phase_number INTEGER NOT NULL
+  )`);
+  // One row of joined ids: a row per question would double the rows written on every save.
+  sql.exec('CREATE TABLE IF NOT EXISTS question_deck (ids TEXT NOT NULL)');
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -96,6 +108,14 @@ function phase(row: Record<string, SqlStorageValue>): Phase {
   if (kind !== 'night' && kind !== 'morning')
     throw new Error(`Room storage: unknown phase ${kind}`);
   return { kind, number: integer(row, 'phase_number') };
+}
+
+function actionNote(row: Record<string, SqlStorageValue>): ActionNote {
+  const type = text(row, 'type');
+  const fields = { playerId: text(row, 'player_id'), phase: phase(row) };
+  if (type === 'role') return { type, role: text(row, 'value'), ...fields };
+  if (type === 'question') return { type, question: text(row, 'value'), ...fields };
+  throw new Error(`Room storage: unknown action note ${type}`);
 }
 
 function loadGame(sql: SqlStorage): GameState | null {
@@ -123,7 +143,11 @@ function loadGame(sql: SqlStorage): GameState | null {
         { role: text(changed, 'role_id'), phase: phase(changed) },
       ]),
   );
-  return { phase: phase(row), deaths, notes, newRoles };
+  const actions = sql.exec('SELECT * FROM action_notes ORDER BY idx').toArray().map(actionNote);
+  const [deck] = sql.exec('SELECT ids FROM question_deck LIMIT 1').toArray();
+  const ids = deck ? text(deck, 'ids') : '';
+  const questionDeck = ids === '' ? [] : ids.split(',');
+  return { phase: phase(row), deaths, notes, newRoles, actions, questionDeck };
 }
 
 function loadSetup(sql: SqlStorage): RoomSetup {
@@ -212,7 +236,14 @@ export function loadRoom(sql: SqlStorage): RoomState | null {
     game:
       loadGame(sql) ??
       (knownStatus === 'playing'
-        ? { phase: { kind: 'night', number: 1 }, deaths: {}, notes: {}, newRoles: {} }
+        ? {
+            phase: { kind: 'night', number: 1 },
+            deaths: {},
+            notes: {},
+            newRoles: {},
+            actions: [],
+            questionDeck: [],
+          }
         : null),
   };
 }
@@ -285,6 +316,8 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
     sql.exec('DELETE FROM deaths');
     sql.exec('DELETE FROM notes');
     sql.exec('DELETE FROM new_roles');
+    sql.exec('DELETE FROM action_notes');
+    sql.exec('DELETE FROM question_deck');
     const { game } = state;
     if (game) {
       sql.exec('INSERT INTO game VALUES (?, ?)', game.phase.kind, game.phase.number);
@@ -305,6 +338,18 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
           changed.phase.number,
         );
       }
+      game.actions.forEach((note, index) => {
+        sql.exec(
+          'INSERT INTO action_notes VALUES (?, ?, ?, ?, ?, ?)',
+          index,
+          note.type,
+          note.playerId,
+          note.type === 'role' ? note.role : note.question,
+          note.phase.kind,
+          note.phase.number,
+        );
+      });
+      sql.exec('INSERT INTO question_deck VALUES (?)', game.questionDeck.join(','));
     }
   });
 }

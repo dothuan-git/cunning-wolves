@@ -1,6 +1,7 @@
 import {
   TEAMS,
   WAKE_NIGHTS,
+  type ActionNote,
   type Assignment,
   type CustomRole,
   type GameRole,
@@ -175,6 +176,18 @@ function phase(value: unknown): Phase | null {
   return kind ? { kind, number: value.number } : null;
 }
 
+function actionNote(value: unknown): ActionNote | null {
+  if (!isObject(value) || typeof value.playerId !== 'string') return null;
+  const { type, playerId, role, question } = value;
+  const at = phase(value.phase);
+  if (!at) return null;
+  if (type === 'role' && typeof role === 'string') return { type, role, playerId, phase: at };
+  if (type === 'question' && typeof question === 'string') {
+    return { type, question, playerId, phase: at };
+  }
+  return null;
+}
+
 function gameState(value: unknown): GameState | null {
   if (
     !isObject(value) ||
@@ -185,7 +198,9 @@ function gameState(value: unknown): GameState | null {
     return null;
   }
   const current = phase(value.phase);
-  if (!current) return null;
+  const actions = list(value.actions, actionNote);
+  const questionDeck = list(value.questionDeck, text);
+  if (!current || !actions || !questionDeck) return null;
   const deaths: Record<string, Phase> = {};
   for (const [playerId, death] of Object.entries(value.deaths)) {
     const marked = phase(death);
@@ -209,7 +224,7 @@ function gameState(value: unknown): GameState | null {
     if (!since) return null;
     newRoles[playerId] = { role: changed.role, phase: since };
   }
-  return { phase: current, deaths, notes, newRoles };
+  return { phase: current, deaths, notes, newRoles, actions, questionDeck };
 }
 
 function reveal(value: unknown): Reveal | null {

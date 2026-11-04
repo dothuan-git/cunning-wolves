@@ -61,9 +61,20 @@ export interface GameState {
   deaths: Record<string, Phase>;
   /** Night number → player id → note */
   notes: Record<number, Record<string, string>>;
-  /** Player id → the role they play now instead of their dealt one, and since when */
+  /** Player id → the role they play now instead of their dealt one; the history is in `actions` */
   newRoles: Record<string, NewRole>;
+  /** What the narrator did, oldest first; a new choice in the same phase replaces the last one */
+  actions: ActionNote[];
+  /** The Gypsy's question ids, shuffled; the top ones are on offer */
+  questionDeck: string[];
 }
+
+/** `role`: the role the player plays from now on, the dealt one when they go back to it. */
+export type NarratorAction =
+  { type: 'role'; role: string } | { type: 'question'; question: string };
+
+/** Something the narrator did for a player; it shows as a note under them, in that phase. */
+export type ActionNote = NarratorAction & { playerId: string; phase: Phase };
 
 /** A role a power gave a player (Doppelgänger, Thief…): the narrator sets it, the phone keeps the dealt card. */
 export interface NewRole {

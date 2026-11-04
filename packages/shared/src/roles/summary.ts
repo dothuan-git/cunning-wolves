@@ -1,4 +1,4 @@
-import type { GameState, Phase } from '../types';
+import type { GameState, NarratorAction, Phase } from '../types';
 
 export interface JournalPlayer {
   id: string;
@@ -6,15 +6,15 @@ export interface JournalPlayer {
 }
 
 /**
- * One phase of the game log: its notes (nights only), the players who died, and roles a power gave
- * players.
+ * One phase of the game log: its notes (nights only), the players who died, and what the narrator
+ * did for players.
  */
 export interface JournalEntry {
   phase: Phase;
   notes: (JournalPlayer & { text: string })[];
   deaths: JournalPlayer[];
-  /** Role ids */
-  newRoles: (JournalPlayer & { role: string })[];
+  /** In the order the narrator did them */
+  actions: (JournalPlayer & NarratorAction)[];
 }
 
 const samePhase = (a: Phase | undefined, kind: Phase['kind'], number: number) =>
@@ -45,16 +45,14 @@ export function gameJournal(game: GameState, players: readonly JournalPlayer[]):
             samePhase(game.deaths[player.id], kind, number),
         )
         .map(({ id, name }) => ({ id, name }));
-      const newRoles = players.flatMap((player) => {
-        const changed = Object.hasOwn(game.newRoles, player.id)
-          ? game.newRoles[player.id]
-          : undefined;
-        return changed && samePhase(changed.phase, kind, number)
-          ? [{ id: player.id, name: player.name, role: changed.role }]
+      const actions = game.actions.flatMap(({ playerId, phase, ...action }) => {
+        const player = players.find((known) => known.id === playerId);
+        return player && samePhase(phase, kind, number)
+          ? [{ id: player.id, name: player.name, ...action }]
           : [];
       });
-      if (notes.length > 0 || deaths.length > 0 || newRoles.length > 0)
-        entries.push({ phase: { kind, number }, notes, deaths, newRoles });
+      if (notes.length > 0 || deaths.length > 0 || actions.length > 0)
+        entries.push({ phase: { kind, number }, notes, deaths, actions });
     }
   }
   return entries;

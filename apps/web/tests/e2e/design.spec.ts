@@ -118,7 +118,7 @@ test('a player who died before the night gets no new note', async ({ page }) => 
   await expect(page.getByRole('textbox', { name: 'Note for Linh', exact: true })).toBeVisible();
 });
 
-test('marking a player dead during the night keeps that night’s note as its only row', async ({
+test('marking a player dead during the night keeps that night’s note above the death', async ({
   page,
 }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
@@ -128,10 +128,97 @@ test('marking a player dead during the night keeps that night’s note as its on
   await page.getByRole('button', { name: 'Mark Linh dead', exact: true }).click();
   await expect(linh).toHaveValue('Bitten by the wolves');
   await expect(page.getByRole('button', { name: 'Restore Linh', exact: true })).toBeVisible();
-  await expect(record).not.toContainText('Died');
+  await expect(record).toContainText('Died');
   await page.getByRole('button', { name: 'Restore Linh', exact: true }).click();
+  await expect(record).not.toContainText('Died');
   await expect(linh).toHaveValue('Bitten by the wolves');
 });
+
+test('a role change shows as a note above the night’s note, and undoing it removes it', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=narrator&lang=en&capture=1');
+  await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
+  await page.getByRole('dialog').getByRole('combobox').selectOption('werewolf');
+  await closeSheet(page);
+  const record = page.getByRole('list', { name: 'Huy’s record', exact: true });
+  const rows = record.getByRole('listitem');
+  await expect(rows.first()).toHaveText(/Night 2\s*Changed role to Wolf/);
+  await expect(rows.last().getByRole('textbox', { name: 'Note for Huy' })).toBeVisible();
+  await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
+  await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
+  await closeSheet(page);
+  await expect(record).not.toContainText('Changed role');
+});
+
+test('the Gypsy button opens four questions, and a pick shows in the history', async ({ page }) => {
+  await page.goto('/design?screen=narrator&state=gypsy&lang=en&capture=1');
+  await expect(page.getByRole('button', { name: /^Pick a question for / })).toHaveCount(1);
+  const button = page.getByRole('button', { name: 'Pick a question for Huy', exact: true });
+  await expect(button).toHaveClass(/text-muted/);
+  await button.click();
+  const sheet = page.getByRole('dialog', { name: 'Questions · Huy', exact: true });
+  const questions = sheet.getByRole('listitem').getByRole('button');
+  await expect(questions).toHaveCount(4);
+  const asked = await questions.nth(1).innerText();
+  await questions.nth(1).click();
+  await expect(questions.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  await expect(sheet).toBeVisible();
+  await questions.nth(2).click();
+  await expect(questions.nth(1)).toHaveAttribute('aria-pressed', 'false');
+  await questions.nth(1).click();
+  await closeSheet(page);
+  await expect(button).toHaveClass(/text-ink/);
+  const record = page.getByRole('list', { name: 'Huy’s record', exact: true });
+  await expect(record.getByText(`Picked question: ${asked}`, { exact: true })).toBeVisible();
+  await expect(record.getByText(/^Picked question: /)).toHaveCount(2);
+
+  await button.click();
+  await questions.nth(1).click();
+  await closeSheet(page);
+  await expect(button).toHaveClass(/text-muted/);
+  await expect(record.getByText(/^Picked question: /)).toHaveCount(1);
+});
+
+test('a player who stopped being the Gypsy keeps a button only to take their pick back', async ({
+  page,
+}) => {
+  await page.goto('/design?screen=narrator&state=gypsy&lang=en&capture=1');
+  const button = page.getByRole('button', { name: 'Pick a question for Huy', exact: true });
+  await button.click();
+  const questions = page.getByRole('dialog').getByRole('listitem').getByRole('button');
+  await questions.first().click();
+  await closeSheet(page);
+  await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
+  await page.getByRole('dialog').getByRole('combobox').selectOption('werewolf');
+  await closeSheet(page);
+
+  await button.click();
+  await expect(questions.first()).toBeEnabled();
+  await expect(questions.nth(1)).toBeDisabled();
+  await questions.first().click();
+  await closeSheet(page);
+  await expect(button).toHaveCount(0);
+});
+
+for (const lang of ['vi', 'en']) {
+  test(`the Gypsy's questions never scroll sideways at 390px in ${lang}`, async ({ page }) => {
+    await page.goto(`/design?screen=narrator&state=gypsy&lang=${lang}&capture=1`);
+    await page.getByRole('button', { name: /(Pick a question for|Chọn câu hỏi cho) Huy/ }).click();
+    const sheet = page.getByRole('dialog');
+    await sheet.getByRole('listitem').getByRole('button').first().click();
+    const noOverflow = (el: HTMLElement) => el.scrollWidth <= el.clientWidth;
+    expect(await sheet.evaluate(noOverflow)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      390,
+    );
+    await page.keyboard.press('Escape');
+    await expect(sheet).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      390,
+    );
+  });
+}
 
 test('a lone player changed to another role keeps the panel, retitled in the new faction', async ({
   page,

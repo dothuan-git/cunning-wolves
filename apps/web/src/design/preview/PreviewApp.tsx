@@ -1,6 +1,8 @@
 import {
   DEFAULT_SETTINGS,
+  GYPSY_QUESTIONS,
   nextPhase,
+  QUESTIONS_OFFERED,
   ROLE_POOL,
   wakingOrder,
   type PoolRole,
@@ -20,9 +22,17 @@ import { RuleBookScreen } from '../../screens/rule-book/RuleBookScreen';
 import { RulesReviewScreen } from '../../screens/rules-review/RulesReviewScreen';
 import { SetupScreen } from '../../screens/setup/SetupScreen';
 import { SummaryScreen } from '../../screens/summary/SummaryScreen';
-import type { Phase, SeatedPlayerItem } from '../../screens/types';
+import type { ActionNoteItem, Phase, SeatedPlayerItem } from '../../screens/types';
 import { ComponentsPreview } from './ComponentsPreview';
-import { exampleGroups, examplePlayers, exampleRoles, manyRoles, seer, villager } from './fixtures';
+import {
+  exampleGroups,
+  examplePlayers,
+  exampleRoles,
+  gypsy,
+  manyRoles,
+  seer,
+  villager,
+} from './fixtures';
 import { isPreviewState, isScreen, SCREEN_IDS, SCREEN_LABELS, SCREEN_STATES } from './screens';
 import type { PreviewState, ScreenId } from './screens';
 
@@ -62,6 +72,7 @@ function PreviewScene({
           : t('preview.noteSeer'),
       minh: t('preview.noteWolves'),
       ha: t('preview.noteWitch'),
+      ...(state === 'gypsy' ? { huy: t('preview.noteWitch') } : {}),
     },
     2: state === 'morning' ? { linh: t('preview.noteSeer2'), minh: t('preview.noteWolves2') } : {},
   };
@@ -73,6 +84,34 @@ function PreviewScene({
   });
   // Player id → the role the narrator gave them, as a role-changing card would allow.
   const [newRoles, setNewRoles] = useState<Record<string, string>>({});
+  // What the narrator did; the Gypsy sample opens with last night's pick already in its history.
+  const [actionNotes, setActionNotes] = useState<ActionNoteItem[]>(() =>
+    state === 'gypsy'
+      ? GYPSY_QUESTIONS.slice(QUESTIONS_OFFERED, QUESTIONS_OFFERED + 1).map((question) => ({
+          type: 'question',
+          question,
+          playerId: 'huy',
+          phase: { kind: 'night', number: 1 },
+        }))
+      : [],
+  );
+  // A new note replaces this player's note of this type in this phase, as in the room.
+  const replaceNote = (
+    note: ActionNoteItem | null,
+    playerId: string,
+    type: 'role' | 'question',
+  ) => {
+    setActionNotes((current) => [
+      ...current.filter(
+        (known) =>
+          known.playerId !== playerId ||
+          known.type !== type ||
+          known.phase.kind !== phase.kind ||
+          known.phase.number !== phase.number,
+      ),
+      ...(note ? [note] : []),
+    ]);
+  };
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
   const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
@@ -255,7 +294,12 @@ function PreviewScene({
     case 'narrator':
       return (
         <NarratorScreen
-          groups={[...exampleGroups]
+          groups={exampleGroups
+            .map((group) =>
+              state === 'gypsy' && group.role.id === villager.id
+                ? { ...group, role: gypsy }
+                : group,
+            )
             .sort((a, b) => {
               const place = (id: string) => {
                 const index = wakeOrder.indexOf(id);
@@ -282,12 +326,24 @@ function PreviewScene({
               { ...sampleNotes[index + 1], ...noteEdits[index + 1] },
             ]),
           )}
+          actions={actionNotes}
           deaths={deaths}
           roleChoices={{
             inGame: exampleRoles,
             others: ROLE_POOL.filter((role) => !exampleRoles.some((own) => own.id === role.id)),
           }}
+          questions={GYPSY_QUESTIONS.slice(0, QUESTIONS_OFFERED)}
+          onPickQuestion={(id, questionId) => {
+            const question = GYPSY_QUESTIONS.find((known) => known.id === questionId);
+            replaceNote(
+              question ? { type: 'question', question, playerId: id, phase } : null,
+              id,
+              'question',
+            );
+          }}
           onSetRole={(id, roleId) => {
+            const role = [...exampleRoles, ...ROLE_POOL].find((known) => known.id === roleId);
+            replaceNote(role ? { type: 'role', role, playerId: id, phase } : null, id, 'role');
             setNewRoles((current) => {
               const others = Object.fromEntries(
                 Object.entries(current).filter(([key]) => key !== id),
@@ -348,13 +404,13 @@ function PreviewScene({
                       { id: 'ha', name: 'Hà', text: t('preview.noteWitch') },
                     ],
                     deaths: [],
-                    newRoles: [],
+                    actions: [],
                   },
                   {
                     phase: { kind: 'morning', number: 1 },
                     notes: [],
                     deaths: [{ id: 'huy', name: 'Huy' }],
-                    newRoles: [],
+                    actions: [],
                   },
                   {
                     phase: { kind: 'night', number: 2 },
@@ -363,7 +419,7 @@ function PreviewScene({
                       { id: 'minh', name: 'Minh', text: t('preview.noteWolves2') },
                     ],
                     deaths: [{ id: 'linh', name: 'Linh' }],
-                    newRoles: [],
+                    actions: [],
                   },
                 ]
           }
