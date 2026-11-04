@@ -336,20 +336,22 @@ export function NarratorScreen({
                           : action.question.text[locale]}
                       </span>
                     </span>
-                    {/* This night's pick, and the morning after it: the one the asker asks next. */}
-                    {action.type === 'question' && action.phase.number === phase.number && (
-                      <button
-                        type="button"
-                        aria-label={t('narrator.showQuestion')}
-                        aria-haspopup="dialog"
-                        className="press -my-2 flex min-h-12 min-w-12 shrink-0 items-center justify-center self-center text-muted hover:text-ink"
-                        onClick={() => {
-                          setShowing(action.question);
-                        }}
-                      >
-                        <Icon name="eye" />
-                      </button>
-                    )}
+                    {/* The morning after a pick is when the asker needs to see it. */}
+                    {action.type === 'question' &&
+                      phase.kind === 'morning' &&
+                      action.phase.number === phase.number && (
+                        <button
+                          type="button"
+                          aria-label={t('narrator.showQuestion')}
+                          aria-haspopup="dialog"
+                          className="press -my-2 flex min-h-12 min-w-12 shrink-0 items-center justify-center self-center text-muted hover:text-ink"
+                          onClick={() => {
+                            setShowing(action.question);
+                          }}
+                        >
+                          <Icon name="eye" />
+                        </button>
+                      )}
                   </li>
                 );
               }
@@ -612,7 +614,6 @@ export function NarratorScreen({
       )}
       {askingPlayer && (
         <QuestionSheet
-          name={askingPlayer.name}
           questions={questions}
           picked={pickedTonight(askingPlayer.id)}
           clearOnly={!askingGroup || !playsGypsy(askingGroup)}

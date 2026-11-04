@@ -119,7 +119,7 @@
   - See decision 0026.
 
 - **Gypsy questions and action notes** (branch `feat/gypsy-questions`, 2026-11-04):
-  - The app holds 24 yes-or-no questions for the Gypsy: 16 from New Moon's Spiritualism cards (the two about the Sheriff and two that strangers can't answer are left out) and 8 of our own. Vietnamese is translated by us. At night a question button opens four; a pick shows in the player's history, and the next night offers four others. An eye button on the pick opens a full-screen card with only the question, for the narrator to hold up to the asker.
+  - The app holds 24 yes-or-no questions for the Gypsy: 16 from New Moon's Spiritualism cards (the two about the Sheriff and two that strangers can't answer are left out) and 8 of our own. Vietnamese is translated by us. At night a question button opens four; a pick shows in the player's history, and the next night offers four others. In the morning, an eye button on the pick opens a full-screen card with only the question, for the narrator to hold up to the asker.
   - A player's history now lists what the narrator did (role changes, picked questions) above that night's note, and a death always shows as its own row. The summary journal lists every action.
   - See decision 0027.
 
