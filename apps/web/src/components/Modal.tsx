@@ -25,7 +25,9 @@ export function ModalDone() {
  * Escape or the Close button dismisses it. Only its body scrolls (a `ScrollArea`); the title and
  * `footer` stay put. Put `ModalDone` in the footer for a Done button that also plays the closing
  * animation. `steady` sizes it to its content, at most 75% of the screen, and keeps that
- * height while the content shrinks (a search), so it never jumps.
+ * height while the content shrinks (a search), so it never jumps. `fullScreen` covers the whole
+ * screen with no animation, because a fade would show the page behind it: for a sheet the narrator
+ * holds up to a player.
  */
 export function Modal({
   title,
@@ -34,6 +36,7 @@ export function Modal({
   footer,
   sheet = false,
   steady = false,
+  fullScreen = false,
 }: {
   title: string;
   onClose: () => void;
@@ -41,6 +44,7 @@ export function Modal({
   footer?: ReactNode;
   sheet?: boolean;
   steady?: boolean;
+  fullScreen?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -51,7 +55,7 @@ export function Modal({
   /** Plays the closing animation, then asks the screen to remove the dialog. */
   function requestClose() {
     if (closing) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (fullScreen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       onClose();
       return;
     }
@@ -94,7 +98,7 @@ export function Modal({
       }}
       aria-labelledby={titleId}
       data-closing={closing}
-      className={`modal ${sheet ? 'mt-auto mb-0 w-full max-w-md pb-8' : 'modal-centered my-auto'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto flex-col overflow-hidden rounded-card bg-field p-5 text-ink shadow-float backdrop:bg-ink/40 open:flex`}
+      className={`${fullScreen ? 'fixed inset-0 m-0 h-dvh max-h-none w-dvw max-w-none' : `modal ${sheet ? 'mt-auto mb-0 w-full max-w-md pb-8' : 'modal-centered my-auto'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto rounded-card shadow-float backdrop:bg-ink/40`} flex-col overflow-hidden bg-field p-5 text-ink open:flex`}
     >
       <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
         <h2 id={titleId} className="font-display text-heading font-semibold">

@@ -327,12 +327,13 @@ export function NarratorScreen({
                         name={action.type === 'role' ? 'swap' : 'question'}
                         className="mt-1 size-4 text-muted"
                       />
+                      {action.type === 'question' && (
+                        <span className="sr-only">{t('narrator.actionQuestion')}</span>
+                      )}
                       <span className="min-w-0 break-words">
                         {action.type === 'role'
                           ? t('narrator.actionRole', { role: action.role.name[locale] })
-                          : t('narrator.actionQuestion', {
-                              question: action.question.text[locale],
-                            })}
+                          : action.question.text[locale]}
                       </span>
                     </span>
                     {/* This night's pick, and the morning after it: the one the asker asks next. */}

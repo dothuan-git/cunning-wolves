@@ -260,7 +260,7 @@
     "questionCard": "Câu hỏi",
     "showQuestion": "Hiện câu hỏi",
     "actionRole": "Đổi vai thành {{role}}",
-    "actionQuestion": "Chọn câu hỏi: {{question}}"
+    "actionQuestion": "Câu hỏi đã chọn"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",

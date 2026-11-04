@@ -395,7 +395,7 @@ test('the narrator picks a Gypsy question, and the next night offers four others
   await options.first().click();
   await expect(options.first()).toHaveAttribute('aria-pressed', 'true');
   await sheet.getByRole('button', { name: 'Done', exact: true }).click();
-  const picked = `Picked question: ${firstOffer[0] ?? ''}`;
+  const picked = firstOffer[0] ?? '';
   await expect(record.getByText(picked, { exact: true })).toBeVisible();
 
   // The pick survives a refresh, stays in the history, and the morning has no button.

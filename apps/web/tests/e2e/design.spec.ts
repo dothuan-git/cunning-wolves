@@ -162,6 +162,10 @@ test('the Gypsy button opens four questions, and a pick shows in the history', a
   const sheet = page.getByRole('dialog', { name: 'Questions · Huy', exact: true });
   const questions = sheet.getByRole('listitem').getByRole('button');
   await expect(questions).toHaveCount(4);
+  // Held up to the Gypsy, so it hides the whole narrator page.
+  const box = await sheet.boundingBox();
+  expect(box).toMatchObject({ x: 0, y: 0, width: 390 });
+  expect(box?.height).toBeGreaterThanOrEqual(844 - 1);
   const asked = await questions.nth(1).innerText();
   await questions.nth(1).click();
   await expect(questions.nth(1)).toHaveAttribute('aria-pressed', 'true');
@@ -172,14 +176,14 @@ test('the Gypsy button opens four questions, and a pick shows in the history', a
   await closeSheet(page);
   await expect(button).toHaveClass(/text-ink/);
   const record = page.getByRole('list', { name: 'Huy’s record', exact: true });
-  await expect(record.getByText(`Picked question: ${asked}`, { exact: true })).toBeVisible();
-  await expect(record.getByText(/^Picked question: /)).toHaveCount(2);
+  await expect(record.getByText(asked, { exact: true })).toBeVisible();
+  await expect(record.getByText('Picked question', { exact: true })).toHaveCount(2);
 
   await button.click();
   await questions.nth(1).click();
   await closeSheet(page);
   await expect(button).toHaveClass(/text-muted/);
-  await expect(record.getByText(/^Picked question: /)).toHaveCount(1);
+  await expect(record.getByText('Picked question', { exact: true })).toHaveCount(1);
 });
 
 test('the question card shows only the question, over the whole screen', async ({ page }) => {

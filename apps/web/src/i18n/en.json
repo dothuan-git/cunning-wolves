@@ -260,7 +260,7 @@
     "questionCard": "Question",
     "showQuestion": "Show the question",
     "actionRole": "Changed role to {{role}}",
-    "actionQuestion": "Picked question: {{question}}"
+    "actionQuestion": "Picked question"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",

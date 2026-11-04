@@ -58,7 +58,7 @@ export function QuestionSheet({
   const locale = useLocale();
   return (
     <Modal
-      sheet
+      fullScreen
       title={t('narrator.questionTitle', { name })}
       footer={<ModalDone />}
       onClose={onClose}
@@ -75,10 +75,12 @@ export function QuestionSheet({
                 onClick={() => {
                   onPick(chosen ? null : question.id);
                 }}
-                className={`press flex min-h-12 w-full items-start justify-between gap-3 py-3 text-left text-body disabled:cursor-not-allowed disabled:opacity-45 ${chosen ? 'font-medium' : ''}`}
+                className="press flex min-h-12 w-full items-start justify-between gap-3 py-3 text-left disabled:cursor-not-allowed disabled:opacity-45"
               >
-                <span className="min-w-0 break-words">{question.text[locale]}</span>
-                <Icon name="check" className={`mt-0.5 ${chosen ? '' : 'invisible'}`} />
+                <span className="min-w-0 font-display text-role font-semibold break-words">
+                  {question.text[locale]}
+                </span>
+                <Icon name="check" className={chosen ? '' : 'invisible'} />
               </button>
             </li>
           );
