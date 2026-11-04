@@ -29,7 +29,7 @@ Tạo từ `packages/shared/src/roles/pool.ts`.
 - **Thợ làm bánh** (Baker) — mỗi đêm. Mỗi đêm, bạn có thể giơ tay báo quản trò rằng muốn thức dậy sớm. Bạn mở mắt đúng lúc bầy sói vừa đi ngủ, nên có khoảng một phần tư cơ hội nhìn thấy một con sói.
 - **Phù thủy** (Witch) — mỗi đêm. Bạn có hai bình thuốc, mỗi bình dùng một lần trong ván: một bình cứu nạn nhân của sói, một bình giết một người bất kỳ. Mỗi đêm quản trò cho bạn biết nạn nhân. Bạn được dùng thuốc cho chính mình, và dùng cả hai bình trong cùng một đêm.
 - **Ảo thuật gia** (Magician) — mỗi đêm. Mỗi đêm bạn dùng một năng lực khác nhau: quản trò giữ một chồng vai hoạt động ban đêm và mỗi đêm (kể cả đêm 1) cho bạn xem một lá. Bạn dùng năng lực của vai đó trong đêm ấy, ví dụ Tiên tri hoặc Người mất ngủ.
-- **Người gọi hồn** (Gypsy) — mỗi đêm. Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
+- **Người gọi hồn** (Gypsy) — mỗi đêm. Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi: chọn một câu và một người trung gian để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
 - **Quạ** (Raven) — mỗi đêm. Một lần trong ván, vào ban đêm, bạn có thể chỉ một người: hôm sau họ bắt đầu lần bỏ phiếu treo cổ với sẵn hai phiếu chống.
 - **Kẻ gây rối** (Troublemaker) — mỗi đêm. Một lần trong ván, chọn một đêm: hôm sau làng bỏ phiếu treo cổ hai lần thay vì một.
 - **Người mất ngủ** (Insomniac) — mỗi đêm. Mỗi đêm, sau khi mọi người đã hành động xong, bạn biết ít nhất một trong hai người ngồi cạnh có thức dậy không, nhưng không biết là ai.

@@ -1,6 +1,6 @@
 # 0010 — One narrator list with night and morning phases
 
-Date: 2026-10-27. Status: accepted. Supersedes the night switcher and the general night note in decision 0007.
+Date: 2026-10-27. Status: accepted. Supersedes the night switcher and the general night note in decision 0007. Amended by decision 0027: a night can show several rows (action notes), and a death always shows.
 
 ## Context
 

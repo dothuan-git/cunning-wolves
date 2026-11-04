@@ -1,4 +1,11 @@
-import { CUSTOM_ROLES_MAX, NOTE_MAX, PICKS_MAX, RULE_MAX, type RoomAction } from '@werewolf/shared';
+import {
+  CUSTOM_ROLES_MAX,
+  GYPSY_QUESTIONS,
+  NOTE_MAX,
+  PICKS_MAX,
+  RULE_MAX,
+  type RoomAction,
+} from '@werewolf/shared';
 import { describe, expect, it } from 'vitest';
 import { apply, createRoom, seatedPlayers, type Random, type RoomState } from '../src/room/machine';
 import { cryptoRandom } from '../src/room/random';
@@ -560,9 +567,23 @@ function copierPlaying(): RoomState {
   );
 }
 
+/** Minh (`a`) holds the Gypsy and Lan (`b`) the Doppelgänger, so roles can change too. */
+function gypsyPlaying(): RoomState {
+  return run(
+    room(),
+    ['a', { type: 'join', name: 'Minh', pin: PIN }],
+    ['b', { type: 'join', name: 'Lan', pin: PIN }],
+    [MASTER, { type: 'addPick', roleId: 'gypsy' }],
+    [MASTER, { type: 'addPick', roleId: 'doppelganger' }],
+    [MASTER, { type: 'review' }],
+    [MASTER, { type: 'startGame' }],
+  );
+}
+
 const NIGHT_1 = { kind: 'night', number: 1 } as const;
 const MORNING_1 = { kind: 'morning', number: 1 } as const;
 const NIGHT_2 = { kind: 'night', number: 2 } as const;
+const QUESTION_IDS = GYPSY_QUESTIONS.map((question) => question.id);
 
 describe('end phase', () => {
   it('starts at Night 1 and moves night, morning, night', () => {
@@ -571,6 +592,8 @@ describe('end phase', () => {
       deaths: {},
       notes: {},
       newRoles: {},
+      actions: [],
+      questionDeck: QUESTION_IDS,
     });
     const state = run(
       playing(),
@@ -726,6 +749,231 @@ describe('set role', () => {
   });
 });
 
+describe('role notes', () => {
+  const setRole = (roleId: string | null) => ({ type: 'setRole', playerId: 'a', roleId }) as const;
+  const roleNote = (role: string, phase: typeof NIGHT_1 | typeof MORNING_1 | typeof NIGHT_2) =>
+    ({ type: 'role', role, playerId: 'a', phase }) as const;
+
+  it('notes a change in the phase it was made', () => {
+    const state = run(copierPlaying(), [MASTER, setRole('witch')]);
+    expect(state.game?.actions).toEqual([roleNote('witch', NIGHT_1)]);
+  });
+
+  it('keeps only the last choice of a phase', () => {
+    const state = run(copierPlaying(), [MASTER, setRole('witch')], [MASTER, setRole('seer')]);
+    expect(state.game?.actions).toEqual([roleNote('seer', NIGHT_1)]);
+  });
+
+  it('leaves no note when the change is undone in the same phase', () => {
+    for (const back of [null, 'doppelganger']) {
+      const state = run(copierPlaying(), [MASTER, setRole('witch')], [MASTER, setRole(back)]);
+      expect(state.game?.actions, String(back)).toEqual([]);
+      expect(state.game?.newRoles, String(back)).toEqual({});
+    }
+  });
+
+  it('adds a note in a later phase, even for going back to the dealt role', () => {
+    const state = run(
+      copierPlaying(),
+      [MASTER, setRole('witch')],
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, setRole(null)],
+    );
+    expect(state.game?.actions).toEqual([
+      roleNote('witch', NIGHT_1),
+      roleNote('doppelganger', MORNING_1),
+    ]);
+  });
+
+  it('removes a later note that lands back on the role the phase began with', () => {
+    const state = run(
+      copierPlaying(),
+      [MASTER, setRole('witch')],
+      [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+      [MASTER, setRole('seer')],
+      [MASTER, setRole('witch')],
+    );
+    expect(state.game?.actions).toEqual([roleNote('witch', NIGHT_1)]);
+    expect(state.game?.newRoles).toEqual({ a: { role: 'witch', phase: MORNING_1 } });
+  });
+
+  it('keeps each player’s notes apart, and a refused change adds none', () => {
+    const state = run(
+      copierPlaying(),
+      [MASTER, setRole('witch')],
+      [MASTER, { type: 'setRole', playerId: 'b', roleId: 'seer' }],
+    );
+    expect(state.game?.actions).toEqual([
+      roleNote('witch', NIGHT_1),
+      { type: 'role', role: 'seer', playerId: 'b', phase: NIGHT_1 },
+    ]);
+    expect(refusal(state, MASTER, setRole('custom-9'))).toBe('not-allowed');
+  });
+});
+
+describe('pick question', () => {
+  const [first = '', second = '', third = '', fourth = '', fifth = ''] = QUESTION_IDS;
+  const pick = (playerId: string, questionId: string | null) =>
+    ({ type: 'pickQuestion', playerId, questionId }) as const;
+  const toNight2: [string, RoomAction][] = [
+    [MASTER, { type: 'endPhase', phase: NIGHT_1 }],
+    [MASTER, { type: 'endPhase', phase: MORNING_1 }],
+  ];
+
+  it('gives every game the whole shuffled deck, after the deal', () => {
+    const asked: number[] = [];
+    const reviewed = run(ready(), [MASTER, { type: 'review' }]);
+    const result = apply(reviewed, MASTER, { type: 'startGame' }, NOW, (below) => {
+      asked.push(below);
+      return below - 1;
+    });
+    // The two cards are shuffled first, so the questions never change who gets which.
+    expect(asked[0]).toBe(2);
+    expect(asked[1]).toBe(QUESTION_IDS.length);
+    expect(result.ok).toBe(true);
+    const shuffled = run(reviewed, [MASTER, { type: 'startGame' }]).game?.questionDeck;
+    expect([...(shuffled ?? [])].sort()).toEqual([...QUESTION_IDS].sort());
+  });
+
+  it('notes the question a Gypsy picks tonight', () => {
+    const state = run(gypsyPlaying(), [MASTER, pick('a', second)]);
+    expect(state.game?.actions).toEqual([
+      { type: 'question', question: second, playerId: 'a', phase: NIGHT_1 },
+    ]);
+  });
+
+  it('replaces a pick, and null takes it back', () => {
+    const picked = run(gypsyPlaying(), [MASTER, pick('a', first)], [MASTER, pick('a', third)]);
+    expect(picked.game?.actions).toEqual([
+      { type: 'question', question: third, playerId: 'a', phase: NIGHT_1 },
+    ]);
+    expect(run(picked, [MASTER, pick('a', null)]).game?.actions).toEqual([]);
+  });
+
+  it('refuses in the morning, for a player who is not the Gypsy, and outside the offer', () => {
+    const state = gypsyPlaying();
+    const morning = run(state, [MASTER, { type: 'endPhase', phase: NIGHT_1 }]);
+    expect(refusal(morning, MASTER, pick('a', first))).toBe('not-allowed');
+    expect(refusal(state, MASTER, pick('b', first))).toBe('not-allowed');
+    expect(refusal(state, MASTER, pick('a', fifth))).toBe('not-allowed');
+    expect(refusal(state, MASTER, pick('a', 'q99'))).toBe('not-allowed');
+    expect(refusal(state, MASTER, pick('a', '__proto__'))).toBe('not-allowed');
+  });
+
+  it('refuses a player without a card, anyone but the master, and outside a game', () => {
+    const state = gypsyPlaying();
+    expect(refusal(state, MASTER, pick('z', first))).toBe('not-allowed');
+    expect(refusal(state, MASTER, pick('__proto__', first))).toBe('not-allowed');
+    expect(refusal(state, 'a', pick('a', first))).toBe('not-master');
+    expect(refusal(ready(), MASTER, pick('a', first))).toBe('not-allowed');
+    const finished = run(state, [MASTER, { type: 'finishGame' }]);
+    expect(refusal(finished, MASTER, pick('a', first))).toBe('not-allowed');
+  });
+
+  it('goes by the role a player plays now, not the one they were dealt', () => {
+    const state = run(
+      gypsyPlaying(),
+      [MASTER, { type: 'setRole', playerId: 'b', roleId: 'gypsy' }],
+      [MASTER, { type: 'setRole', playerId: 'a', roleId: 'witch' }],
+    );
+    expect(run(state, [MASTER, pick('b', first)]).game?.actions.at(-1)).toEqual({
+      type: 'question',
+      question: first,
+      playerId: 'b',
+      phase: NIGHT_1,
+    });
+    expect(refusal(state, MASTER, pick('a', first))).toBe('not-allowed');
+  });
+
+  it('takes back a pick made while a player was the Gypsy by mistake', () => {
+    const mistaken = run(
+      gypsyPlaying(),
+      [MASTER, { type: 'setRole', playerId: 'b', roleId: 'gypsy' }],
+      [MASTER, pick('b', first)],
+      [MASTER, { type: 'setRole', playerId: 'b', roleId: null }],
+    );
+    expect(refusal(mistaken, MASTER, pick('b', second))).toBe('not-allowed');
+    const cleared = run(mistaken, [MASTER, pick('b', null)]);
+    expect(cleared.game?.actions).toEqual([]);
+    expect(run(cleared, ...toNight2).game?.questionDeck).toEqual(QUESTION_IDS);
+  });
+
+  it('keeps a role note and a pick apart when either is redone', () => {
+    const setRole = (roleId: string | null) =>
+      ({ type: 'setRole', playerId: 'a', roleId }) as const;
+    const roleNote = (role: string) =>
+      ({ type: 'role', role, playerId: 'a', phase: NIGHT_1 }) as const;
+    const questionNote = (question: string) =>
+      ({ type: 'question', question, playerId: 'a', phase: NIGHT_1 }) as const;
+    const both = run(gypsyPlaying(), [MASTER, pick('a', first)], [MASTER, setRole('witch')]);
+    expect(both.game?.actions).toEqual([questionNote(first), roleNote('witch')]);
+    expect(run(both, [MASTER, setRole('seer')]).game?.actions).toEqual([
+      questionNote(first),
+      roleNote('seer'),
+    ]);
+    const backToGypsy = run(both, [MASTER, setRole('gypsy')]);
+    expect(backToGypsy.game?.actions).toEqual([questionNote(first)]);
+    expect(run(backToGypsy, [MASTER, pick('a', second)]).game?.actions).toEqual([
+      questionNote(second),
+    ]);
+  });
+
+  it('lets two Gypsies keep a pick each', () => {
+    const state = run(
+      gypsyPlaying(),
+      [MASTER, { type: 'setRole', playerId: 'b', roleId: 'gypsy' }],
+      [MASTER, pick('a', first)],
+      [MASTER, pick('b', second)],
+    );
+    expect(state.game?.actions.filter((note) => note.type === 'question')).toEqual([
+      { type: 'question', question: first, playerId: 'a', phase: NIGHT_1 },
+      { type: 'question', question: second, playerId: 'b', phase: NIGHT_1 },
+    ]);
+  });
+
+  it('keeps the night of a death, but no later night', () => {
+    const died = run(gypsyPlaying(), [MASTER, { type: 'toggleDeath', playerId: 'a' }]);
+    expect(run(died, [MASTER, pick('a', first)]).game?.actions).toHaveLength(1);
+    const night2 = run(died, ...toNight2);
+    expect(refusal(night2, MASTER, pick('a', first))).toBe('not-allowed');
+  });
+
+  it('keeps the same four until one is picked', () => {
+    const state = run(gypsyPlaying(), ...toNight2);
+    expect(state.game?.questionDeck).toEqual(QUESTION_IDS);
+    expect(refusal(state, MASTER, pick('a', fifth))).toBe('not-allowed');
+    expect(run(state, [MASTER, pick('a', fourth)]).game?.actions).toHaveLength(1);
+  });
+
+  it('offers four others on the night after a pick, not in the morning', () => {
+    const picked = run(gypsyPlaying(), [MASTER, pick('a', second)]);
+    const morning = run(picked, [MASTER, { type: 'endPhase', phase: NIGHT_1 }]);
+    expect(morning.game?.questionDeck).toEqual(QUESTION_IDS);
+    const night2 = run(morning, [MASTER, { type: 'endPhase', phase: MORNING_1 }]);
+    expect(night2.game?.questionDeck.slice(0, 4)).toEqual(QUESTION_IDS.slice(4, 8));
+    expect(night2.game?.questionDeck).not.toContain(second);
+    expect(refusal(night2, MASTER, pick('a', first))).toBe('not-allowed');
+    const stillPicked = night2.game?.actions.filter((note) => note.type === 'question');
+    expect(stillPicked).toHaveLength(1);
+    expect(run(night2, [MASTER, pick('a', fifth)]).game?.actions).toHaveLength(2);
+  });
+
+  it('keeps picks from the narrator only, until Finish', () => {
+    const picked = run(gypsyPlaying(), [MASTER, pick('a', second)]);
+    const connected = new Set(['a', 'b']);
+    expect(buildMasterView(picked, connected).game?.actions).toHaveLength(1);
+    for (const viewer of ['a', 'b']) {
+      const text = JSON.stringify(buildPlayerView(picked, connected, viewer));
+      expect(text).not.toContain('questionDeck');
+      expect(text).not.toContain(second);
+    }
+    const finished = run(picked, [MASTER, { type: 'finishGame' }]);
+    expect(buildPlayerView(finished, connected, 'b').reveal?.game.actions).toEqual([
+      { type: 'question', question: second, playerId: 'a', phase: NIGHT_1 },
+    ]);
+  });
+});
+
 describe('set note', () => {
   const note = (night: number, playerId: string, text: string) =>
     ({ type: 'setNote', night, playerId, text }) as const;
@@ -840,7 +1088,14 @@ describe('finish and play again', () => {
     expect(view.reveal).toBeNull();
     expect(view.roles).toEqual([]);
     const second = run(again, [MASTER, { type: 'review' }], [MASTER, { type: 'startGame' }]);
-    expect(second.game).toEqual({ phase: NIGHT_1, deaths: {}, notes: {}, newRoles: {} });
+    expect(second.game).toEqual({
+      phase: NIGHT_1,
+      deaths: {},
+      notes: {},
+      newRoles: {},
+      actions: [],
+      questionDeck: QUESTION_IDS,
+    });
     expect(Object.keys(second.assignments).sort()).toEqual(['a', 'b']);
   });
 
@@ -972,6 +1227,8 @@ describe('views', () => {
       deaths: { b: NIGHT_1 },
       notes: { 1: { a: 'Secret note' } },
       newRoles: { a: { role: 'witch', phase: NIGHT_1 } },
+      actions: [{ type: 'role', role: 'witch', playerId: 'a', phase: NIGHT_1 }],
+      questionDeck: QUESTION_IDS,
     });
     for (const viewer of ['a', 'b', 'c']) {
       const view = buildPlayerView(marked, connected, viewer);
@@ -999,6 +1256,8 @@ describe('views', () => {
         deaths: { b: NIGHT_1 },
         notes: { 1: { a: 'Saw.' } },
         newRoles: { a: { role: 'witch', phase: NIGHT_1 } },
+        actions: [{ type: 'role', role: 'witch', playerId: 'a', phase: NIGHT_1 }],
+        questionDeck: QUESTION_IDS,
       },
     };
     expect(buildPlayerView(finished, connected, 'a').reveal).toEqual(reveal);

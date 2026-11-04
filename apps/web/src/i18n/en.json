@@ -43,6 +43,7 @@
     "noteWolves2": "Chose Linh.",
     "frame": "Phone size {{width}} × {{height}}",
     "many": "Many players",
+    "gypsy": "Gypsy",
     "master": "Narrator",
     "player": "Player"
   },
@@ -94,7 +95,8 @@
     "notePlaceholder": "Add an observation…",
     "statusFor": "Status for {{name}}",
     "nameYou": "{{name}} (you)",
-    "changeRole": "Change {{name}}'s role"
+    "changeRole": "Change {{name}}'s role",
+    "pickQuestion": "Pick a question for {{name}}"
   },
   "card": {
     "tapToEdit": "Tap to edit rule.",
@@ -253,7 +255,12 @@
     "roleTitle": "Role · {{name}}",
     "dealt": "Dealt",
     "rolesInGame": "In this game",
-    "otherRoles": "Other roles"
+    "otherRoles": "Other roles",
+    "questionTitle": "Questions",
+    "questionCard": "Question",
+    "showQuestion": "Show the question",
+    "actionRole": "Changed role to {{role}}",
+    "actionQuestion": "Picked question"
   },
   "summary": {
     "intro": "Every role, and the story you recorded.",
@@ -271,7 +278,8 @@
     "deadCount": "{{count}} dead",
     "diedIn": "Died · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} players",
-    "nowPlays": "{{name}} now plays {{role}}"
+    "nowPlays": "{{name}} now plays {{role}}",
+    "pickedQuestion": "{{name}} picked: {{question}}"
   },
   "components": {
     "primary": "Primary action",

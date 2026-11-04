@@ -97,6 +97,13 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage | n
         ? { type, playerId, roleId }
         : null;
     }
+    case 'pickQuestion': {
+      const playerId = field(data, 'playerId');
+      const questionId = field(data, 'questionId');
+      return typeof playerId === 'string' && (typeof questionId === 'string' || questionId === null)
+        ? { type, playerId, questionId }
+        : null;
+    }
     case 'setOpen': {
       const open = field(data, 'open');
       return typeof open === 'boolean' ? { type, open } : null;

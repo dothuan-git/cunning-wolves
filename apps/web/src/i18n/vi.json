@@ -43,6 +43,7 @@
     "noteWolves2": "Chọn cắn Linh.",
     "frame": "Khung điện thoại {{width}} × {{height}}",
     "many": "Nhiều người chơi",
+    "gypsy": "Người gọi hồn",
     "master": "Quản trò",
     "player": "Người chơi"
   },
@@ -94,7 +95,8 @@
     "notePlaceholder": "Thêm ghi chú…",
     "statusFor": "Trạng thái của {{name}}",
     "nameYou": "{{name}} (bạn)",
-    "changeRole": "Đổi vai của {{name}}"
+    "changeRole": "Đổi vai của {{name}}",
+    "pickQuestion": "Chọn câu hỏi cho {{name}}"
   },
   "card": {
     "tapToEdit": "Chạm để sửa luật.",
@@ -253,7 +255,12 @@
     "roleTitle": "Vai · {{name}}",
     "dealt": "Bài gốc",
     "rolesInGame": "Trong ván này",
-    "otherRoles": "Vai khác"
+    "otherRoles": "Vai khác",
+    "questionTitle": "Câu hỏi",
+    "questionCard": "Câu hỏi",
+    "showQuestion": "Hiện câu hỏi",
+    "actionRole": "Đổi vai thành {{role}}",
+    "actionQuestion": "Câu hỏi đã chọn"
   },
   "summary": {
     "intro": "Từng vai trò và câu chuyện bạn đã ghi lại.",
@@ -271,7 +278,8 @@
     "deadCount": "{{count}} đã chết",
     "diedIn": "Đã chết · {{phase}}",
     "aliveOfTotal": "{{alive}}/{{total}} người chơi",
-    "nowPlays": "{{name}} giờ là {{role}}"
+    "nowPlays": "{{name}} giờ là {{role}}",
+    "pickedQuestion": "{{name}} chọn: {{question}}"
   },
   "components": {
     "primary": "Thao tác chính",

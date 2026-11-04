@@ -1,4 +1,6 @@
 import {
+  canNoteNight,
+  GYPSY_ROLE_ID,
   NOTE_MAX,
   TIMER_MAX,
   wakesOnNight,
@@ -26,8 +28,16 @@ import { useFlip } from '../../design/useFlip';
 import { useLeaving } from '../../design/useLeaving';
 import { useLocale } from '../../i18n/useLocale';
 import { playChime, unlockSound } from '../../sound/chime';
-import type { Phase, PlayerListItem, RoleChoices, RoleGroupItem } from '../types';
+import type {
+  ActionNoteItem,
+  Phase,
+  PlayerListItem,
+  QuestionItem,
+  RoleChoices,
+  RoleGroupItem,
+} from '../types';
 import { groupKey } from './groups';
+import { QuestionButton, QuestionCard, QuestionSheet } from './GypsyQuestions';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
 import { RoleChangeButton, RoleSheet } from './RoleChange';
@@ -40,13 +50,16 @@ export function NarratorScreen({
   groups,
   phase,
   notes,
+  actions,
   deaths,
   roleChoices,
+  questions,
   settings,
   reconnecting = false,
   onPlayerNote,
   onTogglePlayer,
   onSetRole,
+  onPickQuestion,
   onEndPhase,
   onWakeOrder,
   onSettings,
@@ -59,10 +72,14 @@ export function NarratorScreen({
   phase: Phase;
   /** Night number → player id → note. */
   notes: Readonly<Record<number, Readonly<Record<string, string>>>>;
+  /** What the narrator did, oldest first */
+  actions: readonly ActionNoteItem[];
   /** Player id → the phase the narrator marked them dead in. */
   deaths: Readonly<Record<string, Phase>>;
   /** The roles a power can give a player; left out when no dealt role changes roles */
   roleChoices?: RoleChoices;
+  /** The Gypsy's questions on offer; empty hides the question button */
+  questions: readonly QuestionItem[];
   settings: RoomSettings;
   /** The room can't be told anything right now */
   reconnecting?: boolean;
@@ -71,6 +88,8 @@ export function NarratorScreen({
   onTogglePlayer: (playerId: string) => void;
   /** The role a player plays now; null goes back to the dealt one */
   onSetRole: (playerId: string, roleId: string | null) => void;
+  /** The question a Gypsy chose tonight; null takes it back */
+  onPickQuestion: (playerId: string, questionId: string | null) => void;
   onEndPhase: () => void;
   onWakeOrder: (order: string[]) => void;
   onSettings: (settings: RoomSettings) => void;
@@ -87,6 +106,10 @@ export function NarratorScreen({
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
   // The player whose role sheet is open.
   const [changing, setChanging] = useState<string | null>(null);
+  // The Gypsy whose question sheet is open.
+  const [asking, setAsking] = useState<string | null>(null);
+  // The question whose card is held up to the asker.
+  const [showing, setShowing] = useState<QuestionItem | null>(null);
   // The role whose detailed card is open.
   const [viewing, setViewing] = useState<PoolRole | null>(null);
 
@@ -177,6 +200,8 @@ export function NarratorScreen({
       ? undefined
       : groups.find((group) => group.players.some((player) => player.id === changing));
   const changingPlayer = changingGroup?.players.find((player) => player.id === changing);
+  const askingPlayer = isNight ? everyone.find((player) => player.id === asking) : undefined;
+  const askingGroup = groups.find((group) => group.players.some((player) => player.id === asking));
   // A death just undone keeps its row a moment, so it slides out instead of vanishing.
   const shownDeaths = useLeaving(
     Object.entries(deaths).map(([id, at]) => ({ id, at })),
@@ -208,6 +233,20 @@ export function NarratorScreen({
       : group.role.name[locale];
   }
 
+  function playsGypsy(group: RoleGroupItem): boolean {
+    return (group.newRole ?? group.role).id === GYPSY_ROLE_ID;
+  }
+
+  function pickedTonight(playerId: string): string | undefined {
+    for (const action of actions) {
+      const tonight = action.phase.kind === phase.kind && action.phase.number === phase.number;
+      if (action.type === 'question' && action.playerId === playerId && tonight) {
+        return action.question.id;
+      }
+    }
+    return undefined;
+  }
+
   function renderPlayer(player: PlayerListItem, group: RoleGroupItem) {
     const death = deaths[player.id];
     const dead = death !== undefined;
@@ -218,6 +257,7 @@ export function NarratorScreen({
     }
     const entries = playerTimeline({
       notes: playerNotes,
+      actions: actions.filter((action) => action.playerId === player.id),
       death,
       current: phase,
       editingNight: editing?.playerId === player.id ? editing.night : undefined,
@@ -226,6 +266,13 @@ export function NarratorScreen({
       ? undefined
       : shownDeaths.find((shown) => shown.leaving && shown.key === player.id)?.item.at;
     if (undone) entries.push({ type: 'death', phase: undone });
+    // The player who plays the Gypsy now asks, on any night they were alive to start. A pick made
+    // before their role changed keeps the button, so it can be taken back.
+    const picked = pickedTonight(player.id);
+    const asks =
+      isNight &&
+      questions.length > 0 &&
+      (picked !== undefined || (playsGypsy(group) && canNoteNight(death, phase.number)));
     // Phase labels stay small and grey so the player's name leads the row.
     const labelClass = 'min-w-11 shrink-0 text-caption whitespace-nowrap text-muted';
     return (
@@ -233,6 +280,16 @@ export function NarratorScreen({
         <div className="flex min-h-12 items-center justify-between gap-2">
           <PlayerChip name={player.name} dead={dead} large />
           <div className="flex shrink-0 items-center">
+            {asks && (
+              <QuestionButton
+                name={player.name}
+                picked={picked !== undefined}
+                disabled={reconnecting}
+                onOpen={() => {
+                  setAsking(player.id);
+                }}
+              />
+            )}
             {roleChoices && (
               <RoleChangeButton
                 name={player.name}
@@ -257,6 +314,47 @@ export function NarratorScreen({
           // The top padding keeps the first note's overlap off the status pill above it.
           <ol aria-label={t('narrator.history', { name: player.name })} className="pt-1">
             {entries.map((entry) => {
+              if (entry.type === 'action') {
+                const { action } = entry;
+                return (
+                  <li
+                    key={`${action.type}-${action.phase.kind}-${String(action.phase.number)}`}
+                    className={`name-pop flex min-h-8 items-baseline gap-3 py-1 text-body ${dead ? 'text-muted' : 'text-ink'}`}
+                  >
+                    <span className={labelClass}>{phaseLabel(action.phase)}</span>
+                    <span className="flex min-w-0 flex-1 items-start gap-1.5">
+                      <Icon
+                        name={action.type === 'role' ? 'swap' : 'question'}
+                        className="mt-1 size-4 text-muted"
+                      />
+                      {action.type === 'question' && (
+                        <span className="sr-only">{t('narrator.actionQuestion')}</span>
+                      )}
+                      <span className="min-w-0 break-words">
+                        {action.type === 'role'
+                          ? t('narrator.actionRole', { role: action.role.name[locale] })
+                          : action.question.text[locale]}
+                      </span>
+                    </span>
+                    {/* The morning after a pick is when the asker needs to see it. */}
+                    {action.type === 'question' &&
+                      phase.kind === 'morning' &&
+                      action.phase.number === phase.number && (
+                        <button
+                          type="button"
+                          aria-label={t('narrator.showQuestion')}
+                          aria-haspopup="dialog"
+                          className="press -my-2 flex min-h-12 min-w-12 shrink-0 items-center justify-center self-center text-muted hover:text-ink"
+                          onClick={() => {
+                            setShowing(action.question);
+                          }}
+                        >
+                          <Icon name="eye" />
+                        </button>
+                      )}
+                  </li>
+                );
+              }
               if (entry.type === 'death') {
                 return (
                   <li
@@ -503,6 +601,28 @@ export function NarratorScreen({
           }}
           onClose={() => {
             setChanging(null);
+          }}
+        />
+      )}
+      {showing && (
+        <QuestionCard
+          question={showing}
+          onClose={() => {
+            setShowing(null);
+          }}
+        />
+      )}
+      {askingPlayer && (
+        <QuestionSheet
+          questions={questions}
+          picked={pickedTonight(askingPlayer.id)}
+          clearOnly={!askingGroup || !playsGypsy(askingGroup)}
+          disabled={reconnecting}
+          onPick={(questionId) => {
+            onPickQuestion(askingPlayer.id, questionId);
+          }}
+          onClose={() => {
+            setAsking(null);
           }}
         />
       )}

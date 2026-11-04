@@ -97,7 +97,7 @@
   - A third faction (`solo`) for roles that win alone, in purple with its own emblem; custom roles can join it.
   - Roles can wake on Night 1 only or on even nights; the Stuttering Judge now rests after Night 1.
   - Third-faction and team-changing roles are back in scope; card-swapping roles stay out.
-  - The pool now holds 84 roles. 42 are from The Werewolves of Millers Hollow (base game, New Moon, Characters, The Village), 33 from Ultimate Werewolf and 11 more that had been skipped for lack of a sourced rule. The first 27 have marks where the narrator needs to remember something; the other 59 are a card and a rule only, and the app does not run their power.
+  - The pool held 84 roles then (81 now, after later changes). 42 were from The Werewolves of Millers Hollow (base game, New Moon, Characters, The Village), 33 from Ultimate Werewolf and 11 more that had been skipped for lack of a sourced rule. Marks were later removed (decision 0026); the app does not run these roles’ powers.
   - The Ultimate Werewolf roles (Apprentice Seer, Aura Seer, Beholder, Insomniac, Paranormal Investigator, Mayor, Priest, Prince, Tough Guy, Martyr, Pacifist, Old Hag, Old Man, Spellcaster, Troublemaker, Drunk, Ghost, Magician, Lycan, Cursed, Diseased, Doppelgänger, Wolf Man, Wolf Cub, Dire Wolf, Dream Wolf, Minion, Sorceress, Bogeyman, Vampire, Cult Leader, Tanner) were written from partial sources that differ between editions, so each doc says to check it against your copy.
   - Added from the most common version of their rule: Fruit Brute, Lone Wolf, Chupacabra, The Count, Hoodlum and the Amulet of Protection. Added with placeholder rules, because the printed text is not online: the 2026 anniversary roles Puppeteer, Wise Monkey, Colossus and Mighty Wolf-Mother (replace them with the box text). Not added: Teenage Werewolf (no source at all), and the Sheriff and Town Crier, which are marks.
   - Nine roles added: Cupid, Wild Child, Wolf-hound, Cursed Wolf-Father, White Werewolf, Pied Piper, Angel, and Prejudiced Manipulator (branch `feat/roles-third-faction`), with their marks. A player marked Cursed, Turned wolf or Chose the wolves also shows in the wolves' panel, so the narrator wakes them with the pack. Wake orders now run 10 to 500.
@@ -118,9 +118,14 @@
   - Wild Child, Wolf-hound, Cursed, Cursed Wolf-Father and Alpha Wolf now unlock it: the narrator gives the turned player the Werewolf, and their panel turns wolf red.
   - See decision 0026.
 
+- **Gypsy questions and action notes** (branch `feat/gypsy-questions`, 2026-11-04):
+  - The app holds 24 yes-or-no questions for the Gypsy: 16 from New Moon's Spiritualism cards (the two about the Sheriff and two that strangers can't answer are left out) and 8 of our own. Vietnamese is translated by us. At night a question button opens four; a pick shows in the player's history, and the next night offers four others. In the morning, an eye button on the pick opens a full-screen card with only the question, for the narrator to hold up to the asker.
+  - A player's history now lists what the narrator did (role changes, picked questions) above that night's note, and a death always shows as its own row. The summary journal lists every action.
+  - See decision 0027.
+
 ## Next
 
-1. **Roles the app can't run yet** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), the Gypsy needs New Moon's Spiritualism cards, and the Village expansion roles need houses.
+1. **Roles the app can't run yet** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), and the Village expansion roles need houses. The Gypsy now has its own question pool (decision 0027).
 2. Confirm deployment setup: Cloudflare login and GitHub secrets (`docs/decisions/0004-pr-preview-workers.md`), and a deployed phone smoke check: create a room on one phone, join from two others, refresh one.
 3. **Playtest and polish:** play two games back to back with a real group on phones, and fix what comes up.
 
@@ -129,6 +134,6 @@
 - The plan's state diagram (3 loops) is missing from `docs/plan.md`; see the TODO in `docs/game-rules.md`.
 - The system Node on the dev machine is 20 (end of life). pnpm runs scripts on Node 24 regardless; upgrading the system Node to 24 LTS is still recommended.
 - Open item from the plan: standalone assets in the approved engraving style. The sound pack is answered for now by one generated chime at the end of the timer.
-- Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript. The development gallery uses synthetic data and is excluded from production JavaScript.
+- Every screen runs on real rooms. The development gallery uses synthetic data and is excluded from production JavaScript.
 - All 81 roles have card art. A new role without `<role-id>.webp` shows the hooded fallback figure; see `apps/web/src/assets/cards/README.md`.
 - The pool's vi + en role text was drafted by Claude and awaits Thuan's review (`docs/roles/`).

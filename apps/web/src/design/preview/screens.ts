@@ -37,6 +37,7 @@ export const STATES = [
   'morning',
   'master',
   'player',
+  'gypsy',
 ] as const;
 export type PreviewState = (typeof STATES)[number];
 export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
@@ -44,7 +45,7 @@ export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
   'name-entry': ['default', 'error'],
   summary: ['default', 'notes', 'empty', 'player'],
   setup: ['default', 'empty'],
-  narrator: ['default', 'dead', 'morning', 'long'],
+  narrator: ['default', 'dead', 'morning', 'long', 'gypsy'],
   'player-lobby': ['default', 'loading', 'long', 'many', 'removed'],
   'rules-review': ['default', 'many', 'master'],
   'my-card': ['default', 'hidden', 'long'],

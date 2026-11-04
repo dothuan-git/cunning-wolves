@@ -360,6 +360,84 @@ test('lovers are marked dead one by one, and the narrator gives a player a new r
   }
 });
 
+test('the narrator picks a Gypsy question, and the next night offers four others', async ({
+  browser,
+}) => {
+  const roomName = `Séance ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  const minhMessages = roomMessages(minh);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await expect(master.getByRole('button', { name: 'Players (1)' })).toBeVisible();
+  await master.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = master.getByRole('dialog', { name: 'Add village roles' });
+  await picker.getByRole('button', { name: 'Add Gypsy', exact: true }).click();
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+  await master.getByRole('button', { name: 'Review rules', exact: true }).click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+  await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
+
+  const hold = async (name: string) => {
+    await master.getByRole('button', { name, exact: true }).hover();
+    await master.mouse.down();
+    await master.waitForTimeout(1000);
+    await master.mouse.up();
+  };
+  const button = master.getByRole('button', { name: 'Pick a question for Minh', exact: true });
+  const sheet = master.getByRole('dialog', { name: 'Questions', exact: true });
+  const options = sheet.getByRole('listitem').getByRole('button');
+  const offer = async () =>
+    (await options.allInnerTexts()).map((text) => text.replace(/^\d+\.\s*/, ''));
+  const record = master.getByRole('list', { name: 'Minh’s record', exact: true });
+
+  await button.click();
+  await expect(options).toHaveCount(4);
+  const firstOffer = await offer();
+  await options.first().click();
+  await expect(sheet).toHaveCount(0);
+  const picked = firstOffer[0] ?? '';
+  await expect(record.getByText(picked, { exact: true })).toBeVisible();
+  // The question card is for the morning.
+  await expect(record.getByRole('button', { name: 'Show the question' })).toHaveCount(0);
+
+  // The pick survives a refresh, stays in the history, and the morning has no button.
+  await master.reload();
+  await expect(record.getByText(picked, { exact: true })).toBeVisible();
+  await hold('Hold to end night');
+  await expect(master.getByRole('heading', { name: 'Morning 1' })).toBeVisible();
+  await expect(button).toHaveCount(0);
+  await expect(record.getByText(picked, { exact: true })).toBeVisible();
+
+  // The morning is when the asker needs it: the card shows the question and nothing else.
+  await record.getByRole('button', { name: 'Show the question' }).click();
+  const card = master.getByRole('dialog', { name: 'Question', exact: true });
+  await expect(card).toContainText(picked);
+  await expect(card).not.toContainText('Minh');
+  await card.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(card).toHaveCount(0);
+
+  await hold('Hold to end morning');
+  await expect(master.getByRole('heading', { name: 'Night 2' })).toBeVisible();
+  // Last night's pick is history now: it keeps its row but loses the show button.
+  await expect(record.getByText(picked, { exact: true })).toBeVisible();
+  await expect(record.getByRole('button', { name: 'Show the question' })).toHaveCount(0);
+  await expect(button).toHaveClass(/text-muted/);
+  await button.click();
+  await expect(options).toHaveCount(4);
+  const secondOffer = await offer();
+  expect(secondOffer.filter((question) => firstOffer.includes(question))).toEqual([]);
+  await sheet.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
+
+  // A player's phone never hears of it.
+  for (const message of minhMessages) {
+    const text = JSON.stringify(message);
+    expect(text).not.toContain('questionDeck');
+    expect(text).not.toContain('"actions"');
+  }
+});
+
 test('the narrator finishes, everyone sees the summary, and the room plays again', async ({
   browser,
 }) => {

@@ -54,6 +54,8 @@ export type ClientMessage =
   | { type: 'toggleDeath'; playerId: string }
   /** The role a player plays now; null (or the dealt role) goes back to the dealt one */
   | { type: 'setRole'; playerId: string; roleId: string | null }
+  /** The question a Gypsy chose tonight; null takes the choice back */
+  | { type: 'pickQuestion'; playerId: string; questionId: string | null }
   /** Empty text removes the note */
   | { type: 'setNote'; night: number; playerId: string; text: string }
   /** Ends the game and shows everyone the summary */
@@ -92,7 +94,7 @@ export interface MasterView {
   pin: string | null;
   /** Who holds which role; empty until the game starts */
   assignments: Assignment[];
-  /** Phases, deaths, notes and new roles; null until the game starts */
+  /** Phases, deaths, notes, new roles and action notes; null until the game starts */
   game: GameState | null;
 }
 

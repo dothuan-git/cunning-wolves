@@ -48,6 +48,11 @@ const MASTER = {
     deaths: { aaaa: { kind: 'night', number: 2 } },
     notes: { 1: { aaaa: 'Saw the baker.' } },
     newRoles: { aaaa: { role: 'seer', phase: { kind: 'night', number: 2 } } },
+    actions: [
+      { type: 'role', role: 'seer', playerId: 'aaaa', phase: { kind: 'night', number: 2 } },
+      { type: 'question', question: 'q07', playerId: 'aaaa', phase: { kind: 'night', number: 2 } },
+    ],
+    questionDeck: ['q01', 'q02'],
   },
 } as const;
 const SUMMARY: RoomSummary = {
@@ -138,6 +143,8 @@ describe('parseServerMessage', () => {
             deaths: {},
             notes: { 1: { aaaa: 'Saw.' } },
             newRoles: {},
+            actions: [],
+            questionDeck: [],
           },
         },
       },
@@ -196,6 +203,54 @@ describe('parseServerMessage', () => {
         view: {
           ...MASTER,
           game: { ...MASTER.game, newRoles: { aaaa: { phase: { kind: 'night', number: 1 } } } },
+        },
+      },
+    ],
+    [
+      'a game without action notes',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, actions: undefined } } },
+    ],
+    [
+      'a game without a question deck',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, questionDeck: undefined } } },
+    ],
+    [
+      'a question deck that is not text',
+      { type: 'state', view: { ...MASTER, game: { ...MASTER.game, questionDeck: [1] } } },
+    ],
+    [
+      'an action note of an unknown type',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          game: {
+            ...MASTER.game,
+            actions: [{ type: 'x', playerId: 'aaaa', phase: { kind: 'night', number: 1 } }],
+          },
+        },
+      },
+    ],
+    [
+      'a question note without its question',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          game: {
+            ...MASTER.game,
+            actions: [{ type: 'question', playerId: 'aaaa', phase: { kind: 'night', number: 1 } }],
+          },
+        },
+      },
+    ],
+    [
+      'an action note without its phase',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          game: { ...MASTER.game, actions: [{ type: 'role', role: 'seer', playerId: 'aaaa' }] },
         },
       },
     ],

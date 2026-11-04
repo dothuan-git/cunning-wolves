@@ -1,6 +1,7 @@
 import {
   gameRoles,
   roomRoles,
+  type ActionNote,
   type GameRole,
   type GameState,
   type MasterView,
@@ -65,7 +66,17 @@ export function buildMasterView(state: RoomState, connected: ReadonlySet<string>
   };
 }
 
-/** Phases, deaths, notes and new roles: for the master, and for seated players after Finish. */
+function actionNoteInfo(note: ActionNote): ActionNote {
+  const fields = {
+    playerId: note.playerId,
+    phase: { kind: note.phase.kind, number: note.phase.number },
+  };
+  return note.type === 'role'
+    ? { type: 'role', role: note.role, ...fields }
+    : { type: 'question', question: note.question, ...fields };
+}
+
+/** Phases, deaths, notes, new roles and action notes: for the master, and seated players after Finish. */
 function gameStateInfo(game: GameState): GameState {
   return {
     phase: { kind: game.phase.kind, number: game.phase.number },
@@ -84,6 +95,8 @@ function gameStateInfo(game: GameState): GameState {
         { role: changed.role, phase: { kind: changed.phase.kind, number: changed.phase.number } },
       ]),
     ),
+    actions: game.actions.map(actionNoteInfo),
+    questionDeck: [...game.questionDeck],
   };
 }
 

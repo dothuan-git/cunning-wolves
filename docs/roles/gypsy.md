@@ -7,12 +7,14 @@
 
 ## Rule (vi)
 
-Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi trên một thẻ Cầu hồn: chọn một câu và một người để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
+Mỗi đêm quản trò có thể đọc cho bạn bốn câu hỏi: chọn một câu và một người trung gian để hỏi. Sáng hôm sau người đó hỏi to, và người chết đầu tiên trả lời "có" hoặc "không".
 
 ## Rule (en)
 
-Each night the narrator may read you the four questions on a Spiritualism card: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".
+Each night the narrator may read you four questions: pick one and a player to ask it. Next morning that player asks it aloud, and the first dead player answers "yes" or "no".
 
 ## Narrator notes
 
-Uses the five Spiritualism cards of the New Moon expansion, which the app does not hold. The app shows the card and rule only; it does not run this role's power.
+At night a question button sits in the Gypsy's row. It opens four random questions from the app's pool of 24 questions, mostly from the expansion's Spiritualism cards (`packages/shared/src/roles/questions.ts`). The narrator reads them out and taps the one chosen, and it shows as a note in the player's history. The same four stay until one is picked; the next night then offers four others. The app does not record which player will ask it: write that in the night's note. See decision 0027.
+
+To show the asker the question without showing the narrator's page, tap the eye button on the pick in the morning: it opens a full-screen card with only the question.

@@ -25,7 +25,9 @@ export function ModalDone() {
  * Escape or the Close button dismisses it. Only its body scrolls (a `ScrollArea`); the title and
  * `footer` stay put. Put `ModalDone` in the footer for a Done button that also plays the closing
  * animation. `steady` sizes it to its content, at most 75% of the screen, and keeps that
- * height while the content shrinks (a search), so it never jumps.
+ * height while the content shrinks (a search), so it never jumps. `fullScreen` covers the whole
+ * screen, for a sheet the narrator holds up to a player. `hideTitle` keeps the title for screen
+ * readers only.
  */
 export function Modal({
   title,
@@ -34,6 +36,8 @@ export function Modal({
   footer,
   sheet = false,
   steady = false,
+  fullScreen = false,
+  hideTitle = false,
 }: {
   title: string;
   onClose: () => void;
@@ -41,6 +45,8 @@ export function Modal({
   footer?: ReactNode;
   sheet?: boolean;
   steady?: boolean;
+  fullScreen?: boolean;
+  hideTitle?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -94,13 +100,23 @@ export function Modal({
       }}
       aria-labelledby={titleId}
       data-closing={closing}
-      className={`modal ${sheet ? 'mt-auto mb-0 w-full max-w-md pb-8' : 'modal-centered my-auto'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto flex-col overflow-hidden rounded-card bg-field p-5 text-ink shadow-float backdrop:bg-ink/40 open:flex`}
+      // Full screen: bottom padding as tall as the header, so centered content sits mid-screen.
+      className={`modal ${fullScreen ? 'fixed inset-0 m-0 h-dvh max-h-none w-dvw max-w-none pb-21' : `${sheet ? 'mt-auto mb-0 w-full max-w-md pb-8' : 'modal-centered my-auto'} ${steady ? 'modal-steady' : 'max-h-[85dvh]'} mx-auto rounded-card shadow-float`} flex-col overflow-hidden bg-field p-5 text-ink backdrop:bg-ink/40 open:flex`}
     >
       <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
-        <h2 id={titleId} className="font-display text-heading font-semibold">
+        <h2
+          id={titleId}
+          className={hideTitle ? 'sr-only' : 'font-display text-heading font-semibold'}
+        >
           {title}
         </h2>
-        <Button variant="quiet" onClick={requestClose} aria-label={t('common.close')} size="icon">
+        <Button
+          variant="quiet"
+          className="ml-auto"
+          onClick={requestClose}
+          aria-label={t('common.close')}
+          size="icon"
+        >
           <Icon name="close" />
         </Button>
       </div>
