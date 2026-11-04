@@ -180,6 +180,31 @@ test('the Gypsy button opens four questions, and a pick shows in the history', a
   await expect(record.getByText(/^Picked question: /)).toHaveCount(1);
 });
 
+test('the question card shows only the question, over the whole screen', async ({ page }) => {
+  await page.goto('/design?screen=narrator&state=gypsy&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Pick a question for Huy', exact: true }).click();
+  const questions = page.getByRole('dialog').getByRole('listitem').getByRole('button');
+  const asked = await questions.nth(1).innerText();
+  await questions.nth(1).click();
+  await closeSheet(page);
+  // Only this night's pick can be shown: last night's row has no button.
+  await expect(page.getByRole('button', { name: 'Show the question' })).toHaveCount(1);
+  await page.getByRole('button', { name: 'Show the question' }).click();
+  const card = page.getByRole('dialog', { name: 'Question', exact: true });
+  await expect(card).toBeVisible();
+  await expect(card).toHaveText(new RegExp(`^${asked.replace(/[?.]/g, '\\$&')}\\s*Close$`));
+  await expect(card).not.toContainText('Huy');
+  const box = await card.boundingBox();
+  expect(box).toMatchObject({ x: 0, y: 0, width: 390 });
+  expect(box?.height).toBeGreaterThanOrEqual(844 - 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.keyboard.press('Escape');
+  await expect(card).toHaveCount(0);
+  await page.getByRole('button', { name: 'Show the question' }).click();
+  await card.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(card).toHaveCount(0);
+});
+
 test('a player who stopped being the Gypsy keeps a button only to take their pick back', async ({
   page,
 }) => {
@@ -214,6 +239,11 @@ for (const lang of ['vi', 'en']) {
     );
     await page.keyboard.press('Escape');
     await expect(sheet).toHaveCount(0);
+    await page.getByRole('button', { name: /(Show the question|Hiện câu hỏi)/ }).click();
+    const card = page.getByRole('dialog');
+    expect(await card.evaluate(noOverflow)).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(card).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       390,
     );

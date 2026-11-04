@@ -257,6 +257,8 @@
     "rolesInGame": "Trong ván này",
     "otherRoles": "Vai khác",
     "questionTitle": "Câu hỏi · {{name}}",
+    "questionCard": "Câu hỏi",
+    "showQuestion": "Hiện câu hỏi",
     "actionRole": "Đổi vai thành {{role}}",
     "actionQuestion": "Chọn câu hỏi: {{question}}"
   },

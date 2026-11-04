@@ -37,7 +37,7 @@ import type {
   RoleGroupItem,
 } from '../types';
 import { groupKey } from './groups';
-import { QuestionButton, QuestionSheet } from './GypsyQuestions';
+import { QuestionButton, QuestionCard, QuestionSheet } from './GypsyQuestions';
 import { NoteSaver, noteKey, type SaveNote } from './noteSaver';
 import { packExtras } from './pack';
 import { RoleChangeButton, RoleSheet } from './RoleChange';
@@ -108,6 +108,8 @@ export function NarratorScreen({
   const [changing, setChanging] = useState<string | null>(null);
   // The Gypsy whose question sheet is open.
   const [asking, setAsking] = useState<string | null>(null);
+  // The question whose card is held up to the asker.
+  const [showing, setShowing] = useState<QuestionItem | null>(null);
   // The role whose detailed card is open.
   const [viewing, setViewing] = useState<PoolRole | null>(null);
 
@@ -333,6 +335,20 @@ export function NarratorScreen({
                             })}
                       </span>
                     </span>
+                    {/* This night's pick, and the morning after it: the one the asker asks next. */}
+                    {action.type === 'question' && action.phase.number === phase.number && (
+                      <button
+                        type="button"
+                        aria-label={t('narrator.showQuestion')}
+                        aria-haspopup="dialog"
+                        className="press -my-2 flex min-h-12 min-w-12 shrink-0 items-center justify-center self-center text-muted hover:text-ink"
+                        onClick={() => {
+                          setShowing(action.question);
+                        }}
+                      >
+                        <Icon name="eye" />
+                      </button>
+                    )}
                   </li>
                 );
               }
@@ -582,6 +598,14 @@ export function NarratorScreen({
           }}
           onClose={() => {
             setChanging(null);
+          }}
+        />
+      )}
+      {showing && (
+        <QuestionCard
+          question={showing}
+          onClose={() => {
+            setShowing(null);
           }}
         />
       )}

@@ -257,6 +257,8 @@
     "rolesInGame": "In this game",
     "otherRoles": "Other roles",
     "questionTitle": "Questions · {{name}}",
+    "questionCard": "Question",
+    "showQuestion": "Show the question",
     "actionRole": "Changed role to {{role}}",
     "actionQuestion": "Picked question: {{question}}"
   },

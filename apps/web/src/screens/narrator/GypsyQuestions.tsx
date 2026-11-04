@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { Modal, ModalDone } from '../../components/Modal';
 import { useLocale } from '../../i18n/useLocale';
@@ -83,5 +85,53 @@ export function QuestionSheet({
         })}
       </ul>
     </Modal>
+  );
+}
+
+/**
+ * The question alone, over the whole screen, for the narrator to hold up to the player who asks
+ * it. It shows no name and no role, and nothing of the page behind it, so the asker sees only the
+ * question. Escape or the Close button closes it.
+ */
+export function QuestionCard({
+  question,
+  onClose,
+}: {
+  question: QuestionItem;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    const opener = document.activeElement;
+    dialog?.showModal();
+    return () => {
+      dialog?.close();
+      queueMicrotask(() => {
+        if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+      });
+    };
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      aria-label={t('narrator.questionCard')}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-dvw max-w-none flex-col justify-between gap-6 bg-paper p-5 text-ink open:flex"
+    >
+      <div className="grid min-h-0 flex-1 place-items-center overflow-y-auto">
+        <p className="text-center font-display text-title font-semibold break-words">
+          {question.text[locale]}
+        </p>
+      </div>
+      <Button className="press w-full shrink-0" onClick={onClose}>
+        {t('common.close')}
+      </Button>
+    </dialog>
   );
 }

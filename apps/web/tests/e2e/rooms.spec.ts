@@ -406,8 +406,21 @@ test('the narrator picks a Gypsy question, and the next night offers four others
   await expect(button).toHaveCount(0);
   await expect(record.getByText(picked, { exact: true })).toBeVisible();
 
+  // The morning is when the asker needs it: the card shows the question and nothing else.
+  await record.getByRole('button', { name: 'Show the question' }).click();
+  const card = master.getByRole('dialog', { name: 'Question', exact: true });
+  await expect(card).toHaveText(
+    new RegExp(`^${(firstOffer[0] ?? '').replace(/[?.]/g, '\\$&')}\\s*Close$`),
+  );
+  await expect(card).not.toContainText('Minh');
+  await card.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(card).toHaveCount(0);
+
   await hold('Hold to end morning');
   await expect(master.getByRole('heading', { name: 'Night 2' })).toBeVisible();
+  // Last night's pick is history now: it keeps its row but loses the show button.
+  await expect(record.getByText(picked, { exact: true })).toBeVisible();
+  await expect(record.getByRole('button', { name: 'Show the question' })).toHaveCount(0);
   await expect(button).toHaveClass(/text-muted/);
   await button.click();
   await expect(options).toHaveCount(4);
