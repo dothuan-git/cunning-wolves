@@ -82,6 +82,9 @@ function PreviewScene({
     if (state === 'morning') sample.linh = { kind: 'night', number: 2 };
     return sample;
   });
+  // The player's card screen sends them to this game's roles and back, as in a room.
+  const [readingRoles, setReadingRoles] = useState(false);
+  const [cardSeen, setCardSeen] = useState(false);
   // Player id → the role the narrator gave them, as a role-changing card would allow.
   const [newRoles, setNewRoles] = useState<Record<string, string>>({});
   // What the narrator did; the Gypsy sample opens with last night's pick already in its history.
@@ -289,7 +292,31 @@ function PreviewScene({
               },
             }
           : seer;
-      return <MyCardScreen key={state} role={role} initiallyRevealed={state !== 'hidden'} />;
+      if (readingRoles) {
+        return (
+          <RulesReviewScreen
+            roles={exampleRoles.map((example) => ({
+              role: example,
+              count: examplePlayers.filter((player) => player.role.id === example.id).length || 1,
+            }))}
+            onShowCard={() => {
+              setReadingRoles(false);
+              setCardSeen(true);
+            }}
+          />
+        );
+      }
+      return (
+        <MyCardScreen
+          key={state}
+          role={role}
+          initiallyRevealed={state !== 'hidden'}
+          dealIn={!cardSeen}
+          onReviewRoles={() => {
+            setReadingRoles(true);
+          }}
+        />
+      );
     }
     case 'narrator':
       return (

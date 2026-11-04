@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { DetailedCard } from '../../components/DetailedCard';
 import { FactionSection } from '../../components/FactionSection';
+import { Icon } from '../../components/Icon';
 import { RoomSettingsSheet } from '../../components/RoomSettingsSheet';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
@@ -13,6 +14,7 @@ import { useLocale } from '../../i18n/useLocale';
 export function RulesReviewScreen({
   roles,
   master,
+  onShowCard,
 }: {
   roles: readonly { role: PoolRole; count: number }[];
   /** The narrator's controls; players get "I've read the rules" instead */
@@ -28,6 +30,8 @@ export function RulesReviewScreen({
     onDelete: () => void;
     deleteFailed: boolean;
   };
+  /** A player who already has a card came here to read the roles; this takes them back to it. */
+  onShowCard?: () => void;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -41,6 +45,14 @@ export function RulesReviewScreen({
   return (
     <ScreenLayout
       title={t('screens.rulesReview')}
+      action={
+        onShowCard && (
+          <Button variant="quiet" size="compact" className="press" onClick={onShowCard}>
+            {t('rules.toCard')}
+            <Icon name="arrow" className="rotate-180" />
+          </Button>
+        )
+      }
       onOpenMenu={
         master
           ? () => {
@@ -49,7 +61,7 @@ export function RulesReviewScreen({
           : undefined
       }
       footer={
-        master ? (
+        onShowCard ? undefined : master ? (
           <>
             <p role="status" className="text-center text-caption text-muted">
               {t(master.reconnecting ? 'setup.reconnecting' : 'rules.masterWaiting')}
@@ -90,7 +102,12 @@ export function RulesReviewScreen({
       }
     >
       <div className="grid gap-1">
-        <p className="text-control text-muted">{t(master ? 'rules.masterIntro' : 'rules.intro')}</p>
+        {/* Once the game has started, the intro about waiting for it no longer fits. */}
+        {!onShowCard && (
+          <p className="text-control text-muted">
+            {t(master ? 'rules.masterIntro' : 'rules.intro')}
+          </p>
+        )}
         <p className="text-caption text-muted">{t('rules.hint')}</p>
       </div>
       {groups.map(({ team, cards }) => (

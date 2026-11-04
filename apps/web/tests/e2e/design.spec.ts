@@ -139,15 +139,17 @@ test('a role change shows as a note above the night’s note, and undoing it rem
 }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('werewolf');
-  await closeSheet(page);
+  // One tap on a role picks it and closes the sheet.
+  await page.getByRole('dialog').getByRole('button', { name: 'Wolf', exact: true }).click();
   const record = page.getByRole('list', { name: 'Huy’s record', exact: true });
   const rows = record.getByRole('listitem');
   await expect(rows.first()).toHaveText(/Night 2\s*Changed role to Wolf/);
   await expect(rows.last().getByRole('textbox', { name: 'Note for Huy' })).toBeVisible();
   await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
-  await closeSheet(page);
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: 'Villager Dealt', exact: true })
+    .click();
   await expect(record).not.toContainText('Changed role');
 });
 
@@ -215,8 +217,8 @@ test('a player who stopped being the Gypsy keeps a button only to take their pic
   await questions.first().click();
   await closeSheet(page);
   await page.getByRole('button', { name: "Change Huy's role", exact: true }).click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('werewolf');
-  await closeSheet(page);
+  // One tap on a role picks it and closes the sheet.
+  await page.getByRole('dialog').getByRole('button', { name: 'Wolf', exact: true }).click();
 
   await button.click();
   await expect(questions.first()).toBeEnabled();
@@ -258,12 +260,12 @@ test('a lone player changed to another role keeps the panel, retitled in the new
   await expect(button).toHaveClass(/text-muted/);
   await button.click();
   const sheet = page.getByRole('dialog', { name: 'Role · Huy', exact: true });
-  const picker = sheet.getByRole('combobox', { name: 'Plays', exact: true });
-  await expect(picker).toHaveValue('villager');
-  await expect(sheet.getByRole('checkbox')).toHaveCount(0);
-  await picker.selectOption('werewolf');
-  await expect(sheet).toContainText('Dealt Villager');
-  await closeSheet(page);
+  const villager = sheet.getByRole('button', { name: 'Villager Dealt', exact: true });
+  await expect(villager).toHaveAttribute('aria-pressed', 'true');
+  await expect(sheet.getByRole('button', { name: 'Done' })).toHaveCount(0);
+  // One tap picks the role and closes the sheet.
+  await sheet.getByRole('button', { name: 'Wolf', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
   const changed = page.getByRole('region', { name: 'Villager → Wolf', exact: true });
   await expect(changed).toContainText('Huy');
   await expect(changed.getByRole('heading')).toHaveClass(/bg-werewolf-wash/);
@@ -271,8 +273,12 @@ test('a lone player changed to another role keeps the panel, retitled in the new
   await expect(page.getByRole('region', { name: 'Wolf', exact: true })).not.toContainText('Huy');
   await expect(button).toHaveClass(/text-ink/);
   await button.click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('villager');
-  await closeSheet(page);
+  await expect(sheet.getByRole('button', { name: 'Wolf', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await villager.click();
+  await expect(sheet).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Villager', exact: true })).toContainText('Huy');
   await expect(changed).toHaveCount(0);
   await expect(page.getByRole('status')).toHaveText('6 players alive');
@@ -281,8 +287,7 @@ test('a lone player changed to another role keeps the panel, retitled in the new
 test('a player changed out of a shared panel splits off right below it', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: "Change An's role", exact: true }).click();
-  await page.getByRole('dialog').getByRole('combobox').selectOption('seer');
-  await closeSheet(page);
+  await page.getByRole('dialog').getByRole('button', { name: 'Seer', exact: true }).click();
   const wolves = page.getByRole('region', { name: 'Wolf', exact: true });
   const split = page.getByRole('region', { name: 'Wolf → Seer', exact: true });
   await expect(wolves).toContainText('Minh');
@@ -353,6 +358,27 @@ test('the card is dealt in from above when the page opens, but not with reduced 
   await expect(page.locator('.flip-card')).toHaveCSS('animation-duration', '0.45s');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
+});
+
+test('a player goes back from their card to the roles and forward again', async ({ page }) => {
+  await page.goto('/design?screen=my-card&state=hidden&lang=en&capture=1');
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Tonight’s roles', exact: true })).toBeVisible();
+  // The game has started: no "I've read the rules" or waiting line.
+  await expect(page.getByRole('button', { name: 'I’ve read the rules' })).toHaveCount(0);
+  await expect(page.getByText('Waiting for the narrator to begin.')).toHaveCount(0);
+  await page.getByRole('button', { name: /^Look closer at Seer/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('Each night, choose one player');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: 'My card', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your role card', exact: true })).toBeVisible();
+  // Already in hand: it comes back face down, without a second toss.
+  await expect(page.getByRole('button', { name: 'Flip your card' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   await expect(page.locator('.flip-card')).toHaveCSS('animation-name', 'none');
 });
 
