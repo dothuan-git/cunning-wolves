@@ -6,3 +6,5 @@ pnpm-lock.yaml
 **/test-results/
 **/.playwright-mcp/
 **/coverage/
+# Vendored third-party skill (taste-skill), kept as upstream ships it
+.claude/skills/design-taste-frontend/
