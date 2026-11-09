@@ -19,6 +19,8 @@ Phone-first webapp for in-person Werewolf games: it deals role cards and keeps t
 | `pnpm --filter @werewolf/worker cf-typegen` | Regenerate `worker-configuration.d.ts` after editing `wrangler.jsonc` |
 | `pnpm deploy:prod`                          | Production deploy. Never run without asking                           |
 
+One test file, optionally one test by name: `pnpm --filter @werewolf/worker test tests/machine.test.ts -t "join"`. The same works for `@werewolf/web` (files in `tests/unit/`) and `@werewolf/shared` (files in `tests/`). One e2e spec: `pnpm --filter @werewolf/web exec playwright test tests/e2e/rooms.spec.ts`; it reuses a `pnpm dev` that is already running. The first e2e run needs `pnpm --filter @werewolf/web exec playwright install chromium`.
+
 ## Stack
 
 React 19, Vite 8, Tailwind CSS 4, i18next · Cloudflare Workers + Durable Objects (SQLite storage) via `@cloudflare/vite-plugin` · TypeScript 6 strict · Vitest 5 (`@cloudflare/vitest-plugin` for the worker) · Playwright · pnpm workspaces. Version choices: `docs/decisions/0005-toolchain-versions.md`.
@@ -39,6 +41,34 @@ React 19, Vite 8, Tailwind CSS 4, i18next · Cloudflare Workers + Durable Object
 | `apps/worker/src/lobby/`     | Lobby Durable Object: list of open rooms                                  |
 | `packages/shared/src/`       | Types used by both sides: messages, API shapes, role pool data            |
 | `docs/`                      | Plan, game rules, decisions, design, roles, progress                      |
+
+## How it fits together
+
+**Worker.** `apps/worker/src/index.ts` handles `POST /api/rooms`, which creates a `Room` Durable Object named by a random 8-character id. It forwards WebSocket upgrades: `/api/rooms/:id/ws` goes to that room and `/api/lobby/ws` to the single `Lobby` object.
+
+**Room** (`room/Room.ts`) is a thin shell around a pure state machine. For each socket message it:
+
+1. Parses the message with `parseClientMessage` (`messages.ts`). A bad message closes the socket.
+2. Requires `hello` with the device token as the first message. The device id is a hash of token + room id (`deviceId.ts`). It is kept on the socket attachment, so it survives hibernation.
+3. Calls `apply(state, actorId, action, now, random)` in `machine.ts`, which returns the new state or an error code. Every permission check (master or player, room status) lives there. Tests: `tests/machine.test.ts`.
+4. Saves with `saveRoom` (`storage.ts`), which rewrites every table in one transaction. To store something new, add a `CREATE TABLE IF NOT EXISTS` table in `ensureSchema` so rooms saved earlier still load. Don't change existing tables.
+5. Sends each socket its own `buildView(...)` (`view.ts`: `buildMasterView` or `buildPlayerView`). This is where visibility is enforced. Socket-level tests: `tests/rooms.test.ts`.
+6. Sends its public row (`buildSummary`) to the Lobby over RPC, and the Lobby pushes the room list to every home screen. An alarm deletes the room after 6 hours idle.
+
+**Web.** `realtime/ReconnectingSocket.ts` handles backoff, ping/pong and reconnecting when the screen wakes. On top of it sit `RoomConnection` / `LobbyConnection` and the hooks `useRoomConnection` / `useLobby`. `realtime/parse.ts` checks every server message field by field before React sees it. Routing is the small hand-written `router.ts`, with no router library. `screens/room/RoomScreen.tsx` picks the screen from `view.kind` (master or player) and `view.room.status` (`lobby → reveal → playing → finished`). `/design` is a dev-only gallery with fake data.
+
+**Shared.** `packages/shared` is imported as TypeScript source, with no build step. Besides the wire types and the role pool, it holds pure game helpers in `roles/*.ts` (wake order, journal, Gypsy question deck, role changes). Both sides call them, so they always agree.
+
+**Adding a field to room state** usually touches, in order:
+
+1. The type in `packages/shared`.
+2. `machine.ts` and its tests.
+3. A new table in `storage.ts`.
+4. `view.ts`, deciding who sees it.
+5. `room/messages.ts`, if the client sends it.
+6. `apps/web/src/realtime/parse.ts`.
+7. The screen.
+8. `docs/game-rules.md`, if game behavior changes.
 
 ## Rules
 

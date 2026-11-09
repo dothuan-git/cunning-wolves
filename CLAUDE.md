@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 @AGENTS.md
 
 # Working with me
@@ -9,7 +13,7 @@
 # Claude Code
 
 - Plan mode only for new features or changes across several files. Small fixes and tweaks: just do them.
-- Always use the `design-taste-frontend` skill (taste-skill, installed in Thuan's user skills) for any frontend, UI or UX task: new screens, redesigns, small tweaks and reviews. For a small tweak, take its single-component path: match `docs/design/direction.md`, apply its house rules, and run its inspector (`inspect.mjs --app`). Run its scripts with `pnpm exec node`, because they need Node 22+. Don't use frontend-design.
+- Always use the `design-taste-frontend` skill (taste-skill v2.1.5, vendored in `.claude/skills/design-taste-frontend/`; 2.5+ dropped `inspect.mjs` and app screens, so don't upgrade it blindly) for any frontend, UI or UX task: new screens, redesigns, small tweaks and reviews. For a small tweak, take its single-component path: match `docs/design/direction.md`, apply its house rules, and run its inspector (`inspect.mjs --app`). Run its scripts with `pnpm exec node`, because they need Node 22+. Don't use frontend-design.
 - After a visual change, look at one 390px screenshot of the changed screen (the inspector's `mobile-fold.jpg` counts). No subagent.
 - Before a commit, run `pnpm check` (about 35s). Fix failures; never weaken a test. Run `pnpm test:e2e` only when a UI flow or route changed; CI runs it otherwise.
 - Before a PR that touches `apps/worker` or `packages/shared`, run the `reviewer` subagent and resolve its blockers.

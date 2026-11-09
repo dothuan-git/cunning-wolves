@@ -13,6 +13,8 @@ export default defineConfig(
     '**/playwright-report/',
     '**/test-results/',
     '**/coverage/',
+    // Vendored third-party skill (taste-skill), kept byte-for-byte as upstream ships it.
+    '.claude/skills/design-taste-frontend/',
   ]),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
