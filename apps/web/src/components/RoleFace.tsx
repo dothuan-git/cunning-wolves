@@ -14,6 +14,8 @@ const LOOK = {
     art: '',
     // The gap between the art and the name.
     row: 'gap-0',
+    // Under the rule, on its own line, so it can never cover the text.
+    balance: 'self-end pt-2 text-role',
   },
   thumbnail: {
     face: 'thumbnail-face',
@@ -21,15 +23,32 @@ const LOOK = {
     chip: 'thumbnail-chip px-1.5 py-0.5 leading-none',
     art: 'thumbnail-art',
     row: 'thumbnail-row',
+    // In the corner under the name, which stops short of it (see `.thumbnail-balance`).
+    balance: 'thumbnail-balance absolute z-10',
   },
 } as const;
+
+/** `+7`, `−6` or `0`, with a true minus sign, as Ultimate Werewolf prints it. */
+function signed(value: number): string {
+  if (value > 0) return `+${String(value)}`;
+  if (value < 0) return `−${String(-value)}`;
+  return '0';
+}
+
+/** The side the role helps: the village's lapis, the wolves' madder, or muted when it helps neither. */
+function balanceTone(value: number): string {
+  if (value > 0) return FACTION_TEXT.village;
+  if (value < 0) return FACTION_TEXT.werewolf;
+  return 'text-muted';
+}
 
 /**
  * The layout shared by every role card: the name running down the top right in its faction color,
  * the art, and (detailed only) the rule centered. It fills a positioned, clipped card frame.
  * A thumbnail card has no rule and no heading, because it sits inside a button. `count` adds how
  * many of this role are in the game, top left. `rule` replaces the rule text on the detailed card,
- * for a text box that edits it.
+ * for a text box that edits it. The role's balance value (Ultimate Werewolf's role value: above 0
+ * helps the village) sits in the bottom right corner; a custom role has none.
  */
 export function RoleFace({
   role,
@@ -48,8 +67,19 @@ export function RoleFace({
   const Name = thumbnail ? 'span' : 'h2';
   const look = LOOK[variant];
   const team = FACTION_TEXT[role.team];
+  const balance = role.balance !== null && (
+    <span
+      className={`font-display leading-none font-semibold tabular-nums ${look.balance} ${balanceTone(role.balance)}`}
+    >
+      <span aria-hidden="true">{signed(role.balance)}</span>
+      <span className="sr-only">{t('card.balance', { value: signed(role.balance) })}</span>
+    </span>
+  );
   return (
-    <div className={`flex h-full flex-col ${look.face}`}>
+    <div
+      className={`flex h-full flex-col ${look.face}`}
+      data-balance={role.balance === null ? undefined : 'true'}
+    >
       {count !== undefined && (
         <span
           key={count}
@@ -73,6 +103,7 @@ export function RoleFace({
       </div>
       {!thumbnail &&
         (rule ?? <p className="pt-3 text-center text-body text-pretty">{role.rule[locale]}</p>)}
+      {balance}
     </div>
   );
 }

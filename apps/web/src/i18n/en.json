@@ -104,7 +104,8 @@
     "artPlaceholder": "Placeholder role illustration",
     "roleDetails": "Role details",
     "flip": "Flip your card",
-    "hint": "Tap the card to flip it. Keep your role secret."
+    "hint": "Tap the card to flip it. Keep your role secret.",
+    "balance": "Balance {{value}}"
   },
   "rooms": {
     "intro": "A village gathers. A story begins.",

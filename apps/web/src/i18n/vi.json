@@ -104,7 +104,8 @@
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
     "roleDetails": "Chi tiết vai trò",
     "flip": "Lật lá bài của bạn",
-    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn."
+    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn.",
+    "balance": "Điểm cân bằng {{value}}"
   },
   "rooms": {
     "intro": "Dân làng tụ họp. Câu chuyện bắt đầu.",
