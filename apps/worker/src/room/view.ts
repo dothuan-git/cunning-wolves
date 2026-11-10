@@ -109,6 +109,7 @@ function roleInfo(role: RoomRole): RoomRole {
     defaultWakeOrder: role.defaultWakeOrder,
     wakeNights: role.wakeNights,
     image: role.image,
+    balance: role.balance,
     custom: role.custom,
   };
 }

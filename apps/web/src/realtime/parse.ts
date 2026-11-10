@@ -138,7 +138,7 @@ function localized(value: unknown): RoomRole['name'] | null {
 
 function roomRole(value: unknown): RoomRole | null {
   if (!isObject(value)) return null;
-  const { id, defaultWakeOrder, image, custom } = value;
+  const { id, defaultWakeOrder, image, balance, custom } = value;
   const name = localized(value.name);
   const rule = localized(value.rule);
   const team = oneOf(TEAMS, value.team);
@@ -151,11 +151,12 @@ function roomRole(value: unknown): RoomRole | null {
     !wakeNights ||
     !(defaultWakeOrder === null || typeof defaultWakeOrder === 'number') ||
     typeof image !== 'string' ||
+    !(balance === null || (typeof balance === 'number' && Number.isFinite(balance))) ||
     typeof custom !== 'boolean'
   ) {
     return null;
   }
-  return { id, name, rule, team, defaultWakeOrder, wakeNights, image, custom };
+  return { id, name, rule, team, defaultWakeOrder, wakeNights, image, balance, custom };
 }
 
 function gameRole(value: unknown): GameRole | null {

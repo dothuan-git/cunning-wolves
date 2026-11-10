@@ -39,6 +39,7 @@ describe('roomRoles', () => {
       (role) => role.id === 'seer',
     );
     expect(seer?.rule).toEqual({ vi: 'Sees one card.', en: 'Sees one card.' });
+    expect(seer?.balance).toBe(7);
   });
 
   it('adds custom roles after the pool, in both languages', () => {
@@ -49,6 +50,7 @@ describe('roomRoles', () => {
       rule: { vi: 'Bakes bread.', en: 'Bakes bread.' },
       team: 'village',
       defaultWakeOrder: null,
+      balance: null,
       custom: true,
     });
   });

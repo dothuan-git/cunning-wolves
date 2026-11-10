@@ -51,6 +51,8 @@ export function roomRoles(setup: Pick<RoomSetup, 'ruleEdits' | 'customRoles'>): 
     defaultWakeOrder: role.wakes ? CUSTOM_WAKE_START + index : null,
     wakeNights: 'every' as const,
     image: '',
+    // A role made up for one room has no known value, so its card shows none.
+    balance: null,
     custom: true,
   }));
   return [...pool, ...custom];

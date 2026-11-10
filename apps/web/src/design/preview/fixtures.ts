@@ -17,6 +17,7 @@ export const seer: PoolRole = {
     en: 'Each night, choose one player to learn whether they are a Wolf.',
   },
   image: 'seer.webp',
+  balance: 7,
 };
 export const wolf: PoolRole = {
   id: 'werewolf',
@@ -26,6 +27,7 @@ export const wolf: PoolRole = {
   defaultWakeOrder: 20,
   wakeNights: 'every',
   image: 'werewolf.webp',
+  balance: -6,
 };
 export const witch: PoolRole = {
   id: 'witch',
@@ -35,6 +37,7 @@ export const witch: PoolRole = {
   defaultWakeOrder: 30,
   wakeNights: 'every',
   image: 'witch.webp',
+  balance: 4,
 };
 export const villager: PoolRole = {
   id: 'villager',
@@ -44,6 +47,7 @@ export const villager: PoolRole = {
   defaultWakeOrder: null,
   wakeNights: 'every',
   image: 'villager.webp',
+  balance: 1,
 };
 export const gypsy: PoolRole = {
   id: 'gypsy',
@@ -53,6 +57,7 @@ export const gypsy: PoolRole = {
   defaultWakeOrder: 40,
   wakeNights: 'every',
   image: 'gypsy.webp',
+  balance: 2,
 };
 export const priest: PoolRole = {
   id: 'priest',
@@ -62,6 +67,7 @@ export const priest: PoolRole = {
   defaultWakeOrder: 35,
   wakeNights: 'every',
   image: 'priest.webp',
+  balance: 3,
 };
 
 // More roles than a small game, to see the rules review fill several rows. No art exists for
@@ -76,6 +82,7 @@ export const manyRoles: readonly PoolRole[] = [
     defaultWakeOrder: 40,
     wakeNights: 'every',
     image: 'hunter.webp',
+    balance: 3,
   },
   {
     id: 'cupid',
@@ -85,6 +92,7 @@ export const manyRoles: readonly PoolRole[] = [
     defaultWakeOrder: 5,
     wakeNights: 'every',
     image: 'cupid.webp',
+    balance: -3,
   },
   {
     id: 'guard',
@@ -94,6 +102,7 @@ export const manyRoles: readonly PoolRole[] = [
     defaultWakeOrder: 8,
     wakeNights: 'every',
     image: 'guard.webp',
+    balance: 3,
   },
   {
     id: 'alpha',
@@ -103,6 +112,7 @@ export const manyRoles: readonly PoolRole[] = [
     defaultWakeOrder: 22,
     wakeNights: 'every',
     image: 'alpha.webp',
+    balance: -7,
   },
   {
     id: 'fool',
@@ -112,6 +122,7 @@ export const manyRoles: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'fool.webp',
+    balance: 2,
   },
 ];
 

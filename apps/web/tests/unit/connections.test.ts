@@ -25,9 +25,28 @@ const BAKER: RoomRole = {
   defaultWakeOrder: null,
   wakeNights: 'every',
   image: '',
+  balance: null,
   custom: true,
 };
-const DEALT: RoomView = { ...VIEW, roles: [{ role: BAKER, count: 2 }], card: BAKER };
+const SEER: RoomRole = {
+  id: 'seer',
+  name: { vi: 'Tiên tri', en: 'Seer' },
+  rule: { vi: 'Soi.', en: 'Sees.' },
+  team: 'village',
+  defaultWakeOrder: 10,
+  wakeNights: 'every',
+  image: 'seer.webp',
+  balance: 7,
+  custom: false,
+};
+const DEALT: RoomView = {
+  ...VIEW,
+  roles: [
+    { role: BAKER, count: 2 },
+    { role: SEER, count: 1 },
+  ],
+  card: BAKER,
+};
 const SETUP: RoomSetup = {
   picks: ['werewolf', 'custom-0'],
   ruleEdits: { werewolf: 'House rule' },
@@ -265,6 +284,11 @@ describe('parseServerMessage', () => {
       'a card without a team',
       { type: 'state', view: { ...DEALT, card: { ...BAKER, team: undefined } } },
     ],
+    [
+      'a card without a balance',
+      { type: 'state', view: { ...DEALT, card: { ...SEER, balance: undefined } } },
+    ],
+    ['a balance as text', { type: 'state', view: { ...DEALT, card: { ...SEER, balance: '+7' } } }],
     [
       'a role with a name in one language',
       {

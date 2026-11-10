@@ -1179,6 +1179,8 @@ describe('views', () => {
       ['werewolf', 1],
     ]);
     expect(view.roles[0]?.role.rule).toEqual({ vi: 'House rule', en: 'House rule' });
+    // A role's balance is public pool data: it travels with the role, even when the rule is edited.
+    expect(view.roles.map(({ role }) => role.balance)).toEqual([7, -6]);
     expect(view.card).toBeNull();
     expect(view.reveal).toBeNull();
     expect(buildPlayerView(reviewed, connected, 'c').roles).toEqual([]);
