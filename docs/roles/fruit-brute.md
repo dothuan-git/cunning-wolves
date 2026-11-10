@@ -2,6 +2,7 @@
 
 - **id:** `fruit-brute`
 - **Team:** werewolf
+- **Balance:** −3 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (270), after `wolf-cub` and before `dire-wolf`
 - **Card art:** `apps/web/src/assets/cards/fruit-brute.webp`
 

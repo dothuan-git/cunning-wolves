@@ -2,6 +2,7 @@
 
 - **id:** `three-brothers`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Mason (+2))
 - **Wakes at night:** yes (90), after `two-sisters` and before `wild-child`
 - **Card art:** `apps/web/src/assets/cards/three-brothers.webp`
 

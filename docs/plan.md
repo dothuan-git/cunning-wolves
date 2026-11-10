@@ -74,7 +74,7 @@ The role pool is static data shipped with the app; everything else lives inside 
 | PoolRole (static) | id, name {vi, en}, rule {vi, en}, team, defaultWakeOrder, image  | Fixed; never edited at runtime                                   |
 | Room              | id, name, status, phase, masterDeviceId, createdAt, lastActiveAt | status: lobby, setup, reveal, playing, finished                  |
 | Player            | deviceId, name, joinedAt, kicked                                 | deviceId comes from the device token                             |
-| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder                   | A copy of a pool role (edits stay in this room) or a custom role |
+| RoomRole          | id, sourcePoolId?, name, rule, team, wakeOrder, balance          | A copy of a pool role (edits stay in this room) or a custom role |
 | Pick              | index, roomRoleId                                                | One per chosen role copy; must equal the players to move on      |
 | Assignment        | deviceId, roomRoleId, flipped                                    | Created at Start game by shuffling picks                         |
 | Phase             | kind (night, morning), number                                    | Current phase while playing: Night 1, Morning 1, Night 2, …      |

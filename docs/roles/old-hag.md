@@ -2,6 +2,7 @@
 
 - **id:** `old-hag`
 - **Team:** village
+- **Balance:** +1 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (130), after `actor` and before `spellcaster`
 - **Card art:** `apps/web/src/assets/cards/old-hag.webp`
 

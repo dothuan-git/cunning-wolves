@@ -2,6 +2,7 @@
 
 - **id:** `village-idiot`
 - **Team:** village
+- **Balance:** +2 (estimate: Ultimate Werewolf prints +2 for its Idiot, a different role)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/village-idiot.webp`
 

@@ -2,6 +2,7 @@
 
 - **id:** `thief`
 - **Team:** village
+- **Balance:** 0 (estimate)
 - **Wakes at night:** yes (10, Night 1 only), first and before `cupid`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/thief.webp`

@@ -2,6 +2,7 @@
 
 - **id:** `prejudiced-manipulator`
 - **Team:** solo
+- **Balance:** 0 (estimate, compared with the Hoodlum)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/prejudiced-manipulator.webp`
 

@@ -2,6 +2,7 @@
 
 - **id:** `sorceress`
 - **Team:** werewolf
+- **Balance:** −3 (official, Ultimate Werewolf: Ultimate Edition rulebook (printed as the Sorcerer))
 - **Wakes at night:** yes (370), after `white-werewolf` and before `bogeyman`
 - **Card art:** `apps/web/src/assets/cards/sorceress.webp`
 

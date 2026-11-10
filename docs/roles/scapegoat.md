@@ -2,6 +2,7 @@
 
 - **id:** `scapegoat`
 - **Team:** village
+- **Balance:** +1 (estimate, compared with the Villager)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/scapegoat.webp`
 

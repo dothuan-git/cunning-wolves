@@ -2,6 +2,7 @@
 
 - **id:** `gossiper`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Beholder)
 - **Wakes at night:** yes (60, Night 1 only), after `hoodlum` and before `the-count`
 - **Card art:** `apps/web/src/assets/cards/gossiper.webp`
 

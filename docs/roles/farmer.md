@@ -2,6 +2,7 @@
 
 - **id:** `farmer`
 - **Team:** village
+- **Balance:** +1 (estimate, compared with the Mayor, shared between Farmers)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/farmer.webp`
 

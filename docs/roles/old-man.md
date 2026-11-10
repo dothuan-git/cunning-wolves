@@ -2,6 +2,7 @@
 
 - **id:** `old-man`
 - **Team:** village
+- **Balance:** 0 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/old-man.webp`
 

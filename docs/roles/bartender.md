@@ -2,6 +2,7 @@
 
 - **id:** `bartender`
 - **Team:** village
+- **Balance:** +3 (estimate, compared with the Tough Guy)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/bartender.webp`
 

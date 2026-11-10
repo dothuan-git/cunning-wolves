@@ -2,6 +2,7 @@
 
 - **id:** `beholder`
 - **Team:** village
+- **Balance:** +2 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (200, Night 1 only), after `seer` and before `aura-seer`
 - **Card art:** `apps/web/src/assets/cards/beholder.webp`
 

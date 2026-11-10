@@ -2,6 +2,7 @@
 
 - **id:** `fox`
 - **Team:** village
+- **Balance:** +4 (estimate, compared with the Paranormal Investigator, but repeatable)
 - **Wakes at night:** yes (160), after `puppeteer` and before `paranormal-investigator`
 - **Card art:** `apps/web/src/assets/cards/fox.webp`
 

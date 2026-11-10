@@ -48,7 +48,8 @@ While players gather, the master builds the card set on **Setup**. The room keep
 - **Roles:** any number of copies of any pool or custom role, up to 40 in all. Roles are chosen freely; **Review rules** is enabled only when the roles equal the joined players (more than zero).
 - **Rule edits:** tapping a chosen role's rule edits it for this room only. The edited rule is one text, shown to every player whatever their language. An emptied rule keeps the rule it had.
 - **Factions:** Village, Wolves, and a third faction for roles that win on their own (`solo`). Setup, the rules review and the summary list them in that order, wolves first.
-- **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night (every night). A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted.
+- **Balance:** every pool role card shows its balance value in the bottom right corner (above 0 helps the village, below 0 helps the wolves; sources in `docs/roles/README.md`). It is information for the narrator building the set. It is public, the same on every card and phone, and a rule edit does not change it. The app never adds it up or uses it to decide anything.
+- **Custom roles:** a name (1–32 characters), a rule (1–500), a faction, and whether it wakes at night (every night). A waking custom role goes after the pool roles in the wake order. Up to 20 per room; they can't be deleted. A custom role has no balance value.
 - **Wake order:** the master can reorder the waking roles in the game; roles not reordered follow their default order.
 - **Settings:** the night timer (whole seconds, 0–3600, 0 = off; 120 by default), sound cues (off by default) Language is per phone, not a room setting.
 - All of this is master-only and locked once the room leaves `lobby`, except the wake order, timer and sound, which the narrator can still change while reviewing the rules and while playing.

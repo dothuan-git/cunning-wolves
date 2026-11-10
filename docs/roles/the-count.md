@@ -2,6 +2,7 @@
 
 - **id:** `the-count`
 - **Team:** village
+- **Balance:** +5 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (70, Night 1 only), after `gossiper` and before `two-sisters`
 - **Card art:** `apps/web/src/assets/cards/the-count.webp`
 

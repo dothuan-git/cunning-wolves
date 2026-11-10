@@ -2,6 +2,7 @@
 
 - **id:** `lone-wolf`
 - **Team:** solo
+- **Balance:** −5 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (290), after `dire-wolf` and before `minion`
 - **Card art:** `apps/web/src/assets/cards/lone-wolf.webp`
 

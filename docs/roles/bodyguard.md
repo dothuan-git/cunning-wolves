@@ -2,6 +2,7 @@
 
 - **id:** `bodyguard`
 - **Team:** village
+- **Balance:** +3 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (220), after `confessor` and before `priest`
 - **Card art:** `apps/web/src/assets/cards/bodyguard.webp`
 

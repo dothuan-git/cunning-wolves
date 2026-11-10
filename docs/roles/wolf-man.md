@@ -2,6 +2,7 @@
 
 - **id:** `wolf-man`
 - **Team:** werewolf
+- **Balance:** −9 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (250), after `werewolf` and before `wolf-cub`
 - **Card art:** `apps/web/src/assets/cards/wolf-man.webp`
 

@@ -2,6 +2,7 @@
 
 - **id:** `magician`
 - **Team:** village
+- **Balance:** +4 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (450), after `witch` and before `gypsy`
 - **Card art:** `apps/web/src/assets/cards/magician.webp`
 

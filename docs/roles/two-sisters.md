@@ -2,6 +2,7 @@
 
 - **id:** `two-sisters`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Mason (+2))
 - **Wakes at night:** yes (80), after `the-count` and before `three-brothers`
 - **Card art:** `apps/web/src/assets/cards/two-sisters.webp`
 

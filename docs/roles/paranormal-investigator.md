@@ -2,6 +2,7 @@
 
 - **id:** `paranormal-investigator`
 - **Team:** village
+- **Balance:** +3 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (170), after `fox` and before `wise-monkey`
 - **Card art:** `apps/web/src/assets/cards/paranormal-investigator.webp`
 

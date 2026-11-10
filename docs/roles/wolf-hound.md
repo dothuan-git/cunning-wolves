@@ -2,6 +2,7 @@
 
 - **id:** `wolf-hound`
 - **Team:** village
+- **Balance:** −3 (estimate, compared with the Cursed)
 - **Wakes at night:** yes (110, Night 1 only), after `wild-child` and before `actor`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/wolf-hound.webp`

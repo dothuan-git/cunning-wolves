@@ -2,6 +2,7 @@
 
 - **id:** `bogeyman`
 - **Team:** solo
+- **Balance:** −6 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (380), after `sorceress` and before `chupacabra`
 - **Card art:** `apps/web/src/assets/cards/bogeyman.webp`
 

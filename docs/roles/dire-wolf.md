@@ -2,6 +2,7 @@
 
 - **id:** `dire-wolf`
 - **Team:** werewolf
+- **Balance:** −4 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (280), after `fruit-brute` and before `lone-wolf`
 - **Card art:** `apps/web/src/assets/cards/dire-wolf.webp`
 

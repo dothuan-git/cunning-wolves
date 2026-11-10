@@ -2,6 +2,7 @@
 
 - **id:** `schoolmistress`
 - **Team:** village
+- **Balance:** +1 (estimate)
 - **Wakes at night:** yes (485), after `raven` and before `troublemaker`
 - **Card art:** `apps/web/src/assets/cards/schoolmistress.webp`
 

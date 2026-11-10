@@ -2,6 +2,7 @@
 
 - **id:** `chupacabra`
 - **Team:** solo
+- **Balance:** +4 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (390), after `bogeyman` and before `baker`
 - **Card art:** `apps/web/src/assets/cards/chupacabra.webp`
 

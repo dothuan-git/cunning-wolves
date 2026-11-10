@@ -2,6 +2,7 @@
 
 - **id:** `hoodlum`
 - **Team:** solo
+- **Balance:** 0 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (50, Night 1 only), after `doppelganger` and before `gossiper`
 - **Card art:** `apps/web/src/assets/cards/hoodlum.webp`
 

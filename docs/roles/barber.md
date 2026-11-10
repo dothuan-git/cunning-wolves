@@ -2,6 +2,7 @@
 
 - **id:** `barber`
 - **Team:** village
+- **Balance:** +3 (estimate, compared with the Hunter)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/barber.webp`
 

@@ -2,6 +2,7 @@
 
 - **id:** `knight`
 - **Team:** village
+- **Balance:** +4 (estimate, compared with the Hunter, but it always hits a werewolf)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/knight.webp`
 

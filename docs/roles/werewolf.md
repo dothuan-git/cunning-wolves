@@ -2,6 +2,7 @@
 
 - **id:** `werewolf`
 - **Team:** werewolf
+- **Balance:** −6 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (240), after `priest` and before `wolf-man`
 - **Card art:** `apps/web/src/assets/cards/werewolf.webp`
 

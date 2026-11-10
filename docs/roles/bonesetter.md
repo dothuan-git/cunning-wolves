@@ -2,6 +2,7 @@
 
 - **id:** `bonesetter`
 - **Team:** village
+- **Balance:** +2 (estimate)
 - **Wakes at night:** yes (495), after `troublemaker` and before `insomniac`
 - **Card art:** `apps/web/src/assets/cards/bonesetter.webp`
 

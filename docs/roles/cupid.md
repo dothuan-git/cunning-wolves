@@ -2,6 +2,7 @@
 
 - **id:** `cupid`
 - **Team:** village
+- **Balance:** −3 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (20, Night 1 only), after `thief` and before `stuttering-judge`
 - **Card art:** `apps/web/src/assets/cards/cupid.webp`
 

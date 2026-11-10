@@ -2,6 +2,7 @@
 
 - **id:** `white-werewolf`
 - **Team:** solo
+- **Balance:** −4 (estimate, compared with the Lone Wolf)
 - **Wakes at night:** yes (360, with the wolves every night, and alone on even nights), after `mighty-wolf-mother` and before `sorceress`
 - **Card art:** `apps/web/src/assets/cards/white-werewolf.webp`
 

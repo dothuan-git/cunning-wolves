@@ -2,6 +2,7 @@
 
 - **id:** `vampire`
 - **Team:** solo
+- **Balance:** −8 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (420), after `baker` and before `cult-leader`
 - **Card art:** `apps/web/src/assets/cards/vampire.webp`
 

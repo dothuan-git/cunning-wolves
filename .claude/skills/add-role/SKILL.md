@@ -15,6 +15,7 @@ Ask the user for anything missing. Never invent rule text or translations.
 - does it wake at night, and if so between which existing roles, and on which nights (every night, Night 1 only, or even nights)
 - does its power give a player another role, or turn a player into a wolf
 - card art: a file, or none yet
+- balance value: a whole number from −10 to +10 (above 0 helps the village) and where it comes from. Look for Ultimate Werewolf's printed value first; if there is none, propose an estimate from the closest official role and say so (see "Balance values" in `docs/roles/README.md`)
 
 A role that swaps cards or needs extra cards in the deck (Thief, Actor, Devoted Servant) can be added as a card and a rule only: the app does not run its power yet, per `docs/plan.md`. A role that wakes with the wolves without being a wolf goes in `PACK_ROLES`. A role whose power gives a player another role, or turns a player into a wolf, goes in `ROLE_CHANGERS` (both in `packages/shared/src/roles/newRoles.ts`, decisions 0025 and 0026). Anything else the narrator must remember goes in the night's note; the app has no player marks and never links deaths.
 
@@ -30,6 +31,7 @@ Add the entry to `packages/shared/src/roles/pool.ts`:
 - `defaultWakeOrder`: `null` if the role never wakes; otherwise a multiple of 10 that places it between its neighbors (renumber in steps of 10 only if there is no gap).
 - `wakeNights`: `'every'`, `'first'` or `'even'` (`'every'` for a role that never wakes).
 - `image: '<id>.webp'`.
+- `balance`: the agreed value. Write it with its source on the role doc's **Balance** line.
 - Keep the array sorted by `defaultWakeOrder` (waking roles first), then non-waking roles by `id`.
 
 ## 4. Role change
@@ -47,7 +49,7 @@ If the role wakes, add it to the wake order list in `docs/game-rules.md`, noting
 
 ## 7. Tests
 
-- `packages/shared/tests/pool.test.ts` already checks ids, both languages, unique wake orders, wake nights and the art file name for every role; `newRoles.test.ts` checks that every role changer is a pool role.
+- `packages/shared/tests/pool.test.ts` already checks ids, both languages, unique wake orders, wake nights, the balance range and the art file name for every role; `newRoles.test.ts` checks that every role changer is a pool role.
 - Add a dedicated test only if the role brings new behavior.
 - Run `pnpm --filter @werewolf/shared test`, `pnpm typecheck` and `pnpm i18n:check`.
 

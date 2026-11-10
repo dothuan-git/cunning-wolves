@@ -2,6 +2,7 @@
 
 - **id:** `baker`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Beholder)
 - **Wakes at night:** yes (400), after `chupacabra` and before `vampire`
 - **Card art:** `apps/web/src/assets/cards/baker.webp`
 

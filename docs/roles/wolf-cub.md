@@ -2,6 +2,7 @@
 
 - **id:** `wolf-cub`
 - **Team:** werewolf
+- **Balance:** −8 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (260), after `wolf-man` and before `fruit-brute`
 - **Card art:** `apps/web/src/assets/cards/wolf-cub.webp`
 
