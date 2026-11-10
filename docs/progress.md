@@ -126,6 +126,7 @@
 - **Role balance values** (branch `feat/role-balance`, 2026-11-10):
   - Every pool role card shows a balance value in its bottom right corner: above 0 helps the village, below 0 helps the wolves, in the village or wolf color with its sign, muted at 0. Custom roles have none.
   - 36 values are printed in the Ultimate Werewolf: Ultimate Edition rulebook, 12 come from a fan list, and the other 33 (Millers Hollow, The Village and app-made roles; Asmodee publishes none) are our estimates. Each role doc says which; sources in `docs/roles/README.md`.
+  - Setup adds them up: each faction block shows its total after the player count, and the footer line the whole game's total, so the narrator can aim for about 0.
 
 ## Next
 

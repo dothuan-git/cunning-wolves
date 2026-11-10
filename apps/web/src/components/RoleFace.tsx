@@ -2,6 +2,7 @@ import type { Locale, PoolRole } from '@werewolf/shared';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RoleArtwork } from './RoleArtwork';
+import { balanceTone, signedBalance } from '../design/balance';
 import { FACTION_TEXT } from '../design/faction';
 
 // A thumbnail card scales with its own width (see `.thumbnail-card` in index.css), so the same
@@ -27,20 +28,6 @@ const LOOK = {
     balance: 'thumbnail-balance absolute z-10',
   },
 } as const;
-
-/** `+7`, `−6` or `0`, with a true minus sign, as Ultimate Werewolf prints it. */
-function signed(value: number): string {
-  if (value > 0) return `+${String(value)}`;
-  if (value < 0) return `−${String(-value)}`;
-  return '0';
-}
-
-/** The side the role helps: the village's lapis, the wolves' madder, or muted when it helps neither. */
-function balanceTone(value: number): string {
-  if (value > 0) return FACTION_TEXT.village;
-  if (value < 0) return FACTION_TEXT.werewolf;
-  return 'text-muted';
-}
 
 /**
  * The layout shared by every role card: the name running down the top right in its faction color,
@@ -71,8 +58,8 @@ export function RoleFace({
     <span
       className={`font-display leading-none font-semibold tabular-nums ${look.balance} ${balanceTone(role.balance)}`}
     >
-      <span aria-hidden="true">{signed(role.balance)}</span>
-      <span className="sr-only">{t('card.balance', { value: signed(role.balance) })}</span>
+      <span aria-hidden="true">{signedBalance(role.balance)}</span>
+      <span className="sr-only">{t('common.balance', { value: signedBalance(role.balance) })}</span>
     </span>
   );
   return (

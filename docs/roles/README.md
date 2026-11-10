@@ -29,7 +29,7 @@ One file per pool role: `docs/roles/<id>.md`. Add roles with the `add-role` skil
 
 ## Balance values
 
-Every pool role has a balance value (`balance` in `packages/shared/src/roles/pool.ts`), shown in the bottom right corner of its card. Above 0 helps the village, below 0 helps the werewolves, and a fair deck adds up to about 0. The app only shows the value; it never uses it to decide anything.
+Every pool role has a balance value (`balance` in `packages/shared/src/roles/pool.ts`), shown in the bottom right corner of its card. Above 0 helps the village, below 0 helps the werewolves, and a fair deck adds up to about 0. Setup shows each faction's total and the whole game's; the app never uses the value to decide anything.
 
 The values come from three places, and each role doc says which:
 

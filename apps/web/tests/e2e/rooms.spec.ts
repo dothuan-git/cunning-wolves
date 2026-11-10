@@ -136,10 +136,11 @@ test('the master builds a card set the room keeps, and players never see it', as
   const picker = master.getByRole('dialog', { name: 'Add wolf roles' });
   await picker.getByRole('button', { name: 'Add Werewolf', exact: true }).click();
   await picker.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(line).toHaveText('Every player has a role.');
+  await expect(line).toHaveText('Every player has a role. Balance −6');
   await expect(ready).toBeEnabled();
 
-  // A custom role that wakes, picked once: one role too many.
+  // A custom role that wakes, picked once: one role too many. It has no balance value, so the
+  // total stays the Werewolf's.
   await master.getByRole('button', { name: 'Add village roles', exact: true }).click();
   const village = master.getByRole('dialog', { name: 'Add village roles' });
   await village.getByRole('button', { name: 'Create custom role', exact: true }).click();
@@ -152,7 +153,7 @@ test('the master builds a card set the room keeps, and players never see it', as
   await creator.getByRole('button', { name: 'Save', exact: true }).click();
   await village.getByRole('button', { name: 'Add Lantern keeper', exact: true }).click();
   await village.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(line).toHaveText('1 role too many.');
+  await expect(line).toHaveText('1 role too many. Balance −6');
   await expect(ready).toBeDisabled();
 
   // An edited rule is kept by the room.
@@ -165,7 +166,7 @@ test('the master builds a card set the room keeps, and players never see it', as
 
   // A refresh brings it all back from the room.
   await master.reload();
-  await expect(line).toHaveText('1 role too many.');
+  await expect(line).toHaveText('1 role too many. Balance −6');
   await expect(
     master.getByRole('button', { name: 'Edit Lantern keeper', exact: true }),
   ).toBeVisible();

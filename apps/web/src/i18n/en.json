@@ -70,6 +70,7 @@
     "finish": "Finish game",
     "night": "Night {{number}}",
     "countPlayers": "{{count}} players",
+    "balance": "Balance {{value}}",
     "waiting": "Waiting",
     "done": "Done",
     "home": "Back to home",
@@ -104,8 +105,7 @@
     "artPlaceholder": "Placeholder role illustration",
     "roleDetails": "Role details",
     "flip": "Flip your card",
-    "hint": "Tap the card to flip it. Keep your role secret.",
-    "balance": "Balance {{value}}"
+    "hint": "Tap the card to flip it. Keep your role secret."
   },
   "rooms": {
     "intro": "A village gathers. A story begins.",
@@ -208,6 +208,7 @@
     "noMatch": "No roles match your search.",
     "customShort": "Custom",
     "allSeated": "Every player has a role.",
+    "balanceLabel": "Balance",
     "removeRole": "Remove one {{role}}",
     "remaining_one": "Choose {{count}} more role.",
     "remaining_other": "Choose {{count}} more roles.",

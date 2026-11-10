@@ -510,8 +510,15 @@ test('roles are chosen freely, but the rules open only with one role per player'
   await page.goto('/design?screen=setup&lang=en&capture=1');
   const ready = page.getByRole('button', { name: 'Review rules', exact: true });
   const line = page.locator('footer').getByRole('status');
-  // Five roles for six players.
-  await expect(line).toHaveText('Choose 1 more role.');
+  // Five roles for six players. Each faction adds up its roles' balance values, and the footer
+  // the whole game's: two Werewolves (−6 each) against the Seer, Witch and Villager (+7 +4 +1).
+  await expect(line).toHaveText('Choose 1 more role. Balance 0');
+  await expect(page.getByRole('region', { name: 'Wolves', exact: true })).toContainText(
+    '2 players · −12',
+  );
+  await expect(page.getByRole('region', { name: 'Village', exact: true })).toContainText(
+    '3 players · +12',
+  );
   await expect(ready).toBeDisabled();
   await page.getByRole('button', { name: 'Add village roles', exact: true }).click();
   const picker = page.getByRole('dialog', { name: 'Add village roles', exact: true });
@@ -524,7 +531,7 @@ test('roles are chosen freely, but the rules open only with one role per player'
   await expect(villager).toBeEnabled();
   await expect(picker).toContainText('2 roles too many.');
   await picker.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(line).toHaveText('2 roles too many.');
+  await expect(line).toHaveText('2 roles too many. Balance +3');
   await expect(ready).toBeDisabled();
   // Taking the last copy off in the detailed card takes the role out of the game.
   await page.getByRole('button', { name: 'Edit Seer', exact: true }).click();
@@ -534,13 +541,13 @@ test('roles are chosen freely, but the rules open only with one role per player'
     .click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Edit Seer', exact: true })).toHaveCount(0);
-  await expect(line).toHaveText('1 role too many.');
+  await expect(line).toHaveText('1 role too many. Balance −4');
   await page.getByRole('button', { name: 'Edit Witch', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Witch', exact: true })
     .getByRole('button', { name: 'Remove one Witch', exact: true })
     .click();
-  await expect(line).toHaveText('Every player has a role.');
+  await expect(line).toHaveText('Every player has a role. Balance −8');
   await expect(ready).toBeEnabled();
 });
 
@@ -1571,7 +1578,9 @@ test('a card taken out of the game shrinks away before it leaves the page', asyn
   await expect(leaving).toHaveCSS('animation-name', 'card-out');
   await page.clock.runFor(400);
   await expect(leaving).toHaveCount(0);
-  await expect(page.locator('footer').getByRole('status')).toHaveText('Choose 2 more roles.');
+  await expect(page.locator('footer').getByRole('status')).toHaveText(
+    'Choose 2 more roles. Balance −7',
+  );
 });
 
 test('putting a card back while it shrinks keeps it', async ({ page }) => {

@@ -70,6 +70,7 @@
     "finish": "Kết thúc ván",
     "night": "Đêm {{number}}",
     "countPlayers": "{{count}} người chơi",
+    "balance": "Cân bằng {{value}}",
     "waiting": "Đang chờ",
     "done": "Xong",
     "home": "Về trang chủ",
@@ -104,8 +105,7 @@
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
     "roleDetails": "Chi tiết vai trò",
     "flip": "Lật lá bài của bạn",
-    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn.",
-    "balance": "Điểm cân bằng {{value}}"
+    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn."
   },
   "rooms": {
     "intro": "Dân làng tụ họp. Câu chuyện bắt đầu.",
@@ -208,6 +208,7 @@
     "noMatch": "Không có vai trò nào khớp.",
     "customShort": "Tự tạo",
     "allSeated": "Mọi người chơi đã có vai.",
+    "balanceLabel": "Cân bằng",
     "removeRole": "Bớt một {{role}}",
     "remaining_one": "Chọn thêm {{count}} vai trò.",
     "remaining_other": "Chọn thêm {{count}} vai trò.",
