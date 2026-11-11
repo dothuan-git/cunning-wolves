@@ -2,6 +2,7 @@
 
 - **id:** `mighty-wolf-mother`
 - **Team:** werewolf
+- **Balance:** −8 (estimate, compared with the Wolf Cub)
 - **Wakes at night:** yes (350), after `alpha-wolf` and before `white-werewolf`
 - **Card art:** `apps/web/src/assets/cards/mighty-wolf-mother.webp`
 

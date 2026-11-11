@@ -14,6 +14,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 10,
     wakeNights: 'first',
     image: 'thief.webp',
+    balance: 0,
   },
   {
     id: 'cupid',
@@ -26,6 +27,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 20,
     wakeNights: 'first',
     image: 'cupid.webp',
+    balance: -3,
   },
   {
     id: 'stuttering-judge',
@@ -38,6 +40,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 30,
     wakeNights: 'first',
     image: 'stuttering-judge.webp',
+    balance: 2,
   },
   {
     id: 'doppelganger',
@@ -50,6 +53,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 40,
     wakeNights: 'first',
     image: 'doppelganger.webp',
+    balance: -2,
   },
   {
     id: 'hoodlum',
@@ -62,6 +66,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 50,
     wakeNights: 'first',
     image: 'hoodlum.webp',
+    balance: 0,
   },
   {
     id: 'gossiper',
@@ -74,6 +79,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 60,
     wakeNights: 'first',
     image: 'gossiper.webp',
+    balance: 2,
   },
   {
     id: 'the-count',
@@ -86,6 +92,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 70,
     wakeNights: 'first',
     image: 'the-count.webp',
+    balance: 5,
   },
   {
     id: 'two-sisters',
@@ -98,6 +105,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 80,
     wakeNights: 'every',
     image: 'two-sisters.webp',
+    balance: 2,
   },
   {
     id: 'three-brothers',
@@ -110,6 +118,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 90,
     wakeNights: 'every',
     image: 'three-brothers.webp',
+    balance: 2,
   },
   {
     id: 'wild-child',
@@ -122,6 +131,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 100,
     wakeNights: 'first',
     image: 'wild-child.webp',
+    balance: 0,
   },
   {
     id: 'wolf-hound',
@@ -134,6 +144,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 110,
     wakeNights: 'first',
     image: 'wolf-hound.webp',
+    balance: -3,
   },
   {
     id: 'actor',
@@ -146,6 +157,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 120,
     wakeNights: 'every',
     image: 'actor.webp',
+    balance: 3,
   },
   {
     id: 'old-hag',
@@ -158,6 +170,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 130,
     wakeNights: 'every',
     image: 'old-hag.webp',
+    balance: 1,
   },
   {
     id: 'spellcaster',
@@ -170,6 +183,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 140,
     wakeNights: 'every',
     image: 'spellcaster.webp',
+    balance: 1,
   },
   {
     id: 'puppeteer',
@@ -182,6 +196,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 150,
     wakeNights: 'every',
     image: 'puppeteer.webp',
+    balance: 2,
   },
   {
     id: 'fox',
@@ -194,6 +209,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 160,
     wakeNights: 'every',
     image: 'fox.webp',
+    balance: 4,
   },
   {
     id: 'paranormal-investigator',
@@ -206,6 +222,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 170,
     wakeNights: 'every',
     image: 'paranormal-investigator.webp',
+    balance: 3,
   },
   {
     id: 'wise-monkey',
@@ -218,6 +235,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 180,
     wakeNights: 'every',
     image: 'wise-monkey.webp',
+    balance: 3,
   },
   {
     id: 'seer',
@@ -230,6 +248,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 190,
     wakeNights: 'every',
     image: 'seer.webp',
+    balance: 7,
   },
   {
     id: 'beholder',
@@ -242,6 +261,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 200,
     wakeNights: 'first',
     image: 'beholder.webp',
+    balance: 2,
   },
   {
     id: 'aura-seer',
@@ -254,6 +274,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 210,
     wakeNights: 'every',
     image: 'aura-seer.webp',
+    balance: 3,
   },
   {
     id: 'bodyguard',
@@ -266,6 +287,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 220,
     wakeNights: 'every',
     image: 'bodyguard.webp',
+    balance: 3,
   },
   {
     id: 'priest',
@@ -278,6 +300,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 230,
     wakeNights: 'every',
     image: 'priest.webp',
+    balance: 3,
   },
   {
     id: 'werewolf',
@@ -290,6 +313,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 240,
     wakeNights: 'every',
     image: 'werewolf.webp',
+    balance: -6,
   },
   {
     id: 'wolf-man',
@@ -302,6 +326,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 250,
     wakeNights: 'every',
     image: 'wolf-man.webp',
+    balance: -9,
   },
   {
     id: 'wolf-cub',
@@ -314,6 +339,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 260,
     wakeNights: 'every',
     image: 'wolf-cub.webp',
+    balance: -8,
   },
   {
     id: 'fruit-brute',
@@ -326,6 +352,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 270,
     wakeNights: 'every',
     image: 'fruit-brute.webp',
+    balance: -3,
   },
   {
     id: 'dire-wolf',
@@ -338,6 +365,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 280,
     wakeNights: 'every',
     image: 'dire-wolf.webp',
+    balance: -4,
   },
   {
     id: 'lone-wolf',
@@ -350,6 +378,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 290,
     wakeNights: 'every',
     image: 'lone-wolf.webp',
+    balance: -5,
   },
   {
     id: 'minion',
@@ -362,6 +391,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 300,
     wakeNights: 'first',
     image: 'minion.webp',
+    balance: -6,
   },
   {
     id: 'dream-wolf',
@@ -374,6 +404,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 310,
     wakeNights: 'every',
     image: 'dream-wolf.webp',
+    balance: -5,
   },
   {
     id: 'big-bad-wolf',
@@ -386,6 +417,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 320,
     wakeNights: 'every',
     image: 'big-bad-wolf.webp',
+    balance: -9,
   },
   {
     id: 'cursed-wolf-father',
@@ -398,6 +430,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 330,
     wakeNights: 'every',
     image: 'cursed-wolf-father.webp',
+    balance: -8,
   },
   {
     id: 'alpha-wolf',
@@ -410,6 +443,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 340,
     wakeNights: 'every',
     image: 'alpha-wolf.webp',
+    balance: -7,
   },
   {
     id: 'mighty-wolf-mother',
@@ -422,6 +456,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 350,
     wakeNights: 'every',
     image: 'mighty-wolf-mother.webp',
+    balance: -8,
   },
   {
     id: 'white-werewolf',
@@ -434,6 +469,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 360,
     wakeNights: 'every',
     image: 'white-werewolf.webp',
+    balance: -4,
   },
   {
     id: 'sorceress',
@@ -446,6 +482,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 370,
     wakeNights: 'every',
     image: 'sorceress.webp',
+    balance: -3,
   },
   {
     id: 'bogeyman',
@@ -458,6 +495,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 380,
     wakeNights: 'every',
     image: 'bogeyman.webp',
+    balance: -6,
   },
   {
     id: 'chupacabra',
@@ -470,6 +508,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 390,
     wakeNights: 'every',
     image: 'chupacabra.webp',
+    balance: 4,
   },
   {
     id: 'baker',
@@ -482,6 +521,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 400,
     wakeNights: 'every',
     image: 'baker.webp',
+    balance: 2,
   },
   {
     id: 'vampire',
@@ -494,6 +534,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 420,
     wakeNights: 'every',
     image: 'vampire.webp',
+    balance: -8,
   },
   {
     id: 'cult-leader',
@@ -506,6 +547,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 430,
     wakeNights: 'every',
     image: 'cult-leader.webp',
+    balance: 1,
   },
   {
     id: 'witch',
@@ -518,6 +560,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 440,
     wakeNights: 'every',
     image: 'witch.webp',
+    balance: 4,
   },
   {
     id: 'magician',
@@ -530,6 +573,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 450,
     wakeNights: 'every',
     image: 'magician.webp',
+    balance: 4,
   },
   {
     id: 'gypsy',
@@ -542,6 +586,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 460,
     wakeNights: 'every',
     image: 'gypsy.webp',
+    balance: 2,
   },
   {
     id: 'pied-piper',
@@ -554,6 +599,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 470,
     wakeNights: 'every',
     image: 'pied-piper.webp',
+    balance: 1,
   },
   {
     id: 'raven',
@@ -566,6 +612,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 480,
     wakeNights: 'every',
     image: 'raven.webp',
+    balance: 1,
   },
   {
     id: 'troublemaker',
@@ -578,6 +625,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 490,
     wakeNights: 'every',
     image: 'troublemaker.webp',
+    balance: 2,
   },
   {
     id: 'insomniac',
@@ -590,6 +638,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 500,
     wakeNights: 'every',
     image: 'insomniac.webp',
+    balance: 3,
   },
   {
     id: 'angel',
@@ -602,6 +651,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'angel.webp',
+    balance: 1,
   },
   {
     id: 'apprentice-seer',
@@ -614,6 +664,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'apprentice-seer.webp',
+    balance: 4,
   },
   {
     id: 'barber',
@@ -626,6 +677,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'barber.webp',
+    balance: 3,
   },
   {
     id: 'bartender',
@@ -638,6 +690,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'bartender.webp',
+    balance: 3,
   },
   {
     id: 'bear-tamer',
@@ -650,6 +703,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'bear-tamer.webp',
+    balance: 3,
   },
   {
     id: 'bonesetter',
@@ -662,6 +716,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 495,
     wakeNights: 'every',
     image: 'bonesetter.webp',
+    balance: 2,
   },
   {
     id: 'colossus',
@@ -674,6 +729,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'colossus.webp',
+    balance: 3,
   },
   {
     id: 'confessor',
@@ -686,6 +742,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 215,
     wakeNights: 'every',
     image: 'confessor.webp',
+    balance: 2,
   },
   {
     id: 'cursed',
@@ -698,6 +755,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'cursed.webp',
+    balance: -3,
   },
   {
     id: 'devoted-servant',
@@ -710,6 +768,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'devoted-servant.webp',
+    balance: 0,
   },
   {
     id: 'diseased',
@@ -722,6 +781,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'diseased.webp',
+    balance: 3,
   },
   {
     id: 'drunk',
@@ -734,6 +794,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'drunk.webp',
+    balance: -3,
   },
   {
     id: 'elder',
@@ -746,6 +807,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'elder.webp',
+    balance: 2,
   },
   {
     id: 'farmer',
@@ -758,6 +820,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'farmer.webp',
+    balance: 1,
   },
   {
     id: 'ghost',
@@ -770,6 +833,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'ghost.webp',
+    balance: 2,
   },
   {
     id: 'hunter',
@@ -782,6 +846,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'hunter.webp',
+    balance: 3,
   },
   {
     id: 'knight',
@@ -794,6 +859,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'knight.webp',
+    balance: 4,
   },
   {
     id: 'little-girl',
@@ -806,6 +872,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'little-girl.webp',
+    balance: 0,
   },
   {
     id: 'lord',
@@ -818,6 +885,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'lord.webp',
+    balance: 2,
   },
   {
     id: 'lycan',
@@ -830,6 +898,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'lycan.webp',
+    balance: -1,
   },
   {
     id: 'martyr',
@@ -842,6 +911,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'martyr.webp',
+    balance: 3,
   },
   {
     id: 'mayor',
@@ -854,6 +924,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'mayor.webp',
+    balance: 2,
   },
   {
     id: 'old-man',
@@ -866,6 +937,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'old-man.webp',
+    balance: 0,
   },
   {
     id: 'pacifist',
@@ -878,6 +950,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'pacifist.webp',
+    balance: -2,
   },
   {
     id: 'prejudiced-manipulator',
@@ -890,6 +963,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'prejudiced-manipulator.webp',
+    balance: 0,
   },
   {
     id: 'prince',
@@ -902,6 +976,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'prince.webp',
+    balance: 3,
   },
   {
     id: 'scapegoat',
@@ -914,6 +989,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'scapegoat.webp',
+    balance: 1,
   },
   {
     id: 'schoolmistress',
@@ -926,6 +1002,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: 485,
     wakeNights: 'every',
     image: 'schoolmistress.webp',
+    balance: 1,
   },
   {
     id: 'tanner',
@@ -938,6 +1015,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'tanner.webp',
+    balance: 1,
   },
   {
     id: 'tough-guy',
@@ -950,6 +1028,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'tough-guy.webp',
+    balance: 3,
   },
   {
     id: 'village-idiot',
@@ -962,6 +1041,7 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'village-idiot.webp',
+    balance: 2,
   },
   {
     id: 'villager',
@@ -974,5 +1054,6 @@ export const ROLE_POOL: readonly PoolRole[] = [
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: 'villager.webp',
+    balance: 1,
   },
 ];

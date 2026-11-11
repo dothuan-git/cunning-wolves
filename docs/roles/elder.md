@@ -2,6 +2,7 @@
 
 - **id:** `elder`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Tough Guy, with a penalty for the village)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/elder.webp`
 

@@ -123,6 +123,11 @@
   - A player's history now lists what the narrator did (role changes, picked questions) above that night's note, and a death always shows as its own row. The summary journal lists every action.
   - See decision 0027.
 
+- **Role balance values** (branch `feat/role-balance`, 2026-11-10):
+  - Every pool role card shows a balance value in its bottom right corner: above 0 helps the village, below 0 helps the wolves, in the village or wolf color with its sign, muted at 0. Custom roles have none.
+  - 36 values are printed in the Ultimate Werewolf: Ultimate Edition rulebook, 12 come from a fan list, and the other 33 (Millers Hollow, The Village and app-made roles; Asmodee publishes none) are our estimates. Each role doc says which; sources in `docs/roles/README.md`.
+  - Setup adds them up: each faction block shows its total after the player count, and the footer line the whole game's total, so the narrator can aim for about 0.
+
 ## Next
 
 1. **Roles the app can't run yet** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), and the Village expansion roles need houses. The Gypsy now has its own question pool (decision 0027).

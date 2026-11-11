@@ -2,6 +2,7 @@
 
 - **id:** `wild-child`
 - **Team:** village
+- **Balance:** 0 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (100, Night 1 only), after `three-brothers` and before `wolf-hound`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/wild-child.webp`

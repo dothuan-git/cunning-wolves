@@ -2,6 +2,7 @@
 
 - **id:** `confessor`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Beholder)
 - **Wakes at night:** yes (215), after `aura-seer` and before `bodyguard`
 - **Card art:** `apps/web/src/assets/cards/confessor.webp`
 

@@ -2,6 +2,7 @@
 
 - **id:** `seer`
 - **Team:** village
+- **Balance:** +7 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (190), after `wise-monkey` and before `beholder`
 - **Card art:** `apps/web/src/assets/cards/seer.webp`
 

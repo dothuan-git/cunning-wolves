@@ -2,6 +2,7 @@
 
 - **id:** `dream-wolf`
 - **Team:** werewolf
+- **Balance:** −5 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (310), after `minion` and before `big-bad-wolf`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/dream-wolf.webp`

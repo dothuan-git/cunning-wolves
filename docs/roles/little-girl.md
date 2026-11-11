@@ -2,6 +2,7 @@
 
 - **id:** `little-girl`
 - **Team:** village
+- **Balance:** 0 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/little-girl.webp`
 

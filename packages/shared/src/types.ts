@@ -27,6 +27,12 @@ export interface PoolRole {
   wakeNights: WakeNights;
   /** file name in apps/web/src/assets/cards/ */
   image: string;
+  /**
+   * How far the role tips the game: above 0 helps the village, below 0 helps the werewolves, and a
+   * fair deck adds up to about 0 (Ultimate Werewolf's role values; see docs/roles/README.md). Every
+   * pool role has one; null only for a custom role. Shown on the card, never used to decide anything.
+   */
+  balance: number | null;
 }
 
 /** A role as one room uses it: a pool role with this room's rule, or a custom role. */

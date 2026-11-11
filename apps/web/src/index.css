@@ -543,6 +543,18 @@
     left: var(--pad);
   }
 
+  /* The balance value in the bottom right corner, the size of the name above it. */
+  .thumbnail-balance {
+    right: var(--pad);
+    bottom: var(--pad);
+    font-size: clamp(var(--text-caption), 9cqw, var(--text-role));
+  }
+
+  /* The name stops a line short of the corner, so a long name never runs into the value. */
+  .thumbnail-face[data-balance='true'] .thumbnail-name {
+    max-height: calc(100% - 1.4em);
+  }
+
   /* Room above and below the figure, so it sits in the card instead of filling it. */
   .thumbnail-art {
     padding: 10cqw 0;

@@ -2,6 +2,7 @@
 
 - **id:** `ghost`
 - **Team:** village
+- **Balance:** +2 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/ghost.webp`
 

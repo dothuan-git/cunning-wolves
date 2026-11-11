@@ -2,6 +2,7 @@
 
 - **id:** `puppeteer`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Prince)
 - **Wakes at night:** yes (150), after `spellcaster` and before `fox`
 - **Card art:** `apps/web/src/assets/cards/puppeteer.webp`
 

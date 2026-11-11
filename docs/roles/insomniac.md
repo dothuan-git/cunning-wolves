@@ -2,6 +2,7 @@
 
 - **id:** `insomniac`
 - **Team:** village
+- **Balance:** +3 (fan list (werewolf-brain); not in a rulebook we could read)
 - **Wakes at night:** yes (500), after `bonesetter` and last
 - **Card art:** `apps/web/src/assets/cards/insomniac.webp`
 

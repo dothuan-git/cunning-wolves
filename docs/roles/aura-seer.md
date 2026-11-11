@@ -2,6 +2,7 @@
 
 - **id:** `aura-seer`
 - **Team:** village
+- **Balance:** +3 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (210), after `beholder` and before `confessor`
 - **Card art:** `apps/web/src/assets/cards/aura-seer.webp`
 

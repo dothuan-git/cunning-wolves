@@ -2,6 +2,7 @@
 
 - **id:** `priest`
 - **Team:** village
+- **Balance:** +3 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (230), after `bodyguard` and before `werewolf`
 - **Card art:** `apps/web/src/assets/cards/priest.webp`
 

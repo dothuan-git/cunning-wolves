@@ -2,6 +2,7 @@
 
 - **id:** `lord`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Prince)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/lord.webp`
 

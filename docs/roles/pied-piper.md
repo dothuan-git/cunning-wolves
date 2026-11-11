@@ -2,6 +2,7 @@
 
 - **id:** `pied-piper`
 - **Team:** solo
+- **Balance:** +1 (estimate, compared with the Cult Leader)
 - **Wakes at night:** yes (470), after `gypsy` and before `raven`
 - **Card art:** `apps/web/src/assets/cards/pied-piper.webp`
 

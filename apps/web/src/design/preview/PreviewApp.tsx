@@ -679,6 +679,7 @@ function PreviewSetup({
             defaultWakeOrder: role.wakes ? 1000 + current.length : null,
             wakeNights: 'every',
             image: '',
+            balance: null,
           },
         ]);
       }}

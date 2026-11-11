@@ -2,6 +2,7 @@
 
 - **id:** `witch`
 - **Team:** village
+- **Balance:** +4 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (440), after `cult-leader` and before `magician`
 - **Card art:** `apps/web/src/assets/cards/witch.webp`
 

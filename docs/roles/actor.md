@@ -2,6 +2,7 @@
 
 - **id:** `actor`
 - **Team:** village
+- **Balance:** +3 (estimate, compared with the Magician, with only three uses)
 - **Wakes at night:** yes (120), after `wolf-hound` and before `old-hag`
 - **Card art:** `apps/web/src/assets/cards/actor.webp`
 

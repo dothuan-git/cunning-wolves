@@ -2,6 +2,7 @@
 
 - **id:** `doppelganger`
 - **Team:** village
+- **Balance:** −2 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (40, Night 1 only), after `stuttering-judge` and before `hoodlum`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/doppelganger.webp`

@@ -2,6 +2,7 @@
 
 - **id:** `devoted-servant`
 - **Team:** village
+- **Balance:** 0 (estimate, compared with the Doppelgänger)
 - **Wakes at night:** no
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/devoted-servant.webp`

@@ -2,6 +2,7 @@
 
 - **id:** `stuttering-judge`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Troublemaker)
 - **Wakes at night:** yes (30, Night 1 only), after `cupid` and before `doppelganger`
 - **Card art:** `apps/web/src/assets/cards/stuttering-judge.webp`
 

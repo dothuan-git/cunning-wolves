@@ -2,6 +2,7 @@
 
 - **id:** `gypsy`
 - **Team:** village
+- **Balance:** +2 (estimate, compared with the Beholder)
 - **Wakes at night:** yes (460), after `magician` and before `pied-piper`
 - **Card art:** `apps/web/src/assets/cards/gypsy.webp`
 

@@ -1,6 +1,7 @@
 import type { Team } from '@werewolf/shared';
 import { useId, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { balanceTone, signedBalance } from '../design/balance';
 import { FACTION_TEXT, FACTION_WASH } from '../design/faction';
 import { FactionEmblem } from './FactionEmblem';
 import { Icon } from './Icon';
@@ -8,6 +9,7 @@ import { Icon } from './Icon';
 /**
  * One faction's block of role cards: its own pale wash, the emblem and name in the faction color,
  * how many players it has, and the cards three to a row. `children` are the list items.
+ * `balance` adds the faction's balance values added up after the count, colored like a card's.
  *
  * With `onToggle`, the faction's name becomes a button that folds the cards away and back; the
  * parent owns `collapsed`.
@@ -16,6 +18,7 @@ export function FactionSection({
   team,
   count,
   countText,
+  balance,
   collapsed = false,
   onToggle,
   children,
@@ -25,6 +28,7 @@ export function FactionSection({
   count: number;
   /** Replaces "N players" where the block counts something else. */
   countText?: string;
+  balance?: number;
   collapsed?: boolean;
   onToggle?: () => void;
   children: ReactNode;
@@ -67,6 +71,20 @@ export function FactionSection({
         </h2>
         <p key={count} className="count-pop shrink-0 text-caption text-muted">
           {countText ?? t('common.countPlayers', { count })}
+          {balance !== undefined && (
+            <>
+              <span aria-hidden="true">
+                {' · '}
+                <span className={`font-semibold tabular-nums ${balanceTone(balance)}`}>
+                  {signedBalance(balance)}
+                </span>
+              </span>
+              <span className="sr-only">
+                {', '}
+                {t('common.balance', { value: signedBalance(balance) })}
+              </span>
+            </>
+          )}
         </p>
       </div>
       {onToggle ? (

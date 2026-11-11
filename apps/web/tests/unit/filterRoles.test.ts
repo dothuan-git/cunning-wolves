@@ -11,6 +11,7 @@ function role(id: string, vi: string, en: string): PoolRole {
     defaultWakeOrder: null,
     wakeNights: 'every',
     image: `${id}.webp`,
+    balance: 1,
   };
 }
 

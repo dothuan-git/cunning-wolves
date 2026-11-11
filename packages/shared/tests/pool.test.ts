@@ -28,6 +28,21 @@ describe('ROLE_POOL', () => {
     for (const role of ROLE_POOL) expect(WAKE_NIGHTS, role.id).toContain(role.wakeNights);
   });
 
+  it('gives every role a whole-number balance in the published range', () => {
+    for (const role of ROLE_POOL) {
+      expect(Number.isInteger(role.balance), role.id).toBe(true);
+      expect(Math.abs(role.balance ?? Infinity), role.id).toBeLessThanOrEqual(10);
+    }
+  });
+
+  it('keeps the printed Ultimate Werewolf values', () => {
+    const balance = (id: string) => ROLE_POOL.find((role) => role.id === id)?.balance;
+    expect(balance('villager')).toBe(1);
+    expect(balance('werewolf')).toBe(-6);
+    expect(balance('seer')).toBe(7);
+    expect(balance('vampire')).toBe(-8);
+  });
+
   it('names card art after the role id', () => {
     for (const role of ROLE_POOL)
       expect(role.image).toMatch(new RegExp(`^${role.id}\\.(webp|png|svg)$`));

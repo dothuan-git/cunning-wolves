@@ -2,6 +2,7 @@
 
 - **id:** `cursed-wolf-father`
 - **Team:** werewolf
+- **Balance:** −8 (estimate, compared with the Wolf Cub)
 - **Wakes at night:** yes (330), after `big-bad-wolf` and before `alpha-wolf`
 - **Changes roles:** yes: the narrator can give a player another role while it is dealt
 - **Card art:** `apps/web/src/assets/cards/cursed-wolf-father.webp`

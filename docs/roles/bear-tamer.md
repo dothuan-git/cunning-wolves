@@ -2,6 +2,7 @@
 
 - **id:** `bear-tamer`
 - **Team:** village
+- **Balance:** +3 (estimate, compared with the Insomniac)
 - **Wakes at night:** no
 - **Card art:** `apps/web/src/assets/cards/bear-tamer.webp`
 

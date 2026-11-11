@@ -21,9 +21,11 @@ import { RoomSettingsSheet } from '../../components/RoomSettingsSheet';
 import { ScreenLayout } from '../../components/ScreenLayout';
 import { NoteField, TextField } from '../../components/TextField';
 import { ThumbnailCard } from '../../components/ThumbnailCard';
+import { balanceTone, signedBalance } from '../../design/balance';
 import { FACTION_ORDER } from '../../design/faction';
 import { useLocale } from '../../i18n/useLocale';
 import type { SeatedPlayerItem } from '../types';
+import { pickedBalance } from './pickedBalance';
 import { RoomPanel } from './RoomPanel';
 
 const ADD_LABEL = {
@@ -128,6 +130,7 @@ export function SetupScreen({
           : t('setup.allSeated');
   const viewing = roles.find((role) => role.id === viewingId);
   const waking = wakingOrder(roles, picks, wakeOrder);
+  const total = pickedBalance(roles, picks);
 
   function quantity(id: string) {
     return picks.filter((pick) => pick === id).length;
@@ -219,9 +222,18 @@ export function SetupScreen({
       }}
       footer={
         <>
-          {/* Always one line, so the footer keeps its height as the count changes. */}
+          {/* Always one line, so the footer keeps its height as the count changes. The whole
+              game's balance follows once a role is picked: near 0 is a fair game. */}
           <p key={gapText} role="status" className="name-pop text-center text-caption text-muted">
             {gapText}
+            {!reconnecting && picks.length > 0 && (
+              <>
+                {` ${t('setup.balanceLabel')} `}
+                <span className={`font-semibold tabular-nums ${balanceTone(total)}`}>
+                  {signedBalance(total)}
+                </span>
+              </>
+            )}
           </p>
           <Button
             disabled={!matched || reconnecting}
@@ -249,11 +261,13 @@ export function SetupScreen({
         const chosen = roles.filter(
           (role) => role.team === faction && (quantity(role.id) > 0 || leaving.has(role.id)),
         );
+        const count = chosen.reduce((total, role) => total + quantity(role.id), 0);
         return (
           <FactionSection
             key={faction}
             team={faction}
-            count={chosen.reduce((total, role) => total + quantity(role.id), 0)}
+            count={count}
+            balance={count > 0 ? pickedBalance(roles, picks, faction) : undefined}
           >
             {chosen.map((role) => {
               const count = quantity(role.id);

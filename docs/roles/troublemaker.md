@@ -2,6 +2,7 @@
 
 - **id:** `troublemaker`
 - **Team:** village
+- **Balance:** +2 (official, Ultimate Werewolf: Ultimate Edition rulebook)
 - **Wakes at night:** yes (490), after `schoolmistress` and before `bonesetter`
 - **Card art:** `apps/web/src/assets/cards/troublemaker.webp`
 

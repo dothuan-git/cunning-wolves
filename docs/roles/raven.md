@@ -2,6 +2,7 @@
 
 - **id:** `raven`
 - **Team:** village
+- **Balance:** +1 (estimate)
 - **Wakes at night:** yes (480), after `pied-piper` and before `schoolmistress`
 - **Card art:** `apps/web/src/assets/cards/raven.webp`
 

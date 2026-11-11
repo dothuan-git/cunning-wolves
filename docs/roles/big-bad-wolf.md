@@ -2,6 +2,7 @@
 
 - **id:** `big-bad-wolf`
 - **Team:** werewolf
+- **Balance:** −9 (fan list (werewolf-brain), for Ultimate Werewolf’s version of the role)
 - **Wakes at night:** yes (320), after `dream-wolf` and before `cursed-wolf-father`
 - **Card art:** `apps/web/src/assets/cards/big-bad-wolf.webp`
 
