@@ -24,6 +24,7 @@
     "error": "Lỗi kết nối",
     "dead": "Người đã được đánh dấu",
     "hidden": "Úp lá bài",
+    "locked": "Lá bài bị khóa",
     "removed": "Được mời ra khỏi phòng",
     "long": "Nội dung dài",
     "components": "Thành phần giao diện",
@@ -105,7 +106,8 @@
     "artPlaceholder": "Hình minh họa vai trò tạm thời",
     "roleDetails": "Chi tiết vai trò",
     "flip": "Lật lá bài của bạn",
-    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn."
+    "hint": "Chạm vào lá bài để lật. Giữ bí mật vai của bạn.",
+    "locked": "Quản trò đã khóa lá bài."
   },
   "rooms": {
     "intro": "Dân làng tụ họp. Câu chuyện bắt đầu.",
@@ -196,12 +198,14 @@
     "team": "Phe",
     "ruleHint": "Nội dung minh họa cho bản thiết kế.",
     "settings": "Thiết lập bàn chơi",
-    "timer": "Thời gian ban đêm (giây)",
+    "timer": "Bộ đếm ban đêm",
+    "timerOff": "Tắt",
     "sound": "Âm thanh",
+    "blindWolf": "Sói mù",
+    "blindWolfHint": "Người chơi không lật được lá bài.",
     "ready": "Xem lại luật",
     "needRoles": "Xếp đủ vai để tiếp tục.",
     "roleRequired": "Nhập tên và mô tả vai.",
-    "timerHint": "Đặt 0 để tắt bộ đếm.",
     "addWerewolf": "Thêm vai phe Sói",
     "addVillage": "Thêm vai phe Dân",
     "search": "Tìm vai trò",
@@ -236,7 +240,6 @@
   "narrator": {
     "alive": "{{count}} người còn sống",
     "endNight": "Kết thúc đêm",
-    "timer": "Bộ đếm",
     "startTimer": "Bắt đầu đếm",
     "pauseTimer": "Tạm dừng",
     "resetTimer": "Đặt lại bộ đếm",

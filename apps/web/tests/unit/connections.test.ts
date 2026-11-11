@@ -15,6 +15,7 @@ const VIEW: RoomView = {
   seat: 'joined',
   roles: [],
   card: null,
+  cardLocked: false,
   reveal: null,
 };
 const BAKER: RoomRole = {
@@ -52,7 +53,7 @@ const SETUP: RoomSetup = {
   ruleEdits: { werewolf: 'House rule' },
   customRoles: [{ id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: false }],
   wakeOrder: ['werewolf'],
-  settings: { timerSeconds: 60, soundOn: true },
+  settings: { timerSeconds: 60, soundOn: true, blindWolf: false },
 };
 const MASTER = {
   kind: 'master',
@@ -171,6 +172,13 @@ describe('parseServerMessage', () => {
     expect(parseServerMessage(JSON.stringify(finished))).toEqual(finished);
     const dealt = { type: 'state', view: DEALT };
     expect(parseServerMessage(JSON.stringify(dealt))).toEqual(dealt);
+    const locked = { type: 'state', view: { ...DEALT, card: null, cardLocked: true } };
+    expect(parseServerMessage(JSON.stringify(locked))).toEqual(locked);
+    const blind = {
+      type: 'state',
+      view: { ...MASTER, setup: { ...SETUP, settings: { ...SETUP.settings, blindWolf: true } } },
+    };
+    expect(parseServerMessage(JSON.stringify(blind))).toEqual(blind);
     const master = { type: 'state', view: MASTER };
     expect(parseServerMessage(JSON.stringify(master))).toEqual(master);
     const old = { type: 'state', view: { ...MASTER, pin: null } };
@@ -280,6 +288,20 @@ describe('parseServerMessage', () => {
     ['a player view without a reveal', { type: 'state', view: { ...VIEW, reveal: undefined } }],
     ['a reveal without a game', { type: 'state', view: { ...VIEW, reveal: { assignments: [] } } }],
     ['a player view without roles', { type: 'state', view: { ...VIEW, roles: undefined } }],
+    [
+      'a player view without the card lock',
+      { type: 'state', view: { ...VIEW, cardLocked: undefined } },
+    ],
+    [
+      'settings without Blind wolf',
+      {
+        type: 'state',
+        view: {
+          ...MASTER,
+          setup: { ...SETUP, settings: { timerSeconds: 60, soundOn: true } },
+        },
+      },
+    ],
     [
       'a card without a team',
       { type: 'state', view: { ...DEALT, card: { ...BAKER, team: undefined } } },

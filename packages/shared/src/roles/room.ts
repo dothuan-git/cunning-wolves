@@ -11,6 +11,7 @@ export const TIMER_MAX = 3600;
 export const DEFAULT_SETTINGS: RoomSettings = {
   timerSeconds: 120,
   soundOn: false,
+  blindWolf: false,
 };
 
 // Waking custom roles come after every pool role by default, in the order they were made.

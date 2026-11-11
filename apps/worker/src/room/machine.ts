@@ -221,7 +221,7 @@ export function apply(
     case 'setSettings': {
       if (!isMaster) return refuse('not-master');
       // The card set is locked once the rules are reviewed. The narrator's tools (wake order,
-      // timer, sound) can still change while reviewing and playing.
+      // timer, sound, Blind wolf) can still change while reviewing and playing.
       const narratorTool = action.type === 'setWakeOrder' || action.type === 'setSettings';
       const allowed =
         state.status === 'lobby' ||
@@ -474,11 +474,12 @@ function applySetup(setup: RoomSetup, action: SetupAction): SetupResult {
       return { ok: true, setup: { ...setup, wakeOrder: order } };
     }
     case 'setSettings': {
-      const { timerSeconds, soundOn } = action.settings;
+      // Only the settings given change; the others stay as the room has them.
+      const { timerSeconds, soundOn, blindWolf } = { ...setup.settings, ...action.settings };
       if (!Number.isInteger(timerSeconds) || timerSeconds < 0 || timerSeconds > TIMER_MAX) {
         return refuse('not-allowed');
       }
-      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn } } };
+      return { ok: true, setup: { ...setup, settings: { timerSeconds, soundOn, blindWolf } } };
     }
   }
 }

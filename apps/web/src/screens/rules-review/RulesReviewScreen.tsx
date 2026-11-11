@@ -1,4 +1,4 @@
-import type { PoolRole, RoomSettings } from '@werewolf/shared';
+import type { PoolRole, RoomSettings, SettingsChange } from '@werewolf/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
@@ -25,7 +25,7 @@ export function RulesReviewScreen({
     settings: RoomSettings;
     /** The waking roles in the order the narrator will wake them */
     waking: readonly PoolRole[];
-    onSettings: (settings: RoomSettings) => void;
+    onSettings: (change: SettingsChange) => void;
     onWakeOrder: (order: string[]) => void;
     onDelete: () => void;
     deleteFailed: boolean;

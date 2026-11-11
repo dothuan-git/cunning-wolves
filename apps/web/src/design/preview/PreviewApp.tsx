@@ -6,6 +6,7 @@ import {
   ROLE_POOL,
   wakingOrder,
   type PoolRole,
+  type SettingsChange,
 } from '@werewolf/shared';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -118,6 +119,9 @@ function PreviewScene({
   // The wake order set on the setup page, carried to the narrator while this scene stays open.
   const [wakeOrder, setWakeOrder] = useState<readonly string[]>([]);
   const [narratorSettings, setNarratorSettings] = useState(DEFAULT_SETTINGS);
+  const changeNarratorSettings = (change: SettingsChange) => {
+    setNarratorSettings((current) => ({ ...current, ...change }));
+  };
   const [listState, setListState] = useState(state);
   const roomName = t('preview.room');
   // A full table: the sample players and twelve more.
@@ -266,7 +270,7 @@ function PreviewScene({
                     exampleRoles.map((role) => role.id),
                     wakeOrder,
                   ),
-                  onSettings: setNarratorSettings,
+                  onSettings: changeNarratorSettings,
                   onWakeOrder: setWakeOrder,
                   onDelete: () => {
                     onNavigate('home');
@@ -309,7 +313,7 @@ function PreviewScene({
       return (
         <MyCardScreen
           key={state}
-          role={role}
+          role={state === 'locked' ? null : role}
           initiallyRevealed={state !== 'hidden'}
           dealIn={!cardSeen}
           onReviewRoles={() => {
@@ -387,7 +391,7 @@ function PreviewScene({
             return true;
           }}
           onWakeOrder={setWakeOrder}
-          onSettings={setNarratorSettings}
+          onSettings={changeNarratorSettings}
           onTogglePlayer={(id) => {
             setDeaths((current) =>
               id in current
@@ -684,7 +688,9 @@ function PreviewSetup({
         ]);
       }}
       onWakeOrder={setWakeOrder}
-      onSettings={setSettings}
+      onSettings={(change) => {
+        setSettings((current) => ({ ...current, ...change }));
+      }}
       onReady={onReady}
     />
   );

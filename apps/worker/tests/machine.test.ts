@@ -1,5 +1,6 @@
 import {
   CUSTOM_ROLES_MAX,
+  DEFAULT_SETTINGS,
   GYPSY_QUESTIONS,
   NOTE_MAX,
   PICKS_MAX,
@@ -284,7 +285,7 @@ describe('setup', () => {
       ruleEdits: {},
       customRoles: [],
       wakeOrder: [],
-      settings: { timerSeconds: 120, soundOn: false },
+      settings: { timerSeconds: 120, soundOn: false, blindWolf: false },
     });
   });
 
@@ -377,7 +378,7 @@ describe('setup', () => {
   });
 
   it('keeps settings with a whole-second timer up to an hour', () => {
-    const settings = { timerSeconds: 90, soundOn: true };
+    const settings = { timerSeconds: 90, soundOn: true, blindWolf: true };
     expect(run(room(), [MASTER, { type: 'setSettings', settings }]).setup.settings).toEqual(
       settings,
     );
@@ -385,10 +386,20 @@ describe('setup', () => {
       expect(
         refusal(room(), MASTER, {
           type: 'setSettings',
-          settings: { timerSeconds, soundOn: true },
+          settings: { timerSeconds, soundOn: true, blindWolf: false },
         }),
       ).toBe('not-allowed');
     }
+  });
+
+  it('changes only the settings given, so an old copy of the others never undoes them', () => {
+    const blind = run(room(), [MASTER, { type: 'setSettings', settings: { blindWolf: true } }]);
+    expect(blind.setup.settings).toEqual({ ...DEFAULT_SETTINGS, blindWolf: true });
+    const timed = run(blind, [MASTER, { type: 'setSettings', settings: { timerSeconds: 60 } }]);
+    expect(timed.setup.settings).toEqual({ timerSeconds: 60, soundOn: false, blindWolf: true });
+    expect(refusal(timed, MASTER, { type: 'setSettings', settings: { timerSeconds: 3601 } })).toBe(
+      'not-allowed',
+    );
   });
 
   it('is for the master only', () => {
@@ -399,7 +410,7 @@ describe('setup', () => {
       { type: 'editRule', roleId: 'seer', rule: 'x' },
       { type: 'addCustomRole', role: custom },
       { type: 'setWakeOrder', order: [] },
-      { type: 'setSettings', settings: { timerSeconds: 0, soundOn: false } },
+      { type: 'setSettings', settings: { timerSeconds: 0, soundOn: false, blindWolf: false } },
     ];
     for (const action of actions) {
       expect(refusal(seated, 'a', action)).toBe('not-master');
@@ -435,7 +446,7 @@ describe('locks after the lobby', () => {
       expect(
         refusal(locked, MASTER, {
           type: 'setSettings',
-          settings: { timerSeconds: 60, soundOn: true },
+          settings: { timerSeconds: 60, soundOn: true, blindWolf: false },
         }),
       ).toBe(tools);
     },
@@ -1022,14 +1033,17 @@ describe('set note', () => {
 });
 
 describe('narrator tools in play', () => {
-  it('keeps wake order, timer and sound open, and the card set locked', () => {
+  it('keeps wake order, timer, sound and Blind wolf open, and the card set locked', () => {
     const state = run(
       playing(),
       [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
-      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+      [
+        MASTER,
+        { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true, blindWolf: true } },
+      ],
     );
     expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
-    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true, blindWolf: true });
     expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
     expect(refusal(state, MASTER, { type: 'editRule', roleId: 'seer', rule: 'x' })).toBe(
       'not-allowed',
@@ -1042,11 +1056,14 @@ describe('narrator tools in play', () => {
       ready(),
       [MASTER, { type: 'review' }],
       [MASTER, { type: 'setWakeOrder', order: ['werewolf', 'seer'] }],
-      [MASTER, { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true } }],
+      [
+        MASTER,
+        { type: 'setSettings', settings: { timerSeconds: 30, soundOn: true, blindWolf: true } },
+      ],
     );
     expect(state.status).toBe('reveal');
     expect(state.setup.wakeOrder).toEqual(['werewolf', 'seer']);
-    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true });
+    expect(state.setup.settings).toEqual({ timerSeconds: 30, soundOn: true, blindWolf: true });
     expect(refusal(state, MASTER, { type: 'addPick', roleId: 'seer' })).toBe('not-allowed');
   });
 });
@@ -1205,8 +1222,10 @@ describe('views', () => {
         'seat',
         'roles',
         'card',
+        'cardLocked',
         'reveal',
       ]);
+      expect(view.cardLocked).toBe(false);
       // Nobody else's role until the game is finished.
       expect(view.reveal).toBeNull();
     }
@@ -1215,6 +1234,40 @@ describe('views', () => {
       { playerId: 'a', roleId: 'seer' },
       { playerId: 'b', roleId: 'werewolf' },
     ]);
+  });
+
+  it('sends no player their card while Blind wolf is on, until the game is finished', () => {
+    const blind = { timerSeconds: 120, soundOn: false, blindWolf: true };
+    const playing = run(
+      ready(),
+      [MASTER, { type: 'setSettings', settings: blind }],
+      [MASTER, { type: 'review' }],
+      [MASTER, { type: 'startGame' }],
+    );
+    for (const viewer of ['a', 'b']) {
+      const view = buildPlayerView(playing, connected, viewer);
+      expect(view.card).toBeNull();
+      expect(view.cardLocked).toBe(true);
+      expect(JSON.stringify(view)).not.toContain('blindWolf');
+    }
+    // Someone without a card has nothing to lock.
+    expect(buildPlayerView(playing, connected, 'c').cardLocked).toBe(false);
+    // The narrator still sees the deal and the setting.
+    expect(buildMasterView(playing, connected).assignments).toHaveLength(2);
+    expect(buildMasterView(playing, connected).setup.settings.blindWolf).toBe(true);
+    // Before the deal there is no card to lock.
+    const reviewed = run(
+      ready(),
+      [MASTER, { type: 'setSettings', settings: blind }],
+      [MASTER, { type: 'review' }],
+    );
+    expect(reviewed.status).toBe('reveal');
+    expect(buildPlayerView(reviewed, connected, 'a').cardLocked).toBe(false);
+    // Finish shows every card as usual.
+    const finished = run(playing, [MASTER, { type: 'finishGame' }]);
+    const after = buildPlayerView(finished, connected, 'a');
+    expect(after.card?.id).toBe('seer');
+    expect(after.cardLocked).toBe(false);
   });
 
   it('shows the narrator the game, and no player any of it', () => {

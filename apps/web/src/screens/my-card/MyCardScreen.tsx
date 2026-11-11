@@ -12,7 +12,8 @@ export function MyCardScreen({
   dealIn = true,
   onReviewRoles,
 }: {
-  role: PoolRole;
+  /** null while the narrator's Blind wolf keeps the card off this phone: only its back shows */
+  role: PoolRole | null;
   /** Starts with the role showing. Only the design preview uses it. */
   initiallyRevealed?: boolean;
   dealIn?: boolean;
@@ -21,6 +22,8 @@ export function MyCardScreen({
 }) {
   const { t } = useTranslation();
   const [revealed, setRevealed] = useState(initiallyRevealed);
+  // A locked card turns face down, so unlocking it later doesn't show the role at once.
+  if (!role && revealed) setRevealed(false);
   return (
     <ScreenLayout
       title={t('screens.myCard')}
@@ -37,14 +40,14 @@ export function MyCardScreen({
       <div className="card-stage -mx-2 flex min-h-0 flex-1 items-center justify-center">
         <RoleCard
           role={role}
-          revealed={revealed}
+          revealed={revealed && role !== null}
           dealIn={dealIn}
           onToggle={() => {
             setRevealed((value) => !value);
           }}
         />
       </div>
-      <p className="text-center text-caption text-muted">{t('card.hint')}</p>
+      <p className="text-center text-caption text-muted">{t(role ? 'card.hint' : 'card.locked')}</p>
     </ScreenLayout>
   );
 }

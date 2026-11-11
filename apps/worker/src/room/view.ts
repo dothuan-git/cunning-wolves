@@ -46,6 +46,7 @@ function setupInfo(setup: RoomSetup): RoomSetup {
     settings: {
       timerSeconds: setup.settings.timerSeconds,
       soundOn: setup.settings.soundOn,
+      blindWolf: setup.settings.blindWolf,
     },
   };
 }
@@ -120,6 +121,15 @@ function gameInfo(state: RoomState): GameRole[] {
   return gameRoles(state.setup).map(({ role, count }) => ({ role: roleInfo(role), count }));
 }
 
+/** The viewer has a card, but the narrator's Blind wolf keeps it off their phone during play. */
+function cardLocked(state: RoomState, viewer: string): boolean {
+  return (
+    state.status === 'playing' &&
+    state.setup.settings.blindWolf &&
+    Object.hasOwn(state.assignments, viewer)
+  );
+}
+
 /** The viewer's own card, and only theirs. */
 function cardInfo(state: RoomState, viewer: string): RoomRole | null {
   if (state.status === 'lobby' || !Object.hasOwn(state.assignments, viewer)) return null;
@@ -148,6 +158,7 @@ export function buildPlayerView(
 ): PlayerView {
   const own = state.players.find((player) => player.id === viewer);
   const seated = own !== undefined && !own.kicked;
+  const locked = seated && cardLocked(state, viewer);
   return {
     kind: 'player',
     you: viewer,
@@ -155,7 +166,8 @@ export function buildPlayerView(
     players: playerList(state, connected),
     seat: own ? (own.kicked ? 'removed' : 'joined') : 'none',
     roles: seated ? gameInfo(state) : [],
-    card: seated ? cardInfo(state, viewer) : null,
+    card: seated && !locked ? cardInfo(state, viewer) : null,
+    cardLocked: locked,
     reveal: seated ? revealInfo(state) : null,
   };
 }

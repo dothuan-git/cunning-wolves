@@ -30,6 +30,7 @@ export const STATES = [
   'error',
   'dead',
   'hidden',
+  'locked',
   'long',
   'many',
   'removed',
@@ -48,7 +49,7 @@ export const SCREEN_STATES: Record<ScreenId, readonly PreviewState[]> = {
   narrator: ['default', 'dead', 'morning', 'long', 'gypsy'],
   'player-lobby': ['default', 'loading', 'long', 'many', 'removed'],
   'rules-review': ['default', 'many', 'master'],
-  'my-card': ['default', 'hidden', 'long'],
+  'my-card': ['default', 'hidden', 'locked', 'long'],
   'rule-book': ['default'],
   components: ['default'],
 };

@@ -2,27 +2,22 @@ import {
   canNoteNight,
   GYPSY_ROLE_ID,
   NOTE_MAX,
-  TIMER_MAX,
   wakesOnNight,
   type PoolRole,
   type RoomSettings,
+  type SettingsChange,
 } from '@werewolf/shared';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../../components/Button';
-import { DeleteRoomButton } from '../../components/DeleteRoomButton';
 import { DetailedCard } from '../../components/DetailedCard';
 import { HoldButton } from '../../components/HoldButton';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { PlayerStatusControl } from '../../components/PlayerStatusControl';
 import { Icon } from '../../components/Icon';
-import { Modal } from '../../components/Modal';
 import { PlayerChip } from '../../components/PlayerChip';
 import { RoleBanner } from '../../components/RoleBanner';
+import { RoomSettingsSheet } from '../../components/RoomSettingsSheet';
 import { ScreenLayout } from '../../components/ScreenLayout';
-import { SwitchRow } from '../../components/SwitchRow';
-import { WakeOrderSetting } from '../../components/WakeOrderSetting';
-import { NoteField, TextField } from '../../components/TextField';
+import { NoteField } from '../../components/TextField';
 import { FACTION_TEXT, FACTION_WASH } from '../../design/faction';
 import { useFlip } from '../../design/useFlip';
 import { useLeaving } from '../../design/useLeaving';
@@ -92,7 +87,7 @@ export function NarratorScreen({
   onPickQuestion: (playerId: string, questionId: string | null) => void;
   onEndPhase: () => void;
   onWakeOrder: (order: string[]) => void;
-  onSettings: (settings: RoomSettings) => void;
+  onSettings: (change: SettingsChange) => void;
   /** Leaves out the Finish game control when not given */
   onFinish?: () => void;
   /** Leaves out Delete room when not given */
@@ -102,7 +97,6 @@ export function NarratorScreen({
   const { t } = useTranslation();
   const locale = useLocale();
   const [showTools, setShowTools] = useState(false);
-  const [timerDraft, setTimerDraft] = useState('');
   const [editing, setEditing] = useState<{ playerId: string; night: number } | null>(null);
   // The player whose role sheet is open.
   const [changing, setChanging] = useState<string | null>(null);
@@ -161,16 +155,6 @@ export function NarratorScreen({
   }
   function noteText(night: number, playerId: string): string {
     return drafts[noteKey(night, playerId)] ?? notes[night]?.[playerId] ?? '';
-  }
-
-  function closeTools() {
-    // A number outside the timer's range is pulled into it; anything else leaves it as it was.
-    const typed = Number.parseInt(timerDraft, 10);
-    if (!Number.isNaN(typed)) {
-      const timerSeconds = Math.min(TIMER_MAX, Math.max(0, typed));
-      if (timerSeconds !== length) onSettings({ ...settings, timerSeconds });
-    }
-    setShowTools(false);
   }
 
   // A role split into several panels is one entry in the wake order.
@@ -470,7 +454,6 @@ export function NarratorScreen({
     <ScreenLayout
       title={t('screens.narrator')}
       onOpenMenu={() => {
-        setTimerDraft(String(length));
         setShowTools(true);
       }}
       footer={
@@ -627,81 +610,30 @@ export function NarratorScreen({
         />
       )}
       {showTools && (
-        <Modal sheet title={t('setup.settings')} onClose={closeTools}>
-          <div className="grid gap-4 pb-4">
-            <div className="flex items-center justify-between text-control">
-              <span>{t('language.label')}</span>
-              <LanguageSwitch compact />
-            </div>
-            {length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-control">
-                  {t('narrator.timer')}{' '}
-                  <span className="ml-2 tabular-nums" role="timer">
-                    {String(Math.floor(seconds / 60)).padStart(2, '0')}:
-                    {String(seconds % 60).padStart(2, '0')}
-                  </span>
-                </span>
-                <div className="flex gap-1">
-                  <Button
-                    variant="secondary"
-                    disabled={seconds === 0}
-                    onClick={() => {
-                      // The tap that starts the timer is what lets the phone play its chime.
-                      if (!running) unlockSound();
-                      setTimer((value) => ({ ...value, running: !value.running }));
-                    }}
-                  >
-                    {t(running ? 'narrator.pauseTimer' : 'narrator.startTimer')}
-                  </Button>
-                  <Button
-                    variant="quiet"
-                    aria-label={t('narrator.resetTimer')}
-                    onClick={() => {
-                      setTimer({ length, seconds: length, running: false });
-                    }}
-                  >
-                    <Icon name="reset" />
-                  </Button>
-                </div>
-              </div>
-            )}
-            <TextField
-              type="number"
-              min="0"
-              max={TIMER_MAX}
-              label={t('setup.timer')}
-              hint={t('setup.timerHint')}
-              value={timerDraft}
-              disabled={reconnecting}
-              onChange={(event) => {
-                setTimerDraft(event.target.value);
-              }}
-            />
-            <div className="divide-y divide-line border-y border-line">
-              <SwitchRow
-                label={t('setup.sound')}
-                checked={settings.soundOn}
-                disabled={reconnecting}
-                onChange={(event) => {
-                  if (event.target.checked) unlockSound();
-                  onSettings({ ...settings, soundOn: event.target.checked });
-                }}
-              />
-            </div>
-            {wakingRoles.length > 0 && (
-              <WakeOrderSetting
-                roles={wakingRoles}
-                onChange={(order) => {
-                  onWakeOrder(order.map((role) => role.id));
-                }}
-              />
-            )}
-            {onDelete && (
-              <DeleteRoomButton disabled={reconnecting} failed={deleteFailed} onDelete={onDelete} />
-            )}
-          </div>
-        </Modal>
+        <RoomSettingsSheet
+          settings={settings}
+          waking={wakingRoles}
+          countdown={{
+            seconds,
+            running,
+            onToggle: () => {
+              // The tap that starts the timer is what lets the phone play its chime.
+              if (!running) unlockSound();
+              setTimer((value) => ({ ...value, running: !value.running }));
+            },
+            onReset: () => {
+              setTimer({ length, seconds: length, running: false });
+            },
+          }}
+          reconnecting={reconnecting}
+          deleteFailed={deleteFailed}
+          onSettings={onSettings}
+          onWakeOrder={onWakeOrder}
+          onDelete={onDelete}
+          onClose={() => {
+            setShowTools(false);
+          }}
+        />
       )}
     </ScreenLayout>
   );

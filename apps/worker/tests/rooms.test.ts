@@ -144,7 +144,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false },
+        settings: { timerSeconds: 120, soundOn: false, blindWolf: false },
       },
       pin: PIN,
       assignments: [],
@@ -259,7 +259,7 @@ describe('Room', () => {
     master.send({ type: 'setWakeOrder', order: ['custom-0', 'werewolf'] });
     master.send({
       type: 'setSettings',
-      settings: { timerSeconds: 45, soundOn: true },
+      settings: { timerSeconds: 45, soundOn: true, blindWolf: true },
     });
     await master.next(masterView((view) => view.setup.settings.timerSeconds === 45));
 
@@ -272,12 +272,13 @@ describe('Room', () => {
         { id: 'custom-0', name: 'Baker', rule: 'Bakes.', team: 'village', wakes: true },
       ],
       wakeOrder: ['custom-0', 'werewolf'],
-      settings: { timerSeconds: 45, soundOn: true },
+      settings: { timerSeconds: 45, soundOn: true, blindWolf: true },
     });
     await runInDurableObject(env.ROOM.getByName(roomId), (_instance, state) => {
       expect(loadRoom(state.storage.sql)?.setup.settings).toEqual({
         timerSeconds: 45,
         soundOn: true,
+        blindWolf: true,
       });
     });
     for (const text of minh.received) {
@@ -317,7 +318,7 @@ describe('Room', () => {
         ruleEdits: {},
         customRoles: [],
         wakeOrder: [],
-        settings: { timerSeconds: 120, soundOn: false },
+        settings: { timerSeconds: 120, soundOn: false, blindWolf: false },
       });
       expect(loaded?.assignments).toEqual({});
       expect(loaded?.game).toBeNull();
@@ -374,6 +375,51 @@ describe('Room', () => {
     });
   });
 
+  it('keeps the dealt card off player phones while Blind wolf is on', async () => {
+    const roomId = await newRoom();
+    const master = await enter(roomId, TOKENS.master);
+    const minh = await join(roomId, TOKENS.minh, 'Minh');
+    const blind = (blindWolf: boolean) => {
+      master.send({
+        type: 'setSettings',
+        settings: { timerSeconds: 120, soundOn: false, blindWolf },
+      });
+    };
+    master.send({ type: 'addPick', roleId: 'seer' });
+    blind(true);
+    master.send({ type: 'review' });
+    master.send({ type: 'startGame' });
+    const { view: dealt } = await master.next(masterView((view) => view.room.status === 'playing'));
+    const minhId = await deviceIdFromToken(TOKENS.minh, roomId);
+    expect(dealt.assignments).toEqual([{ playerId: minhId, roleId: 'seer' }]);
+    const { view: locked } = await minh.next(playerView((view) => view.room.status === 'playing'));
+    expect(locked).toMatchObject({ card: null, cardLocked: true });
+
+    // A reconnect gets no card either, and no player view so far carried one.
+    const again = await enter(roomId, TOKENS.minh);
+    const { view: kept } = await again.next(playerView());
+    expect(kept).toMatchObject({ card: null, cardLocked: true });
+    const anyPlayer = playerView();
+    for (const text of [...minh.received, ...again.received]) {
+      const message: unknown = JSON.parse(text);
+      if (anyPlayer(message)) expect(message.view.card).toBeNull();
+    }
+
+    // Turning it off sends the card, and turning it on again takes it back.
+    blind(false);
+    const { view: open } = await again.next(playerView((view) => view.card !== null));
+    expect(open.card?.id).toBe('seer');
+    expect(open.cardLocked).toBe(false);
+    blind(true);
+    await again.next(playerView((view) => view.cardLocked && view.card === null));
+
+    // Finish shows every card, as without it.
+    master.send({ type: 'finishGame' });
+    const { view: finished } = await again.next(playerView((view) => view.reveal !== null));
+    expect(finished.reveal?.assignments).toEqual([{ playerId: minhId, roleId: 'seer' }]);
+    expect(finished).toMatchObject({ card: { id: 'seer' }, cardLocked: false });
+  });
+
   it('keeps the narrator game across a reload, and sends it to the master only', async () => {
     const roomId = await newRoom();
     const master = await enter(roomId, TOKENS.master);
@@ -424,6 +470,8 @@ describe('Room', () => {
     const master = await enter(roomId, TOKENS.master);
     await join(roomId, TOKENS.minh, 'Minh');
     master.send({ type: 'addPick', roleId: 'seer' });
+    // Settings that differ from the defaults, so only Blind wolf falls back once its table goes.
+    master.send({ type: 'setSettings', settings: { timerSeconds: 45, soundOn: true } });
     master.send({ type: 'review' });
     master.send({ type: 'startGame' });
     await master.next(masterView((view) => view.room.status === 'playing'));
@@ -435,6 +483,7 @@ describe('Room', () => {
       sql.exec('DROP TABLE new_roles');
       sql.exec('DROP TABLE action_notes');
       sql.exec('DROP TABLE question_deck');
+      sql.exec('DROP TABLE blind_wolf');
       // A room saved while it still had player marks loads, and the old tables go.
       sql.exec(
         'CREATE TABLE marks (player_id TEXT, mark TEXT, phase_kind TEXT, phase_number INTEGER)',
@@ -443,7 +492,11 @@ describe('Room', () => {
       sql.exec('CREATE TABLE marks_on (value INTEGER NOT NULL)');
       sql.exec('INSERT INTO marks_on VALUES (1)');
       const older = loadRoom(sql);
-      expect(older?.setup.settings).toEqual({ timerSeconds: 120, soundOn: false });
+      expect(older?.setup.settings).toEqual({
+        timerSeconds: 45,
+        soundOn: true,
+        blindWolf: false,
+      });
       expect(
         sql.exec("SELECT name FROM sqlite_master WHERE name IN ('marks', 'marks_on')").toArray(),
       ).toEqual([]);
@@ -683,7 +736,9 @@ describe('parseClientMessage', () => {
       },
     ],
     [{ type: 'setWakeOrder', order: ['witch', 'seer'] }],
-    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true } }],
+    [{ type: 'setSettings', settings: { timerSeconds: 60, soundOn: true, blindWolf: false } }],
+    [{ type: 'setSettings', settings: { blindWolf: true } }],
+    [{ type: 'setSettings', settings: { timerSeconds: 90 } }],
     [{ type: 'review' }],
     [{ type: 'backToSetup' }],
     [{ type: 'startGame' }],
@@ -753,9 +808,14 @@ describe('parseClientMessage', () => {
       JSON.stringify({ type: 'setNote', night: '1', playerId: 'abc', text: '' }),
     ],
     ['a wake order with a number', JSON.stringify({ type: 'setWakeOrder', order: ['seer', 1] })],
+    ['settings with nothing to change', JSON.stringify({ type: 'setSettings', settings: {} })],
     [
-      'settings without sound',
-      JSON.stringify({ type: 'setSettings', settings: { timerSeconds: 60 } }),
+      'a timer given as text',
+      JSON.stringify({ type: 'setSettings', settings: { timerSeconds: '60' } }),
+    ],
+    [
+      'Blind wolf as a number',
+      JSON.stringify({ type: 'setSettings', settings: { soundOn: true, blindWolf: 1 } }),
     ],
   ])('rejects %s', (_label, raw) => {
     expect(parseClientMessage(raw)).toBeNull();

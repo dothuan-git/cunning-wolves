@@ -2,22 +2,36 @@ import { useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
 /**
- * A setting that is on or off: its name, with a square switch on the right. It is a real checkbox, so it keeps its label and keyboard behaviour.
+ * A setting that is on or off: its name (with an optional line on what it does), with a square
+ * switch on the right. It is a real checkbox, so it keeps its label and keyboard behaviour.
  */
 export function SwitchRow({
   label,
+  hint,
   ...props
-}: { label: string } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
+}: { label: string; hint?: string } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
   const id = useId();
   return (
     <label
       htmlFor={id}
       className="flex min-h-14 cursor-pointer items-center justify-between gap-4 py-2 has-disabled:cursor-not-allowed"
     >
-      <span className="min-w-0 text-control font-medium">{label}</span>
+      <span className="grid min-w-0 gap-0.5">
+        <span id={`${id}-label`} className="text-control font-medium">
+          {label}
+        </span>
+        {hint && (
+          <span id={`${id}-hint`} className="text-caption text-muted">
+            {hint}
+          </span>
+        )}
+      </span>
       <span className="relative h-7 w-12 shrink-0">
-        {/* The real checkbox covers the track, so it takes the tap and shows focus on it. */}
+        {/* The real checkbox covers the track, so it takes the tap and shows focus on it. It is
+            named by the label alone; the hint is its description. */}
         <input
+          aria-labelledby={`${id}-label`}
+          aria-describedby={hint ? `${id}-hint` : undefined}
           {...props}
           id={id}
           type="checkbox"

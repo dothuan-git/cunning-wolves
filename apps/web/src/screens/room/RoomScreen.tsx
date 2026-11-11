@@ -111,7 +111,7 @@ export function RoomScreen({ roomId }: { roomId: string }) {
             onStart: () => send({ type: 'startGame' }),
             settings: setup.settings,
             waking: wakingOrder(roomRoles(setup), setup.picks, setup.wakeOrder),
-            onSettings: (settings) => send({ type: 'setSettings', settings }),
+            onSettings: (change) => send({ type: 'setSettings', settings: change }),
             onWakeOrder: (order) => send({ type: 'setWakeOrder', order }),
             onDelete,
             deleteFailed: masterError === 'try-again',
@@ -164,7 +164,7 @@ export function RoomScreen({ roomId }: { roomId: string }) {
         onEditRule={(roleId, rule) => send({ type: 'editRule', roleId, rule })}
         onAddCustomRole={(role) => send({ type: 'addCustomRole', role })}
         onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
-        onSettings={(settings) => send({ type: 'setSettings', settings })}
+        onSettings={(change) => send({ type: 'setSettings', settings: change })}
         // The wake order is already in the room; the room checks roles = players again.
         onReady={() => send({ type: 'review' })}
       />
@@ -270,7 +270,7 @@ function NarratorRoom({
       }
       onEndPhase={() => send({ type: 'endPhase', phase: game.phase })}
       onWakeOrder={(order) => send({ type: 'setWakeOrder', order })}
-      onSettings={(settings) => send({ type: 'setSettings', settings })}
+      onSettings={(change) => send({ type: 'setSettings', settings: change })}
       onFinish={() => send({ type: 'finishGame' })}
       onDelete={() => send({ type: 'deleteRoom' })}
       deleteFailed={deleteFailed}
@@ -364,7 +364,8 @@ function PlayerRoom({
     );
   }
 
-  if (view.seat === 'joined' && view.card) {
+  // The same screen with the card locked, so the lock going on or off doesn't deal it in again.
+  if (view.seat === 'joined' && (view.card || view.cardLocked)) {
     if (readingRoles) {
       return (
         <RulesReviewScreen

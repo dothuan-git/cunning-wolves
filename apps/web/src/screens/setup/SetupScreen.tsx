@@ -7,6 +7,7 @@ import {
   type CustomRoleInput,
   type PoolRole,
   type RoomSettings,
+  type SettingsChange,
   type Team,
 } from '@werewolf/shared';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -89,7 +90,7 @@ export function SetupScreen({
   onEditRule: (roleId: string, rule: string) => void;
   onAddCustomRole: (role: CustomRoleInput) => void;
   onWakeOrder: (order: string[]) => void;
-  onSettings: (settings: RoomSettings) => void;
+  onSettings: (change: SettingsChange) => void;
   /**
    * Called with the ids of the waking roles in the order the narrator will wake them.
    * Reviewing the rules closes the room: the roster is fixed from here on.

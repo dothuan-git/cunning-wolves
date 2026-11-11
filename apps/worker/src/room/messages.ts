@@ -3,7 +3,7 @@ import {
   type ClientMessage,
   type CustomRoleInput,
   type Phase,
-  type RoomSettings,
+  type SettingsChange,
 } from '@werewolf/shared';
 
 // Exactly what crypto.randomUUID() makes on the client.
@@ -34,13 +34,26 @@ function parseCustomRole(value: unknown): CustomRoleInput | null {
   return known ? { name, rule, team: known, wakes } : null;
 }
 
-function parseSettings(value: unknown): RoomSettings | null {
+/** Some settings, at least one; each one given must have its type. */
+function parseSettings(value: unknown): SettingsChange | null {
   if (!isObject(value)) return null;
+  const change: SettingsChange = {};
   const timerSeconds = field(value, 'timerSeconds');
   const soundOn = field(value, 'soundOn');
-  return typeof timerSeconds === 'number' && typeof soundOn === 'boolean'
-    ? { timerSeconds, soundOn }
-    : null;
+  const blindWolf = field(value, 'blindWolf');
+  if (timerSeconds !== undefined) {
+    if (typeof timerSeconds !== 'number') return null;
+    change.timerSeconds = timerSeconds;
+  }
+  if (soundOn !== undefined) {
+    if (typeof soundOn !== 'boolean') return null;
+    change.soundOn = soundOn;
+  }
+  if (blindWolf !== undefined) {
+    if (typeof blindWolf !== 'boolean') return null;
+    change.blindWolf = blindWolf;
+  }
+  return Object.keys(change).length > 0 ? change : null;
 }
 
 function parsePhase(value: unknown): Phase | null {
