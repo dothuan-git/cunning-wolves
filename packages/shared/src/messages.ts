@@ -4,9 +4,9 @@ import type {
   GameState,
   Phase,
   RoomRole,
-  RoomSettings,
   RoomSetup,
   RoomStatus,
+  SettingsChange,
 } from './types';
 
 /** Room ids, as the create route makes them: in `/room/:id` and `/api/rooms/:id/ws`. */
@@ -42,7 +42,8 @@ export type ClientMessage =
   | { type: 'editRule'; roleId: string; rule: string }
   | { type: 'addCustomRole'; role: CustomRoleInput }
   | { type: 'setWakeOrder'; order: string[] }
-  | { type: 'setSettings'; settings: RoomSettings }
+  /** Changes only the settings given */
+  | { type: 'setSettings'; settings: SettingsChange }
   /** Shows the rules to everyone; needs as many roles as players. Closes the room. */
   | { type: 'review' }
   | { type: 'backToSetup' }
@@ -121,6 +122,8 @@ export interface PlayerView {
   roles: GameRole[];
   /** This player's own role, once the game starts; never anyone else's */
   card: RoomRole | null;
+  /** A card is dealt, but the narrator's Blind wolf keeps it off this phone (`card` is null) */
+  cardLocked: boolean;
   /** Every player's role and the narrator's game: only once the game is finished */
   reveal: Reveal | null;
 }

@@ -89,6 +89,8 @@ function ensureSchema(sql: SqlStorage): void {
   )`);
   // One row of joined ids: a row per question would double the rows written on every save.
   sql.exec('CREATE TABLE IF NOT EXISTS question_deck (ids TEXT NOT NULL)');
+  // The Blind wolf setting. A room saved before it has no row, so it loads with it off.
+  sql.exec('CREATE TABLE IF NOT EXISTS blind_wolf (on_value INTEGER NOT NULL)');
 }
 
 function text(row: Record<string, SqlStorageValue>, column: string): string {
@@ -182,10 +184,12 @@ function loadSetup(sql: SqlStorage): RoomSetup {
     .toArray()
     .map((row) => text(row, 'role_id'));
   const [settingsRow] = sql.exec('SELECT * FROM settings LIMIT 1').toArray();
+  const [blindRow] = sql.exec('SELECT on_value FROM blind_wolf LIMIT 1').toArray();
   const settings = settingsRow
     ? {
         timerSeconds: integer(settingsRow, 'timer_seconds'),
         soundOn: integer(settingsRow, 'sound_on') === 1,
+        blindWolf: blindRow ? integer(blindRow, 'on_value') === 1 : DEFAULT_SETTINGS.blindWolf,
       }
     : { ...DEFAULT_SETTINGS };
   return { picks, ruleEdits, customRoles, wakeOrder, settings };
@@ -308,6 +312,8 @@ export function saveRoom(storage: DurableObjectStorage, state: RoomState): void 
       setup.settings.timerSeconds,
       setup.settings.soundOn ? 1 : 0,
     );
+    sql.exec('DELETE FROM blind_wolf');
+    sql.exec('INSERT INTO blind_wolf VALUES (?)', setup.settings.blindWolf ? 1 : 0);
     sql.exec('DELETE FROM assignments');
     for (const [playerId, roleId] of Object.entries(state.assignments)) {
       sql.exec('INSERT INTO assignments VALUES (?, ?)', playerId, roleId);

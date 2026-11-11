@@ -112,13 +112,14 @@ function roomSetup(value: unknown): RoomSetup | null {
     if (typeof rule !== 'string') return null;
     ruleEdits[roleId] = rule;
   }
-  const { timerSeconds, soundOn } = value.settings;
+  const { timerSeconds, soundOn, blindWolf } = value.settings;
   if (
     !picks ||
     !customRoles ||
     !wakeOrder ||
     typeof timerSeconds !== 'number' ||
-    typeof soundOn !== 'boolean'
+    typeof soundOn !== 'boolean' ||
+    typeof blindWolf !== 'boolean'
   ) {
     return null;
   }
@@ -127,7 +128,7 @@ function roomSetup(value: unknown): RoomSetup | null {
     ruleEdits,
     customRoles,
     wakeOrder,
-    settings: { timerSeconds, soundOn },
+    settings: { timerSeconds, soundOn, blindWolf },
   };
 }
 
@@ -256,14 +257,26 @@ function roomView(value: unknown): RoomView | null {
   const roles = list(value.roles, gameRole);
   const card = value.card === null ? null : roomRole(value.card);
   const revealed = value.reveal === null ? null : reveal(value.reveal);
+  const { cardLocked } = value;
   if (
     value.kind === 'player' &&
     seat &&
     roles &&
     (value.card === null || card) &&
+    typeof cardLocked === 'boolean' &&
     (value.reveal === null || revealed)
   ) {
-    return { kind: 'player', you: value.you, room, players, seat, roles, card, reveal: revealed };
+    return {
+      kind: 'player',
+      you: value.you,
+      room,
+      players,
+      seat,
+      roles,
+      card,
+      cardLocked,
+      reveal: revealed,
+    };
   }
   return null;
 }

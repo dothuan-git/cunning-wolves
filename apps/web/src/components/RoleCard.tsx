@@ -6,14 +6,17 @@ import { RoleFace } from './RoleFace';
 
 const FLIP_MS = 250;
 
-/** A round playing card that shows its back until it is tapped, then flips to the role. */
+/**
+ * A round playing card that shows its back until it is tapped, then flips to the role. Without a
+ * role (the narrator's Blind wolf) it is only the back, and it doesn't flip.
+ */
 export function RoleCard({
   role,
   revealed,
   onToggle,
   dealIn = true,
 }: {
-  role: PoolRole;
+  role: PoolRole | null;
   revealed: boolean;
   onToggle: () => void;
   /** Tosses the card in as it appears; off when the player comes back to a card already dealt. */
@@ -43,15 +46,16 @@ export function RoleCard({
           aria-hidden={!revealed}
           inert={!revealed}
         >
-          {faceMounted && <RoleFace role={role} />}
+          {faceMounted && role && <RoleFace role={role} />}
         </div>
       </div>
       <button
         type="button"
         aria-pressed={revealed}
         aria-label={t('card.flip')}
+        disabled={!role}
         onClick={onToggle}
-        className="absolute inset-0 rounded-playing"
+        className="absolute inset-0 rounded-playing disabled:cursor-not-allowed"
       />
     </div>
   );

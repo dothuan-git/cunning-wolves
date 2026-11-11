@@ -128,6 +128,12 @@
   - 36 values are printed in the Ultimate Werewolf: Ultimate Edition rulebook, 12 come from a fan list, and the other 33 (Millers Hollow, The Village and app-made roles; Asmodee publishes none) are our estimates. Each role doc says which; sources in `docs/roles/README.md`.
   - Setup adds them up: each faction block shows its total after the player count, and the footer line the whole game's total, so the narrator can aim for about 0.
 
+- **Blind wolf and one settings sheet** (branch `feat/blind-wolf`, 2026-11-11):
+  - A Blind wolf switch in the narrator's settings: while it is on, players get their card face down and can't flip it. The room doesn't send the card at all. The narrator can turn it on or off at any time until Finish.
+  - Setup, the rules review and the narrator page share one compact settings sheet. The timer is six buttons (Off to 5:00) instead of a typed seconds field. During the game the countdown sits on the timer's row, with play/pause and reset icons.
+  - Every setting saves when it is used.
+  - See decision 0028.
+
 ## Next
 
 1. **Roles the app can't run yet** (decision 0023): the Thief and the Actor need extra cards in the deck and a different deal (the narrator can already give the Thief its new role), and the Village expansion roles need houses. The Gypsy now has its own question pool (decision 0027).

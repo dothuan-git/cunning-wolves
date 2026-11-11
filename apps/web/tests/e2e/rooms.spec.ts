@@ -252,6 +252,63 @@ test('the master shows the rules, then deals each player only their own card', a
   }
 });
 
+test('with Blind wolf on, players keep their card face down until the narrator lifts it', async ({
+  browser,
+}) => {
+  const roomName = `Loft ${String(Date.now()).slice(-6)}`;
+  const master = await phone(browser);
+  const minh = await phone(browser);
+  const minhMessages = roomMessages(minh);
+  await createRoom(master, roomName);
+  await joinFromHome(minh, roomName, 'Minh');
+  await expect(master.getByRole('button', { name: 'Players (1)' })).toBeVisible();
+  await master.getByRole('button', { name: 'Add village roles', exact: true }).click();
+  const picker = master.getByRole('dialog', { name: 'Add village roles' });
+  await picker.getByRole('button', { name: 'Add Seer', exact: true }).click();
+  await picker.getByRole('button', { name: 'Done', exact: true }).click();
+
+  // The narrator turns on Blind wolf before the deal, and picks a shorter timer.
+  const menu = master.getByRole('button', { name: 'Menu', exact: true });
+  const settings = master.getByRole('dialog', { name: 'Table settings' });
+  const blind = settings.getByRole('checkbox', { name: 'Blind wolf', exact: true });
+  await menu.click();
+  await blind.check();
+  await expect(blind).toBeChecked();
+  const timer = settings.getByRole('group', { name: 'Night timer' });
+  await timer.getByRole('button', { name: '1:30', exact: true }).click();
+  await expect(timer.getByRole('button', { name: '1:30', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await settings.getByRole('button', { name: 'Close' }).click();
+  await master.getByRole('button', { name: 'Review rules', exact: true }).click();
+  await master.getByRole('button', { name: 'Start game' }).click();
+  await expect(master.getByRole('heading', { name: 'Night 1' })).toBeVisible();
+
+  // The card is dealt in face down and can't be flipped, even after a refresh.
+  const flip = minh.getByRole('button', { name: 'Flip your card' });
+  await expect(flip).toBeDisabled();
+  await expect(minh.getByText('The narrator has locked the cards.')).toBeVisible();
+  await minh.reload();
+  await expect(flip).toBeDisabled();
+  expect([...cardIds(minhMessages)]).toEqual([]);
+
+  // In the game the timer row holds the countdown at the length picked before.
+  await menu.click();
+  await expect(settings.getByRole('timer')).toHaveText('1:30');
+  await expect(blind).toBeChecked();
+  await blind.uncheck();
+  await expect(flip).toBeEnabled();
+  await flip.click();
+  await expect(minh.locator('.flip-front')).toContainText('Seer');
+  expect([...cardIds(minhMessages)]).toEqual(['seer']);
+
+  // Turning it on again turns the card face down at once.
+  await blind.check();
+  await expect(flip).toBeDisabled();
+  await expect(flip).toHaveAttribute('aria-pressed', 'false');
+});
+
 test('the room keeps what the narrator marks, and no player sees it', async ({ browser }) => {
   const roomName = `Inn ${String(Date.now()).slice(-6)}`;
   const master = await phone(browser);

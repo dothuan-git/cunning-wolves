@@ -494,6 +494,46 @@ test('the setup settings sheet sets the wake order, and it is kept when reopened
   await expect(page.getByRole('button', { name: 'Wolf, 3 of 3', exact: true })).toBeVisible();
 });
 
+for (const [lang, menu, timer, start, pause] of [
+  ['vi', 'Tùy chọn', 'Bộ đếm ban đêm', 'Bắt đầu đếm', 'Tạm dừng'],
+  ['en', 'Menu', 'Night timer', 'Start timer', 'Pause timer'],
+] as const) {
+  for (const screen of ['setup', 'narrator'] as const) {
+    test(`the ${screen} settings sheet fits its timer on one row at 390px in ${lang}`, async ({
+      page,
+    }) => {
+      await page.goto(`/design?screen=${screen}&lang=${lang}&capture=1`);
+      await page.getByRole('button', { name: menu, exact: true }).click();
+      await settle(page);
+      const sheet = page.getByRole('dialog');
+      expect(await sheet.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        390,
+      );
+      const chips = sheet.getByRole('group', { name: timer }).getByRole('button');
+      await expect(chips).toHaveCount(6);
+      const boxes = await Promise.all((await chips.all()).map((chip) => chip.boundingBox()));
+      for (const box of boxes) {
+        expect(box?.width).toBeGreaterThanOrEqual(48);
+        expect(box?.height).toBeGreaterThanOrEqual(48);
+        expect(box?.y).toBe(boxes[0]?.y);
+      }
+      // A tap picks the length; only one is picked at a time.
+      await chips.filter({ hasText: '1:00' }).click();
+      await expect(chips.filter({ hasText: '1:00' })).toHaveAttribute('aria-pressed', 'true');
+      await expect(sheet.locator('[role="group"] [aria-pressed="true"]')).toHaveCount(1);
+      if (screen === 'narrator') {
+        // During the game the countdown sits beside the timer, at the length picked.
+        await expect(sheet.getByRole('timer')).toHaveText('1:00');
+        await sheet.getByRole('button', { name: start, exact: true }).click();
+        await expect(sheet.getByRole('button', { name: pause, exact: true })).toBeVisible();
+      } else {
+        await expect(sheet.getByRole('timer')).toHaveCount(0);
+      }
+    });
+  }
+}
+
 test('the wake order title keeps a gap above its tiles', async ({ page }) => {
   await page.goto('/design?screen=narrator&lang=en&capture=1');
   await page.getByRole('button', { name: 'Menu', exact: true }).click();

@@ -92,7 +92,15 @@ export interface RoomSettings {
   /** Narrator's timer length; 0 = no timer */
   timerSeconds: number;
   soundOn: boolean;
+  /** Blind wolf: players are dealt a card but can't flip it; the room doesn't send it to them */
+  blindWolf: boolean;
 }
+
+/**
+ * The settings one control changes; the room keeps the rest. A control sends only its own field, so
+ * a phone's out-of-date copy of the others (say Blind wolf) can never undo a newer change.
+ */
+export type SettingsChange = Partial<RoomSettings>;
 
 /** The card set the master builds while players gather. Only the master sees it before Ready. */
 export interface RoomSetup {
